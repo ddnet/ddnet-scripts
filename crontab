@@ -1,0 +1,4 @@
+# m h  dom mon dow   command
+*/20 * * * * /usr/bin/nice -n 19 /usr/bin/ionice -c 3 /home/teeworlds/servers/scripts/update-everything.sh
+*/2 * * * * /usr/bin/nice -n 19 /usr/bin/ionice -c 3 /home/teeworlds/servers/scripts/update-status.sh
+#* * * * * /home/teeworlds/servers/scripts/print.sh

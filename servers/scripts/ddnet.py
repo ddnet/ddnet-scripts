@@ -1,0 +1,471 @@
+# -*- coding: utf-8 -*-
+
+import sys
+import re
+import os
+import gc
+import os.path
+from cgi import escape
+from datetime import date, datetime
+from collections import namedtuple, defaultdict
+import time
+import msgpack
+from urllib import quote_plus
+
+from mysql import *
+from teeworlds import *
+from countryflags import *
+
+reload(sys)
+sys.setdefaultencoding('utf8')
+
+webDir = "/var/www"
+
+pointsDict = {
+  'novice':    (1, 0),
+  'moderate':  (2, 5),
+  'brutal':    (3,15),
+  'hitomi':    (4, 0),
+  'oldschool': (6, 0),
+  'solo':      (4, 0)
+}
+
+def points(rank):
+  if rank < 0 or rank > 10:
+    return 0
+
+  return {
+    1 : 25,
+    2 : 18,
+    3 : 15,
+    4 : 12,
+    5 : 10,
+    6 : 8,
+    7 : 6,
+    8 : 4,
+    9 : 2,
+    10 : 1
+  }[rank]
+
+def description(tile):
+  return {
+    'DFREEZE' : 'Deep Freeze',
+    'EHOOK_START': 'Endless Hook',
+    'HIT_START': 'No Hit',
+    'SOLO_START': 'Solo',
+    'NPC_START': 'No Player Collision',
+    'SUPER_START': 'Super Jumps',
+    'JETPACK_START': 'Jetpack',
+    'WALLJUMP': 'WallJump',
+    'NPH_START': 'No Player Hook',
+    'WEAPON_SHOTGUN': 'Shotgun',
+    'WEAPON_GRENADE': 'Grenade',
+    'POWERUP_NINJA': 'Ninja',
+    'WEAPON_RIFLE': 'Rifle',
+    'JUMP': 'Customized Jumps',
+    'SWITCHTIMEDOPEN': 'Timed Switch',
+    'SWITCHOPEN': 'Switch',
+    'TELEINEVIL': 'Evil Teleport',
+    'TELEIN': 'Teleport',
+    'TELECHECKIN': 'Checkpointed Teleport',
+    'TELEINWEAPON': 'Weapon Teleport',
+    'TELEINHOOK': 'Hook Teleport'
+  }[tile]
+
+def order(tile):
+  return [
+    'SOLO_START',
+
+    'WEAPON_SHOTGUN',
+    'WEAPON_GRENADE',
+    'WEAPON_RIFLE',
+    'POWERUP_NINJA',
+
+    'DFREEZE',
+    'EHOOK_START',
+    'HIT_START',
+
+    'NPC_START',
+    'NPH_START',
+    'SUPER_START',
+    'JETPACK_START',
+    'WALLJUMP',
+    'JUMP',
+
+    'SWITCHTIMEDOPEN',
+    'SWITCHOPEN',
+
+    'TELEIN',
+    'TELEINEVIL',
+    'TELECHECKIN',
+    'TELEINWEAPON',
+    'TELEINHOOK'
+  ].index(tile)
+
+def normalizeMapname(name):
+  return re.sub('\W', '_', name)
+
+def textJoinNames(names):
+  result = ', '.join(names[:-1])
+  if names[-1]:
+    result += ' & ' + names[-1]
+  return result
+
+def joinNames(names):
+  result = ', '.join(names[:-1])
+  if names[-1]:
+    result += ' &amp; ' + names[-1]
+  return result
+
+def renderStars(points):
+  return u'★' * points + u'✰' * max(5 - points, 0)
+
+def globalPoints(type, stars):
+  mo = pointsDict.get(type, (1,0))
+  mult = mo[0]
+  offset = mo[1]
+  return stars * mult + offset
+
+PlayerMap = namedtuple('PlayerMap', ['teamRank', 'rank', 'points', 'nrFinishes', 'firstFinish', 'time'])
+Player = namedtuple('Player', ['maps'])
+
+def slugify2(name):
+  x = '[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.:]+'
+  string = ""
+  for c in name:
+    if c in x or ord(c) >= 128:
+      string += "-%s-" % ord(c)
+    else:
+      string += c
+  return string
+
+def deslugify2(string):
+  n = u''
+  t = 0
+  i = 0
+
+  for c in string:
+    if t == 0:
+      if c == '-':
+        t = 1
+      else:
+        n += c
+    else:
+      if c == '-':
+        n += unichr(i)
+        t = 0
+        i = 0
+      else:
+        i = i * 10 + int(c)
+
+  return n.encode('utf-8')
+
+def playerWebsite(name):
+  return "/players/%s/" % slugify2(u'%s' % name)
+
+def formatRank(rank):
+  if rank == 0:
+    return ''
+  return '%d.' % rank
+
+def formatDate(date):
+  return date.strftime('%Y-%m-%d %H:%M')
+
+def formatDateShort(date):
+  return date.strftime('%H:%M')
+
+def formatTime(totalSeconds):
+  return '%02d:%02d' % divmod(totalSeconds, 60)
+
+def formatTimeExact(totalSeconds):
+  return '%02d:%05.02f' % divmod(totalSeconds, 60)
+
+def formatScore(score, pure = False):
+  if pure:
+    return str(score)
+  if score == -9999:
+    return ""
+  return formatTime(abs(score))
+
+def header(title, menu, header, refresh = False, stupidIncludes = False):
+  if refresh:
+    mbRefresh = '<meta http-equiv="refresh" content="120" />'
+  else:
+    mbRefresh = ''
+
+  if stupidIncludes:
+    mbIncludes = """    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/bootstrap-theme.css">
+    <link rel="stylesheet" type="text/css" href="css/light.css" />"""
+  else:
+    mbIncludes = ''
+
+  return """<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+    <link rel="icon" type="image/png" href="/favicon-196x196.png" sizes="196x196">
+    <link rel="icon" type="image/png" href="/favicon-160x160.png" sizes="160x160">
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+    <meta name="msapplication-TileColor" content="#2d89ef">
+    <meta name="msapplication-TileImage" content="/mstile-144x144.png">
+    <meta name="viewport" content="width=device-width">
+    %s
+    %s
+    <link rel="stylesheet" type="text/css" href="/css.css" />
+    <script src="/js.js" type="text/javascript"></script>
+    <title>%s</title>
+  </head>
+  <body>
+    <article>
+    <div class="title"><h1><a href="/"><img class="logobig" alt="DDraceNetwork" src="/ddnet2.svg"/><img class="logosmall" alt="DDraceNetwork" src="/ddnet.svg"/></a></h1></div>
+    <menu class="contentleft">
+    <ul class="big">
+      <li><a href="/status/">Status</a></li>
+      <li><a href="/ranks/">Ranks</a></li>
+      <li><a href="/tournament/">Tournaments</a></li>
+      <li><a href="//forum.ddnet.tw/">Forum</a></li>
+    </ul>
+    %s
+    </menu>
+    <section>
+    %s""" % (mbRefresh, mbIncludes, title, menu, header)
+
+def printSoloRecords(recordName, className, topFinishes):
+  string = u'<div class="block2 %s"><h4>%s:</h4>\n' % (className, recordName)
+  if len(topFinishes) > 0:
+    string += '<table class="tight">\n'
+    for f in topFinishes:
+      if f[4] > 1:
+        mbS = "es"
+      else:
+        mbS = ""
+      string += u'  <tr title="%s, %s, %d finish%s total"><td class="rank">%d.</td><td class="time">%s</td><td><a href="%s">%s</a></td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[4], mbS, f[0], escape(formatTime(f[2])), escape(playerWebsite(u'%s' % f[1])), escape(f[1]))
+    string += '</table>\n'
+  string += '</div>\n'
+
+  return string
+
+def printTeamRecords(recordName, className, topFinishes):
+  string = u'<div class="block2 %s"><h4>%s:</h4>\n' % (className, recordName)
+  if len(topFinishes) > 0:
+    string += '<table class="tight">\n'
+    for f in topFinishes:
+      string += u'  <tr title="%s, %s"><td class="rank">%d.</td><td class="time">%s</td><td>%s</td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[0], escape(formatTime(f[2])), f[1])
+    string += '</table>\n'
+  string += '</div>\n'
+
+  return string
+
+def printLadder(name, ranks):
+  string = '<div class="block2 ladder"><h3>%s</h3>\n' % name
+  currentRank = 0
+  skips = 1
+  lastPoints = 0
+  if len(ranks) > 0:
+    string += '<table class="tight">\n'
+    for currentPos, r in enumerate(ranks):
+      if currentPos > 499:
+        break
+      if r[1] != lastPoints:
+        lastPoints = r[1]
+        currentRank += skips
+        skips = 1
+      else:
+        skips += 1
+      if currentPos > 9:
+        string += '<tr class="allPoints" style="display: none">\n'
+      else:
+        string += '<tr>\n'
+      string += u'  <td class="rankglobal">%d.</td><td class="points">%d pts</td><td><a href="%s">%s</a></td></tr>' % (currentRank, r[1], escape(playerWebsite(u'%s' % r[0])), escape(r[0]))
+    string += '</table>\n'
+  string += '</div>\n'
+
+  return string
+
+def printPlayers(server, filt, players):
+  count = 0
+  for player in server.playerlist:
+    if filt(player):
+      count += 1
+  if count == 0:
+    return
+
+  print('<table class="status">')
+  for player in sorted(server.playerlist, key=lambda p: p.score, reverse=True):
+    if filt(player):
+      print("<tr>")
+
+      if player.name.encode('utf-8') in players:
+        htmlName = '<a href=\"%s\">%s</a>' % (escape(playerWebsite(u'%s' % player.name)), escape(player.name))
+      else:
+        htmlName = escape(player.name)
+
+      print((u"  <td class=\"time\">%s</td><td class=\"name\">%s</td><td class=\"clan\">%s</td><td class=\"flag\"><img src=\"countryflags/%s.png\" alt=\"%s\" height=\"20\"/></td>" % (formatScore(player.score, "race" not in server.gametype.lower()), htmlName, escape(player.clan), countryFlags.get(player.country, 'default'), countryFlags.get(player.country, 'NONE'))).encode('utf-8'))
+      print("</tr>")
+  print("</table>")
+
+def serverStatus(title):
+  return """    <div id="global" class="block">
+      <h2>%s</h2>
+      <table class="table table-striped table-condensed">
+        <thead>
+        <tr>
+          <th id="status4" style="text-align: center;">Net</th>
+          <th id="status6" style="text-align: center;">IPv6</th>
+          <th id="name">Name</th>
+          <th id="type">Domain</th>
+          <th id="host">Host</th>
+          <th id="location">Location</th>
+          <th id="uptime">Uptime</th>
+          <th id="load">Load</th>
+          <th id="network">Net ↓|↑</th>
+          <th id="cpu">CPU</th>
+          <th id="memory">RAM</th>
+          <th id="hdd">HDD</th>
+        </tr>
+        </thead>
+        <tbody id="servers">
+        <!-- Servers here -->
+        </tbody>
+      </table>
+      <br />
+      <h3 class="ip">
+        <a href="https://github.com/BotoX/ServerStatus">ServerStatus</a>
+      </h3>
+    </div>
+    <script src="js/jquery-1.10.2.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/serverstatus.js"></script>
+    """ % title
+
+def printStatus(name, servers, serverAddresses, external = False):
+  serverPlayers = {}
+
+  serverPositions = {}
+
+  for i in servers:
+    serverPlayers[i[0]] = 0
+    serverPositions[i[0]] = 0
+
+  tw = Teeworlds(timeout=5)
+  tw2 = Teeworlds(timeout=5)
+  tw3 = Teeworlds(timeout=5)
+  tw4 = Teeworlds(timeout=5)
+
+  for serverAddress in serverAddresses:
+    server = Server64(tw, serverAddress[:-1])
+    server.request()
+    tw.serverlist.add(server)
+
+    server2 = Server64(tw2, serverAddress[:-1])
+    server2.request()
+    tw2.serverlist.add(server2)
+
+    server3 = Server(tw3, serverAddress[:-1])
+    server3.request()
+    tw3.serverlist.add(server3)
+
+    server4 = Server(tw4, serverAddress[:-1])
+    server4.request()
+    tw4.serverlist.add(server4)
+
+  tw.run_loop()
+  tw2.run_loop()
+  tw3.run_loop()
+  tw4.run_loop()
+
+  totalPlayers = 0
+  lastServer = ''
+
+  serverlists = [tw.serverlist, tw2.serverlist, tw3.serverlist, tw4.serverlist]
+
+  for i, s in enumerate(tw.serverlist):
+    for serverlist in serverlists:
+      server = serverlist.servers[i]
+
+      if server.clients < 0:
+        continue
+
+      if serverAddresses[i][2] != lastServer:
+        lastServer = serverAddresses[i][2]
+        serverPositions[lastServer] = i
+      totalPlayers += max(0,server.clients)
+      if serverPlayers.has_key(serverAddresses[i][2]):
+        serverPlayers[serverAddresses[i][2]] += max(0,server.clients)
+      break
+
+  menuText = ""
+  if len(servers) > 1:
+    menuText += '<ul>'
+    for i in servers:
+      menuText += '<li><a href="#server-%d">%s&nbsp;[%d]</a></li> ' % (serverPositions[i[0]], i[1].replace(" ","&nbsp;"), serverPlayers[i[0]])
+    menuText += "</ul>"
+
+  if name == "DDraceNetwork":
+    print header("[%d] %s Status" % (totalPlayers, name), menuText, serverStatus("%s Status: %d players" % (name, totalPlayers)), True, True)
+  else:
+    print header("[%d] %s Status" % (totalPlayers, name), menuText, '<div id="global" class="block"><h2>%s Status: %d players</h2></div>' % (name, totalPlayers), True)
+
+  print '<p class="toggle"><a title="Click to toggle whether empty servers are shown" href="#" onclick="showClass(\'empty\'); return false;">Show empty servers</a></p>'
+
+  players = None
+  with open('%s/playerNames.msgpack' % webDir, 'rb') as inp:
+    players = msgpack.unpack(inp, encoding='utf-8')
+  inp = None
+
+  for i, s in enumerate(tw.serverlist):
+    for serverlist in serverlists:
+      try:
+        server = serverlist.servers[i]
+        mbEmpty = ""
+        if server.clients < 1:
+          mbEmpty = " empty\" style=\"display:none"
+
+        clients = server.clients
+        max_clients = server.max_clients
+        name = server.name
+
+        tmp = name.strip().split(" - ")
+        serverType = tmp[-1].split(" ")[0]
+        serverRest = " ".join(tmp[-1].split(" ")[1:])
+        if serverRest != "":
+          serverRest = " %s" % serverRest
+
+        if external or "Test" in name:
+          serverName = escape(name)
+          mapName = escape(server.map)
+        elif not "DDrace" in name or "BLOCKER" in name or "Tournament" in name or "ADMIN" in name:
+          serverName = escape(name)
+          mapName = '<a href="/maps/?map=%s">%s</a>' % (quote_plus(server.map), escape(server.map))
+        else:
+          serverName = '%s - <a href="/ranks/%s/">%s</a>%s' % (escape(" - ".join(tmp[:-1])), escape(serverType.lower()), escape(serverType), escape(serverRest))
+          mapName = '<a href="/ranks/%s/#map-%s">%s</a>' % (escape(serverType.lower()), escape (normalizeMapname(server.map)), escape(server.map))
+
+
+        print((u'<div id="server-%d"><div class="block%s"><h3 class="ip">%s:%d</h3><h2>%s: %s [%d/%d]</h2><br/>' % (i, mbEmpty, serverAddresses[i][2], serverAddresses[i][1], serverName, mapName, clients, max_clients)).encode('utf-8'))
+
+        print('<div class="block3 status-players"><h3>Players</h3>')
+        printPlayers(server, lambda p: p.playing, players)
+
+        print('</div><div class="block3 status-players"><h3>Spectators</h3>')
+        printPlayers(server, lambda p: not p.playing, players)
+        print('</div><br/></div></div>')
+      except:
+        continue
+      break
+  print '<p class="toggle">Refreshed: %s</p>' % time.strftime("%Y-%m-%d %H:%M")
+  print """</section>
+  </article>
+  </body>
+  </html>"""

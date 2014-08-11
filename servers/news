@@ -1,0 +1,25 @@
+|DDNet 4.7 released|
+• [Client] Automatic timeout protection on DDNet servers
+• [Server] /timeout protection for all clients
+• [Server] /specteam to only see players from your team when spectating
+• [Server] Fixes for /save and /load
+
+|Moderate Tournament on Sunday!|
+The DDraceNetwork Quick Tournament #18 will take place
+on Sunday, August 10 at 19:00 CEST (not 20:00!).
+We will play the long and easy map Neverwhere by Bixes & Themix.
+
+The rules are as always, check out ddnet.tw for more information.
+Hopefully we will have a German livestream by Hallowed1986!
+
+|Brutal Tournament on Sunday!|
+We played the surprisingly Brutal Inception by Cøke & #eci.in`.
+Noone was able to finish!
+
+|DDNet 4.6 released|
+• [Server] Save a game in team using /save password (by HMH)
+• [Client] Fix some default binds (pageup, pagedown)
+• [Client] Prevent dummy from reconnecting too often
+• [Blocker] Disable rejoin to team 0 after finish
+• [Blocker] Add freeze hammer
+• and many more fixes

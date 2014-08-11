@@ -1,0 +1,13 @@
+When you want to change map make sure noone is currently racing!
+Don't block. Often the race progress is being delayed by blocking players. And only some of them do it on purpose.
+When you dont know what to do in a challenge, try to stay away from the action. Find a place from where you can have a look at the other tees without blocking them.
+Most communication in DDRace is not via chat. Watch the behavior of other tees. Teeworlds allows to show very different expressions. Observe other tees and try to understand what they want from you or others.
+Don't leave anyone. Often a group of racing tees fails because everyone tried to do the challenge alone. One by one fails.
+Add DDraceNetwork to your favorites!
+You should always help first when there is a tee that needs help. Leaving stuck tees behind could be a fatal fault, because that tee could be the one who rescues you next time.
+DDraceNetwork supports team ranks! Play in team, get a /rankteam and you will appear in the /top5team
+DDraceNetwork has a points system! For every map you finish you earn points. Check your current points with /points and compare yourself to the /top5points
+DDraceNetwork always welcomes creative maps you made and ideas for new DDRace features you have.
+You can compare your points, global rank and team rank on DDraceNetwork's website: http://ddnet.tw
+Mappers looking to map using our new features can get our server and client on our website: http://ddnet.tw
+When you get blocked in the noob filter do not kick the blocker but instead join a team.

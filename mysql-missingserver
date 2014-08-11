@@ -1,0 +1,31 @@
+ A  ->  B  ->  C | Server B goes down
+GER -> IRN -> CHN | example
+
+
+When IRN comes back:
+
+on all
+stop slave;
+
+on GER
+show master status;
+mysqldump -p'SECRETPASS' --master-data --databases teeworlds --result-file=dbdata1.sql
+show master status; // Nothing should change
+scp dbdata1.sql ddnetirn:
+
+on IRN
+drop database teeworlds;
+create database teeworlds;
+mysql -p'SECRETPASS' teeworlds < dbdata1.sql
+show master status;
+
+on CHN
+change master to master_host='irn.ddnet.tw', master_log_file='mysql-bin.000106', master_log_pos=7966699;
+
+on all
+start slave;
+show slave status\G
+
+insert missing records anywhere:
+INSERT IGNORE INTO record_race(Map, Name, Timestamp, Time, cp1, cp2, cp3, cp4, cp5, cp6, cp7, cp8, cp9, cp10, cp11, cp12, cp13, cp14, cp15, cp16, cp17, cp18, cp19, cp20, cp21, cp22, cp23, cp24, cp25) VALUES ('Kobra', 'bigman', '2014-02-15 22:37:55', '2253.34', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0');
+INSERT IGNORE INTO record_race(Map, Name, Timestamp, Time, cp1, cp2, cp3, cp4, cp5, cp6, cp7, cp8, cp9, cp10, cp11, cp12, cp13, cp14, cp15, cp16, cp17, cp18, cp19, cp20, cp21, cp22, cp23, cp24, cp25) VALUES ('Kobra', 'Boss', '2014-02-15 22:37:28', '2227.94', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0');
