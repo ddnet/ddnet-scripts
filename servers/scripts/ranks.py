@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 from collections import defaultdict
 import msgpack
 import traceback
+from time import sleep
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -191,6 +192,7 @@ with con:
 
       try:
         cur.execute("select Name, r.ID, Time, Timestamp from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID order by r.Time, r.ID, Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
+        sleep(0.1)
         rows = cur.fetchall()
       except:
         traceback.print_exc()
@@ -218,7 +220,7 @@ with con:
           ID = row[1]
 
         if row[0] not in players:
-          players[row[0]] = Player({})
+          players[row[0]] = Player({}, {})
         if originalMapName not in players[row[0]].maps:
           players[row[0]].maps[originalMapName] = PlayerMap(currentRank, 0, 0, 0, date(2015,10,10),  date(2016,10,10))
 
@@ -251,7 +253,8 @@ with con:
       countFinishes = 0
 
       try:
-        cur.execute("select l.Name, minTime, l.Timestamp, playCount, minTimestamp from (select * from record_race where Map = '%s') as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp from record_race where Map = '%s' group by Name order by minTime ASC) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTime;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
+        cur.execute("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, l.Server from (select * from record_race where Map = '%s') as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp from record_race where Map = '%s' group by Name order by minTime ASC) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTime;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
+        sleep(0.1)
         rows = cur.fetchall()
       except:
         traceback.print_exc()
@@ -284,11 +287,17 @@ with con:
           monthlyServerPointsLadder[row[0]] += globalPoints(type, stars)
 
         if row[0] not in players:
-          players[row[0]] = Player({})
+          players[row[0]] = Player({}, {})
         if originalMapName not in players[row[0]].maps:
           players[row[0]].maps[originalMapName] = PlayerMap(0, currentRank, globalPoints(type, stars), row[3], row[4], row[1])
         else:
           players[row[0]].maps[originalMapName] = PlayerMap(players[row[0]].maps[originalMapName][0], currentRank, globalPoints(type, stars), row[3], row[4], row[1])
+
+        if row[5] != None:
+          if row[5] not in players[row[0]].servers:
+            players[row[0]].servers[row[5]] = 1
+          else:
+            players[row[0]].servers[row[5]] += 1
 
         if currentPosition > 10:
           continue
@@ -332,6 +341,7 @@ with con:
       try:
         cur.execute("select count(Name) from record_teamrace where Map = '%s' group by ID order by count(Name) desc limit 1;" % con.escape_string(originalMapName))
         rows = cur.fetchall()
+        sleep(0.1)
         biggestTeam = " (biggest team: %d)" % rows[0][0]
       except:
         pass
@@ -384,6 +394,7 @@ with con:
     lastString = ""
     cur.execute("select Timestamp, l.Map, Name, Time from (select Timestamp, Map, Name, Time from record_race) as l join record_maps on l.Map = record_maps.Map where Server = '%s' order by Timestamp desc limit 10;" % type)
     rows = cur.fetchall()
+    sleep(0.1)
 
     lastString = '<div class="block4"><h3>Last Finishes</h3><table class="tight">'
 
@@ -407,10 +418,12 @@ with con:
 
     tf.close()
     os.rename(tmpname, filename)
+    sleep(1)
 
   lastString = ""
   cur.execute("select Timestamp, Map, Name, Time from record_race order by Timestamp desc limit 10;")
   rows = cur.fetchall()
+  sleep(0.1)
 
   lastString = '<div class="block4"><h3>Last Finishes</h3><table>'
 
@@ -458,12 +471,14 @@ with open(tmpname, 'wb') as out:
 </body>
 </html>"""
 os.rename(tmpname, filename)
+sleep(1)
 
 tmpname = '%s/playerNames.tmp' % webDir
 filename = '%s/playerNames.msgpack' % webDir
 with open(tmpname, 'wb') as out:
   out.write(msgpack.packb(players.keys()))
 os.rename(tmpname, filename)
+sleep(1)
 
 tmpname = '%s/players.tmp' % webDir
 filename = '%s/players.msgpack' % webDir

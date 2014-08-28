@@ -43,9 +43,8 @@ types = sys.argv[1:]
 menuText = '<ul>\n'
 for type in types:
   menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type.title())
-
-print header("Quick Tournament #17 - DDraceNetwork", menuText, "")
 menuText += '</ul>'
+print header("Quick Tournament #17 - DDraceNetwork", menuText, "")
 
 f = open("tournament")
 tournamentMaps = []

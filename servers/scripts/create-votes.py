@@ -16,7 +16,6 @@ serverStrings = {
   'moderate' : '           Moderate Server',
   'brutal'   : '                Brutal Server',
   'oldschool': '            Oldschool Server',
-  'hitomi'   : '               Hitomi Server',
   'solo'     : '                 Solo Server'
 }
 

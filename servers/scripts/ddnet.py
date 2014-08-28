@@ -25,7 +25,6 @@ pointsDict = {
   'novice':    (1, 0),
   'moderate':  (2, 5),
   'brutal':    (3,15),
-  'hitomi':    (4, 0),
   'oldschool': (6, 0),
   'solo':      (4, 0)
 }
@@ -127,7 +126,7 @@ def globalPoints(type, stars):
   return stars * mult + offset
 
 PlayerMap = namedtuple('PlayerMap', ['teamRank', 'rank', 'points', 'nrFinishes', 'firstFinish', 'time'])
-Player = namedtuple('Player', ['maps'])
+Player = namedtuple('Player', ['maps', 'servers'])
 
 def slugify2(name):
   x = '[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.:]+'
@@ -233,6 +232,7 @@ def header(title, menu, header, refresh = False, stupidIncludes = False):
     <ul class="big">
       <li><a href="/status/">Status</a></li>
       <li><a href="/ranks/">Ranks</a></li>
+      <li><a href="/releases/">Releases</a></li>
       <li><a href="/tournament/">Tournaments</a></li>
       <li><a href="//forum.ddnet.tw/">Forum</a></li>
     </ul>
@@ -349,6 +349,111 @@ def serverStatus(title):
     <script src="js/serverstatus.js"></script>
     """ % title
 
+childrenCount = 0
+second = False
+def getTSStatus():
+  import ts3
+  global childrenCount
+  svr = ts3.TS3Server("ts.ddnet.tw", 10011, 1)
+  response = svr.send_command('use port=9987')
+
+  response = svr.send_command('serverinfo')
+  if response.response['msg'] != 'ok':
+      exit
+  svr_info = response.data[0]
+
+  response = svr.send_command('channellist')
+  if response.response['msg'] != 'ok':
+      exit
+  channel_list = response.data
+
+  response = svr.send_command('clientlist')
+  if response.response['msg'] != 'ok':
+      exit
+  client_list = response.data
+
+  # Start building the channel / client tree.
+  # We save tree nodes in a dictionary, keyed by their id so we can find
+  # them later in order to support arbitrary channel hierarchies.
+  channels = {}
+
+  # Build the root, or channel 0
+  channels[0] = {
+      'title': svr_info['virtualserver_name'],
+      'isFolder': True,
+      'expand': True,
+      'children': []
+  }
+
+  # Add the channels to our tree
+
+  for channel in channel_list:
+      node = {
+          'title': channel['channel_name'],
+          'isFolder': True,
+          'expand': True,
+          'children': []
+      }
+      parent = channels[int(channel['pid'])]
+      parent['children'].append(node)
+      channels[int(channel['cid'])] = node
+
+      if node['title'] == 'DDraceNetwork':
+          ddnetChan = node
+
+  # Add the clients to the tree
+
+  for client in client_list:
+      if client['client_type'] == '0':
+          node = {
+              'title': client['client_nickname'],
+              'isFolder': False
+          }
+          channel = channels[int(client['cid'])]
+          channel['children'].append(node)
+
+  tree = [channels[0]]
+
+  childrenCount = 0
+  def renderChannel(chan, name):
+      global childrenCount, second
+      thisCount = 0
+      result = '<div class="block3">\n<h3>%s</h3>\n<table>\n' % name
+      childrenCount
+      for child in chan['children']:
+          if not child['isFolder']:
+              result += '<tr>\n  <td>%s</td>\n</tr>\n' % child['title']
+              childrenCount += 1
+              thisCount += 1
+      result += '</table>\n</div>\n'
+      if second:
+        result += '<br/>'
+      if thisCount > 0:
+        second = not second
+        return result
+      else:
+        return ''
+
+  text = ''
+
+  text += renderChannel(ddnetChan, 'DDraceNetwork Main')
+  for chan in ddnetChan['children']:
+      if chan['isFolder']:
+          text += renderChannel(chan, 'DDraceNetwork %s' % chan['title'])
+
+  #if childrenCount == 0:
+  #  result = '<div class="block empty" style="display:none">\n'
+  #else:
+  result = '<div class="block">\n'
+  result += '<h3 class="ip">ts.ddnet.tw</h3>'
+  mbS = ''
+  if childrenCount != 1:
+    mbS = 's'
+  result += '<h2>DDNet Teamspeak Status: %d user%s</h2>\n' % (childrenCount, mbS)
+  result += text
+  result += '<br/></div>'
+  return result
+
 def printStatus(name, servers, serverAddresses, external = False):
   serverPlayers = {}
 
@@ -418,6 +523,9 @@ def printStatus(name, servers, serverAddresses, external = False):
     print header("[%d] %s Status" % (totalPlayers, name), menuText, '<div id="global" class="block"><h2>%s Status: %d players</h2></div>' % (name, totalPlayers), True)
 
   print '<p class="toggle"><a title="Click to toggle whether empty servers are shown" href="#" onclick="showClass(\'empty\'); return false;">Show empty servers</a></p>'
+
+  if name == "DDraceNetwork":
+    print getTSStatus()
 
   players = None
   with open('%s/playerNames.msgpack' % webDir, 'rb') as inp:

@@ -97,31 +97,6 @@ serverAddresses = [
 
   , ("151.248.116.14", 8250, "rus.ddnet.tw") # Monster
 
-  #, ("130.185.74.93", 7303, "irn.ddnet.tw") # Novice #1
-  #, ("130.185.74.93", 7304, "irn.ddnet.tw") # Moderate #1
-  #, ("130.185.74.93", 7305, "irn.ddnet.tw") # Brutal #1
-  #, ("130.185.74.93", 7306, "irn.ddnet.tw") # Hitomi #1
-  #, ("130.185.74.93", 7317, "irn.ddnet.tw") # Oldschool #1
-  #, ("130.185.74.93", 7321, "irn.ddnet.tw") # Solo #1
-
-  #, ("130.185.74.93", 7203, "irn.ddnet.tw") # Block #1
-  #, ("130.185.74.93", 7204, "irn.ddnet.tw") # Block #2
-  #, ("130.185.74.93", 7205, "irn.ddnet.tw") # Block #3
-  #, ("130.185.74.93", 7206, "irn.ddnet.tw") # ADMIN #1
-  #, ("130.185.74.93", 7207, "irn.ddnet.tw") # ADMIN #1
-
-  #, ("130.185.74.93", 8101, "irn.ddnet.tw") # iCTF #1
-  #, ("130.185.74.93", 8102, "irn.ddnet.tw") # iCTF #2
-  ##, ("130.185.74.93", 8103, "irn.ddnet.tw") # iCTF #3
-  ##, ("130.185.74.93", 8104, "irn.ddnet.tw") # iCTF #4
-
-  #, ("130.185.74.93", 7210, "irn.ddnet.tw") # zCatch #1
-  ##, ("130.185.74.93", 7211, "irn.ddnet.tw") # zCatch #2
-  ##, ("130.185.74.93", 7212, "irn.ddnet.tw") # zCatch #3
-  ##, ("130.185.74.93", 8220, "irn.ddnet.tw") # HTF
-  ##, ("130.185.74.93", 8230, "irn.ddnet.tw") # Survival
-  #, ("130.185.74.93", 8299, "irn.ddnet.tw") # Bomb Tag
-
   , ("112.124.108.6", 7303, "chn.ddnet.tw") # Novice #1
   , ("112.124.108.6", 7304, "chn.ddnet.tw") # Moderate #1
   , ("112.124.108.6", 7305, "chn.ddnet.tw") # Brutal #1
@@ -175,16 +150,42 @@ serverAddresses = [
   , ("41.185.26.5", 7325, "zaf.ddnet.tw")
 
   , ("41.185.26.5", 7307, "zaf.ddnet.tw") # Test
+
+  , ("94.182.162.155", 8303, "irn.ddnet.tw") # Novice #1
+  , ("94.182.162.155", 8304, "irn.ddnet.tw") # Moderate #1
+  , ("94.182.162.155", 8305, "irn.ddnet.tw") # Brutal #1
+  , ("94.182.162.155", 8306, "irn.ddnet.tw") # Hitomi #1
+  , ("94.182.162.155", 8317, "irn.ddnet.tw") # Oldschool #1
+  #, ("94.182.162.155", 8321, "irn.ddnet.tw") # Solo #1
+
+  , ("94.182.162.155", 8103, "irn.ddnet.tw") # Block #1
+  #, ("94.182.162.155", 8204, "irn.ddnet.tw") # Block #2
+  #, ("94.182.162.155", 8205, "irn.ddnet.tw") # Block #3
+  #, ("94.182.162.155", 8206, "irn.ddnet.tw") # ADMIN #1
+  #, ("94.182.162.155", 8207, "irn.ddnet.tw") # ADMIN #1
+
+  #, ("94.182.162.155", 8101, "irn.ddnet.tw") # iCTF #1
+  #, ("94.182.162.155", 8102, "irn.ddnet.tw") # iCTF #2
+  ##, ("94.182.162.155", 8103, "irn.ddnet.tw") # iCTF #3
+  ##, ("94.182.162.155", 8104, "irn.ddnet.tw") # iCTF #4
+
+  #, ("94.182.162.155", 7210, "irn.ddnet.tw") # zCatch #1
+  ##, ("94.182.162.155", 7211, "irn.ddnet.tw") # zCatch #2
+  ##, ("94.182.162.155", 7212, "irn.ddnet.tw") # zCatch #3
+  ##, ("94.182.162.155", 8220, "irn.ddnet.tw") # HTF
+  ##, ("94.182.162.155", 8230, "irn.ddnet.tw") # Survival
+  #, ("94.182.162.155", 8299, "irn.ddnet.tw") # Bomb Tag
+
   ]
 
 servers = [
     ("ddnet.tw", "Network GER")
   , ("usa.ddnet.tw", "Network USA")
   , ("rus.ddnet.tw", "Network RUS")
-  #, ("irn.ddnet.tw", "Network Persian")
   , ("chn.ddnet.tw", "Network CHN")
   , ("chl.ddnet.tw", "Network Chile")
   , ("zaf.ddnet.tw", "Network South Africa")
+  , ("irn.ddnet.tw", "Network Persian")
   ]
 
 printStatus("DDraceNetwork", servers, serverAddresses)

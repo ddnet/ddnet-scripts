@@ -7,6 +7,7 @@ from cgi import escape
 from datetime import datetime, timedelta
 import cStringIO
 import msgpack
+from operator import itemgetter
 #from guppy import hpy
 
 reload(sys)
@@ -111,6 +112,15 @@ def application(env, start_response):
   print >>out, '<br/>'
   print >>out, printPersonalResult("Points (last month)", monthlyPointsRanks, name)
   print >>out, printPersonalResult("Points (last week)", weeklyPointsRanks, name)
+
+  try:
+    favServer = max(player[1].iteritems(), key=itemgetter(1))[0]
+    if favServer == None:
+      favServer = 'UNK'
+  except:
+    favServer = 'UNK'
+
+  print >>out, '<div class="block2 ladder"><h3>Favorite Server</h3>\n<p class="pers-result"><img src="/countryflags/%s.png" alt="%s" height="20" /></p></div>' % (favServer, favServer)
   print >>out, '<br/></div>'
 
   for type in types:
