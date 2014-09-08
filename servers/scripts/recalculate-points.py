@@ -44,5 +44,7 @@ with con:
   cur = con.cursor()
   cur.execute("set names 'utf8';")
 
+  cur.execute("DELETE FROM record_points;")
+
   for r in pointsRanks:
     cur.execute("INSERT INTO record_points(Name, Points) VALUES ('%s', '%d') ON duplicate key UPDATE Name=VALUES(Name), Points=VALUES(Points);" % (con.escape_string(r[0]), r[1]))

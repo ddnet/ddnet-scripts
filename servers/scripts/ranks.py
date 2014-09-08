@@ -385,10 +385,10 @@ with con:
 
     serverRanks[type] = (totalServerPoints, serverPointsRanks, serverTeamrankRanks, serverRankRanks)
 
-    serversString += printLadder("Points (%d total)" % totalServerPoints, serverPointsRanks)
+    serversString += printLadder("Points (%d total)" % totalServerPoints, serverPointsRanks, players)
     if type != "solo":
-      serversString += printLadder("Team Rank", serverTeamrankRanks)
-    serversString += printLadder("Rank", serverRankRanks)
+      serversString += printLadder("Team Rank", serverTeamrankRanks, players)
+    serversString += printLadder("Rank", serverRankRanks, players)
     serversString += '<br/>'
 
     lastString = ""
@@ -403,8 +403,8 @@ with con:
 
     lastString += '</table></div><br/>'
 
-    serversString += printLadder("Points (last month)", monthlyServerPointsRanks)
-    serversString += printLadder("Points (last week)", weeklyServerPointsRanks)
+    serversString += printLadder("Points (last month)", monthlyServerPointsRanks, players)
+    serversString += printLadder("Points (last week)", weeklyServerPointsRanks, players)
     serversString += lastString
     serversString += '<div class="all-%s" style="display: ">\n' % type
     serversString += mapsString
@@ -421,7 +421,7 @@ with con:
     sleep(1)
 
   lastString = ""
-  cur.execute("select Timestamp, Map, Name, Time from record_race order by Timestamp desc limit 10;")
+  cur.execute("select Timestamp, Map, Name, Time from record_race order by Timestamp desc limit 20;")
   rows = cur.fetchall()
   sleep(0.1)
 
@@ -444,12 +444,12 @@ teamrankRanks = sorted(teamrankLadder.items(), key=lambda r: r[1], reverse=True)
 rankRanks = sorted(rankLadder.items(), key=lambda r: r[1], reverse=True)
 
 print '<div id="global" class="block"><h2>Global Ranks</h2>'
-print printLadder("Points (%d total)" % totalPoints, pointsRanks)
-print printLadder("Team Rank", teamrankRanks)
-print printLadder("Rank", rankRanks)
+print printLadder("Points (%d total)" % totalPoints, pointsRanks, players, 20)
+print printLadder("Team Rank", teamrankRanks, players, 20)
+print printLadder("Rank", rankRanks, players, 20)
 print '<br/>'
-print printLadder("Points (last month)", monthlyPointsRanks)
-print printLadder("Points (last week)", weeklyPointsRanks)
+print printLadder("Points (last month)", monthlyPointsRanks, players, 20)
+print printLadder("Points (last week)", weeklyPointsRanks, players, 20)
 print lastString
 print '</div>'
 print printFooter()

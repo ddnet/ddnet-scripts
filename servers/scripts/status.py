@@ -130,6 +130,7 @@ serverAddresses = [
   , ("190.114.253.157", 7210, "chl.ddnet.tw") # zCatch #1
   , ("190.114.253.157", 7211, "chl.ddnet.tw") # zCatch #2
   , ("190.114.253.157", 7212, "chl.ddnet.tw") # zCatch #3
+  , ("190.114.253.157", 7220, "chl.ddnet.tw") # openFNG
   #, ("190.114.253.157", 8220, "chl.ddnet.tw") # HTF
   #, ("190.114.253.157", 8230, "chl.ddnet.tw") # Survival
   , ("190.114.253.157", 8299, "chl.ddnet.tw") # Bomb Tag
@@ -151,6 +152,9 @@ serverAddresses = [
 
   , ("41.185.26.5", 7307, "zaf.ddnet.tw") # Test
 
+  , ("41.185.26.5", 7210, "zaf.ddnet.tw") # zCatch
+  , ("41.185.26.5", 7220, "zaf.ddnet.tw") # openFNG
+
   , ("94.182.162.155", 8303, "irn.ddnet.tw") # Novice #1
   , ("94.182.162.155", 8304, "irn.ddnet.tw") # Moderate #1
   , ("94.182.162.155", 8305, "irn.ddnet.tw") # Brutal #1
@@ -159,6 +163,8 @@ serverAddresses = [
   #, ("94.182.162.155", 8321, "irn.ddnet.tw") # Solo #1
 
   , ("94.182.162.155", 8103, "irn.ddnet.tw") # Block #1
+  , ("94.182.162.155", 7220, "irn.ddnet.tw") # openFNG
+
   #, ("94.182.162.155", 8204, "irn.ddnet.tw") # Block #2
   #, ("94.182.162.155", 8205, "irn.ddnet.tw") # Block #3
   #, ("94.182.162.155", 8206, "irn.ddnet.tw") # ADMIN #1

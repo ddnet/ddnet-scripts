@@ -11,6 +11,7 @@ from collections import namedtuple, defaultdict
 import time
 import msgpack
 from urllib import quote_plus
+from operator import itemgetter
 
 from mysql import *
 from teeworlds import *
@@ -267,7 +268,7 @@ def printTeamRecords(recordName, className, topFinishes):
 
   return string
 
-def printLadder(name, ranks):
+def printLadder(name, ranks, players, number = 10):
   string = '<div class="block2 ladder"><h3>%s</h3>\n' % name
   currentRank = 0
   skips = 1
@@ -283,10 +284,20 @@ def printLadder(name, ranks):
         skips = 1
       else:
         skips += 1
-      if currentPos > 9:
+      if currentPos > number - 1:
         string += '<tr class="allPoints" style="display: none">\n'
       else:
         string += '<tr>\n'
+
+      #try:
+      #  player = players.get(r[0])
+      #  favServer = max(player[1].iteritems(), key=itemgetter(1))[0]
+      #  if favServer == None:
+      #    favServer = 'UNK'
+      #except:
+      #  favServer = 'UNK'
+
+      #string += u'  <td class="rankglobal">%d.</td><td class="points">%d pts</td><td><a href="%s">%s</a></td><td class=\"flag\"><img src=\"/countryflags/%s.png\" alt=\"%s\" height=\"20\"/></td></tr>' % (currentRank, r[1], escape(playerWebsite(u'%s' % r[0])), escape(r[0]), favServer, favServer)
       string += u'  <td class="rankglobal">%d.</td><td class="points">%d pts</td><td><a href="%s">%s</a></td></tr>' % (currentRank, r[1], escape(playerWebsite(u'%s' % r[0])), escape(r[0]))
     string += '</table>\n'
   string += '</div>\n'
@@ -525,7 +536,10 @@ def printStatus(name, servers, serverAddresses, external = False):
   print '<p class="toggle"><a title="Click to toggle whether empty servers are shown" href="#" onclick="showClass(\'empty\'); return false;">Show empty servers</a></p>'
 
   if name == "DDraceNetwork":
-    print getTSStatus()
+    try:
+      print getTSStatus()
+    except:
+      pass
 
   players = None
   with open('%s/playerNames.msgpack' % webDir, 'rb') as inp:
