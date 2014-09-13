@@ -61,6 +61,41 @@ serverAddresses = [
   , ("185.37.147.11", 8241, "ddnet.tw") # Vanilla CTF #1
   , ("185.37.147.11", 8242, "ddnet.tw") # Vanilla CTF #2
 
+  , ("176.31.125.151", 8303, "fra.ddnet.tw") # Novice #1
+  , ("176.31.125.151", 8304, "fra.ddnet.tw") # Moderate #1
+  , ("176.31.125.151", 8305, "fra.ddnet.tw") # Brutal #1
+  , ("176.31.125.151", 8306, "fra.ddnet.tw") # Hitomi #1
+  , ("176.31.125.151", 8308, "fra.ddnet.tw") # Moderate #2
+  , ("176.31.125.151", 8309, "fra.ddnet.tw") # Moderate #3
+  , ("176.31.125.151", 8311, "fra.ddnet.tw") # Brutal #2
+  , ("176.31.125.151", 8312, "fra.ddnet.tw") # Novice #2
+  , ("176.31.125.151", 8313, "fra.ddnet.tw") # Brutal #3
+  , ("176.31.125.151", 8314, "fra.ddnet.tw") # Brutal #4
+  , ("176.31.125.151", 8316, "fra.ddnet.tw") # Hitomi #2
+  , ("176.31.125.151", 8317, "fra.ddnet.tw") # Oldschool #1
+  , ("176.31.125.151", 8318, "fra.ddnet.tw") # Oldschool #2
+  , ("176.31.125.151", 8319, "fra.ddnet.tw") # Oldschool #3
+  , ("176.31.125.151", 8320, "fra.ddnet.tw") # Oldschool #4
+  , ("176.31.125.151", 8321, "fra.ddnet.tw") # Solo #1
+  , ("176.31.125.151", 8322, "fra.ddnet.tw") # Bonus #1
+  , ("176.31.125.151", 8323, "fra.ddnet.tw") # Solo #2
+  , ("176.31.125.151", 8324, "fra.ddnet.tw") # Solo #3
+  , ("176.31.125.151", 8326, "fra.ddnet.tw") # Bonus #2
+  , ("176.31.125.151", 8327, "fra.ddnet.tw") # Bonus #3
+  , ("176.31.125.151", 8330, "fra.ddnet.tw") # Bonus #4
+  , ("176.31.125.151", 8331, "fra.ddnet.tw") # Bonus #5
+  , ("176.31.125.151", 8332, "fra.ddnet.tw") # Bonus #6
+  , ("176.31.125.151", 8333, "fra.ddnet.tw") # Bonus #7
+  , ("176.31.125.151", 8334, "fra.ddnet.tw") # Bonus #8
+  , ("176.31.125.151", 8335, "fra.ddnet.tw") # Bonus #9
+  , ("176.31.125.151", 8336, "fra.ddnet.tw") # Bonus #10
+
+  , ("176.31.125.151", 8307, "fra.ddnet.tw") # Test
+
+  , ("176.31.125.151", 8203, "fra.ddnet.tw") # Block #1
+  , ("176.31.125.151", 8204, "fra.ddnet.tw") # Block #2
+  , ("176.31.125.151", 8205, "fra.ddnet.tw") # Block #3
+
   , ("74.91.114.132", 8303, "usa.ddnet.tw") # Novice #1
   , ("74.91.114.132", 8304, "usa.ddnet.tw") # Moderate #1
   , ("74.91.114.132", 8305, "usa.ddnet.tw") # Brutal #1
@@ -186,6 +221,7 @@ serverAddresses = [
 
 servers = [
     ("ddnet.tw", "Network GER")
+  , ("fra.ddnet.tw", "Network FRA")
   , ("usa.ddnet.tw", "Network USA")
   , ("rus.ddnet.tw", "Network RUS")
   , ("chn.ddnet.tw", "Network CHN")
