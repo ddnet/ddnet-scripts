@@ -129,7 +129,7 @@ menuText += '<li><a href="#points">Points Calculation</a></li>\n'
 menuText += '</ul>'
 
 print header("Ranks - DDraceNetwork", menuText, "")
-print '<p class="toggle"><a title="Click to toggle whether only the top 10 ranks or all ranks are shown" href="#" onclick="showClass(\'allPoints\'); return false;">Top 500 / Top 10</a></p>'
+print '<p class="toggle"><a title="Click to toggle whether only the top 10 ranks or all ranks are shown" href="#" onclick="showClass(\'allPoints\'); return false;">Top 500 / Top 20</a></p>'
 
 with con:
   cur = con.cursor()

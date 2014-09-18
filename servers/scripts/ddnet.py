@@ -234,6 +234,7 @@ def header(title, menu, header, refresh = False, stupidIncludes = False):
       <li><a href="/status/">Status</a></li>
       <li><a href="/ranks/">Ranks</a></li>
       <li><a href="/releases/">Releases</a></li>
+      <li><a href="/halloffame/">Hall of Fame</a></li>
       <li><a href="/tournament/">Tournaments</a></li>
       <li><a href="//forum.ddnet.tw/">Forum</a></li>
     </ul>
