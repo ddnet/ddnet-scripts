@@ -57,7 +57,12 @@ for x in releases:
   if not mapperName:
     mbMapperName = ""
   else:
-    mbMapperName = "<strong>by %s</strong><br/>" % escape(mapperName)
+    names = splitMappers(mapperName)
+    newNames = []
+    for name in names:
+      newNames.append('<a href="%s">%s</a>' % (mapperWebsite(name), escape(name)))
+
+    mbMapperName = "<strong>by %s</strong><br/>" % makeAndString(newNames)
 
   formattedMapName = escape(originalMapName)
   mbMapInfo = ""

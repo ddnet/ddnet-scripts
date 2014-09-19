@@ -155,7 +155,13 @@ with con:
 
     f = open("types/%s/maps" % type, 'r')
 
-    serversString += '<div id="%s" class="longblock div-ranks"><h2>%s Server Ranks</h2>\n' % (type, type.title())
+    serversString += '<div id="%s" class="longblock div-ranks">\n' % type
+    serversString += '<div id="remote" class="right"><form id="playerform" action="/players/" method="get"><input name="player" class="typeahead" type="text" placeholder="Player search"><input type="submit" value="Player search" style="position: absolute; left: -9999px"></form></div>\n'
+    serversString += '<script src="/jquery.js" type="text/javascript"></script>\n'
+    serversString += '<script src="/typeahead.bundle.js" type="text/javascript"></script>\n'
+    serversString += '<script src="/playersearch.js" type="text/javascript"></script>\n'
+    serversString += '<div class="block7"><h2>%s Server Ranks</h2></div><br/>\n' % type.title()
+
     mapsString = ""
 
     maps[type] = []
@@ -349,7 +355,12 @@ with con:
       if not mapperName:
         mbMapperName = ""
       else:
-        mbMapperName = "<strong>by %s</strong><br/>" % escape(mapperName)
+        names = splitMappers(mapperName)
+        newNames = []
+        for name in names:
+          newNames.append('<a href="%s">%s</a>' % (mapperWebsite(name), escape(name)))
+
+        mbMapperName = "<strong>by %s</strong><br/>" % makeAndString(newNames)
 
       formattedMapName = escape(originalMapName)
       mbMapInfo = ""
@@ -443,7 +454,12 @@ monthlyPointsRanks = sorted(monthlyPointsLadder.items(), key=lambda r: r[1], rev
 teamrankRanks = sorted(teamrankLadder.items(), key=lambda r: r[1], reverse=True)
 rankRanks = sorted(rankLadder.items(), key=lambda r: r[1], reverse=True)
 
-print '<div id="global" class="block"><h2>Global Ranks</h2>'
+print '<div id="global" class="block">\n'
+print '<div id="remote" class="right"><form id="playerform" action="/players/" method="get"><input name="player" class="typeahead" type="text" placeholder="Player search"><input type="submit" value="Player search" style="position: absolute; left: -9999px"></form></div>'
+print '<script src="/jquery.js" type="text/javascript"></script>'
+print '<script src="/typeahead.bundle.js" type="text/javascript"></script>'
+print '<script src="/playersearch.js" type="text/javascript"></script>'
+print '<div class="block7"><h2>Global Ranks</h2></div><br/>'
 print printLadder("Points (%d total)" % totalPoints, pointsRanks, players, 20)
 print printLadder("Team Rank", teamrankRanks, players, 20)
 print printLadder("Rank", rankRanks, players, 20)

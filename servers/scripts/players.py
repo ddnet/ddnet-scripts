@@ -9,6 +9,7 @@ import cStringIO
 import msgpack
 from operator import itemgetter
 import urllib
+import json
 #from guppy import hpy
 
 reload(sys)
@@ -157,9 +158,12 @@ with con:
       hiddenFields += '<input type="hidden" name="player" value="%s">' % escape(name)
 
     print >>out, '<div id="global" class="block div-ranks">'
-    print >>out, '<div class="right"><form action="/compare/" method="get"><table><tr><td>%s<input name="player" type="text" size="20"></td><td><input type="submit" value="Add to comparison"></td></tr></table></form></div>' % hiddenFields
+    print >>out, '<div id="remote" class="right"><form id="playerform" action="/compare/" method="get">%s<input name="player" class="typeahead" type="text" placeholder="Add to comparison"><input type="submit" value="Add to comparison" style="position: absolute; left: -9999px"></form></div>' % hiddenFields
+    print >>out, '<script src="/jquery.js" type="text/javascript"></script>'
+    print >>out, '<script src="/typeahead.bundle.js" type="text/javascript"></script>'
+    print >>out, '<script src="/playersearch.js" type="text/javascript"></script>'
     for (name, player) in namePlayers:
-      print >>out, '<h2>Global Ranks for <a href="%s">%s</a></h2>' % (playerWebsite(name), escape(name))
+      print >>out, '<div class="block7"><h2>Global Ranks for <a href="%s">%s</a></h2></div><br/>' % (playerWebsite(name), escape(name))
       print >>out, globalRanks(name, player)
       print >>out, '<br/>'
     print >>out, '</div>'
@@ -246,7 +250,7 @@ with con:
 
       if (not path.endswith("/")) or path.endswith(".html"):
         start_response('301 Moved Permanently', [('Location', path.rstrip('/').rsplit('.html', 1)[0] + "/")])
-        return
+        return ''
 
       reloadData()
 
@@ -273,12 +277,42 @@ with con:
         for q in qs:
           newPath += slugify2(u'%s' % urllib.unquote_plus(q)).encode('utf-8') + '/'
         start_response('301 Moved Permanently', [('Location', newPath)])
-        return
+        return ''
 
       start_response('200 OK', [('Content-Type', 'text/html')])
       return comparison(namePlayers)
 
     if path == '/players/':
+      qs = env['QUERY_STRING']
+
+      if len(qs) > 0 and qs.startswith('player='):
+        q = qs[7:]
+
+        newPath = '/players/' + slugify2(u'%s' % urllib.unquote_plus(q)).encode('utf-8') + '/'
+        start_response('301 Moved Permanently', [('Location', newPath)])
+        return ''
+
+      if len(qs) > 0 and qs.startswith('query='):
+        q = urllib.unquote_plus(qs[6:])
+        ql = q.lower()
+
+        jsonT = []
+        reloadData()
+        for r in pointsRanks:
+          if r[0].lower().startswith(ql):
+            jsonT.append({'name': r[0], 'points': r[1]})
+            if len(jsonT) > 10:
+              break
+
+        for r in pointsRanks:
+          if ql in r[0].lower() and {'name': r[0], 'points': r[1]} not in jsonT:
+            jsonT.append({'name': r[0], 'points': r[1]})
+            if len(jsonT) > 10:
+              break
+
+        start_response('200 OK', [('Content-Type', 'application/json')])
+        return json.dumps(jsonT)
+
       start_response('200 OK', [('Content-Type', 'text/html')])
       with open('%s/players/index.html' % webDir, 'rb') as err:
         return err.read()
@@ -290,7 +324,7 @@ with con:
 
     if (not path.endswith("/")) or path.endswith(".html"):
       start_response('301 Moved Permanently', [('Location', path.rstrip('/').rsplit('.html', 1)[0] + "/")])
-      return
+      return ''
 
     name = deslugify2(path.split('/')[2])
     reloadData()
@@ -317,8 +351,11 @@ with con:
 
     hiddenFields = '<input type="hidden" name="player" value="%s">' % escape(name)
 
-    print >>out, '<div class="right"><form action="/compare/" method="get"><table><tr><td>%s<input name="player" type="text" size="20"></td><td><input type="submit" value="Compare"></td></tr></table></form></div>' % hiddenFields
-    print >>out, '<h2>Global Ranks for %s</h2>' % escape(name)
+    print >>out, '<div id="remote" class="right"><form id="playerform" action="/compare/" method="get">%s<input name="player" class="typeahead" type="text" placeholder="Compare"><input type="submit" value="Compare" style="position: absolute; left: -9999px"></form></div>' % hiddenFields
+    print >>out, '<script src="/jquery.js" type="text/javascript"></script>'
+    print >>out, '<script src="/typeahead.bundle.js" type="text/javascript"></script>'
+    print >>out, '<script src="/playersearch.js" type="text/javascript"></script>'
+    print >>out, '<div class="block7"><h2>Global Ranks for %s</h2></div><br/>' % escape(name)
     print >>out, globalRanks(name, player)
     print >>out, lastFinishes(name)
     print >>out, '<br/>'

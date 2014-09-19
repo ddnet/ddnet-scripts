@@ -163,6 +163,30 @@ def deslugify2(string):
 def playerWebsite(name):
   return "/players/%s/" % slugify2(u'%s' % name)
 
+def mapperWebsite(name):
+  return "/mappers/%s/" % slugify2(u'%s' % name)
+
+def splitMappers(mapperName):
+  names = mapperName.split(", ")
+  if len(names):
+    names = names[:-1] + names[-1].split(" & ")
+  return names
+
+def makeAndString(names):
+  if len(names) < 1:
+    return ""
+
+  if len(names) == 1:
+    return names[0]
+
+  result = ""
+  for name in names[:-1]:
+    if result:
+      result += ", "
+    result += name
+  result += " & " + names[-1]
+  return result
+
 def formatRank(rank):
   if rank == 0:
     return ''

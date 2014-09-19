@@ -44,7 +44,7 @@ menuText = '<ul>\n'
 for type in types:
   menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type.title())
 menuText += '</ul>'
-print header("Quick Tournament #18 - DDraceNetwork", menuText, "")
+print header("Quick Tournament #19 - DDraceNetwork", menuText, "")
 
 f = open("tournament")
 tournamentMaps = []
@@ -242,7 +242,12 @@ with con:
       if not mapperName:
         mbMapperName = ""
       else:
-        mbMapperName = "<strong>by %s</strong><br/>" % escape(mapperName)
+        names = splitMappers(mapperName)
+        newNames = []
+        for name in names:
+          newNames.append('<a href="%s">%s</a>' % (mapperWebsite(name), escape(name)))
+
+        mbMapperName = "<strong>by %s</strong><br/>" % makeAndString(newNames)
 
       formattedMapName = escape(originalMapName)
       mbMapInfo = ""
@@ -276,8 +281,8 @@ with con:
     serversString += '</div>\n'
     serversString += '</div>\n'
 
-print '<div id="global" class="block div-tournament"><h2>Quick Tournament #18</h2>'
-print '<p>This tournament was played on 2014-09-14 at 20:00 CEST.</p>'
+print '<div id="global" class="block div-tournament"><h2>Quick Tournament #19</h2>'
+print '<p>This tournament was played on 2014-09-21 at 20:00 CEST.</p>'
 print '</div>'
 print '<div id="serverranks" style="display: ">'
 print serversString
