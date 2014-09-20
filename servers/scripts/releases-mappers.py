@@ -43,6 +43,8 @@ for x in releases:
     mapperName = ""
 
   for name in splitMappers(mapperName):
+    if name == '':
+      name = 'Unknown Mapper'
     if name not in mappers:
       mappers[name] = {}
     if server not in mappers[name]:
@@ -61,19 +63,23 @@ for mapper, servers in mappers.iteritems():
   tf = open(tmpname, 'w')
 
   menuText = '<ul>\n'
+  menuText += '<li><a href="/mappers/">All Mappers</a></li>\n'
+  menuText += '<li><a href="#global">Mapper Profile: %s</a></li>\n' % escape(mapper)
   for type in types:
     if type in servers:
-      menuText += '<li><a href="/ranks/%s/">%s Server</a></li>\n' % (type, type.title())
+      menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type.title())
   menuText += '</ul>'
-  print >>tf, header('%s - Mapper Profile - DDraceNetwork' % mapper, menuText, '')
+  print >>tf, header('%s - Mapper Profile - DDraceNetwork' % escape(mapper), menuText, '')
 
   for type in types:
-    mapsString = '<div id="novice" class="longblock div-ranks">\n'
+    mapsString = '<div id="%s" class="longblock div-ranks">\n' % type
     mapsString += '<div class="block7"><h2>%s Server</h2></div><br/>\n' % type.title()
     if type not in servers:
       continue
 
     for (date, server, stars, originalMapName, mapperName) in servers[type]:
+      if date == "2013-10-14 19:40":
+        date = ""
 
       mapName = normalizeMapname(originalMapName)
 
@@ -110,9 +116,27 @@ for mapper, servers in mappers.iteritems():
     serversString += mapsString
     serversString += '</div>\n'
 
-  print >>tf, '<div id="global" class="block"><h2>Mapper Profile: %s</h2><br/></div>' % mapper
+  print >>tf, '<div id="global" class="block"><h2>Mapper Profile: %s</h2><br/></div>' % escape(mapper)
   print >>tf, serversString
   print >>tf, footer()
 
   tf.close()
   os.rename(tmpname, filename)
+
+print header('Mappers - DDraceNetwork', '', '')
+print '<div id="global" class="longblock"><h2>Mappers</h2>'
+print '<ul>'
+
+for name in sorted(mappers.iterkeys(), key=str.lower):
+  servers = mappers[name]
+  tmp = ''
+  for type in types:
+    if type in servers:
+      maps = servers[type]
+      if len(tmp):
+        tmp += ', '
+      tmp += type.title() + ': ' + str(len(maps))
+  print '<li><a href="%s">%s</a> (%s)</li>' % (mapperWebsite(name), escape(name), tmp)
+
+print '</ul>'
+print '</div>'

@@ -48,6 +48,9 @@ for x in releases:
     stars, originalMapName = y.split('|')
     mapperName = ""
 
+  if date == "2013-10-14 19:40":
+    date = ""
+
   stars = int(stars)
 
   mapName = normalizeMapname(originalMapName)

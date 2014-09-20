@@ -31,12 +31,11 @@ serverAddresses = [
   , ("185.37.147.11", 8334, "ddnet.tw") # Bonus #8
   , ("185.37.147.11", 8335, "ddnet.tw") # Bonus #9
   , ("185.37.147.11", 8336, "ddnet.tw") # Bonus #10
+  , ("185.37.147.11", 8328, "ddnet.tw") # Bonus #11
   , ("185.37.147.11", 8307, "ddnet.tw") # Test #1
   , ("185.37.147.11", 8310, "ddnet.tw") # Test #2
   , ("185.37.147.11", 8315, "ddnet.tw") # Test #3
   , ("185.37.147.11", 8325, "ddnet.tw") # Nuclear Test #1
-  , ("185.37.147.11", 8328, "ddnet.tw") # Nuclear Test #2
-  #, ("185.37.147.11", 8329, "ddnet.tw") # Nuclear Test #3
 
   , ("185.37.147.11", 8103, "ddnet.tw") # Block #1
   #, ("185.37.147.11", 8104, "ddnet.tw") # Block #2
@@ -111,8 +110,8 @@ serverAddresses = [
 
   , ("74.91.114.132", 8101, "usa.ddnet.tw") # iCTF #1
   , ("74.91.114.132", 8102, "usa.ddnet.tw") # iCTF #2
-  #, ("74.91.114.132", 8103, "usa.ddnet.tw") # iCTF #3
-  #, ("74.91.114.132", 8104, "usa.ddnet.tw") # iCTF #4
+  , ("74.91.114.132", 8103, "usa.ddnet.tw") # iCTF #3
+  , ("74.91.114.132", 8104, "usa.ddnet.tw") # iCTF #4
 
   , ("74.91.114.132", 8210, "usa.ddnet.tw") # zCatch #1
   , ("74.91.114.132", 8211, "usa.ddnet.tw") # zCatch #2
