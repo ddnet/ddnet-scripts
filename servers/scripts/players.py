@@ -113,6 +113,7 @@ with con:
     rows = cur.fetchall()
 
     for row in rows:
+      type = ''
       for t in types:
         if row[1] in maps[t]:
           type = t
@@ -345,7 +346,7 @@ with con:
       menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type.title())
     menuText += '</ul>'
 
-    print >>out, header("Statistics for %s - DDraceNetwork" % escape(name), menuText, "")
+    print >>out, header("%s - Player Profile - DDraceNetwork" % escape(name), menuText, "")
 
     print >>out, '<div id="global" class="block div-ranks">'
 
@@ -363,7 +364,13 @@ with con:
 
     for type in types:
       maps2 = maps[type]
-      print >>out, '<div id="%s" class="block div-ranks"><h2>%s Server</h2>' % (type, type.title())
+
+      count = 0
+      for map in maps2:
+        if map in player[0]:
+          count += 1
+
+      print >>out, '<div id="%s" class="block div-ranks"><h2></h2><h2 class="inline">%s Server</h2> <h3 class="inline">(%d/%d maps finished)</h3><br/>' % (type, type.title(), count, len(maps2))
 
       print >>out, printPersonalResult("Points (%d total)" % serverRanks[type][0], serverRanks[type][1], name)
       print >>out, printPersonalResult("Team Rank", serverRanks[type][2], name)

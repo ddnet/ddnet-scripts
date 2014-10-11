@@ -36,4 +36,4 @@ with con:
       #else:
       #  mapperName = ""
 
-      cur.execute("INSERT INTO record_maps(Map, Server, Points) VALUES ('%s', '%s', '%d') ON duplicate key UPDATE Server=VALUES(Server), Points=VALUES(Points);" % (con.escape_string(mapName), con.escape_string(type), points))
+      cur.execute("INSERT INTO record_maps(Map, Server, Points, Stars) VALUES ('%s', '%s', '%d', '%d') ON duplicate key UPDATE Server=VALUES(Server), Points=VALUES(Points), Stars=VALUES(Stars);" % (con.escape_string(mapName), con.escape_string(type), points, stars))

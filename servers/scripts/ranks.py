@@ -43,10 +43,6 @@ def printFooter():
           <td class="multiplier">3</td>
           <td class="multiplier">15</td>
         </tr><tr>
-          <td>Hitomi</td>
-          <td class="multiplier">4</td>
-          <td class="multiplier">0</td>
-        </tr><tr>
           <td>Oldschool</td>
           <td class="multiplier">6</td>
           <td class="multiplier">0</td>
@@ -470,23 +466,23 @@ print lastString
 print '</div>'
 print printFooter()
 
-tmpname = '%s/players/index.tmp' % webDir
-filename = '%s/players/index.html' % webDir
-with open(tmpname, 'wb') as out:
-  print >>out, header("Player not found - DDraceNetwork", "", "")
-  print >>out, '<div id="global" class="longblock"><h2>Player not found</h2><h3>Maybe who you\'re looking for is in this list:</h3>'
-  print >>out, '<ol>'
-
-  for player in sorted(players.keys()):
-    print >>out, '<li><a href="%s">%s</a></li>' % (playerWebsite(u'%s' % player), escape(player))
-
-  print >>out, '</ol>'
-  print >>out, '</div>'
-  print >>out, """  </section>
-</article>
-</body>
-</html>"""
-os.rename(tmpname, filename)
+#tmpname = '%s/players/index.tmp' % webDir
+#filename = '%s/players/index.html' % webDir
+#with open(tmpname, 'wb') as out:
+#  print >>out, header("Player not found - DDraceNetwork", "", "")
+#  print >>out, '<div id="global" class="longblock"><h2>Player not found</h2><h3>Maybe who you\'re looking for is in this list:</h3>'
+#  print >>out, '<ol>'
+#
+#  for player in sorted(players.keys()):
+#    print >>out, '<li><a href="%s">%s</a></li>' % (playerWebsite(u'%s' % player), escape(player))
+#
+#  print >>out, '</ol>'
+#  print >>out, '</div>'
+#  print >>out, """  </section>
+#</article>
+#</body>
+#</html>"""
+#os.rename(tmpname, filename)
 sleep(1)
 
 tmpname = '%s/playerNames.tmp' % webDir

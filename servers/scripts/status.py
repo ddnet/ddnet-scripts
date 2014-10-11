@@ -3,97 +3,133 @@
 from ddnet import *
 
 serverAddresses = [
-    ("185.37.147.11", 8303, "ddnet.tw") # Novice #1
-  , ("185.37.147.11", 8304, "ddnet.tw") # Moderate #1
-  , ("185.37.147.11", 8305, "ddnet.tw") # Brutal #1
-  , ("185.37.147.11", 8306, "ddnet.tw") # Hitomi #1
-  , ("185.37.147.11", 8308, "ddnet.tw") # Moderate #2
-  , ("185.37.147.11", 8309, "ddnet.tw") # Moderate #3
-  , ("185.37.147.11", 8311, "ddnet.tw") # Brutal #2
-  , ("185.37.147.11", 8312, "ddnet.tw") # Novice #2
-  , ("185.37.147.11", 8313, "ddnet.tw") # Brutal #3
-  , ("185.37.147.11", 8314, "ddnet.tw") # Brutal #4
-  , ("185.37.147.11", 8316, "ddnet.tw") # Hitomi #2
-  , ("185.37.147.11", 8317, "ddnet.tw") # Oldschool #1
-  , ("185.37.147.11", 8318, "ddnet.tw") # Oldschool #2
-  , ("185.37.147.11", 8319, "ddnet.tw") # Oldschool #3
-  , ("185.37.147.11", 8320, "ddnet.tw") # Oldschool #4
-  , ("185.37.147.11", 8321, "ddnet.tw") # Solo #1
-  , ("185.37.147.11", 8322, "ddnet.tw") # Bonus #1
-  , ("185.37.147.11", 8323, "ddnet.tw") # Solo #2
-  , ("185.37.147.11", 8324, "ddnet.tw") # Solo #3
-  , ("185.37.147.11", 8326, "ddnet.tw") # Bonus #2
-  , ("185.37.147.11", 8327, "ddnet.tw") # Bonus #3
-  , ("185.37.147.11", 8330, "ddnet.tw") # Bonus #4
-  , ("185.37.147.11", 8331, "ddnet.tw") # Bonus #5
-  , ("185.37.147.11", 8332, "ddnet.tw") # Bonus #6
-  , ("185.37.147.11", 8333, "ddnet.tw") # Bonus #7
-  , ("185.37.147.11", 8334, "ddnet.tw") # Bonus #8
-  , ("185.37.147.11", 8335, "ddnet.tw") # Bonus #9
-  , ("185.37.147.11", 8336, "ddnet.tw") # Bonus #10
-  , ("185.37.147.11", 8328, "ddnet.tw") # Bonus #11
-  , ("185.37.147.11", 8307, "ddnet.tw") # Test #1
-  , ("185.37.147.11", 8310, "ddnet.tw") # Test #2
-  , ("185.37.147.11", 8315, "ddnet.tw") # Test #3
-  , ("185.37.147.11", 8325, "ddnet.tw") # Nuclear Test #1
+    ("185.37.147.11", 8303, "ger.ddnet.tw") # Novice #1
+  , ("185.37.147.11", 8304, "ger.ddnet.tw") # Moderate #1
+  , ("185.37.147.11", 8305, "ger.ddnet.tw") # Brutal #1
+  , ("185.37.147.11", 8306, "ger.ddnet.tw") # Hitomi #1
+  , ("185.37.147.11", 8308, "ger.ddnet.tw") # Moderate #2
+  , ("185.37.147.11", 8309, "ger.ddnet.tw") # Moderate #3
+  , ("185.37.147.11", 8311, "ger.ddnet.tw") # Brutal #2
+  , ("185.37.147.11", 8312, "ger.ddnet.tw") # Novice #2
+  , ("185.37.147.11", 8313, "ger.ddnet.tw") # Brutal #3
+  , ("185.37.147.11", 8314, "ger.ddnet.tw") # Brutal #4
+  , ("185.37.147.11", 8316, "ger.ddnet.tw") # Hitomi #2
+  , ("185.37.147.11", 8317, "ger.ddnet.tw") # Oldschool #1
+  , ("185.37.147.11", 8318, "ger.ddnet.tw") # Oldschool #2
+  , ("185.37.147.11", 8319, "ger.ddnet.tw") # Oldschool #3
+  , ("185.37.147.11", 8320, "ger.ddnet.tw") # Oldschool #4
+  , ("185.37.147.11", 8321, "ger.ddnet.tw") # Solo #1
+  , ("185.37.147.11", 8322, "ger.ddnet.tw") # Bonus #1
+  , ("185.37.147.11", 8323, "ger.ddnet.tw") # Solo #2
+  , ("185.37.147.11", 8324, "ger.ddnet.tw") # Solo #3
+  , ("185.37.147.11", 8326, "ger.ddnet.tw") # Bonus #2
+  , ("185.37.147.11", 8327, "ger.ddnet.tw") # Bonus #3
+  , ("185.37.147.11", 8330, "ger.ddnet.tw") # Bonus #4
+  , ("185.37.147.11", 8331, "ger.ddnet.tw") # Bonus #5
+  , ("185.37.147.11", 8332, "ger.ddnet.tw") # Bonus #6
+  , ("185.37.147.11", 8333, "ger.ddnet.tw") # Bonus #7
+  , ("185.37.147.11", 8334, "ger.ddnet.tw") # Bonus #8
+  , ("185.37.147.11", 8335, "ger.ddnet.tw") # Bonus #9
+  , ("185.37.147.11", 8336, "ger.ddnet.tw") # Bonus #10
+  , ("185.37.147.11", 8328, "ger.ddnet.tw") # Bonus #11
+  , ("185.37.147.11", 8307, "ger.ddnet.tw") # Test #1
+  , ("185.37.147.11", 8310, "ger.ddnet.tw") # Test #2
+  , ("185.37.147.11", 8315, "ger.ddnet.tw") # Test #3
+  , ("185.37.147.11", 8325, "ger.ddnet.tw") # Nuclear Test #1
 
-  , ("185.37.147.11", 8103, "ddnet.tw") # Block #1
-  #, ("185.37.147.11", 8104, "ddnet.tw") # Block #2
-  #, ("185.37.147.11", 8105, "ddnet.tw") # Block #3
+  #, ("185.37.147.11", 8103, "ger.ddnet.tw") # Block #1
+  #, ("185.37.147.11", 8104, "ger.ddnet.tw") # Block #2
+  #, ("185.37.147.11", 8105, "ger.ddnet.tw") # Block #3
 
-  , ("185.37.147.11", 8201, "ddnet.tw") # iCTF #1
-  , ("185.37.147.11", 8202, "ddnet.tw") # iCTF #2
-  , ("185.37.147.11", 8203, "ddnet.tw") # iCTF #3
-  , ("185.37.147.11", 8204, "ddnet.tw") # iCTF #4
-  , ("185.37.147.11", 8205, "ddnet.tw") # iCTF #5
-  , ("185.37.147.11", 8206, "ddnet.tw") # iCTF #6
-  , ("185.37.147.11", 8207, "ddnet.tw") # iCTF #7
-  , ("185.37.147.11", 8208, "ddnet.tw") # gCTF #1
-  , ("185.37.147.11", 8209, "ddnet.tw") # gCTF #2
+  , ("185.37.147.11", 8201, "ger.ddnet.tw") # iCTF #1
+  , ("185.37.147.11", 8202, "ger.ddnet.tw") # iCTF #2
+  , ("185.37.147.11", 8203, "ger.ddnet.tw") # iCTF #3
+  , ("185.37.147.11", 8204, "ger.ddnet.tw") # iCTF #4
+  , ("185.37.147.11", 8205, "ger.ddnet.tw") # iCTF #5
+  , ("185.37.147.11", 8206, "ger.ddnet.tw") # iCTF #6
+  , ("185.37.147.11", 8207, "ger.ddnet.tw") # iCTF #7
+  , ("185.37.147.11", 8208, "ger.ddnet.tw") # gCTF #1
+  , ("185.37.147.11", 8209, "ger.ddnet.tw") # gCTF #2
 
-  , ("185.37.147.11", 8210, "ddnet.tw") # zCatch
-  , ("185.37.147.11", 8211, "ddnet.tw") # Nano-League #1
-  , ("185.37.147.11", 8212, "ddnet.tw") # Nano-League #1
-  #, ("185.37.147.11", 8220, "ddnet.tw") # HTF
-  #, ("185.37.147.11", 8230, "ddnet.tw") # Survival
+  , ("185.37.147.11", 8210, "ger.ddnet.tw") # zCatch
+  , ("185.37.147.11", 8211, "ger.ddnet.tw") # Nano-League #1
+  , ("185.37.147.11", 8212, "ger.ddnet.tw") # Nano-League #1
+  #, ("185.37.147.11", 8220, "ger.ddnet.tw") # HTF
+  #, ("185.37.147.11", 8230, "ger.ddnet.tw") # Survival
 
-  , ("185.37.147.11", 8241, "ddnet.tw") # Vanilla CTF #1
-  , ("185.37.147.11", 8242, "ddnet.tw") # Vanilla CTF #2
+  , ("185.37.147.11", 8241, "ger.ddnet.tw") # Vanilla CTF #1
+  , ("185.37.147.11", 8242, "ger.ddnet.tw") # Vanilla CTF #2
 
-  , ("176.31.125.151", 8303, "fra.ddnet.tw") # Novice #1
-  , ("176.31.125.151", 8304, "fra.ddnet.tw") # Moderate #1
-  , ("176.31.125.151", 8305, "fra.ddnet.tw") # Brutal #1
-  , ("176.31.125.151", 8306, "fra.ddnet.tw") # Hitomi #1
-  , ("176.31.125.151", 8308, "fra.ddnet.tw") # Moderate #2
-  , ("176.31.125.151", 8309, "fra.ddnet.tw") # Moderate #3
-  , ("176.31.125.151", 8311, "fra.ddnet.tw") # Brutal #2
-  , ("176.31.125.151", 8312, "fra.ddnet.tw") # Novice #2
-  , ("176.31.125.151", 8313, "fra.ddnet.tw") # Brutal #3
-  , ("176.31.125.151", 8314, "fra.ddnet.tw") # Brutal #4
-  , ("176.31.125.151", 8316, "fra.ddnet.tw") # Hitomi #2
-  , ("176.31.125.151", 8317, "fra.ddnet.tw") # Oldschool #1
-  , ("176.31.125.151", 8318, "fra.ddnet.tw") # Oldschool #2
-  , ("176.31.125.151", 8319, "fra.ddnet.tw") # Oldschool #3
-  , ("176.31.125.151", 8320, "fra.ddnet.tw") # Oldschool #4
-  , ("176.31.125.151", 8321, "fra.ddnet.tw") # Solo #1
-  , ("176.31.125.151", 8322, "fra.ddnet.tw") # Bonus #1
-  , ("176.31.125.151", 8323, "fra.ddnet.tw") # Solo #2
-  , ("176.31.125.151", 8324, "fra.ddnet.tw") # Solo #3
-  , ("176.31.125.151", 8326, "fra.ddnet.tw") # Bonus #2
-  , ("176.31.125.151", 8327, "fra.ddnet.tw") # Bonus #3
-  , ("176.31.125.151", 8330, "fra.ddnet.tw") # Bonus #4
-  , ("176.31.125.151", 8331, "fra.ddnet.tw") # Bonus #5
-  , ("176.31.125.151", 8332, "fra.ddnet.tw") # Bonus #6
-  , ("176.31.125.151", 8333, "fra.ddnet.tw") # Bonus #7
-  , ("176.31.125.151", 8334, "fra.ddnet.tw") # Bonus #8
-  , ("176.31.125.151", 8335, "fra.ddnet.tw") # Bonus #9
-  , ("176.31.125.151", 8336, "fra.ddnet.tw") # Bonus #10
+  , ("176.31.125.151", 8303, "fra2.ddnet.tw") # Novice #1
+  , ("176.31.125.151", 8304, "fra2.ddnet.tw") # Moderate #1
+  , ("176.31.125.151", 8305, "fra2.ddnet.tw") # Brutal #1
+  , ("176.31.125.151", 8306, "fra2.ddnet.tw") # Hitomi #1
+  , ("176.31.125.151", 8308, "fra2.ddnet.tw") # Moderate #2
+  , ("176.31.125.151", 8309, "fra2.ddnet.tw") # Moderate #3
+  , ("176.31.125.151", 8311, "fra2.ddnet.tw") # Brutal #2
+  , ("176.31.125.151", 8312, "fra2.ddnet.tw") # Novice #2
+  , ("176.31.125.151", 8313, "fra2.ddnet.tw") # Brutal #3
+  , ("176.31.125.151", 8314, "fra2.ddnet.tw") # Brutal #4
+  , ("176.31.125.151", 8316, "fra2.ddnet.tw") # Hitomi #2
+  , ("176.31.125.151", 8317, "fra2.ddnet.tw") # Oldschool #1
+  , ("176.31.125.151", 8318, "fra2.ddnet.tw") # Oldschool #2
+  , ("176.31.125.151", 8319, "fra2.ddnet.tw") # Oldschool #3
+  , ("176.31.125.151", 8320, "fra2.ddnet.tw") # Oldschool #4
+  , ("176.31.125.151", 8321, "fra2.ddnet.tw") # Solo #1
+  , ("176.31.125.151", 8322, "fra2.ddnet.tw") # Bonus #1
+  , ("176.31.125.151", 8323, "fra2.ddnet.tw") # Solo #2
+  , ("176.31.125.151", 8324, "fra2.ddnet.tw") # Solo #3
+  , ("176.31.125.151", 8326, "fra2.ddnet.tw") # Bonus #2
+  , ("176.31.125.151", 8327, "fra2.ddnet.tw") # Bonus #3
+  , ("176.31.125.151", 8330, "fra2.ddnet.tw") # Bonus #4
+  , ("176.31.125.151", 8331, "fra2.ddnet.tw") # Bonus #5
+  , ("176.31.125.151", 8332, "fra2.ddnet.tw") # Bonus #6
+  , ("176.31.125.151", 8333, "fra2.ddnet.tw") # Bonus #7
+  , ("176.31.125.151", 8334, "fra2.ddnet.tw") # Bonus #8
+  , ("176.31.125.151", 8335, "fra2.ddnet.tw") # Bonus #9
+  , ("176.31.125.151", 8336, "fra2.ddnet.tw") # Bonus #10
 
-  , ("176.31.125.151", 8307, "fra.ddnet.tw") # Test
+  , ("176.31.125.151", 8307, "fra2.ddnet.tw") # Test
+  , ("176.31.125.151", 8310, "fra2.ddnet.tw") # Test
+  , ("176.31.125.151", 8315, "fra2.ddnet.tw") # Test
 
-  , ("176.31.125.151", 8203, "fra.ddnet.tw") # Block #1
-  , ("176.31.125.151", 8204, "fra.ddnet.tw") # Block #2
-  , ("176.31.125.151", 8205, "fra.ddnet.tw") # Block #3
+  , ("176.31.125.151", 8203, "fra2.ddnet.tw") # Block #1
+  , ("176.31.125.151", 8204, "fra2.ddnet.tw") # Block #2
+  , ("176.31.125.151", 8205, "fra2.ddnet.tw") # Block #3
+  , ("176.31.125.151", 8206, "fra2.ddnet.tw") # Block Sergio
+
+  , ("178.33.191.10", 8303, "fra2.ddnet.tw") # Novice #1
+  , ("178.33.191.10", 8304, "fra2.ddnet.tw") # Moderate #1
+  , ("178.33.191.10", 8305, "fra2.ddnet.tw") # Brutal #1
+  , ("178.33.191.10", 8306, "fra2.ddnet.tw") # Hitomi #1
+  , ("178.33.191.10", 8308, "fra2.ddnet.tw") # Moderate #2
+  , ("178.33.191.10", 8309, "fra2.ddnet.tw") # Moderate #3
+  , ("178.33.191.10", 8311, "fra2.ddnet.tw") # Brutal #2
+  , ("178.33.191.10", 8312, "fra2.ddnet.tw") # Novice #2
+  , ("178.33.191.10", 8313, "fra2.ddnet.tw") # Brutal #3
+  , ("178.33.191.10", 8314, "fra2.ddnet.tw") # Brutal #4
+  , ("178.33.191.10", 8316, "fra2.ddnet.tw") # Hitomi #2
+  , ("178.33.191.10", 8317, "fra2.ddnet.tw") # Oldschool #1
+  , ("178.33.191.10", 8318, "fra2.ddnet.tw") # Oldschool #2
+  , ("178.33.191.10", 8319, "fra2.ddnet.tw") # Oldschool #3
+  , ("178.33.191.10", 8320, "fra2.ddnet.tw") # Oldschool #4
+  , ("178.33.191.10", 8321, "fra2.ddnet.tw") # Solo #1
+  , ("178.33.191.10", 8322, "fra2.ddnet.tw") # Bonus #1
+  , ("178.33.191.10", 8323, "fra2.ddnet.tw") # Solo #2
+  , ("178.33.191.10", 8324, "fra2.ddnet.tw") # Solo #3
+  , ("178.33.191.10", 8326, "fra2.ddnet.tw") # Bonus #2
+  , ("178.33.191.10", 8327, "fra2.ddnet.tw") # Bonus #3
+  , ("178.33.191.10", 8330, "fra2.ddnet.tw") # Bonus #4
+  , ("178.33.191.10", 8331, "fra2.ddnet.tw") # Bonus #5
+  , ("178.33.191.10", 8332, "fra2.ddnet.tw") # Bonus #6
+  , ("178.33.191.10", 8333, "fra2.ddnet.tw") # Bonus #7
+  , ("178.33.191.10", 8334, "fra2.ddnet.tw") # Bonus #8
+  , ("178.33.191.10", 8335, "fra2.ddnet.tw") # Bonus #9
+  , ("178.33.191.10", 8336, "fra2.ddnet.tw") # Bonus #10
+  , ("178.33.191.10", 8203, "fra2.ddnet.tw") # Block #1
+  , ("178.33.191.10", 8204, "fra2.ddnet.tw") # Block #2
+  , ("178.33.191.10", 8205, "fra2.ddnet.tw") # Block #3
+  , ("178.33.191.10", 8206, "fra2.ddnet.tw") # Block Sergio
 
   , ("74.91.114.132", 8303, "usa.ddnet.tw") # Novice #1
   , ("74.91.114.132", 8304, "usa.ddnet.tw") # Moderate #1
@@ -219,14 +255,14 @@ serverAddresses = [
   ]
 
 servers = [
-    ("ddnet.tw", "Network GER")
-  , ("fra.ddnet.tw", "Network FRA")
-  , ("usa.ddnet.tw", "Network USA")
-  , ("rus.ddnet.tw", "Network RUS")
-  , ("chn.ddnet.tw", "Network CHN")
-  , ("chl.ddnet.tw", "Network Chile")
-  , ("zaf.ddnet.tw", "Network South Africa")
-  , ("irn.ddnet.tw", "Network Persian")
+    ("ger.ddnet.tw", "DDNet GER")
+  , ("fra2.ddnet.tw", "DDNet FRA")
+  , ("usa.ddnet.tw", "DDNet USA")
+  , ("rus.ddnet.tw", "DDNet RUS")
+  , ("chn.ddnet.tw", "DDNet CHN")
+  , ("chl.ddnet.tw", "DDNet Chile")
+  , ("zaf.ddnet.tw", "DDNet South Africa")
+  , ("irn.ddnet.tw", "DDNet Persian")
   ]
 
 printStatus("DDraceNetwork", servers, serverAddresses)

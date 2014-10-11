@@ -44,7 +44,7 @@ menuText = '<ul>\n'
 for type in types:
   menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type.title())
 menuText += '</ul>'
-print header("Quick Tournament #19 - DDraceNetwork", menuText, "")
+print header("Quick Tournament #20 - DDraceNetwork", menuText, "")
 
 f = open("tournament")
 tournamentMaps = []
@@ -188,7 +188,7 @@ with con:
           serverPointsLadder[row[0]] = globalPoints(type, stars)
 
         if row[0] not in players:
-          players[row[0]] = Player({})
+          players[row[0]] = Player({}, {})
         if originalMapName not in players[row[0]].maps:
           players[row[0]].maps[originalMapName] = PlayerMap(0, currentRank, globalPoints(type, stars), row[3], row[4], row[1])
         else:
@@ -281,8 +281,8 @@ with con:
     serversString += '</div>\n'
     serversString += '</div>\n'
 
-print '<div id="global" class="block div-tournament"><h2>Quick Tournament #19</h2>'
-print '<p>This tournament was played on 2014-09-21 at 20:00 CEST.</p>'
+print '<div id="global" class="block div-tournament"><h2>Quick Tournament #20</h2>'
+print '<p>This tournament was played on 2014-09-28 at 20:00 CEST.</p>'
 print '</div>'
 print '<div id="serverranks" style="display: ">'
 print serversString
