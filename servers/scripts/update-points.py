@@ -31,9 +31,10 @@ with con:
       points = globalPoints(type, stars)
 
       mapName = words[1]
-      #if len(words) > 2:
-      #  mapperName = words[2]
-      #else:
-      #  mapperName = ""
 
-      cur.execute("INSERT INTO record_maps(Map, Server, Points, Stars) VALUES ('%s', '%s', '%d', '%d') ON duplicate key UPDATE Server=VALUES(Server), Points=VALUES(Points), Stars=VALUES(Stars);" % (con.escape_string(mapName), con.escape_string(type), points, stars))
+      if len(words) > 2:
+        mapperName = words[2]
+      else:
+        mapperName = "Unknown Mapper"
+
+      cur.execute("INSERT INTO record_maps(Map, Server, Mapper, Points, Stars) VALUES ('%s', '%s', '%s', '%d', '%d') ON duplicate key UPDATE Server=VALUES(Server), Mapper=VALUES(Mapper), Points=VALUES(Points), Stars=VALUES(Stars);" % (con.escape_string(mapName), con.escape_string(type), con.escape_string(mapperName), points, stars))

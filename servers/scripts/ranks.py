@@ -11,6 +11,7 @@ from collections import defaultdict
 import msgpack
 import traceback
 from time import sleep
+from string import capwords
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -136,12 +137,9 @@ with con:
     directory = os.path.dirname(filename)
     if not os.path.exists(directory):
       os.makedirs(directory)
-    tf = open(tmpname, 'w')
-
-    print >>tf, header("%s Ranks - DDraceNetwork" % type.title(), menuText, "")
-    print >>tf, '<p class="toggle"><a title="Click to toggle whether only the top 10 ranks or all ranks are shown" href="#" onclick="showClass(\'allPoints\'); return false;">Top 500 / Top 10</a></p>'
 
     serversString = ""
+    subserversString = ""
     totalServerPoints = 0
     serverRankLadder = defaultdict(int)
     serverTeamrankLadder = defaultdict(int)
@@ -162,7 +160,17 @@ with con:
 
     maps[type] = []
 
+    subtypes = []
+
     for line in f:
+      if line.startswith('───') and line.endswith('───\n'):
+        subname = line.lstrip('─ ').rstrip('\n─ ')
+        if mapsString != '':
+          mapsString += '<br/></div>\n'
+        subtypes.append(subname.lower())
+        mapsString += '<div class="longblock div-ranks"><h2 id="%s">%s</h2><br/>\n' % (subname.lower().replace(' ', '-'), capwords(subname))
+        continue
+
       words = line.rstrip('\n').split('|')
       if len(words) == 0 or not words[0].isdigit():
         continue
@@ -413,10 +421,29 @@ with con:
     serversString += printLadder("Points (last month)", monthlyServerPointsRanks, players)
     serversString += printLadder("Points (last week)", weeklyServerPointsRanks, players)
     serversString += lastString
+    serversString += '</div>\n'
     serversString += '<div class="all-%s" style="display: ">\n' % type
     serversString += mapsString
     serversString += '</div>\n'
-    serversString += '</div>\n'
+
+    tf = open(tmpname, 'w')
+
+    #serverMenuText = '<ul>'
+    #serverMenuText += '<li><a href="/ranks/">Global Ranks</a></li>'
+    #for type2 in types:
+    #  if type == type2:
+    #    subMenu = '<ul style="font-size: 90%">'
+    #    for subtype in subtypes:
+    #      subMenu += '<li><a href="#%s">%s</a></li>' % (subtype.replace(' ','-'), capwords(subtype))
+    #    subMenu += '</ul>'
+    #    serverMenuText += '<li><a href="/ranks/%s/">%s Server</a>%s</li>\n' % (type2, type2.title(), subMenu)
+    #  else:
+    #    serverMenuText += '<li><a href="/ranks/%s/">%s Server</a></li>\n' % (type2, type2.title())
+    #serverMenuText += '<li><a href="#points">Points Calculation</a></li>\n'
+    #serverMenuText += '</ul>'
+
+    print >>tf, header("%s Ranks - DDraceNetwork" % type.title(), menuText, "")
+    print >>tf, '<p class="toggle"><a title="Click to toggle whether only the top 10 ranks or all ranks are shown" href="#" onclick="showClass(\'allPoints\'); return false;">Top 500 / Top 10</a></p>'
 
     print >>tf, '<div id="serverranks" style="display: ">'
     print >>tf, serversString

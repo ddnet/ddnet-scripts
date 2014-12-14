@@ -386,14 +386,6 @@ with con:
         normMap = normalizeMapname(map)
         if map in player[0]:
           found = True
-          #if player[0][map][4].year > 2014:
-          #  print >> sys.stderr, player[0][map][1]
-          #  print >> sys.stderr, player[0][map][3]
-          #  print >> sys.stderr, "first"
-          #  print >> sys.stderr, player[0][map][4]
-          #  print >> sys.stderr, name
-          #  print >> sys.stderr, map
-          #  continue
 
           tblString += '<tr><td><a href="/ranks/%s/#map-%s">%s</a></td><td class="smallpoints">%d</td><td class="rank">%s</td><td class="rank">%s</td><td class="rank">%s</td><td class="rank">%d</td><td class="rank">%s</td></tr>\n' % (type, escape(normMap), escape(map), player[0][map][2], formatRank(player[0][map][0]), formatRank(player[0][map][1]), escape(formatTime(player[0][map][5])), player[0][map][3], escape(formatDate(datetime.strptime(player[0][map][4], "%Y-%m-%d %H:%M:%S"))))
         else:

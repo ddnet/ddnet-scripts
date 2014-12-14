@@ -60,7 +60,7 @@ for type in types:
   menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type.title())
 menuText += '</ul>'
 
-print header("Quick Tournament #5 - DDraceNetwork", menuText, "")
+print header("Quick Tournament #23 - DDraceNetwork", menuText, "")
 
 f = open("tournament")
 tournamentMaps = []
@@ -145,7 +145,7 @@ with con:
           ID = row[1]
 
         if row[0] not in players:
-          players[row[0]] = Player({})
+          players[row[0]] = Player({}, {})
         if originalMapName not in players[row[0]].maps:
           players[row[0]].maps[originalMapName] = PlayerMap(currentRank, 0, 0, 0, date(2015,10,10),  date(2016,10,10))
 
@@ -215,7 +215,7 @@ with con:
           serverPointsLadder[row[0]] = globalPoints(type, stars)
 
         if row[0] not in players:
-          players[row[0]] = Player({})
+          players[row[0]] = Player({}, {})
         if originalMapName not in players[row[0]].maps:
           players[row[0]].maps[originalMapName] = PlayerMap(0, currentRank, globalPoints(type, stars), row[3], row[4], row[1])
         else:
@@ -295,7 +295,7 @@ with con:
 
       mapsString += u'<div class="block3 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" /></a>%s<br/><span title="%s">%d tee%s finished%s</span></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime))
       #mapsString += printTeamRecords("Team Records", "teamrecords", teamRanks)
-      mapsString += printSoloRecords("Records", "records", ranks)
+      mapsString += printExactSoloRecords("Records", "records", ranks)
       mapsString += '<br/>\n'
 
     serverPointsRanks = sorted(serverPointsLadder.items(), key=lambda r: r[1], reverse=True)
@@ -313,8 +313,8 @@ with con:
 #teamrankRanks = sorted(teamrankLadder.items(), key=lambda r: r[1], reverse=True)
 #rankRanks = sorted(rankLadder.items(), key=lambda r: r[1], reverse=True)
 
-print '<div id="global" class="block div-tournament"><h2>Quick Tournament #5</h2>'
-print '<p>This tournament was played on 2014-03-30 from 22:00 to 22:00 CEST.</p>'
+print '<div id="global" class="block div-tournament"><h2>Quick Tournament #23</h2>'
+print '<p>This tournament was played on 2014-10-25 from 20:00 to 21:00 CEST.</p>'
 #print printLadder(teamrankRanks)
 print '</div>'
 print '<div id="serverranks" style="display: ">'

@@ -244,6 +244,11 @@ def header(title, menu, header, refresh = False, stupidIncludes = False):
     <meta name="msapplication-TileColor" content="#2d89ef">
     <meta name="msapplication-TileImage" content="/mstile-144x144.png">
     <meta name="viewport" content="width=device-width">
+    <meta http-equiv="cache-control" content="max-age=0" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta http-equiv="expires" content="0" />
+    <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+    <meta http-equiv="pragma" content="no-cache" />
     %s
     %s
     <link rel="stylesheet" type="text/css" href="/css.css" />
@@ -266,6 +271,21 @@ def header(title, menu, header, refresh = False, stupidIncludes = False):
     </menu>
     <section>
     %s""" % (mbRefresh, mbIncludes, title, menu, header)
+
+def printExactSoloRecords(recordName, className, topFinishes):
+  string = u'<div class="block2 %s"><h4>%s:</h4>\n' % (className, recordName)
+  if len(topFinishes) > 0:
+    string += '<table class="tight">\n'
+    for f in topFinishes:
+      if f[4] > 1:
+        mbS = "es"
+      else:
+        mbS = ""
+      string += u'  <tr title="%s, %s, %d finish%s total"><td class="rank">%d.</td><td class="time">%s</td><td><a href="%s">%s</a></td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[4], mbS, f[0], escape(formatTimeExact(f[2])), escape(playerWebsite(u'%s' % f[1])), escape(f[1]))
+    string += '</table>\n'
+  string += '</div>\n'
+
+  return string
 
 def printSoloRecords(recordName, className, topFinishes):
   string = u'<div class="block2 %s"><h4>%s:</h4>\n' % (className, recordName)
@@ -490,36 +510,45 @@ def getTSStatus():
   result += '<br/></div>'
   return result
 
-def printStatus(name, servers, serverAddresses, external = False):
+def address(s):
+  spl = s.split(':')
+  return (spl[0], int(spl[1]))
+
+def printStatus2(name, servers, doc, external = False):
   serverPlayers = {}
 
   serverPositions = {}
 
   for i in servers:
-    serverPlayers[i[0]] = 0
-    serverPositions[i[0]] = 0
+    serverPlayers[i] = 0
+    serverPositions[i] = 0
 
   tw = Teeworlds(timeout=5)
   tw2 = Teeworlds(timeout=5)
   tw3 = Teeworlds(timeout=5)
   tw4 = Teeworlds(timeout=5)
 
-  for serverAddress in serverAddresses:
-    server = Server64(tw, serverAddress[:-1])
-    server.request()
-    tw.serverlist.add(server)
+  for countryEntry in doc:
+    country = countryEntry['name']
+    for typ, svs in countryEntry['servers'].iteritems():
+      for s in svs:
+        serverAddress = address(s)
 
-    server2 = Server64(tw2, serverAddress[:-1])
-    server2.request()
-    tw2.serverlist.add(server2)
+        server = Server64(tw, serverAddress)
+        server.request()
+        tw.serverlist.add(server)
 
-    server3 = Server(tw3, serverAddress[:-1])
-    server3.request()
-    tw3.serverlist.add(server3)
+        server2 = Server64(tw2, serverAddress)
+        server2.request()
+        tw2.serverlist.add(server2)
 
-    server4 = Server(tw4, serverAddress[:-1])
-    server4.request()
-    tw4.serverlist.add(server4)
+        server3 = Server(tw3, serverAddress)
+        server3.request()
+        tw3.serverlist.add(server3)
+
+        server4 = Server(tw4, serverAddress)
+        server4.request()
+        tw4.serverlist.add(server4)
 
   tw.run_loop()
   tw2.run_loop()
@@ -531,26 +560,32 @@ def printStatus(name, servers, serverAddresses, external = False):
 
   serverlists = [tw.serverlist, tw2.serverlist, tw3.serverlist, tw4.serverlist]
 
-  for i, s in enumerate(tw.serverlist):
-    for serverlist in serverlists:
-      server = serverlist.servers[i]
+  #for i, s in enumerate(tw.serverlist):
+  i = 0
+  for countryEntry in doc:
+    country = countryEntry['name']
+    for typ, svs in countryEntry['servers'].iteritems():
+      for s in svs:
+        for serverlist in serverlists:
+          server = serverlist.servers[i]
 
-      if server.clients < 0:
-        continue
+          if server.clients < 0:
+            continue
 
-      if serverAddresses[i][2] != lastServer:
-        lastServer = serverAddresses[i][2]
-        serverPositions[lastServer] = i
-      totalPlayers += max(0,server.clients)
-      if serverPlayers.has_key(serverAddresses[i][2]):
-        serverPlayers[serverAddresses[i][2]] += max(0,server.clients)
-      break
+          if country != lastServer:
+            lastServer = country
+            serverPositions[lastServer] = i
+          totalPlayers += max(0,server.clients)
+          if serverPlayers.has_key(country):
+            serverPlayers[country] += max(0,server.clients)
+          break
+        i += 1
 
   menuText = ""
   if len(servers) > 1:
     menuText += '<ul>'
     for i in servers:
-      menuText += '<li><a href="#server-%d">%s&nbsp;[%d]</a></li> ' % (serverPositions[i[0]], i[1].replace(" ","&nbsp;"), serverPlayers[i[0]])
+      menuText += '<li><a href="#server-%d">%s&nbsp;[%d]</a></li> ' % (serverPositions[i], servers[i][1].replace(" ","&nbsp;"), serverPlayers[i])
     menuText += "</ul>"
 
   if name == "DDraceNetwork":
@@ -571,48 +606,55 @@ def printStatus(name, servers, serverAddresses, external = False):
     players = msgpack.unpack(inp, encoding='utf-8')
   inp = None
 
-  for i, s in enumerate(tw.serverlist):
-    for serverlist in serverlists:
-      try:
-        server = serverlist.servers[i]
-        mbEmpty = ""
-        if server.clients < 1:
-          mbEmpty = " empty\" style=\"display:none"
+  #for i, s in enumerate(tw.serverlist):
+  i = 0
+  for countryEntry in doc:
+    country = countryEntry['name']
+    for typ, svs in countryEntry['servers'].iteritems():
+      for s in svs:
+        for serverlist in serverlists:
+          try:
+            server = serverlist.servers[i]
+            mbEmpty = ""
+            if server.clients < 1:
+              mbEmpty = " empty\" style=\"display:none"
 
-        clients = server.clients
-        max_clients = server.max_clients
-        name = server.name
+            clients = server.clients
+            max_clients = server.max_clients
+            name = server.name
 
-        tmp = name.strip().split(" - ")
-        serverType = tmp[-1].split(" ")[0]
-        serverRest = " ".join(tmp[-1].split(" ")[1:])
-        if serverRest != "":
-          serverRest = " %s" % serverRest
+            tmp = name.strip().split(" - ")
+            serverType = tmp[-1].split(" ")[0]
+            serverRest = " ".join(tmp[-1].split(" ")[1:])
+            if serverRest != "":
+              serverRest = " %s" % serverRest
 
-        if external or "Test" in name:
-          serverName = escape(name)
-          mapName = escape(server.map)
-        elif not "DDrace" in name or "BLOCKER" in name or "Tournament" in name or "ADMIN" in name:
-          serverName = escape(name)
-          mapName = '<a href="/maps/?map=%s">%s</a>' % (quote_plus(server.map), escape(server.map))
-        else:
-          serverName = '%s - <a href="/ranks/%s/">%s</a>%s' % (escape(" - ".join(tmp[:-1])), escape(serverType.lower()), escape(serverType), escape(serverRest))
-          mapName = '<a href="/ranks/%s/#map-%s">%s</a>' % (escape(serverType.lower()), escape (normalizeMapname(server.map)), escape(server.map))
+            if external or "Test" in name:
+              serverName = escape(name)
+              mapName = escape(server.map)
+            elif not "DDrace" in name or "BLOCKER" in name or "Tournament" in name or "ADMIN" in name:
+              serverName = escape(name)
+              mapName = '<a href="/maps/?map=%s">%s</a>' % (quote_plus(server.map), escape(server.map))
+            else:
+              serverName = '%s - <a href="/ranks/%s/">%s</a>%s' % (escape(" - ".join(tmp[:-1])), escape(serverType.lower()), escape(serverType), escape(serverRest))
+              mapName = '<a href="/ranks/%s/#map-%s">%s</a>' % (escape(serverType.lower()), escape (normalizeMapname(server.map)), escape(server.map))
 
 
-        print((u'<div id="server-%d"><div class="block%s"><h3 class="ip">%s:%d</h3><h2>%s: %s [%d/%d]</h2><br/>' % (i, mbEmpty, serverAddresses[i][2], serverAddresses[i][1], serverName, mapName, clients, max_clients)).encode('utf-8'))
+            print((u'<div id="server-%d"><div class="block%s"><h3 class="ip">%s</h3><h2>%s: %s [%d/%d]</h2><br/>' % (i, mbEmpty, s, serverName, mapName, clients, max_clients)).encode('utf-8'))
 
-        print('<div class="block3 status-players"><h3>Players</h3>')
-        printPlayers(server, lambda p: p.playing, players)
+            print('<div class="block3 status-players"><h3>Players</h3>')
+            printPlayers(server, lambda p: p.playing, players)
 
-        print('</div><div class="block3 status-players"><h3>Spectators</h3>')
-        printPlayers(server, lambda p: not p.playing, players)
-        print('</div><br/></div></div>')
-      except:
-        continue
-      break
+            print('</div><div class="block3 status-players"><h3>Spectators</h3>')
+            printPlayers(server, lambda p: not p.playing, players)
+            print('</div><br/></div></div>')
+          except:
+            continue
+          break
+        i += 1
   print '<p class="toggle">Refreshed: %s</p>' % time.strftime("%Y-%m-%d %H:%M")
   print """</section>
   </article>
   </body>
   </html>"""
+
