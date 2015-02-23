@@ -3,8 +3,8 @@
 
 SERVER = "ddnet.tw"
 PORT = 35601
-USER = "ddnetger"
-PASSWORD = "SECRETPASS"
+USER = "ddnet"
+PASSWORD = "asdkljadmdasda"
 INTERVAL = 1 # Update interval
 
 
@@ -45,7 +45,7 @@ def get_memory():
 	return int(MemTotal), int(MemUsed), int(SwapTotal), int(SwapFree)
 
 def get_hdd():
-	p = subprocess.check_output(['df', '-Tlm', '--total', '-t', 'ext4', '-t', 'ext3', '-t', 'ext2', '-t', 'reiserfs', '-t', 'jfs', '-t', 'ntfs', '-t', 'fat32', '-t', 'btrfs', '-t', 'fuseblk', '-t', 'zfs', '-t', 'simfs']).decode("Utf-8")
+	p = subprocess.Popen(['df', '-Tlm', '--total', '-t', 'ext4', '-t', 'ext3', '-t', 'ext2', '-t', 'reiserfs', '-t', 'jfs', '-t', 'ntfs', '-t', 'fat32', '-t', 'btrfs', '-t', 'fuseblk', '-t', 'zfs', '-t', 'simfs'], stdout=subprocess.PIPE).communicate()[0].decode("Utf-8")
 	total = p.splitlines()[-1]
 	used = total.split()[3]
 	size = total.split()[2]
@@ -125,6 +125,7 @@ if __name__ == '__main__':
 		try:
 			print("Connecting...")
 			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			s.settimeout(10.0)
 			s.connect((SERVER, PORT))
 			data = s.recv(1024)
 			if data.find("Authentication required") > -1:

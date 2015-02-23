@@ -1,3 +1,4 @@
+Check out DDNet's Teamspeak server by laxa on ts.ddnet.tw
 When you want to change map make sure noone is currently racing!
 Don't block. Often the race progress is being delayed by blocking players. And only some of them do it on purpose.
 When you dont know what to do in a challenge, try to stay away from the action. Find a place from where you can have a look at the other tees without blocking them.
@@ -11,3 +12,4 @@ DDraceNetwork always welcomes creative maps you made and ideas for new DDRace fe
 You can compare your points, global rank and team rank on DDraceNetwork's website: http://ddnet.tw
 Mappers looking to map using our new features can get our server and client on our website: http://ddnet.tw
 When you get blocked in the noob filter do not kick the blocker but instead join a team.
+Keep up to date with new map releases on http://ddnet.tw/releases

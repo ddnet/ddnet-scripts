@@ -1,25 +1,21 @@
-|DDNet 4.7 released|
-• [Client] Automatic timeout protection on DDNet servers
-• [Server] /timeout protection for all clients
-• [Server] /specteam to only see players from your team when spectating
-• [Server] Fixes for /save and /load
+|DDNet Client & Server 7.2 released|
+• [Client] Kill & emoticons are cloned with cl_dummy_copy_moves
+• [Mapping] Tons of automapper features (by DoNe)
+• [Server] Fix: Release hook when player changes team
 
-|Moderate Tournament on Sunday!|
-The DDraceNetwork Quick Tournament #18 will take place
-on Sunday, August 10 at 19:00 CEST (not 20:00!).
-We will play the long and easy map Neverwhere by Bixes & Themix.
+|Moderate Tournament on Sunday|
+After a long break we're back with a new Tournament! This Sunday at
+20:00 CET we will play the new Moderate (★✰✰✰✰) map "Jvice" by Vasten100!
 
-The rules are as always, check out ddnet.tw for more information.
-Hopefully we will have a German livestream by Hallowed1986!
+• 60 minutes to get the best time
+• You can try as often as you want
+• Teams of any size are allowed
 
-|Brutal Tournament on Sunday!|
-We played the surprisingly Brutal Inception by Cøke & #eci.in`.
-Noone was able to finish!
+More infos on ddnet.tw!
 
-|DDNet 4.6 released|
-• [Server] Save a game in team using /save password (by HMH)
-• [Client] Fix some default binds (pageup, pagedown)
-• [Client] Prevent dummy from reconnecting too often
-• [Blocker] Disable rejoin to team 0 after finish
-• [Blocker] Add freeze hammer
-• and many more fixes
+|DDNet Client & Server 7.1 released|
+• [Client] Dummy copies moves (by Tobii)
+• [Client] Fix fast file download for some filenames (by Learath2)
+• [Mapping] Fire delay tunings
+• [Mapping] Automapper rules for generic_unhookable (+0.7) (by hi_leute_gll)
+• [Server] Support for JS clients (by eeeee)

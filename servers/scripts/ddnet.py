@@ -12,6 +12,7 @@ import time
 import msgpack
 from urllib import quote_plus
 from operator import itemgetter
+from collections import OrderedDict
 
 from mysql import *
 from teeworlds import *
@@ -29,6 +30,22 @@ pointsDict = {
   'oldschool': (6, 0),
   'solo':      (4, 0)
 }
+
+def lookupIp(ip):
+  ipDict = {
+    '178.33.191.10': 'ddnet.tw',
+    '95.172.92.151': 'ger.ddnet.tw',
+    '74.91.114.132': 'usa.ddnet.tw',
+    '192.99.185.158': 'can.ddnet.tw',
+    '151.248.116.14': 'rus.ddnet.tw',
+    '112.124.108.6': 'chn.ddnet.tw',
+    '190.114.253.157': 'chl.ddnet.tw',
+    '181.41.210.80': 'br.ddnet.tw',
+    '41.185.26.5': 'zaf.ddnet.tw'
+  }
+  if ip in ipDict:
+    return ipDict[ip]
+  return ip
 
 def points(rank):
   if rank < 0 or rank > 10:
@@ -211,7 +228,7 @@ def formatScore(score, pure = False):
     return ""
   return formatTime(abs(score))
 
-def header(title, menu, header, refresh = False, stupidIncludes = False):
+def header(title, menu, header, refresh = False, stupidIncludes = False, otherIncludes = ""):
   if refresh:
     mbRefresh = '<meta http-equiv="refresh" content="120" />'
   else:
@@ -251,6 +268,7 @@ def header(title, menu, header, refresh = False, stupidIncludes = False):
     <meta http-equiv="pragma" content="no-cache" />
     %s
     %s
+    %s
     <link rel="stylesheet" type="text/css" href="/css.css" />
     <script src="/js.js" type="text/javascript"></script>
     <title>%s</title>
@@ -265,12 +283,15 @@ def header(title, menu, header, refresh = False, stupidIncludes = False):
       <li><a href="/releases/">Releases</a></li>
       <li><a href="/halloffame/">Hall of Fame</a></li>
       <li><a href="/tournament/">Tournaments</a></li>
+      <li><a href="/skins/">Skin Database</a></li>
+      <li><a href="/downloads/">Downloads</a></li>
+      <li><a href="/stats/">Statistics</a></li>
       <li><a href="//forum.ddnet.tw/">Forum</a></li>
     </ul>
     %s
     </menu>
     <section>
-    %s""" % (mbRefresh, mbIncludes, title, menu, header)
+    %s""" % (mbRefresh, mbIncludes, otherIncludes, title, menu, header)
 
 def printExactSoloRecords(recordName, className, topFinishes):
   string = u'<div class="block2 %s"><h4>%s:</h4>\n' % (className, recordName)
@@ -514,8 +535,9 @@ def address(s):
   spl = s.split(':')
   return (spl[0], int(spl[1]))
 
-def printStatus2(name, servers, doc, external = False):
-  serverPlayers = {}
+def printStatus(name, servers, doc, external = False):
+  serverPlayers = OrderedDict()
+  modPlayers = OrderedDict()
 
   serverPositions = {}
 
@@ -531,6 +553,7 @@ def printStatus2(name, servers, doc, external = False):
   for countryEntry in doc:
     country = countryEntry['name']
     for typ, svs in countryEntry['servers'].iteritems():
+      modPlayers[typ] = 0
       for s in svs:
         serverAddress = address(s)
 
@@ -578,6 +601,8 @@ def printStatus2(name, servers, doc, external = False):
           totalPlayers += max(0,server.clients)
           if serverPlayers.has_key(country):
             serverPlayers[country] += max(0,server.clients)
+          if modPlayers.has_key(typ):
+            modPlayers[typ] += max(0,server.clients)
           break
         i += 1
 
@@ -640,7 +665,7 @@ def printStatus2(name, servers, doc, external = False):
               mapName = '<a href="/ranks/%s/#map-%s">%s</a>' % (escape(serverType.lower()), escape (normalizeMapname(server.map)), escape(server.map))
 
 
-            print((u'<div id="server-%d"><div class="block%s"><h3 class="ip">%s</h3><h2>%s: %s [%d/%d]</h2><br/>' % (i, mbEmpty, s, serverName, mapName, clients, max_clients)).encode('utf-8'))
+            print((u'<div id="server-%d"><div class="block%s"><h3 class="ip">%s</h3><h2>%s: %s [%d/%d]</h2><br/>' % (i, mbEmpty, s, lookupIp(serverName), mapName, clients, max_clients)).encode('utf-8'))
 
             print('<div class="block3 status-players"><h3>Players</h3>')
             printPlayers(server, lambda p: p.playing, players)
@@ -658,3 +683,15 @@ def printStatus2(name, servers, doc, external = False):
   </body>
   </html>"""
 
+  now = datetime.now()
+  with open('%s/status/csv/bycountry' % webDir, 'a') as f:
+    f.write(now.strftime("%Y-%m-%d %H:%M"))
+    for country in serverPlayers:
+      f.write(",%s:%d" % (country, serverPlayers[country]))
+    f.write('\n')
+
+  with open('%s/status/csv/bymod' % webDir, 'a') as f:
+    f.write(now.strftime("%Y-%m-%d %H:%M"))
+    for typ in modPlayers:
+      f.write(",%s:%d" % (typ, modPlayers[typ]))
+    f.write('\n')

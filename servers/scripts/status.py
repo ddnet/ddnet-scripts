@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 from ddnet import *
 import json
-from jsoncomment import JsonComment
 from collections import OrderedDict
 
 servers = OrderedDict([
@@ -17,4 +16,4 @@ servers = OrderedDict([
   #, ("IRN", ("irn.ddnet.tw", "DDNet Persian"))
   ])
 
-printStatus2("DDraceNetwork", servers, JsonComment(json).load(open("serverlist.json"), object_pairs_hook=OrderedDict, object_hook=OrderedDict))
+printStatus("DDraceNetwork", servers, json.load(open("/home/teeworlds/servers/serverlist.json"), object_pairs_hook=OrderedDict, object_hook=OrderedDict))

@@ -21,7 +21,7 @@ def printTeamRecords2(recordName, className, topFinishes):
   if len(topFinishes) > 0:
     string += '<table class="tight">\n'
     for f in topFinishes:
-      string += u'  <tr title="%s, %s"><td class="rank">%d.</td><td>%s</td><td>%s</td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[0], escape(formatDate(f[3])), f[1])
+      string += u'  <tr title="%s, %s"><td class="rank">%d.</td><td>%s</td><td>%s</td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[0], escape(formatTimeExact(f[2])), f[1])
     string += '</table>\n'
   string += '</div>\n'
 
@@ -44,7 +44,7 @@ menuText = '<ul>\n'
 for type in types:
   menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type.title())
 menuText += '</ul>'
-print header("Quick Tournament #26 - DDraceNetwork", menuText, "")
+print header("Quick Tournament #28 - DDraceNetwork", menuText, "")
 
 f = open("tournament")
 tournamentMaps = []
@@ -94,7 +94,7 @@ with con:
       skips = 1
 
       try:
-        cur.execute("select Name, r.ID, Time, Timestamp from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Timestamp) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID order by r.Timestamp, r.ID, Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
+        cur.execute("select Name, r.ID, Time, Timestamp from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID order by r.Time, r.ID, Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
         rows = cur.fetchall()
       except:
         pass
@@ -156,7 +156,8 @@ with con:
       countFinishes = 0
 
       try:
-        cur.execute("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, maxTimestamp from (select * from record_race where Map = '%s') as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp, max(Timestamp) as maxTimestamp from record_race where Map = '%s' group by Name order by minTimestamp ASC) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTimestamp;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
+        #cur.execute("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, maxTimestamp from (select * from record_race where Map = '%s') as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp, max(Timestamp) as maxTimestamp from record_race where Map = '%s' group by Name order by minTimestamp ASC) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTimestamp;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
+        cur.execute("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, maxTimestamp from (select * from record_race where Map = '%s') as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp, max(Timestamp) as maxTimestamp from record_race where Map = '%s' group by Name order by minTimestamp ASC) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTime;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
         rows = cur.fetchall()
       except:
         pass
@@ -281,8 +282,8 @@ with con:
     serversString += '</div>\n'
     serversString += '</div>\n'
 
-print '<div id="global" class="block div-tournament"><h2>Quick Tournament #26</h2>'
-print '<p>This tournament was played on 2014-11-30 at 20:00 CET.</p>'
+print '<div id="global" class="block div-tournament"><h2>Quick Tournament #28</h2>'
+print '<p>This tournament was played on 2015-02-22 at 20:00 CET.</p>'
 print '</div>'
 print '<div id="serverranks" style="display: ">'
 print serversString

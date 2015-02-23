@@ -104,6 +104,26 @@ with con:
 
     return out.getvalue()
 
+  def firstFinishes(name):
+    out = cStringIO.StringIO()
+
+    print >>out, '<div class="block2 ladder"><h3>First Finishes</h3>\n<table class="tight">'
+
+    cur.execute("select Timestamp, Map, Time from record_race where Name = '%s' order by Timestamp asc limit 10;" % con.escape_string(name))
+    rows = cur.fetchall()
+    for row in rows:
+      type = ''
+      for t in types:
+        if row[1] in maps[t]:
+          type = t
+          break
+
+      print >> out, '<tr><td>%s: <a href="/ranks/%s/#map-%s">%s</a> (%s)&nbsp;&nbsp;</td></tr>' % (escape(formatDate(row[0])), type, escape(normalizeMapname(row[1])), escape(row[1]), escape(formatTime(row[2])))
+
+    print >>out, '</table></div>'
+
+    return out.getvalue()
+
   def lastFinishes(name):
     out = cStringIO.StringIO()
 
@@ -358,6 +378,7 @@ with con:
     print >>out, '<script src="/playersearch.js" type="text/javascript"></script>'
     print >>out, '<div class="block7"><h2>Global Ranks for %s</h2></div><br/>' % escape(name)
     print >>out, globalRanks(name, player)
+    print >>out, firstFinishes(name)
     print >>out, lastFinishes(name)
     print >>out, '<br/>'
     print >>out, '</div>'

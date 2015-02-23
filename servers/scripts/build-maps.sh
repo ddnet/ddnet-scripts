@@ -1,6 +1,7 @@
 #!/usr/bin/env zsh
 mkdir -p /home/teeworlds/maps
 cd /home/teeworlds/maps
+rm -rf *
 
 for i in `cat ../servers/all-types`; do
   mkdir -p $i

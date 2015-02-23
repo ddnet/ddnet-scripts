@@ -3,6 +3,6 @@ def mysqlConnect():
   return mdb.connect(
     'localhost',
     'teeworlds',
-    'SECRETPASS',
+    'dmd(n9=1mMkvnkd())99',
     'teeworlds'
   )
