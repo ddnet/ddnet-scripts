@@ -2,7 +2,7 @@ ssh root@37.235.52.151
 
 apt-get update
 apt-get upgrade
-apt-get install zsh vim htop git g++ libboost-dev msgpack-python python-mysqldb ntp
+apt-get install zsh vim htop git g++ libboost-dev msgpack-python python-mysqldb ntp sshfs tcpdump gdb pkg-config
 vim /etc/passwd /etc/group
 
 Create teeworlds user and set zsh
@@ -23,7 +23,7 @@ apt-get install python-software-properties
 apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 0xcbcb082a1bb943db
 add-apt-repository 'deb http://mirror.jmu.edu/pub/mariadb/repo/5.5/debian wheezy main'
 apt-get update
-apt-get install mariadb-server
+apt-get install mariadb-server libmariadbclient-dev libmysqlcppconn-dev
 
 From root @ other server:
 scp -r /etc/zsh /etc/vim* /etc/mysql 37.235.52.151:/etc

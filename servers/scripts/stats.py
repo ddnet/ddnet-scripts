@@ -20,6 +20,8 @@ locale.setlocale(locale.LC_ALL, 'en_US')
 reload(sys)
 sys.setdefaultencoding('utf8')
 
+startDate = datetime.today() - timedelta(weeks = 4)
+
 # Finishes
 con = mysqlConnect()
 with con:
@@ -41,6 +43,11 @@ with con:
   cur.execute('select sum(Time) from record_race where Map != "Flappy Bird";')
   rows = cur.fetchall()
   timeRanks = strfdelta(timedelta(seconds = rows[0][0]), "{years} years, {days} days and {hours} hours")
+
+  yesterday = datetime.now() - timedelta(days=1)
+  cur.execute('select sum(Time) from record_race where Map != "Flappy Bird" and DATE(Timestamp) = "%s";' % yesterday.strftime("%Y-%m-%d"))
+  rows = cur.fetchall()
+  timeRanksYesterday = strfdelta(timedelta(seconds = rows[0][0]), "{days} days and {hours} hours")
 
   cur.execute("select year(Timestamp), month(Timestamp), day(Timestamp), count(*) from record_race group by year(Timestamp), month(Timestamp), day(Timestamp) order by Timestamp;")
   rows = cur.fetchall()
@@ -133,24 +140,28 @@ with open('%s/status/csv/bycountry' % webDir) as f:
       sn = token.split(':')
       if sn[0] not in players:
         players[sn[0]] = {}
-      players[sn[0]][date] = sn[1]
+      players[sn[0]][date] = int(sn[1])
 p = ""
 scale = 30
 for server, dates in players.iteritems():
   if len(p) > 0:
     p += ", "
-  p += "{name: '%s', pointInterval: %d * 2 * 60 * 1000, pointStart: Date.UTC(2014,11,21,1,30), data: [" % (server, scale)
+  p += "{name: '%s', pointInterval: %d * 2 * 60 * 1000, pointStart: Date.UTC(%d,%d,%d,%d,%d), data: [" % (server, scale, startDate.year, startDate.month-1, startDate.day, startDate.hour, startDate.minute)
   n = ""
   pos = 1
   aggNum = 0
-  lastDate = datetime(2014,12,21,1,30)
+  lastDate = startDate
   for date, num in sorted(dates.iteritems()):
     currDate = datetime(date.year, date.month, date.day, date.hour, date.minute)
+    if currDate < startDate:
+      continue
     lastDate += timedelta(minutes=2)
     while lastDate < currDate:
       lastDate += timedelta(minutes=2)
       if pos == 0:
-        n += ", %s" % aggNum
+        if len(n) > 0:
+          n += ", "
+        n += "%s" % aggNum
         aggNum = 0
       pos = (pos + 1) % scale
 
@@ -159,7 +170,7 @@ for server, dates in players.iteritems():
     if pos == 0:
       if len(n) > 0:
         n += ", "
-      n += aggNum
+      n += "%s" % aggNum
       aggNum = 0
     pos = (pos + 1) % scale
   p += n + "]}"
@@ -174,23 +185,27 @@ with open('%s/status/csv/bymod' % webDir) as f:
       sn = token.split(':')
       if sn[0] not in players:
         players[sn[0]] = {}
-      players[sn[0]][date] = sn[1]
+      players[sn[0]][date] = int(sn[1])
 p2 = ""
 for server, dates in players.iteritems():
   if len(p2) > 0:
     p2 += ", "
-  p2 += "{name: '%s', pointInterval: %d * 2 * 60 * 1000, pointStart: Date.UTC(2014,11,21,1,30), data: [" % (server, scale)
+  p2 += "{name: '%s', pointInterval: %d * 2 * 60 * 1000, pointStart: Date.UTC(%d,%d,%d,%d,%d), data: [" % (server, scale, startDate.year, startDate.month-1, startDate.day, startDate.hour, startDate.minute)
   n = ""
   pos = 1
   aggNum = 0
-  lastDate = datetime(2014,12,21,1,30)
+  lastDate = startDate
   for date, num in sorted(dates.iteritems()):
     currDate = datetime(date.year, date.month, date.day, date.hour, date.minute)
+    if currDate < startDate:
+      continue
     lastDate += timedelta(minutes=2)
     while lastDate < currDate:
       lastDate += timedelta(minutes=2)
       if pos == 0:
-        n += ", %s" % aggNum
+        if len(n) > 0:
+          n += ", "
+        n += "%s" % aggNum
         aggNum = 0
       pos = (pos + 1) % scale
 
@@ -199,7 +214,7 @@ for server, dates in players.iteritems():
     if pos == 0:
       if len(n) > 0:
         n += ", "
-      n += aggNum
+      n += "%s" % aggNum
       aggNum = 0
     pos = (pos + 1) % scale
   p2 += n + "]}"
@@ -213,7 +228,25 @@ text = header("Statistics & Charts", "", "", False, False, otherIncludes)
 with open('scripts/stats.html') as f:
   text += f.read()
 
-print text % (p, p2, finishes, m, nrMaps, nrPlayers, nrRanks, timeRanks)
+# Country records
+countryRecords = OrderedDict()
+with open('%s/status/csv/bycountry' % webDir) as f:
+  for line in f:
+    tokens = line.rstrip('\n').split(',')
+    date = datetime.strptime(tokens[0], '%Y-%m-%d %H:%M')
+    for token in tokens[1:]:
+      sn = token.split(':')
+      if sn[0] not in countryRecords or countryRecords[sn[0]][0] < int(sn[1]):
+        countryRecords[sn[0]] = (int(sn[1]), date)
+countryRecordsString = ""
+for server, item in countryRecords.iteritems():
+  record = item[0]
+  date = item[1]
+  if len(countryRecordsString) > 0:
+    countryRecordsString += ", "
+  countryRecordsString += '<span title="%s">%s: %d</span>' % (date, server, record)
+
+print text % (p, p2, finishes, m, nrMaps, nrPlayers, nrRanks, timeRanks, timeRanksYesterday, countryRecordsString)
 
 print """</section>
 </article>

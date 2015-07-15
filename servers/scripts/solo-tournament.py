@@ -57,7 +57,7 @@ types = sys.argv[1:]
 
 menuText = '<ul>\n'
 for type in types:
-  menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type.title())
+  menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, titleType(type))
 menuText += '</ul>'
 
 print header("Quick Tournament #23 - DDraceNetwork", menuText, "")
@@ -78,7 +78,7 @@ with con:
 
     f = open("types/%s/maps" % type, 'r')
 
-    serversString += '<div id="%s" class="block div-tournament"><div class="back-up"><a href="#top">&#8593;</a></div><h2>%s Server</h2>\n' % (type, type.title())
+    serversString += '<div id="%s" class="block div-tournament"><div class="back-up"><a href="#top">&#8593;</a></div><h2>%s Server</h2>\n' % (type, titleType(type))
     mapsString = ""
 
     maps[type] = []
@@ -313,8 +313,8 @@ with con:
 #teamrankRanks = sorted(teamrankLadder.items(), key=lambda r: r[1], reverse=True)
 #rankRanks = sorted(rankLadder.items(), key=lambda r: r[1], reverse=True)
 
-print '<div id="global" class="block div-tournament"><h2>Quick Tournament #23</h2>'
-print '<p>This tournament was played on 2014-10-25 from 20:00 to 21:00 CEST.</p>'
+print '<div id="global" class="block div-tournament"><h2>Quick Tournament #30</h2>'
+print '<p>This tournament was played on 2015-04-05 from 20:00 to 21:30 CEST.</p>'
 #print printLadder(teamrankRanks)
 print '</div>'
 print '<div id="serverranks" style="display: ">'

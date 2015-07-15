@@ -11,7 +11,6 @@ from collections import defaultdict
 import msgpack
 import traceback
 from time import sleep
-from string import capwords
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -43,6 +42,10 @@ def printFooter():
           <td>Brutal</td>
           <td class="multiplier">3</td>
           <td class="multiplier">15</td>
+        </tr><tr>
+          <td>DDmaX</td>
+          <td class="multiplier">4</td>
+          <td class="multiplier">0</td>
         </tr><tr>
           <td>Oldschool</td>
           <td class="multiplier">6</td>
@@ -121,7 +124,7 @@ types = sys.argv[1:]
 menuText = '<ul>'
 menuText += '<li><a href="/ranks/">Global Ranks</a></li>'
 for type in types:
-  menuText += '<li><a href="/ranks/%s/">%s Server</a></li>\n' % (type, type.title())
+  menuText += '<li><a href="/ranks/%s/">%s Server</a></li>\n' % (type, titleType(type))
 menuText += '<li><a href="#points">Points Calculation</a></li>\n'
 menuText += '</ul>'
 
@@ -133,7 +136,7 @@ with con:
   cur.execute("set names 'utf8';")
   for type in types:
     filename = "%s/ranks/%s/index.html" % (webDir, type)
-    tmpname = "%s/ranks/%s/index.tmp" % (webDir, type)
+    tmpname = "%s/ranks/%s/index.%d.tmp" % (webDir, type, os.getpid())
     directory = os.path.dirname(filename)
     if not os.path.exists(directory):
       os.makedirs(directory)
@@ -154,21 +157,21 @@ with con:
     serversString += '<script src="/jquery.js" type="text/javascript"></script>\n'
     serversString += '<script src="/typeahead.bundle.js" type="text/javascript"></script>\n'
     serversString += '<script src="/playersearch.js" type="text/javascript"></script>\n'
-    serversString += '<div class="block7"><h2>%s Server Ranks</h2></div><br/>\n' % type.title()
+    serversString += '<div class="block7"><h2>%s Server Ranks</h2></div><br/>\n' % titleType(type)
 
     mapsString = ""
 
     maps[type] = []
 
-    subtypes = []
+    #subtypes = []
 
     for line in f:
       if line.startswith('───') and line.endswith('───\n'):
         subname = line.lstrip('─ ').rstrip('\n─ ')
         if mapsString != '':
           mapsString += '<br/></div>\n'
-        subtypes.append(subname.lower())
-        mapsString += '<div class="longblock div-ranks"><h2 id="%s">%s</h2><br/>\n' % (subname.lower().replace(' ', '-'), capwords(subname))
+        #subtypes.append(subname.lower())
+        mapsString += '<div class="longblock div-ranks"><h2 id="%s">%s</h2><br/>\n' % (subname.lower().replace(' ', '-'), titleSubtype(subname))
         continue
 
       words = line.rstrip('\n').split('|')
@@ -188,8 +191,6 @@ with con:
 
       mapName = normalizeMapname(originalMapName)
 
-      maps[type].append(originalMapName)
-
       rows = []
       teamRanks = []
       namesOnMap = {}
@@ -202,8 +203,8 @@ with con:
 
       try:
         cur.execute("select Name, r.ID, Time, Timestamp from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID order by r.Time, r.ID, Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
-        sleep(0.1)
         rows = cur.fetchall()
+        sleep(0.05)
       except:
         traceback.print_exc()
       if len(rows) > 0:
@@ -232,7 +233,7 @@ with con:
         if row[0] not in players:
           players[row[0]] = Player({}, {})
         if originalMapName not in players[row[0]].maps:
-          players[row[0]].maps[originalMapName] = PlayerMap(currentRank, 0, 0, 0, date(2015,10,10),  date(2016,10,10))
+          players[row[0]].maps[originalMapName] = PlayerMap(currentRank, 0, 0, "2020-10-10 00:00:00", 0.0)
 
         if currentPosition > 10:
           continue
@@ -264,12 +265,14 @@ with con:
 
       try:
         cur.execute("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, l.Server from (select * from record_race where Map = '%s') as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp from record_race where Map = '%s' group by Name order by minTime ASC) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTime;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
-        sleep(0.1)
         rows = cur.fetchall()
+        sleep(0.05)
       except:
         traceback.print_exc()
 
       countFinishes = len(rows)
+      maps[type].append(Map(originalMapName, globalPoints(type, stars), countFinishes))
+
       currentRank = 0
       currentPosition = 0
       lastTime = 0
@@ -299,9 +302,9 @@ with con:
         if row[0] not in players:
           players[row[0]] = Player({}, {})
         if originalMapName not in players[row[0]].maps:
-          players[row[0]].maps[originalMapName] = PlayerMap(0, currentRank, globalPoints(type, stars), row[3], row[4], row[1])
+          players[row[0]].maps[originalMapName] = PlayerMap(0, currentRank, row[3], row[4], row[1])
         else:
-          players[row[0]].maps[originalMapName] = PlayerMap(players[row[0]].maps[originalMapName][0], currentRank, globalPoints(type, stars), row[3], row[4], row[1])
+          players[row[0]].maps[originalMapName] = PlayerMap(players[row[0]].maps[originalMapName][0], currentRank, row[3], row[4], row[1])
 
         if row[5] != None:
           if row[5] not in players[row[0]].servers:
@@ -351,7 +354,7 @@ with con:
       try:
         cur.execute("select count(Name) from record_teamrace where Map = '%s' group by ID order by count(Name) desc limit 1;" % con.escape_string(originalMapName))
         rows = cur.fetchall()
-        sleep(0.1)
+        sleep(0.05)
         biggestTeam = " (biggest team: %d)" % rows[0][0]
       except:
         pass
@@ -407,9 +410,9 @@ with con:
     serversString += '<br/>'
 
     lastString = ""
-    cur.execute("select Timestamp, l.Map, Name, Time from (select Timestamp, Map, Name, Time from record_race) as l join record_maps on l.Map = record_maps.Map where Server = '%s' order by Timestamp desc limit 10;" % type)
+    cur.execute("select l.Timestamp, l.Map, Name, Time from (select Timestamp, Map, Name, Time from record_race) as l join record_maps on l.Map = record_maps.Map where Server = '%s' order by l.Timestamp desc limit 10;" % type)
     rows = cur.fetchall()
-    sleep(0.1)
+    sleep(0.05)
 
     lastString = '<div class="block4"><h3>Last Finishes</h3><table class="tight">'
 
@@ -434,15 +437,15 @@ with con:
     #  if type == type2:
     #    subMenu = '<ul style="font-size: 90%">'
     #    for subtype in subtypes:
-    #      subMenu += '<li><a href="#%s">%s</a></li>' % (subtype.replace(' ','-'), capwords(subtype))
+    #      subMenu += '<li><a href="#%s">%s</a></li>' % (subtype.replace(' ','-'), titleSubtype(subtype))
     #    subMenu += '</ul>'
-    #    serverMenuText += '<li><a href="/ranks/%s/">%s Server</a>%s</li>\n' % (type2, type2.title(), subMenu)
+    #    serverMenuText += '<li><a href="/ranks/%s/">%s Server</a>%s</li>\n' % (type2, titleType(type2), subMenu)
     #  else:
-    #    serverMenuText += '<li><a href="/ranks/%s/">%s Server</a></li>\n' % (type2, type2.title())
+    #    serverMenuText += '<li><a href="/ranks/%s/">%s Server</a></li>\n' % (type2, titleType(type2))
     #serverMenuText += '<li><a href="#points">Points Calculation</a></li>\n'
     #serverMenuText += '</ul>'
 
-    print >>tf, header("%s Ranks - DDraceNetwork" % type.title(), menuText, "")
+    print >>tf, header("%s Ranks - DDraceNetwork" % titleType(type), menuText, "")
     print >>tf, '<p class="toggle"><a title="Click to toggle whether only the top 10 ranks or all ranks are shown" href="#" onclick="showClass(\'allPoints\'); return false;">Top 500 / Top 10</a></p>'
 
     print >>tf, '<div id="serverranks" style="display: ">'
@@ -452,22 +455,17 @@ with con:
 
     tf.close()
     os.rename(tmpname, filename)
-    sleep(1)
+    sleep(0.1)
 
   lastString = ""
-  cur.execute("select Timestamp, Map, Name, Time from record_race order by Timestamp desc limit 20;")
+  cur.execute("select l.Timestamp, l.Map, Name, Time, record_maps.Server from ((select * from record_race order by Timestamp desc limit 20) as l left join record_maps on l.Map = record_maps.Map);")
   rows = cur.fetchall()
-  sleep(0.1)
+  sleep(0.05)
 
   lastString = '<div class="block4"><h3>Last Finishes</h3><table>'
 
   for row in rows:
-    for t in types:
-      if row[1] in maps[t]:
-        type = t
-        break
-
-    lastString += '<tr><td><span title="%s">%s</span>: <a href="/ranks/%s/#map-%s">%s</a> by <a href="%s">%s</a> (%s)</td></tr>' % (escape(formatDate(row[0])), escape(formatDateShort(row[0])), type, escape(normalizeMapname(row[1])), escape(row[1]), escape(playerWebsite(row[2])), escape(row[2]), escape(formatTime(row[3])))
+    lastString += '<tr><td><span title="%s">%s</span>: <a href="/ranks/%s/#map-%s">%s</a> by <a href="%s">%s</a> (%s)</td></tr>' % (escape(formatDate(row[0])), escape(formatDateShort(row[0])), row[4], escape(normalizeMapname(row[1])), escape(row[1]), escape(playerWebsite(row[2])), escape(row[2]), escape(formatTime(row[3])))
 
   lastString += '</table></div><br/>'
 
@@ -493,7 +491,7 @@ print lastString
 print '</div>'
 print printFooter()
 
-#tmpname = '%s/players/index.tmp' % webDir
+#tmpname = '%s/players/index.%d.tmp' % (webDir, os.getpid())
 #filename = '%s/players/index.html' % webDir
 #with open(tmpname, 'wb') as out:
 #  print >>out, header("Player not found - DDraceNetwork", "", "")
@@ -510,16 +508,16 @@ print printFooter()
 #</body>
 #</html>"""
 #os.rename(tmpname, filename)
-sleep(1)
+sleep(0.1)
 
-tmpname = '%s/playerNames.tmp' % webDir
+tmpname = '%s/playerNames.%d.tmp' % (webDir, os.getpid())
 filename = '%s/playerNames.msgpack' % webDir
 with open(tmpname, 'wb') as out:
   out.write(msgpack.packb(players.keys()))
 os.rename(tmpname, filename)
-sleep(1)
+sleep(0.1)
 
-tmpname = '%s/players.tmp' % webDir
+tmpname = '%s/players.%d.tmp' % (webDir, os.getpid())
 filename = '%s/players.msgpack' % webDir
 with open(tmpname, 'wb') as out:
   out.write(msgpack.packb(types))

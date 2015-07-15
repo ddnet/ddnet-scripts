@@ -15,6 +15,7 @@ serverStrings = {
   'novice'   : '              Novice Server',
   'moderate' : '           Moderate Server',
   'brutal'   : '                Brutal Server',
+  'ddmax'    : '                DDmaX Server',
   'oldschool': '            Oldschool Server',
   'solo'     : '                 Solo Server'
 }
@@ -100,7 +101,7 @@ with con:
     else:
       try:
         cur.execute("select Name from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY TIME LIMIT 1) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID order by Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
-        bestTeamRank = textJoinNames(map(lambda x: x[0], cur.fetchall()))
+        bestTeamRank = escapeOption(textJoinNames(map(lambda x: x[0], cur.fetchall())))
       except:
         pass
 
@@ -108,7 +109,7 @@ with con:
         try:
           cur.execute("select Name, Time from record_race where Map = '%s' ORDER BY TIME LIMIT 1;" % con.escape_string(originalMapName))
           row = cur.fetchone()
-          bestRank = row[0]
+          bestRank = escapeOption(row[0])
           bestTime = formatTime(row[1])
         except:
           pass

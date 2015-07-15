@@ -21,7 +21,8 @@ def printTeamRecords2(recordName, className, topFinishes):
   if len(topFinishes) > 0:
     string += '<table class="tight">\n'
     for f in topFinishes:
-      string += u'  <tr title="%s, %s"><td class="rank">%d.</td><td>%s</td><td>%s</td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[0], escape(formatTimeExact(f[2])), f[1])
+      #string += u'  <tr title="%s, %s"><td class="rank">%d.</td><td>%s</td><td>%s</td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[0], escape(formatTimeExact(f[2])), f[1])
+      string += u'  <tr title="%s, %s"><td class="rank">%d.</td><td>%s</td><td><img src="/countryflags/%s.png" alt="%s" height="15" /></td><td>%s</td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[0], escape(formatDateShort(f[3])), f[4], f[4], f[1])
     string += '</table>\n'
   string += '</div>\n'
 
@@ -42,9 +43,9 @@ types = sys.argv[1:]
 
 menuText = '<ul>\n'
 for type in types:
-  menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type.title())
+  menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, titleType(type))
 menuText += '</ul>'
-print header("Quick Tournament #28 - DDraceNetwork", menuText, "")
+print header("Quick Tournament #36 - DDraceNetwork", menuText, "")
 
 f = open("tournament")
 tournamentMaps = []
@@ -63,7 +64,7 @@ with con:
 
     f = open("types/%s/maps" % type, 'r')
 
-    serversString += '<div id="%s" class="block div-tournament"><div class="back-up"><a href="#top">&#8593;</a></div><h2>%s Server</h2>\n' % (type, type.title())
+    serversString += '<div id="%s" class="block div-tournament"><div class="back-up"><a href="#top">&#8593;</a></div><h2>%s Server</h2>\n' % (type, titleType(type))
     mapsString = ""
 
     maps[type] = []
@@ -94,7 +95,8 @@ with con:
       skips = 1
 
       try:
-        cur.execute("select Name, r.ID, Time, Timestamp from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID order by r.Time, r.ID, Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
+        #cur.execute("select Name, r.ID, Time, Timestamp from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID order by r.Time, r.ID, Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
+        cur.execute("select Name, r.ID, Time, Timestamp from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Timestamp) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID order by r.Timestamp, r.ID, Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
         rows = cur.fetchall()
       except:
         pass
@@ -106,7 +108,9 @@ with con:
           fNames = []
           for name in names:
             fNames.append('<a href="%s">%s</a>' % (escape(playerWebsite(u'%s' % name)), escape(name)))
-          teamRanks.append((currentRank, joinNames(fNames), time, timestamp))
+          cur.execute("select Server from record_race where Map = '%s' and Name = '%s'" % (con.escape_string(originalMapName), con.escape_string(names[0])))
+          rows = cur.fetchall()
+          teamRanks.append((currentRank, joinNames(fNames), time, timestamp, rows[0][0]))
           names = []
 
           countTeamFinishes += 1
@@ -123,7 +127,7 @@ with con:
         if row[0] not in players:
           players[row[0]] = Player({}, {})
         if originalMapName not in players[row[0]].maps:
-          players[row[0]].maps[originalMapName] = PlayerMap(currentRank, 0, 0, 0, date(2015,10,10),  date(2016,10,10))
+          players[row[0]].maps[originalMapName] = PlayerMap(currentRank, 0, 0, date(2015,10,10),  date(2016,10,10))
 
         time = row[2]
         timestamp = row[3]
@@ -148,7 +152,9 @@ with con:
         fNames = []
         for name in names:
           fNames.append('<a href="%s">%s</a>' % (escape(playerWebsite(u'%s' % name)), escape(name)))
-        teamRanks.append((currentRank, joinNames(fNames), time, timestamp))
+        cur.execute("select Server from record_race where Map = '%s' and Name = '%s'" % (con.escape_string(originalMapName), con.escape_string(names[0])))
+        rows = cur.fetchall()
+        teamRanks.append((currentRank, joinNames(fNames), time, timestamp, rows[0][0]))
         countTeamFinishes += 1
 
       rows = []
@@ -156,8 +162,8 @@ with con:
       countFinishes = 0
 
       try:
-        #cur.execute("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, maxTimestamp from (select * from record_race where Map = '%s') as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp, max(Timestamp) as maxTimestamp from record_race where Map = '%s' group by Name order by minTimestamp ASC) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTimestamp;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
-        cur.execute("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, maxTimestamp from (select * from record_race where Map = '%s') as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp, max(Timestamp) as maxTimestamp from record_race where Map = '%s' group by Name order by minTimestamp ASC) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTime;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
+        cur.execute("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, maxTimestamp from (select * from record_race where Map = '%s') as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp, max(Timestamp) as maxTimestamp from record_race where Map = '%s' group by Name order by minTimestamp ASC) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTimestamp;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
+        #cur.execute("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, maxTimestamp from (select * from record_race where Map = '%s') as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp, max(Timestamp) as maxTimestamp from record_race where Map = '%s' group by Name order by minTimestamp ASC) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTime;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
         rows = cur.fetchall()
       except:
         pass
@@ -191,9 +197,9 @@ with con:
         if row[0] not in players:
           players[row[0]] = Player({}, {})
         if originalMapName not in players[row[0]].maps:
-          players[row[0]].maps[originalMapName] = PlayerMap(0, currentRank, globalPoints(type, stars), row[3], row[4], row[1])
+          players[row[0]].maps[originalMapName] = PlayerMap(0, currentRank, row[3], row[4], row[1])
         else:
-          players[row[0]].maps[originalMapName] = PlayerMap(players[row[0]].maps[originalMapName][0], currentRank, globalPoints(type, stars), row[3], row[4], row[1])
+          players[row[0]].maps[originalMapName] = PlayerMap(players[row[0]].maps[originalMapName][0], currentRank, row[3], row[4], row[1])
 
         if currentPosition > 10:
           continue
@@ -282,8 +288,8 @@ with con:
     serversString += '</div>\n'
     serversString += '</div>\n'
 
-print '<div id="global" class="block div-tournament"><h2>Quick Tournament #28</h2>'
-print '<p>This tournament was played on 2015-02-22 at 20:00 CET.</p>'
+print '<div id="global" class="block div-tournament"><h2>Quick Tournament #36</h2>'
+print '<p>This tournament was played on 2015-06-28 at 20:00 CEST.</p>'
 print '</div>'
 print '<div id="serverranks" style="display: ">'
 print serversString

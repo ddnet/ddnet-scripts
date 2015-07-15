@@ -5,7 +5,6 @@ rm -rf *
 
 for i in `cat ../servers/all-types`; do
   mkdir -p $i
-  rm $i/votes.cfg
   grep "|" ../servers/types/$i/maps | cut -d"|" -f2 | while read j; do
     cp -- "../servers/maps/$j.map" $i
     cp -- "../servers/data/maps/$j.cfg" $i 2>/dev/null

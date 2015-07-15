@@ -13,6 +13,7 @@ import msgpack
 from urllib import quote_plus
 from operator import itemgetter
 from collections import OrderedDict
+from string import capwords
 
 from mysql import *
 from teeworlds import *
@@ -27,6 +28,7 @@ pointsDict = {
   'novice':    (1, 0),
   'moderate':  (2, 5),
   'brutal':    (3,15),
+  'ddmax':     (4, 0),
   'oldschool': (6, 0),
   'solo':      (4, 0)
 }
@@ -63,6 +65,22 @@ def points(rank):
     9 : 2,
     10 : 1
   }[rank]
+
+def titleType(type):
+  if type == 'ddmax':
+    return 'DDmaX'
+  else:
+    return type.title()
+
+def titleSubtype(type):
+  if type == 'DDRACEMAX.EASY MAPS':
+    return 'DDracemaX.easy Maps'
+  elif type == 'DDRACEMAX.NEXT MAPS':
+    return 'DDracemaX.next Maps'
+  elif type == 'DDRACEMAX.PRO MAPS':
+    return 'DDracemaX.pro Maps'
+  else:
+    return capwords(type)
 
 def description(tile):
   return {
@@ -122,6 +140,9 @@ def order(tile):
 def normalizeMapname(name):
   return re.sub('\W', '_', name)
 
+def escapeOption(str):
+  return str.replace('"', '\\"')
+
 def textJoinNames(names):
   result = ', '.join(names[:-1])
   if names[-1]:
@@ -143,8 +164,10 @@ def globalPoints(type, stars):
   offset = mo[1]
   return stars * mult + offset
 
-PlayerMap = namedtuple('PlayerMap', ['teamRank', 'rank', 'points', 'nrFinishes', 'firstFinish', 'time'])
+#PlayerMap = namedtuple('PlayerMap', ['teamRank', 'rank', 'points', 'nrFinishes', 'firstFinish', 'time'])
+PlayerMap = namedtuple('PlayerMap', ['teamRank', 'rank', 'nrFinishes', 'firstFinish', 'time'])
 Player = namedtuple('Player', ['maps', 'servers'])
+Map = namedtuple('Map', ['name', 'points', 'finishes'])
 
 def slugify2(name):
   x = '[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.:]+'
@@ -281,7 +304,6 @@ def header(title, menu, header, refresh = False, stupidIncludes = False, otherIn
       <li><a href="/status/">Status</a></li>
       <li><a href="/ranks/">Ranks</a></li>
       <li><a href="/releases/">Releases</a></li>
-      <li><a href="/halloffame/">Hall of Fame</a></li>
       <li><a href="/tournament/">Tournaments</a></li>
       <li><a href="/skins/">Skin Database</a></li>
       <li><a href="/downloads/">Downloads</a></li>
@@ -379,7 +401,7 @@ def printPlayers(server, filt, players):
     return
 
   print('<table class="status">')
-  for player in sorted(server.playerlist, key=lambda p: p.score, reverse=True):
+  for player in sorted(server.playerlist, key=lambda p: (-p.score, p.name.lower())):
     if filt(player):
       print("<tr>")
 
@@ -536,6 +558,8 @@ def address(s):
   return (spl[0], int(spl[1]))
 
 def printStatus(name, servers, doc, external = False):
+  now = datetime.now()
+  date = now.strftime("%Y-%m-%d %H:%M")
   serverPlayers = OrderedDict()
   modPlayers = OrderedDict()
 
@@ -620,11 +644,11 @@ def printStatus(name, servers, doc, external = False):
 
   print '<p class="toggle"><a title="Click to toggle whether empty servers are shown" href="#" onclick="showClass(\'empty\'); return false;">Show empty servers</a></p>'
 
-  if name == "DDraceNetwork":
-    try:
-      print getTSStatus()
-    except:
-      pass
+  #if name == "DDraceNetwork":
+  #  try:
+  #    print getTSStatus()
+  #  except:
+  #    pass
 
   players = None
   with open('%s/playerNames.msgpack' % webDir, 'rb') as inp:
@@ -683,15 +707,14 @@ def printStatus(name, servers, doc, external = False):
   </body>
   </html>"""
 
-  now = datetime.now()
   with open('%s/status/csv/bycountry' % webDir, 'a') as f:
-    f.write(now.strftime("%Y-%m-%d %H:%M"))
+    f.write(date)
     for country in serverPlayers:
       f.write(",%s:%d" % (country, serverPlayers[country]))
     f.write('\n')
 
   with open('%s/status/csv/bymod' % webDir, 'a') as f:
-    f.write(now.strftime("%Y-%m-%d %H:%M"))
+    f.write(date)
     for typ in modPlayers:
       f.write(",%s:%d" % (typ, modPlayers[typ]))
     f.write('\n')

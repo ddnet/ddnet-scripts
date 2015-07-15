@@ -4,7 +4,7 @@
 SERVER = "ddnet.tw"
 PORT = 35601
 USER = "ddnet"
-PASSWORD = "asdkljadmdasda"
+PASSWORD = "SECRET"
 INTERVAL = 1 # Update interval
 
 

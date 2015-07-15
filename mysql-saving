@@ -1,0 +1,18 @@
+RUS hat was GER nicht hat von GER ab 2014-05-15 06:10 bis 2014-05-15 23:50
+
+GER as new basis
+
+11 done
+
+- disconnect GER->CHN
+- insert missing ranks into GER
+
+- disconnect all duplications
+- clear tables ALL
+
+delete from teeworlds.record_race;
+delete from teeworlds.record_teamrace;
+delete from teeworlds.record_maps;
+
+- mysqldump GER -> ALL
+- start duplications

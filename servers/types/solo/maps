@@ -1,87 +1,166 @@
 $add_vote "Make sure noone is racing before voting!" "info"
 $add_vote "Random Solo Map" "random_map"
-$add_vote "Random Unfinished Solo Map" "random_unfinished_map"
+$add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 
 ─── NEW MAPS ───
-4|Lamb|Gridwyn
-2|Rocket Jump|<BµmM>
-3|Miracle|Bixes
-5|Fly to the Legends 2|nealson T'nP
-3|Escape|DoNe & Chill [TD]
-2|Chill Let's Climb 2|Chill [TD]
-4|Honkstar 2|Honky_Tonk_Man
-3|Croissant|artkis
-3|2+2=green|Hidden-Ezio
+3|Exalate|IRGNW & Kosho
+2|Hopeless II|Juandissimo & IRGNW
+3|IMA NINJA|Welf
+4|Masquerade|Forris
+3|Desert Mine|Blue
+3|Allround2|[A] Awesome
+3|Solo Future|Gridwyn
+4|Partenack|Themix
+2|Heaven-time|Ñı©Ø
+3|Thomas|Im 'corneum
+2|SoManyStars|Fňokurka oo7
+2|Hell-time|Ñı©Ø
 
-─── DDRACENETWORK EXCLUSIVE MAPS ───
-3|AIB Quest 1|Pipou
-3|Art of Movement|DoNe & Chill [TD]
-2|DayLight|٭ıƞdex'<3
-3|Exchange|Delo & Kintaro
-1|Flappy Bird|Saavik
-3|FlipLipp10|FlipLipp
-5|Fly out of hell|Micro
-5|Fly to the Legends|nealson T'nP
-2|ForeverAlone|Delo
-3|Golden_Evening|Gianth
-4|Honkstar|Honky_Tonk_Man
-2|It's Time|Stalker
+─── JETPACK MAPS ───
+2|deathpack|Electricitee
 1|Joyride|Zerodin
 2|Joyride 2|Zerodin
-2|Jungle Run|Kintaro
-4|Just_Shotgun|Aoe
-4|Microlity|Micro
-1|Mini Zero|Zerodin
-1|Mini Zero II|Zerodin
-4|Movement I|Nigel
-1|OldschoolAdventure|.me'
 3|PetJack|DoNe
 3|PetJack 2|DoNe
-1|Prison 1|AKc0RiZer
 3|ROCKET-BELT|Cøke
-2|Short Con|Broken
-4|Space Climb|Silex
-2|SkyCave|Delo
-1|SpaceIsKey|Delo & Kintaro
-4|Triplecan|Cøke
-5|Triplecan 2|Cøke
-2|WallJump|Kintaro
+3|SpeedCore|Alvin Risk
 
-─── OTHER MAPS ───
-1|1of4|Chill [TD]
+─── WALLJUMP MAPS ───
+3|Art of Movement|DoNe & Chill [TD]
+2|MojoJump|Vasten100
+2|WallJump|Kintaro*
+
+─── PUSH HOOK MAPS ───
+1|Killstreak 1|Tuna
+3|Killstreak 2|Tuna
+2|Push it|Welf
+
+─── SPECIAL MAPS ───
+3|Exchange|Delo & Kintaro*
+1|Flappy Bird|Saavik
+1|HDP_OnOff|El Futuro
+1|Rollercoaster|DoNe
+1|SpaceIsKey|Delo & Kintaro*
+
+─── OTHER SOLO MAPS ───
+2|1of4|Chill [TD]
+3|2+2=green|Ezio
 2|2of4|Chill [TD]
 2|3of4|Chill [TD]
 2|4of4|Chill [TD]
 2|After the Cataclysm|Soignar
-3|Aufnahmetest|Kintaro
-3|Aufnahmetest 2|Kintaro
+3|AIB Quest 1|Pipou
+3|AIB Quest 2|Pipou
+3|AIB Quest 4|Pipou
+2|Allround|[A] Awesome
+2|Alpha|Kosho
+3|Antrum|»Rogue.
+3|Atmosphere|=CuBe= & =Typhoon=
+3|Aufnahmetest|Kintaro*
+3|Aufnahmetest 2|Kintaro*
 3|Aufnahmetest 3|
+3|Autumn Sky|Timbo & ٭ıƞdex'<3
+3|Autumn Sunset|Themix
+3|Awayza|Ama
+4|Birinci|Gridwyn
+3|Bittersweet Sunset|Tuna
+2|BlackVision|Vasten100
 4|BrokeysChallenge|MaDLeX
+2|Brown Suger
 2|Chill Let's Climb|Chill [TD]
+2|Chill Let's Climb 2|Chill [TD]
+3|Croissant|artkis
+4|Crooked Mind|Themix
+2|DayLight|٭ıƞdex'<3
+3|Duodecimo|Forris
+3|Escape|DoNe & Chill [TD]
 2|Extension 1.0|Jeet
 2|Extension 2.0|Jeet
+3|Fallen Angel|Tee 3D
+3|Flamara|Evoli & RedFight
+3|FlipLipp10|FlipLipp
 2|Fly Lessons|Jeet
-1|Hardcore 2 Solo|original map by Cube
+5|Fly out of hell|Micro
+5|Fly to the Legends|nealson T'nP
+5|Fly to the Legends 2|nealson T'nP
+2|ForeverAlone|Delo
+3|Gigabyte|Chak
+3|GLL|hi_leute_gll
+3|Golden_Evening|Gianth
+3|Grand Shotgun|IRGNW
+1|Hardcore 2 Solo
 3|HDP_Gajos9|El Futuro
-1|HDP_OnOff|El Futuro
 2|HDP_Run2|El Futuro
-1|hotrun
-1|Lonely Swim 9.0|Tuna
-2|Lonely Swim 9.1|Tuna
-2|Lonely Swim 9.2|Tuna
+3|HDP_run_gay25|Kaestchen & Kuadmair
+3|Hell's Castle|Tuna
+3|Heraconx|{E}{L}{I}{T}{E}
+2|Hollywood Undead|Ezio
+4|Honkstar|Honky_Tonk_Man
+4|Honkstar 2|Honky_Tonk_Man
+4|Honkstar 3|Honky_Tonk_Man
+3|Hopeless|Juandissimo
+1|hotrun|Ubu
+4|HyperEdge|nealson T'nP
+2|Iron Island|Im 'corneum
+3|I will be back|Miper
+5|It'sYourDeath|nealson T'nP
+3|It's Time|Stalker
+2|Jungle Run|Kintaro*
+4|Just_Shotgun|Aoe
+2|Kobra Solo|Zerodin
+2|Kobra 2 Solo|Zerodin
+2|Kobra 3 Solo|Zerodin
+4|Lamb|Gridwyn
+3|Last Jump|Kosho
+4|Lawrence|Themix
+3|Let's Swing|Juandissimo
 2|Lonely Swim 3|Tuna
 1|Lonely Swim 4|Tuna
+2|Lonely Swim 9.0|Tuna
+2|Lonely Swim 9.1|Tuna
+2|Lonely Swim 9.2|Tuna
+4|Microlity|Micro
+1|Mini Zero II|Zerodin
+1|Mini Zero|Zerodin
+3|Miracle|Bixes
+4|Movement I|Nigel
+3|Nettex|{E}{L}{I}{T}{E}
+2|Night of Spikes|Element Finland
 1|No_Stuck|Xalcon
+1|OldschoolAdventure|.me'
+2|Old Style|Destoros
+4|Pharoah|mikey12
+1|Prison 1|AKc0RiZer
 1|Race_Sanktoras|Sanktoras
-1|run_guy_25|Kaestchen
+3|Rocket Challenge|Juandissimo
+2|Rocket Jump|<BµmM>
+2|run_guy_25|Kaestchen
 2|selfdragger|Jeet
-3|SL1|Lolz
+2|Short Con|Broken
+2|ShotFF|Savander
+2|SkyCave|Delo
+3|Skepsis|Juandissimo, DoNe & Soreu
+3|SL1|LoLz
 4|Solo_Mietzcore|Eiskaltemietz
+1|SorGores 1|Soreu
+4|Space Climb|Silex
+1|Spallok|Evoli
+2|Speedster|imp
+3|Summer Breeze|Bixes
+4|Sunburst|Skeptar & tobu.
 2|Tee Legends 1|Bee & Alias
 2|Tee Legends 2|Bee & Alias
 2|Tee Legends 3|Bee & Alias
+1|The Space Station|Ñı©Ø
+4|Triplecan|Cøke
+5|Triplecan 2|Cøke
+2|UpNDown|Vasten100
 3|Verification 3.9|Silex
-2|Verification 7.0|Kintaro
-3|Verification 7.1|Kintaro
-3|Verification 7.2|Kintaro
+2|Verification 7.0|Kintaro*
+3|Verification 7.1|Kintaro*
+3|Verification 7.2|Kintaro*
 4|Verification 9.0|estern
+4|Verification 9.1|estern
+2|VoidOfSpace|Alvin Risk
+3|WALL-E T|Alvin Risk & Åmol
+3|Weird Cave|Rapture & ٭ıƞdex'<3

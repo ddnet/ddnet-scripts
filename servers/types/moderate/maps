@@ -1,142 +1,230 @@
 $add_vote "Make sure noone is racing before voting!" "info"
 $add_vote "Random Moderate Map" "random_map"
-$add_vote "Random Unfinished Moderate Map" "random_unfinished_map"
+$add_vote "Random Moderate Map Unfinished by Vote Caller" "random_unfinished_map"
 
 ─── NEW MAPS ───
-3|Aequilibrium|Bixes
-5|MysteryCompound|BlaGK
-4|Maximum|Knight :3
-4|Rapture|Bixes
-4|tihid|kickz
-4|Minimum|Knight :3
-5|DarkRoad|=Typhoon=
-2|a_simple_run|=CuBe=
-2|SunDay|Gridwyn
-4|sense|=CuBe=
-4|Easy Way|Cøke
-3|Doable|Skeptar
-3|nameless map|Skeptar
+3|DeathHook|Pandoru & =xPeke=
+2|High Five|Zerodin
+4|Boo!|TyxpekCZ
+3|NightSky|Zaiross
+1|Planet Jupiter|Aoe
+3|Caventure II|Meliodafu
+5|Temple of Doom|Hindu & Zerodin
+5|Eternal 2|Welf
+1|Mirage|Juandissimo
+3|Hyper|Knight :3
 
-─── DDRACENETWORK EXCLUSIVE MAPS ───
-3|acan|Suppe
-3|Aftermath|٭ıƞdex'<3
-5|BackToBasics|Shorefire
-4|Bootcamp #1|.me'
-3|Bootcamp #2|.me'
-2|Brony|Ama
-2|Captain America|Ama
-3|Caution|mikey12
-2|Cavings I|Ama
-5|Cemetery|{E}{L}{I}{T}{E} & ٭ıƞdex'<3
-1|Coffee I|٭ıƞdex'<3
-1|Coffee II|٭ıƞdex'<3
-5|Construction I|FakeDeath
-4|Dead|Knight :3
-4|Easy Edge|Zerodin
-3|Easy Hook|Zerodin
-3|Excast|Åmol
-4|Falling Star|Nigel
-1|faye|Suppe
-1|FindTheFreeze|Suppe
-4|Fishbone|Aoe
-4|Freeze Jungle|Zerodin
-4|FWYS Key 1|Ama
-1|Galaxy Turn|Trinkflasche
-2|Golden|mikey12
-4|HeartOfMoon|SBL & Haberginte
-4|Hell 2|Knight :3 & Wolƒ.▲
-2|Holiday Adventure|Themix
-2|Hollow|Ama
-1|Hollow 2|Ama
-3|Hubbel|Welf
-4|Ice Cave 1|DoNe & 16 mappers
-4|Ice Cave 2|DoNe & 11 mappers
-1|Intense 1.0|Elephant
-3|Intense 2.0|Elephant
-4|KeeZ|Zerodin
-1|Kopell|Evoli
-3|Level|DiViNe
-3|Limitation|Chicken
-2|Lygerastia|Gianth
-4|MapleSyrup|Maple
-5|Maranko|{E}{L}{I}{T}{E}
-4|Mario_reloaded|Destoros
-5|Midnight|ħίɴɖƲ
-3|MoonPie|ħίɴɖƲ
-4|Motherlode|SickCunt
-4|Neon 1|Knight :3
-4|New Era|Silex
-4|NiggoDrag|Bossk
-4|No Merci|Chill [TD]
-3|Not Adrenaline 4|Silex & Kintaro
-3|One Way|Destoros
-2|Peaceful Jungle|Themix
-1|Piranha|ħίɴɖƲ
-3|Plan A|Zerodin
-3|Plan B|Zerodin
-3|Plan C|Zerodin
-3|PreciousDream|٭ıƞdex'<3
-5|Primeval Forest|Silex
-3|Redemption|Broken
-2|Request|BlaGK
-3|Short|Delo
-3|Short2|Delo
-2|Simple World|<BµmM>
-2|Simple World 2|<BµmM>
-1|SimplePlay|SBL
-1|SimplePlay 2|SBL
-2|SimplePlay 3|SBL
-3|SkiLLz|SkiLLz
-2|SomewhereDistant|٭ıƞdex'<3
-3|Sounds|Chill [TD]
-2|SpongeBob 3|KBeeeR
-5|Sunrice|Zerodin
-4|Swoosh|mikey12
-3|The Problem|Zerodin
-2|Top 2|mikey12
-4|TowerOfDesperation|Delo
-5|Tube|Chill [TD]
-2|Twix|Knight :3
-3|WEEDS|Scratchy <3
-3|Wrong Forest|Zerodin
+─── MAPS WITH SOUND ───
+3|Spooky|Ama
+3|Xabier|Waschlappen & Broken
+
+─── DUMMY MAPS ───
+1|Caventure|Meliodafu
+4|Escape from the Prison|IRGNW
+2|JustCopyFly|Vasten100
+2|Samsara|Meliodafu
+3|TakeUrLuggage|Tuna & ٭ıƞdex'<3
 
 ─── 3 PLAYER MAPS ───
 4|3Play|Ama & Hitomi
 5|LazeAround|Suppe
+3|LazeAround2|Suppe
+1|Weapons|Juandissimo & DoNe
 
-─── 4 PLAYER MAPS ───
-5|4Four|Chill [TD]
-
-─── OTHER MAPS ───
-4|~AuTuMn~|KBeeeR & .me'
-1|0 KBeeeR S - 1|KBeeeR
-3|Besbex|SBL
-3|blue-mountains|Welf
+─── OTHER MODERATE MAPS ───
+4|0 to 100|Silex & Captain
+2|2 easy for u|Ray
+5|acan|Suppe
+4|Aequilibrium|Bixes
+4|Aftermath|٭ıƞdex'<3
+4|Afternoon|Hindu
+3|Against the Current|Themix
+4|AK|aMu & Kayumi
+2|a_simple_run|=CuBe=
+4|BackToBasics2|Shorefire
+5|BackToBasics|Shorefire
+4|Bootcamp #1|.me'
+3|Bootcamp #2|.me'
+3|Brony|Ama
 4|Brown|Stervella
 4|Bubbles|Megaman
+2|Captain America|Ama
+1|Castle|Ama
+3|Castle Lemongrab|RaiNy
+3|Caution|mikey12
+2|Cavings I|Ama
+5|Cemetery|{E}{L}{I}{T}{E} & ٭ıƞdex'<3
 4|Challenge|.me'
-5|Dragonscale|Cøke & Aoe
-5|Dusty Road|Kintaro
+4|Chevtzo|Kosho
+4|Circle|Saavik
+1|Clarity|٭ıƞdex'<3
+1|Coffee I|٭ıƞdex'<3
+1|Coffee II|٭ıƞdex'<3
+5|Construction I|FakeDeath
+4|Cross|hannibal
+2|Cry|Hitomi
+5|DarkRoad|=Typhoon=
+5|Dawn To Dusk|mikey12
+1|DayDrive|BlaGK
+5|Day One|Vasten100
+5|Dead|Knight :3
+5|Death Sentence 2|Bixes & Themix
+3|Doable|Skeptar
+3|Dummy 2|Nigel
+5|Dusty Road|Kintaro*
+3|Earthborn|BlaGK
+4|Easy Edge|Zerodin
+3|Easy Hook|Zerodin
+5|Elitissimo|Juandissimo & {E}{L}{I}{T}{E}
+4|Entei|Zerodin
+4|Eternal|Welf
+2|Etna_1|Etna
+3|Excast|Åmol
+5|Excast 2|Åmol
+4|Excast 3|Åmol
+4|FaCe|Zerodin
+2|FastRun|Hitomi
+1|faye|Suppe
+4|Fender|Scratchy <3
+1|FindTheFreeze|Suppe
+5|Firedelay|Sorah
+4|Fishbone|Aoe
 4|Fluff 2|Tuna
-3|Galaxy Story|Kintaro
+4|Freeze Jungle|Zerodin
+5|Fried|Tuna & Hake
+4|FWYS Key 1|Ama
+3|Galaxy Story|Kintaro*
+1|Galaxy Turn|Trinkflasche
+4|Gibson|Scratchy <3
+3|Golden|mikey12
+3|Grace|Tuna
+4|HeartOfMoon|SBL & Haberginte
 2|Heaven|Captain & DiViNe
-5|IronFlight|SBL
-2|KitKat 1|KBeeeR & zodiac
-2|KitKat 2|KBeeeR
+4|Hell 2|Knight :3 & Wolƒ.▲
+2|HellGate 3.5|Hitomi
+4|HellGate X|Hitomi
+4|Herbstzeitlose|Skeptar & MµhBoµ
+4|Holiday Adventure|Themix
+2|Hollow|Ama
+1|Hollow 2|Ama
+1|Hookthrough|[A] Awesome & ٭ıƞdex'<3
+3|Hookthrough 2|[A] Awesome
+4|Hubbel|Welf
+4|Humpalumpa 1|aMu
+4|Humpalumpa 2|aMu
+5|HURT|MarvinProductions
+4|Ice Cave 1|DoNe & Various Mappers
+4|Ice Cave 2|DoNe & Various Mappers
+1|Intense 1.0|Elephant
+3|Intense 2.0|Elephant
+2|Jvice|Vasten100
+5|Jumanji|Avaron & Rashu
+2|Just HookThrough|Åmol & ٭ıƞdex'<3
+2|Justix|gherode
+4|KeeZ|Zerodin
+4|Kiko|hannibal
+1|Kopell|Evoli
+5|Let's Fail!|Zerodin
+3|Level|DiViNe
+3|Limitation|Chicken
 2|Little Adventure|Silex
+2|Lygerastia|Gianth
+2|mainstream|RaiNy
+5|MapleSyrup|Maple
+5|Maranko|{E}{L}{I}{T}{E}
+4|Mario_reloaded|Destoros
 1|MiddleFinger|Virus2k
-4|Nasa|Aoe
-5|NightRunner|SBL
+5|Midnight|Hindu
+4|Minimum|Knight :3
+5|minion|Anqel
+1|MonkeyDream|Gridwyn
+2|MonkeyDream 2|Gridwyn
+3|moondrag|Shorefire
+3|MoonPie|Hindu
+4|Motherlode|SickCunt
+5|MysteryCompound|BlaGK
+4|nameless map|Skeptar
+4|Neon 1|Knight :3
+5|Neverwhere|Bixes & Themix
+4|New Era|Silex
+2|Next Grey|Themix
+4|NiggoDrag|Bossk
+4|No Merci|Chill [TD]
+3|Not Adrenaline 4|Silex & Kintaro*
 5|NUT Hardcore UNITED|Zeta-Hoernchen
+3|One Way|Destoros
 2|P2Z_Crungle|cris
 3|P2Z_DeadlyJungle|cris
 4|P2Z_Island|cris
 3|P2Z_Soar|cris
+2|Peaceful Jungle|Themix
+4|Peaceful Jungle 2|Themix
+2|Piranha|Hindu
+1|Pisull|Evoli
 3|piViq|Satyr & Broken
-1|Purple Panic|Anqel & Moses
+3|Plan A|Zerodin
+3|Plan B|Zerodin
+3|Plan C|Zerodin
+2|Plue|Hake
+3|PreciousDream|٭ıƞdex'<3
+5|Primeval Forest|Silex
+3|Purple Panic 3|Anqel
+3|PurpleViolence|Vasten100
 4|Rainbow Sunrise|.me'
+4|Rapture|Bixes
+4|Ray - 2|Ray
+4|Rayquaza|Zerodin
+4|Red Avenue|Bixes
+3|Redemption|Broken
+2|Request|BlaGK
+3|Resoren|Revelo
+3|Rivendell|hannibal & hi_leute_gll
+4|Sabell|Evoli
+4|Sacred Source|Themix
 5|Seduction|Silex
-2|SpongeBob 1|KBeeeR
-3|Totoro|Delo
+4|sense|=CuBe=
+3|Short|Delo
+3|Short2|Delo
+4|Short Flight|Welf
+2|[SI] AVADA|Hitomi
+3|[SI] DANICA|Hitomi
+2|[SI] INSTINCT|Ama
+2|[SI] KABOO|Ama
+2|[SI] LAVITA|Ama
+2|Simple World|<BµmM>
+2|Simple World 2|<BµmM>
+3|Simple World 3|<BµmM>
+3|[SI] NEVERLAND|Ama
+3|[SI] SELEN|Hitomi
+3|[SI] VIADANTE|Hitomi
+2|[SI] YELLOW|Hitomi
+3|SkiLLz|SkiLLz
+2|SkyFly|Rod Slide
+3|Slow Santa|Ray
+2|SomewhereDistant|٭ıƞdex'<3
+3|Sonne, Mond und Sterne|Skeptar & Punica
+3|Sounds|Chill [TD]
+2|SpongeBob 3|KBeeeR
+2|SunDay|Gridwyn
+5|SunDay 2|Gridwyn
+4|SunDay 3|Gridwyn
+5|Sunrice|Zerodin
+4|Swoosh|mikey12
+4|Tetris|Waschlappen
+2|The Beginning|EpicIceTee
+4|The Problem|Zerodin
+3|The Trip|Hindu
+5|ThereIsNoTruth|[SN] Snoop! & Chill [TD]
+2|The Shire|hannibal & teddy
+3|tihid|kickz
+3|Top 2|mikey1
+4|Topsy Turvy|TheZyZya2
+4|TowerOfDesperation|Delo
+2|Try Again|LoLz
+5|Tube|Chill [TD]
+2|Twix|Knight :3
 5|Underwater|Stalker
-2|Underworld|JeanneDark & Aoe
+3|WEEDS|Scratchy <3
+3|Wrong Forest|Zerodin
+3|Zoroark|Zerodin
+4|#wontfix|Waschlappen & Broken

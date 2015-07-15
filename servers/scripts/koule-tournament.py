@@ -79,7 +79,7 @@ types = sys.argv[1:]
 
 menuText = '<ul>\n'
 for type in types:
-  menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type.title())
+  menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, titleType(type))
 menuText += '<li><a href="#points">Points Calculation</a></li></ul>'
 
 print header("Koule Tournament - DDraceNetwork", menuText, "")
@@ -102,7 +102,7 @@ with con:
 
     f = open("types/%s/maps" % type, 'r')
 
-    serversString += '<div id="%s" class="block div-tournament"><div class="back-up"><a href="#top">&#8593;</a></div><h2>%s Servers</h2>\n' % (type, type.title())
+    serversString += '<div id="%s" class="block div-tournament"><div class="back-up"><a href="#top">&#8593;</a></div><h2>%s Servers</h2>\n' % (type, titleType(type))
     mapsString = ""
 
     maps[type] = []

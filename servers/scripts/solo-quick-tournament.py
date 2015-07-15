@@ -73,7 +73,7 @@ types = sys.argv[1:]
 
 menuText = '<ul>\n'
 for type in types:
-  menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type.title())
+  menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, titleType(type))
 menuText += '</ul>'
 
 print header("Quick Tournament #27 - DDraceNetwork", menuText, "")
@@ -95,7 +95,7 @@ with con:
 
     f = open("types/%s/maps" % type, 'r')
 
-    serversString += '<div id="%s" class="block div-tournament"><div class="back-up"><a href="#top">&#8593;</a></div><h2>%s Server</h2>\n' % (type, type.title())
+    serversString += '<div id="%s" class="block div-tournament"><div class="back-up"><a href="#top">&#8593;</a></div><h2>%s Server</h2>\n' % (type, titleType(type))
     mapsString = ""
 
     maps[type] = []
@@ -158,7 +158,7 @@ with con:
         if row[0] not in players:
           players[row[0]] = Player({}, {})
         if originalMapName not in players[row[0]].maps:
-          players[row[0]].maps[originalMapName] = PlayerMap(0, currentRank, globalPoints(type, stars), row[3], row[4], row[1])
+          players[row[0]].maps[originalMapName] = PlayerMap(0, currentRank, row[3], row[4], row[1])
         else:
           players[row[0]].maps[originalMapName] = PlayerMap(players[row[0]].maps[originalMapName][0], currentRank, globalPoints(type, stars), row[3], row[4], row[1])
 
@@ -245,8 +245,8 @@ with con:
 #teamrankRanks = sorted(teamrankLadder.items(), key=lambda r: r[1], reverse=True)
 #rankRanks = sorted(rankLadder.items(), key=lambda r: r[1], reverse=True)
 
-print '<div id="global" class="block div-tournament"><h2>Quick Tournament #27</h2>'
-print '<p>This tournament is played on 2014-12-21 at 20:00 CST.</p>'
+print '<div id="global" class="block div-tournament"><h2>Quick Tournament #31</h2>'
+print '<p>This tournament is played on 2015-04-26 at 20:00 CST.</p>'
 #print printLadder(teamrankRanks)
 print '</div>'
 print '<div id="serverranks" style="display: ">'

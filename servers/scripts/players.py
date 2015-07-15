@@ -10,6 +10,7 @@ import msgpack
 from operator import itemgetter
 import urllib
 import json
+from gc import collect
 #from guppy import hpy
 
 reload(sys)
@@ -30,6 +31,9 @@ last = None
 con = mysqlConnect()
 con.autocommit(True)
 
+def tableHeader(name, id):
+  return '<table id="%s" class="%s"><thead><tr><th class="unMapTr">Map</th><th class="unPtsTr">Pts</th><th class="unFinTr">Finishes</th></tr></thead><tbody>\n' % (id, name)
+
 with con:
   cur = con.cursor()
   cur.execute("set names 'utf8';")
@@ -39,6 +43,16 @@ with con:
     now = datetime.now()
     if not last or last <= now - timedelta(minutes=20) or (last - timedelta(minutes=1)).minute / 20 != (now - timedelta(minutes=1)).minute / 20:
       with open('%s/players.msgpack' % webDir, 'rb') as inp:
+        del types
+        del players
+        del maps
+        del totalPoints
+        del pointsRanks
+        del weeklyPointsRanks
+        del monthlyPointsRanks
+        del teamrankRanks
+        del rankRanks
+        del serverRanks
         unpacker = msgpack.Unpacker(inp)
         types = unpacker.unpack()
         maps = unpacker.unpack()
@@ -51,6 +65,7 @@ with con:
         serverRanks = unpacker.unpack()
         players = unpacker.unpack()
         last = datetime.now()
+      gc.collect()
 
   def printPersonalResult(name, ranks, player):
     string = '<div class="block2 ladder"><h3>%s</h3>\n<p class="pers-result">' % name
@@ -104,26 +119,6 @@ with con:
 
     return out.getvalue()
 
-  def firstFinishes(name):
-    out = cStringIO.StringIO()
-
-    print >>out, '<div class="block2 ladder"><h3>First Finishes</h3>\n<table class="tight">'
-
-    cur.execute("select Timestamp, Map, Time from record_race where Name = '%s' order by Timestamp asc limit 10;" % con.escape_string(name))
-    rows = cur.fetchall()
-    for row in rows:
-      type = ''
-      for t in types:
-        if row[1] in maps[t]:
-          type = t
-          break
-
-      print >> out, '<tr><td>%s: <a href="/ranks/%s/#map-%s">%s</a> (%s)&nbsp;&nbsp;</td></tr>' % (escape(formatDate(row[0])), type, escape(normalizeMapname(row[1])), escape(row[1]), escape(formatTime(row[2])))
-
-    print >>out, '</table></div>'
-
-    return out.getvalue()
-
   def lastFinishes(name):
     out = cStringIO.StringIO()
 
@@ -135,8 +130,11 @@ with con:
     for row in rows:
       type = ''
       for t in types:
-        if row[1] in maps[t]:
-          type = t
+        for (map, points, finishes) in maps[t]:
+          if row[1] == map:
+            type = t
+            break
+        if type != '':
           break
 
       print >> out, '<tr><td>%s: <a href="/ranks/%s/#map-%s">%s</a> (%s)</td></tr>' % (escape(formatDate(row[0])), type, escape(normalizeMapname(row[1])), escape(row[1]), escape(formatTime(row[2])))
@@ -169,7 +167,7 @@ with con:
     menuText = '<ul>'
     menuText += '<li><a href="#global">Comparison of %s</a></li>' % andText
     for type in types:
-      menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type.title())
+      menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, titleType(type))
     menuText += '</ul>'
 
     print >>out, header("Comparison of %s - DDraceNetwork" % andText, menuText, "")
@@ -183,6 +181,10 @@ with con:
     print >>out, '<script src="/jquery.js" type="text/javascript"></script>'
     print >>out, '<script src="/typeahead.bundle.js" type="text/javascript"></script>'
     print >>out, '<script src="/playersearch.js" type="text/javascript"></script>'
+    print >>out, '<script type="text/javascript" src="/players-data/jquery.tablesorter.js"></script>'
+    print >>out, '<script type="text/javascript" src="/players-data/sorter.js"></script>'
+    print >>out, '<link rel="stylesheet" type="text/css" href="/players-data/css-sorter.css">'
+
     for (name, player) in namePlayers:
       print >>out, '<div class="block7"><h2>Global Ranks for <a href="%s">%s</a></h2></div><br/>' % (playerWebsite(name), escape(name))
       print >>out, globalRanks(name, player)
@@ -191,7 +193,7 @@ with con:
 
     for type in types:
       maps2 = maps[type]
-      print >>out, '<div id="%s" class="block div-ranks"><h2>%s Server</h2>' % (type, type.title())
+      print >>out, '<div id="%s" class="block div-ranks"><h2>%s Server</h2>' % (type, titleType(type))
 
       for (name, player) in namePlayers:
         print >>out, '<div class="block2 ladder"><h2>%s</h2></div>' % name
@@ -200,12 +202,13 @@ with con:
         print >>out, printPersonalResult("Rank", serverRanks[type][3], name)
         print >>out, '<br/>'
 
-      unfinishedString = ""
+      unfinishedString = tableHeader("unfinTable1", "unfinTable1-" + type)
 
-      tblString = '<table class="spacey"><tr><th>Map</th><th>Points</th><th colspan="%d">Time</th><th colspan="%d">Rank</th><th colspan="%d">Team Rank</th></tr><tr><th></th><th></th>%s%s%s</tr>\n' % (len(namePlayers), len(namePlayers), len(namePlayers), tableText, tableText, tableText)
+      tblString = '<table class="spacey"><thead><tr><th>Map</th><th>Points</th><th colspan="%d">Time</th><th colspan="%d">Rank</th><th colspan="%d">Team Rank</th></tr><tr><th></th><th></th>%s%s%s</tr></thead><tbody>\n' % (len(namePlayers), len(namePlayers), len(namePlayers), tableText, tableText, tableText)
       found = False
+      allFinished = True
 
-      for map in maps2:
+      for map, points, finishes in maps2:
         normMap = normalizeMapname(map)
         tmpStrings = [['<td class="rank verticalLine"></td>'] * 3]
         for i in range(len(namePlayers) - 1):
@@ -217,14 +220,13 @@ with con:
             found = True
             foundNow = True
             if name == namePlayers[0][0]:
-              tmpStrings[i][0] = '<td class="rank verticalLine">%s</td>' % escape(formatTime(player[0][map][5]))
+              tmpStrings[i][0] = '<td class="rank verticalLine">%s</td>' % escape(formatTime(player[0][map][4]))
               tmpStrings[i][1] = '<td class="rank verticalLine">%s</td>' % formatRank(player[0][map][1])
               tmpStrings[i][2] = '<td class="rank verticalLine">%s</td>' % formatRank(player[0][map][0])
             else:
-              tmpStrings[i][0] = '<td class="rank">%s</td>' % escape(formatTime(player[0][map][5]))
+              tmpStrings[i][0] = '<td class="rank">%s</td>' % escape(formatTime(player[0][map][4]))
               tmpStrings[i][1] = '<td class="rank">%s</td>' % formatRank(player[0][map][1])
               tmpStrings[i][2] = '<td class="rank">%s</td>' % formatRank(player[0][map][0])
-            points = player[0][map][2]
           i += 1
 
         if foundNow:
@@ -237,18 +239,23 @@ with con:
             tblString += tmpStrings[i][2]
           tblString += '</tr>\n'
         else:
-          unfinishedString += '<a href="/ranks/%s/#map-%s">%s</a>, ' % (type, escape(normMap), escape(map))
+          allFinished = False
+          unfinishedString += '<tr><td><a href="/ranks/%s/#map-%s">%s</a></td><td class="rank">%d</td><td class="rank">%d</td></tr>' % (type, escape(normMap), escape(map), points, finishes)
 
-      tblString += '</table>'
+      unfinishedString += '</tbody></table>'
+      unfinishedString += tableHeader("unfinTable2", "unfinTable2-" + type) + '</tbody></table>'
+      unfinishedString += tableHeader("unfinTable3", "unfinTable3-" + type) + '</tbody></table>'
+      tblString += '</tbody></table>'
       if found:
         print >>out, tblString
 
       print >>out, '<p>'
-      if len(unfinishedString) == 0:
-        print >>out, '<strong>All maps on %s finished by %s!</strong>' % (type.title(), orText)
+      if allFinished:
+        print >>out, '<strong>All maps on %s finished by %s!</strong></p>' % (titleType(type), orText)
       else:
-        print >>out, '<strong>Maps unfinished by %s</strong>: %s' % (andText, unfinishedString[:-2])
-      print >>out, '</p></div>'
+        print >>out, '<strong>Maps unfinished by %s</strong></p>' % andText
+        print >>out, unfinishedString
+      print >>out, '</div>'
 
     print >>out, """  </section>
   </article>
@@ -363,7 +370,7 @@ with con:
     menuText = '<ul>'
     menuText += '<li><a href="#global">Global Ranks for %s</a></li>' % escape(name)
     for type in types:
-      menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type.title())
+      menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, titleType(type))
     menuText += '</ul>'
 
     print >>out, header("%s - Player Profile - DDraceNetwork" % escape(name), menuText, "")
@@ -376,9 +383,13 @@ with con:
     print >>out, '<script src="/jquery.js" type="text/javascript"></script>'
     print >>out, '<script src="/typeahead.bundle.js" type="text/javascript"></script>'
     print >>out, '<script src="/playersearch.js" type="text/javascript"></script>'
+    print >>out, '<script type="text/javascript" src="/players-data/jquery.tablesorter.js"></script>'
+    print >>out, '<script type="text/javascript" src="/players-data/sorter.js"></script>'
+    print >>out, '<link rel="stylesheet" type="text/css" href="/players-data/css-sorter.css">'
+
     print >>out, '<div class="block7"><h2>Global Ranks for %s</h2></div><br/>' % escape(name)
+
     print >>out, globalRanks(name, player)
-    print >>out, firstFinishes(name)
     print >>out, lastFinishes(name)
     print >>out, '<br/>'
     print >>out, '</div>'
@@ -387,41 +398,47 @@ with con:
       maps2 = maps[type]
 
       count = 0
-      for map in maps2:
+      for map, points, finishes in maps2:
         if map in player[0]:
           count += 1
 
-      print >>out, '<div id="%s" class="block div-ranks"><h2></h2><h2 class="inline">%s Server</h2> <h3 class="inline">(%d/%d maps finished)</h3><br/>' % (type, type.title(), count, len(maps2))
+      print >>out, '<div id="%s" class="block div-ranks"><h2></h2><h2 class="inline">%s Server</h2> <h3 class="inline">(%d/%d maps finished)</h3><br/>' % (type, titleType(type), count, len(maps2))
 
       print >>out, printPersonalResult("Points (%d total)" % serverRanks[type][0], serverRanks[type][1], name)
       print >>out, printPersonalResult("Team Rank", serverRanks[type][2], name)
       print >>out, printPersonalResult("Rank", serverRanks[type][3], name)
       print >>out, '<br/>'
 
-      unfinishedString = ""
+      unfinishedString = tableHeader("unfinTable1", "unfinTable1-" + type)
 
-      tblString = '<table class="spacey"><tr><th>Map</th><th>Points</th><th>Team Rank</th><th>Rank</th><th>Time</th><th>Finishes</th><th>First Finish</th></tr>\n'
+      tblString = '<table class="spacey"><thead><tr><th>Map</th><th>Points</th><th>Team Rank</th><th>Rank</th><th>Time</th><th>Finishes</th><th>First Finish</th></tr></thead><tbody>\n'
       found = False
+      allFinished = True
 
-      for map in maps2:
+      for map, points, finishes in maps2:
         normMap = normalizeMapname(map)
         if map in player[0]:
           found = True
 
-          tblString += '<tr><td><a href="/ranks/%s/#map-%s">%s</a></td><td class="smallpoints">%d</td><td class="rank">%s</td><td class="rank">%s</td><td class="rank">%s</td><td class="rank">%d</td><td class="rank">%s</td></tr>\n' % (type, escape(normMap), escape(map), player[0][map][2], formatRank(player[0][map][0]), formatRank(player[0][map][1]), escape(formatTime(player[0][map][5])), player[0][map][3], escape(formatDate(datetime.strptime(player[0][map][4], "%Y-%m-%d %H:%M:%S"))))
+          tblString += '<tr><td><a href="/ranks/%s/#map-%s">%s</a></td><td class="smallpoints">%d</td><td class="rank">%s</td><td class="rank">%s</td><td class="rank">%s</td><td class="rank">%d</td><td class="rank">%s</td></tr>\n' % (type, escape(normMap), escape(map), points, formatRank(player[0][map][0]), formatRank(player[0][map][1]), escape(formatTime(player[0][map][4])), player[0][map][2], escape(formatDate(datetime.strptime(player[0][map][3], "%Y-%m-%d %H:%M:%S"))))
         else:
-          unfinishedString += '<a href="/ranks/%s/#map-%s">%s</a>, ' % (type, escape(normMap), escape(map))
+          allFinished = False
+          unfinishedString += '<tr><td><a href="/ranks/%s/#map-%s">%s</a></td><td class="rank">%d</td><td class="rank">%d</td></tr>' % (type, escape(normMap), escape(map), points, finishes)
 
-      tblString += '</table>'
+      unfinishedString += '</tbody></table>'
+      unfinishedString += tableHeader("unfinTable2", "unfinTable2-" + type) + '</tbody></table>'
+      unfinishedString += tableHeader("unfinTable3", "unfinTable3-" + type) + '</tbody></table>'
+      tblString += '</tbody></table>'
       if found:
         print >>out, tblString
 
       print >>out, '<p>'
-      if len(unfinishedString) == 0:
-        print >>out, '<strong>All maps on %s finished!</strong>' % type.title()
+      if allFinished:
+        print >>out, '<strong>All maps on %s finished!</strong></p>' % titleType(type)
       else:
-        print >>out, '<strong>Unfinished maps</strong>: %s' % unfinishedString[:-2]
-      print >>out, '</p></div>'
+        print >>out, '<strong>Unfinished maps</strong></p>'
+        print >>out, unfinishedString
+      print >>out, '</div>'
 
     print >>out, """  </section>
   </article>

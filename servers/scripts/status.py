@@ -13,7 +13,7 @@ servers = OrderedDict([
   , ("CHL", ("chl.ddnet.tw", "DDNet Chile"))
   , ("BRA", ("br.ddnet.tw", "DDNet Brazil"))
   , ("ZAF", ("zaf.ddnet.tw", "DDNet South Africa"))
-  #, ("IRN", ("irn.ddnet.tw", "DDNet Persian"))
+  , ("IRN", ("irn.ddnet.tw", "DDNet Persian"))
   ])
 
 printStatus("DDraceNetwork", servers, json.load(open("/home/teeworlds/servers/serverlist.json"), object_pairs_hook=OrderedDict, object_hook=OrderedDict))

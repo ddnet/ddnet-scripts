@@ -4,6 +4,7 @@
 from ddnet import *
 import sys
 import msgpack
+import os
 from cgi import escape
 
 reload(sys)
@@ -56,7 +57,7 @@ for mapper, servers in mappers.iteritems():
   serversString = ""
 
   filename = "%s/mappers/%s/index.html" % (webDir, slugify2(u'%s' % mapper))
-  tmpname = "%s/mappers/%s/index.tmp" % (webDir, slugify2(u'%s' % mapper))
+  tmpname = "%s/mappers/%s/index.%d.tmp" % (webDir, slugify2(u'%s' % mapper), os.getpid())
   directory = os.path.dirname(filename)
   if not os.path.exists(directory):
     os.makedirs(directory)
@@ -67,13 +68,13 @@ for mapper, servers in mappers.iteritems():
   menuText += '<li><a href="#global">Mapper Profile: %s</a></li>\n' % escape(mapper)
   for type in types:
     if type in servers:
-      menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type.title())
+      menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, titleType(type))
   menuText += '</ul>'
   print >>tf, header('%s - Mapper Profile - DDraceNetwork' % escape(mapper), menuText, '')
 
   for type in types:
     mapsString = '<div id="%s" class="longblock div-ranks">\n' % type
-    mapsString += '<div class="block7"><h2>%s Server</h2></div><br/>\n' % type.title()
+    mapsString += '<div class="block7"><h2>%s Server</h2></div><br/>\n' % titleType(type)
     if type not in servers:
       continue
 
@@ -135,7 +136,7 @@ for name in sorted(mappers.iterkeys(), key=str.lower):
       maps = servers[type]
       if len(tmp):
         tmp += ', '
-      tmp += type.title() + ': ' + str(len(maps))
+      tmp += titleType(type) + ': ' + str(len(maps))
   print '<li><a href="%s">%s</a> (%s)</li>' % (mapperWebsite(name), escape(name), tmp)
 
 print '</ul>'
