@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 from collections import defaultdict
 import msgpack
 import traceback
-from time import sleep
+from time import sleep, strftime
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -53,6 +53,11 @@ def printFooter():
         </tr><tr>
           <td>Solo</td>
           <td class="multiplier">4</td>
+          <td class="multiplier">0</td>
+        </tr>
+        </tr><tr>
+          <td>Race</td>
+          <td class="multiplier">2</td>
           <td class="multiplier">0</td>
         </tr>
       </table>
@@ -103,10 +108,11 @@ def printFooter():
     </div>
     <br/>
   </div>
+  <p class="toggle">Refreshed: %s</p>
   </section>
   </article>
   </body>
-</html>"""
+</html>""" % strftime("%Y-%m-%d %H:%M")
 
 con = mysqlConnect()
 
@@ -124,7 +130,7 @@ types = sys.argv[1:]
 menuText = '<ul>'
 menuText += '<li><a href="/ranks/">Global Ranks</a></li>'
 for type in types:
-  menuText += '<li><a href="/ranks/%s/">%s Server</a></li>\n' % (type, titleType(type))
+  menuText += '<li><a href="/ranks/%s/">%s Server</a></li>\n' % (type.lower(), type)
 menuText += '<li><a href="#points">Points Calculation</a></li>\n'
 menuText += '</ul>'
 
@@ -135,8 +141,8 @@ with con:
   cur = con.cursor()
   cur.execute("set names 'utf8';")
   for type in types:
-    filename = "%s/ranks/%s/index.html" % (webDir, type)
-    tmpname = "%s/ranks/%s/index.%d.tmp" % (webDir, type, os.getpid())
+    filename = "%s/ranks/%s/index.html" % (webDir, type.lower())
+    tmpname = "%s/ranks/%s/index.%d.tmp" % (webDir, type.lower(), os.getpid())
     directory = os.path.dirname(filename)
     if not os.path.exists(directory):
       os.makedirs(directory)
@@ -150,14 +156,14 @@ with con:
     weeklyServerPointsLadder = defaultdict(int)
     monthlyServerPointsLadder = defaultdict(int)
 
-    f = open("types/%s/maps" % type, 'r')
+    f = open("types/%s/maps" % type.lower(), 'r')
 
     serversString += '<div id="%s" class="longblock div-ranks">\n' % type
     serversString += '<div id="remote" class="right"><form id="playerform" action="/players/" method="get"><input name="player" class="typeahead" type="text" placeholder="Player search"><input type="submit" value="Player search" style="position: absolute; left: -9999px"></form></div>\n'
     serversString += '<script src="/jquery.js" type="text/javascript"></script>\n'
     serversString += '<script src="/typeahead.bundle.js" type="text/javascript"></script>\n'
     serversString += '<script src="/playersearch.js" type="text/javascript"></script>\n'
-    serversString += '<div class="block7"><h2>%s Server Ranks</h2></div><br/>\n' % titleType(type)
+    serversString += '<div class="block7"><h2>%s Server Ranks</h2></div><br/>\n' % type
 
     mapsString = ""
 
@@ -204,7 +210,7 @@ with con:
       try:
         cur.execute("select Name, r.ID, Time, Timestamp from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID order by r.Time, r.ID, Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
         rows = cur.fetchall()
-        sleep(0.05)
+        #sleep(0.05)
       except:
         traceback.print_exc()
       if len(rows) > 0:
@@ -266,7 +272,7 @@ with con:
       try:
         cur.execute("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, l.Server from (select * from record_race where Map = '%s') as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp from record_race where Map = '%s' group by Name order by minTime ASC) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTime;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
         rows = cur.fetchall()
-        sleep(0.05)
+        #sleep(0.05)
       except:
         traceback.print_exc()
 
@@ -354,7 +360,7 @@ with con:
       try:
         cur.execute("select count(Name) from record_teamrace where Map = '%s' group by ID order by count(Name) desc limit 1;" % con.escape_string(originalMapName))
         rows = cur.fetchall()
-        sleep(0.05)
+        #sleep(0.05)
         biggestTeam = " (biggest team: %d)" % rows[0][0]
       except:
         pass
@@ -386,13 +392,13 @@ with con:
       except IOError:
         traceback.print_exc()
 
-      if type == "solo":
+      if type == "Solo" or type == "Race":
         mapsString += u'<div class="block2 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="../maps/%s.png" /></a>%s<br/><span title="%s">%d tee%s finished%s</span></p></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime))
+        mapsString += printExactSoloRecords("Records", "records", ranks)
       else:
         mapsString += u'<div class="block2 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="../maps/%s.png" /></a>%s<br/><span title="%s">%d tee%s finished%s</span><br/>%d team%s finished%s</p></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime), countTeamFinishes, mbS, escape(biggestTeam))
         mapsString += printTeamRecords("Team Records", "teamrecords", teamRanks)
-
-      mapsString += printSoloRecords("Records", "records", ranks)
+        mapsString += printSoloRecords("Records", "records", ranks)
       mapsString += '<br/>\n'
 
     serverPointsRanks = sorted(serverPointsLadder.items(), key=lambda r: r[1], reverse=True)
@@ -404,7 +410,7 @@ with con:
     serverRanks[type] = (totalServerPoints, serverPointsRanks, serverTeamrankRanks, serverRankRanks)
 
     serversString += printLadder("Points (%d total)" % totalServerPoints, serverPointsRanks, players)
-    if type != "solo":
+    if type != "Solo" and type != "Race":
       serversString += printLadder("Team Rank", serverTeamrankRanks, players)
     serversString += printLadder("Rank", serverRankRanks, players)
     serversString += '<br/>'
@@ -412,12 +418,12 @@ with con:
     lastString = ""
     cur.execute("select l.Timestamp, l.Map, Name, Time from (select Timestamp, Map, Name, Time from record_race) as l join record_maps on l.Map = record_maps.Map where Server = '%s' order by l.Timestamp desc limit 10;" % type)
     rows = cur.fetchall()
-    sleep(0.05)
+    #sleep(0.05)
 
     lastString = '<div class="block4"><h3>Last Finishes</h3><table class="tight">'
 
     for row in rows:
-      lastString += '<tr><td><span title="%s">%s</span>: <a href="/ranks/%s/#map-%s">%s</a> by <a href="%s">%s</a> (%s)</td></tr>' % (escape(formatDate(row[0])), escape(formatDateShort(row[0])), type, escape(normalizeMapname(row[1])), escape(row[1]), escape(playerWebsite(row[2])), escape(row[2]), escape(formatTime(row[3])))
+      lastString += '<tr><td><span title="%s">%s</span>: <a href="/ranks/%s/#map-%s">%s</a> by <a href="%s">%s</a> (%s)</td></tr>' % (escape(formatDate(row[0])), escape(formatDateShort(row[0])), type.lower(), escape(normalizeMapname(row[1])), escape(row[1]), escape(playerWebsite(row[2])), escape(row[2]), escape(formatTime(row[3])))
 
     lastString += '</table></div><br/>'
 
@@ -439,13 +445,13 @@ with con:
     #    for subtype in subtypes:
     #      subMenu += '<li><a href="#%s">%s</a></li>' % (subtype.replace(' ','-'), titleSubtype(subtype))
     #    subMenu += '</ul>'
-    #    serverMenuText += '<li><a href="/ranks/%s/">%s Server</a>%s</li>\n' % (type2, titleType(type2), subMenu)
+    #    serverMenuText += '<li><a href="/ranks/%s/">%s Server</a>%s</li>\n' % (type2.lower(), type2, subMenu)
     #  else:
-    #    serverMenuText += '<li><a href="/ranks/%s/">%s Server</a></li>\n' % (type2, titleType(type2))
+    #    serverMenuText += '<li><a href="/ranks/%s/">%s Server</a></li>\n' % (type2.lower(), type2)
     #serverMenuText += '<li><a href="#points">Points Calculation</a></li>\n'
     #serverMenuText += '</ul>'
 
-    print >>tf, header("%s Ranks - DDraceNetwork" % titleType(type), menuText, "")
+    print >>tf, header("%s Ranks - DDraceNetwork" % type, menuText, "")
     print >>tf, '<p class="toggle"><a title="Click to toggle whether only the top 10 ranks or all ranks are shown" href="#" onclick="showClass(\'allPoints\'); return false;">Top 500 / Top 10</a></p>'
 
     print >>tf, '<div id="serverranks" style="display: ">'
@@ -455,17 +461,17 @@ with con:
 
     tf.close()
     os.rename(tmpname, filename)
-    sleep(0.1)
+    #sleep(0.1)
 
   lastString = ""
   cur.execute("select l.Timestamp, l.Map, Name, Time, record_maps.Server from ((select * from record_race order by Timestamp desc limit 20) as l left join record_maps on l.Map = record_maps.Map);")
   rows = cur.fetchall()
-  sleep(0.05)
+  #sleep(0.05)
 
   lastString = '<div class="block4"><h3>Last Finishes</h3><table>'
 
   for row in rows:
-    lastString += '<tr><td><span title="%s">%s</span>: <a href="/ranks/%s/#map-%s">%s</a> by <a href="%s">%s</a> (%s)</td></tr>' % (escape(formatDate(row[0])), escape(formatDateShort(row[0])), row[4], escape(normalizeMapname(row[1])), escape(row[1]), escape(playerWebsite(row[2])), escape(row[2]), escape(formatTime(row[3])))
+    lastString += '<tr><td><span title="%s">%s</span>: <a href="/ranks/%s/#map-%s">%s</a> by <a href="%s">%s</a> (%s)</td></tr>' % (escape(formatDate(row[0])), escape(formatDateShort(row[0])), row[4].lower(), escape(normalizeMapname(row[1])), escape(row[1]), escape(playerWebsite(row[2])), escape(row[2]), escape(formatTime(row[3])))
 
   lastString += '</table></div><br/>'
 
@@ -508,14 +514,14 @@ print printFooter()
 #</body>
 #</html>"""
 #os.rename(tmpname, filename)
-sleep(0.1)
+#sleep(0.1)
 
 tmpname = '%s/playerNames.%d.tmp' % (webDir, os.getpid())
 filename = '%s/playerNames.msgpack' % webDir
 with open(tmpname, 'wb') as out:
   out.write(msgpack.packb(players.keys()))
 os.rename(tmpname, filename)
-sleep(0.1)
+#sleep(0.1)
 
 tmpname = '%s/players.%d.tmp' % (webDir, os.getpid())
 filename = '%s/players.msgpack' % webDir

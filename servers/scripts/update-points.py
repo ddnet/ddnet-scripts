@@ -27,7 +27,7 @@ with con:
   cur.execute("set names 'utf8';")
 
   for type in types:
-    f = open("types/%s/maps" % type, 'r')
+    f = open("types/%s/maps" % type.lower(), 'r')
     for line in f:
       words = line.rstrip('\n').split('|')
       if len(words) == 0 or not words[0].isdigit():

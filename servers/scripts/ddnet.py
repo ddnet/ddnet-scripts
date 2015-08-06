@@ -14,6 +14,7 @@ from urllib import quote_plus
 from operator import itemgetter
 from collections import OrderedDict
 from string import capwords
+from socket import gethostbyaddr
 
 from mysql import *
 from teeworlds import *
@@ -25,29 +26,20 @@ sys.setdefaultencoding('utf8')
 webDir = "/var/www"
 
 pointsDict = {
-  'novice':    (1, 0),
-  'moderate':  (2, 5),
-  'brutal':    (3,15),
-  'ddmax':     (4, 0),
-  'oldschool': (6, 0),
-  'solo':      (4, 0)
+  'Novice':    (1, 0),
+  'Moderate':  (2, 5),
+  'Brutal':    (3,15),
+  'DDmaX':     (4, 0),
+  'Oldschool': (6, 0),
+  'Solo':      (4, 0),
+  'Race':      (2, 0)
 }
 
 def lookupIp(ip):
-  ipDict = {
-    '178.33.191.10': 'ddnet.tw',
-    '95.172.92.151': 'ger.ddnet.tw',
-    '74.91.114.132': 'usa.ddnet.tw',
-    '192.99.185.158': 'can.ddnet.tw',
-    '151.248.116.14': 'rus.ddnet.tw',
-    '112.124.108.6': 'chn.ddnet.tw',
-    '190.114.253.157': 'chl.ddnet.tw',
-    '181.41.210.80': 'br.ddnet.tw',
-    '41.185.26.5': 'zaf.ddnet.tw'
-  }
-  if ip in ipDict:
-    return ipDict[ip]
-  return ip
+  try:
+    return gethostbyaddr(ip)[0]
+  except:
+    return ip
 
 def points(rank):
   if rank < 0 or rank > 10:
@@ -65,12 +57,6 @@ def points(rank):
     9 : 2,
     10 : 1
   }[rank]
-
-def titleType(type):
-  if type == 'ddmax':
-    return 'DDmaX'
-  else:
-    return type.title()
 
 def titleSubtype(type):
   if type == 'DDRACEMAX.EASY MAPS':
@@ -361,6 +347,7 @@ def printLadder(name, ranks, players, number = 10):
   currentRank = 0
   skips = 1
   lastPoints = 0
+  lastServer = ''
   if len(ranks) > 0:
     string += '<table class="tight">\n'
     for currentPos, r in enumerate(ranks):
@@ -385,7 +372,11 @@ def printLadder(name, ranks, players, number = 10):
       #except:
       #  favServer = 'UNK'
 
-      #string += u'  <td class="rankglobal">%d.</td><td class="points">%d pts</td><td><a href="%s">%s</a></td><td class=\"flag\"><img src=\"/countryflags/%s.png\" alt=\"%s\" height=\"20\"/></td></tr>' % (currentRank, r[1], escape(playerWebsite(u'%s' % r[0])), escape(r[0]), favServer, favServer)
+      #if lastServer != favServer:
+      #  string += u'  <td class="rankglobal">%d.</td><td class="points">%d pts</td><td class=\"flag\"><img src=\"/countryflags/%s.png\" alt=\"%s\" height=\"15\"/></td><td><a href="%s">%s</a></td></tr>' % (currentRank, r[1], favServer, favServer, escape(playerWebsite(u'%s' % r[0])), escape(r[0]))
+      #  lastServer = favServer
+      #else:
+      #  string += u'  <td class="rankglobal">%d.</td><td class="points">%d pts</td><td class=\"flag\">⋮</td><td><a href="%s">%s</a></td></tr>' % (currentRank, r[1], escape(playerWebsite(u'%s' % r[0])), escape(r[0]))
       string += u'  <td class="rankglobal">%d.</td><td class="points">%d pts</td><td><a href="%s">%s</a></td></tr>' % (currentRank, r[1], escape(playerWebsite(u'%s' % r[0])), escape(r[0]))
     string += '</table>\n'
   string += '</div>\n'
@@ -689,7 +680,7 @@ def printStatus(name, servers, doc, external = False):
               mapName = '<a href="/ranks/%s/#map-%s">%s</a>' % (escape(serverType.lower()), escape (normalizeMapname(server.map)), escape(server.map))
 
 
-            print((u'<div id="server-%d"><div class="block%s"><h3 class="ip">%s</h3><h2>%s: %s [%d/%d]</h2><br/>' % (i, mbEmpty, s, lookupIp(serverName), mapName, clients, max_clients)).encode('utf-8'))
+            print((u'<div id="server-%d"><div class="block%s"><h3 class="ip">%s:%s</h3><h2>%s: %s [%d/%d]</h2><br/>' % (i, mbEmpty, lookupIp(s.split(":")[0]), s.split(":")[1], serverName, mapName, clients, max_clients)).encode('utf-8'))
 
             print('<div class="block3 status-players"><h3>Players</h3>')
             printPlayers(server, lambda p: p.playing, players)

@@ -25,7 +25,7 @@ def printSoloRecords2(recordName, className, topFinishes):
         mbS = "es"
       else:
         mbS = ""
-      string += u'  <tr title="%s, %s"><td class="rank">%d.</td><td>%s</td><td><a href="%s">%s</a></td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[0], escape(formatDate(f[3])), escape(playerWebsite(u'%s' % f[1])), escape(f[1]))
+      string += u'  <tr title="%s, %s"><td class="rank">%d.</td><td>%s</td><td><img src="/countryflags/%s.png" alt="%s" height="15" /></td><td><a href="%s">%s</a></td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[0], escape(formatDate(f[3])), f[5], f[5], escape(playerWebsite(u'%s' % f[1])), escape(f[1]))
     string += '</table>\n'
   string += '</div>\n'
 
@@ -73,10 +73,10 @@ types = sys.argv[1:]
 
 menuText = '<ul>\n'
 for type in types:
-  menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, titleType(type))
+  menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type)
 menuText += '</ul>'
 
-print header("Quick Tournament #27 - DDraceNetwork", menuText, "")
+print header("2nd Birthday Tournament - DDraceNetwork", menuText, "")
 
 f = open("tournament")
 tournamentMaps = []
@@ -93,9 +93,9 @@ with con:
     serverTeamrankLadder = {}
     serverPointsLadder = {}
 
-    f = open("types/%s/maps" % type, 'r')
+    f = open("types/%s/maps" % type.lower(), 'r')
 
-    serversString += '<div id="%s" class="block div-tournament"><div class="back-up"><a href="#top">&#8593;</a></div><h2>%s Server</h2>\n' % (type, titleType(type))
+    serversString += '<div id="%s" class="block div-tournament"><div class="back-up"><a href="#top">&#8593;</a></div><h2>%s Server</h2>\n' % (type, type)
     mapsString = ""
 
     maps[type] = []
@@ -164,8 +164,9 @@ with con:
 
         #if currentPosition > 20:
         #  continue
-
-        ranks.append((currentRank, row[0], row[1], row[2], row[3]))
+        cur.execute("select Server from record_race where Map = '%s' and Name = '%s'" % (con.escape_string(originalMapName), con.escape_string(row[0])))
+        rows2 = cur.fetchall()
+        ranks.append((currentRank, row[0], row[1], row[2], row[3], rows2[0][0]))
 
         if row[0] in rankLadder:
           rankLadder[row[0]] += points(currentRank)
@@ -245,8 +246,8 @@ with con:
 #teamrankRanks = sorted(teamrankLadder.items(), key=lambda r: r[1], reverse=True)
 #rankRanks = sorted(rankLadder.items(), key=lambda r: r[1], reverse=True)
 
-print '<div id="global" class="block div-tournament"><h2>Quick Tournament #31</h2>'
-print '<p>This tournament is played on 2015-04-26 at 20:00 CST.</p>'
+print '<div id="global" class="block div-tournament"><h2>2nd Birthday Tournament</h2>'
+print '<p>This tournament is played on DDNet\'s 2nd Birthday, 2015-07-18 at 20:00 CST.</p>'
 #print printLadder(teamrankRanks)
 print '</div>'
 print '<div id="serverranks" style="display: ">'

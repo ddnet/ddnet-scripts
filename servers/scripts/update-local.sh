@@ -1,13 +1,15 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 
+setopt sh_word_split
+unsetopt nomatch
 cd /home/teeworlds/servers
 
 types=`cat all-types`
 
 for i in $types; do
-  scripts/create-votes.py $i > types/$i/votes.$$.tmp
-  mv types/$i/votes.$$.tmp types/$i/votes.cfg
-  split -l 40 types/$i/votes.cfg types/$i/votes.cfg
+  scripts/create-votes.py $i > types/${i:l}/votes.$$.tmp
+  mv types/${i:l}/votes.$$.tmp types/${i:l}/votes.cfg
+  split -l 40 types/${i:l}/votes.cfg types/${i:l}/votes.cfg
 done
 
 (for i in test/maps/*.map; do b=$(basename "$i" .map); echo "add_vote \"$b\" \"change_map \\\"$b\\\"\""; done) > types/test/votes.$$.tmp

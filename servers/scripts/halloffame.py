@@ -103,7 +103,7 @@ for x in entries:
   except IOError:
     pass
 
-  mapsString += u'<div class="blockreleases release" id="map-%s"><h2 class="inline">%s<br/>%s</h2><br/><h3 class="inline">on <a href="/ranks/%s/#map-%s">%s</a> %s</h3><h3 class="inline"><a href="/ranks/%s">%s Server</a></h3><br/><p>Difficulty: %s, Points: %d<br/><a href="http://youtu.be/%s?list=UUehuq_sbMTEATWVgDvnVy7w%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" /></a>%s<br/></div>\n' % (escape(mapName), playerNames, time, server, escape(normalizeMapname(originalMapName)), formattedMapName, mbMapperName, server, titleType(server), escape(renderStars(stars)), globalPoints(server, stars), video, ytTime, escape(mapName), mbMapInfo)
+  mapsString += u'<div class="blockreleases release" id="map-%s"><h2 class="inline">%s<br/>%s</h2><br/><h3 class="inline">on <a href="/ranks/%s/#map-%s">%s</a> %s</h3><h3 class="inline"><a href="/ranks/%s">%s Server</a></h3><br/><p>Difficulty: %s, Points: %d<br/><a href="http://youtu.be/%s?list=UUehuq_sbMTEATWVgDvnVy7w%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" /></a>%s<br/></div>\n' % (escape(mapName), playerNames, time, server.lower(), escape(normalizeMapname(originalMapName)), formattedMapName, mbMapperName, server.lower(), server, escape(renderStars(stars)), globalPoints(server, stars), video, ytTime, escape(mapName), mbMapInfo)
 
 serversString += mapsString
 serversString += '<span class="stretch"></span></div>\n'

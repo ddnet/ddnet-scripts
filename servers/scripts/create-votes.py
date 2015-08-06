@@ -12,18 +12,19 @@ def truncate(s, length, encoding='utf-8'):
   return encoded.decode(encoding, 'ignore')
 
 serverStrings = {
-  'novice'   : '              Novice Server',
-  'moderate' : '           Moderate Server',
-  'brutal'   : '                Brutal Server',
-  'ddmax'    : '                DDmaX Server',
-  'oldschool': '            Oldschool Server',
-  'solo'     : '                 Solo Server'
+  'Novice'   : '              Novice Server',
+  'Moderate' : '           Moderate Server',
+  'Brutal'   : '                Brutal Server',
+  'DDmaX'    : '                DDmaX Server',
+  'Oldschool': '            Oldschool Server',
+  'Solo'     : '                 Solo Server',
+  'Race'     : '                 Race Server'
 }
 
 server = sys.argv[1]
 
 con = mysqlConnect()
-f = open('types/%s/maps' % server, 'r')
+f = open('types/%s/maps' % server.lower(), 'r')
 
 motdSkeleton = open('motd/skeleton', 'rb').read()
 
@@ -38,7 +39,7 @@ exec types/%s/reset.cfg
 exec types/%s/flexname.cfg
 clear_votes
 exec types/%s/flexvotes.cfg
-exec types/%s/votes.cfg""" % (server, server, server, server)
+exec types/%s/votes.cfg""" % (server.lower(), server.lower(), server.lower(), server.lower())
 
 motdNews = ""
 for line in open('motd/news', 'rb'):

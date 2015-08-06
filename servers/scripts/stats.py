@@ -64,14 +64,71 @@ with con:
     finishes += '%d' % row[3]
     lastDay = currDay
 
-  # Points
-  #cur.execute("select year(Timestamp), month(Timestamp), day(Timestamp), sum(Points) from record_race inner join record_maps on record_race.Map = record_maps.Map group by year(Timestamp), month(Timestamp), day(Timestamp) order by Timestamp;")
-  #rows = cur.fetchall()
-  #points = ""
-  #for row in rows:
-  #  if len(points) > 0:
-  #    points+= ", "
-  #  points += '[Date.UTC(%d,%d,%d), %d]' % (row[0], row[1]-1, row[2], row[3])
+  # Points by country
+  cur.execute("select record_race.Server, year(record_race.Timestamp), month(record_race.Timestamp), day(record_race.Timestamp), sum(Points) from record_race join record_maps on record_race.Map = record_maps.Map group by record_race.Server, year(record_race.Timestamp), month(record_race.Timestamp), day(record_race.Timestamp) order by record_race.Server, record_race.Timestamp;")
+  rows = cur.fetchall()
+  countryPoints = ""
+  oldServer = ""
+
+  for row in rows:
+    server = row[0]
+    currDay = datetime(row[1], row[2], row[3])
+
+    if server != oldServer:
+      if countryPoints != "":
+        countryPoints += "]}, "
+      lastDay = datetime(2013,07,18)
+      countryPoints += "{name: '%s', pointInterval: 24 * 3600 * 1000, pointStart: Date.UTC(%d,%d,%d), data: [" % (server, lastDay.year, lastDay.month-1, lastDay.day)
+    else:
+      lastDay += timedelta(days=1)
+
+    while lastDay < currDay:
+      if lastDay > datetime(2013,07,18):
+        countryPoints += ", "
+      countryPoints += "0"
+      lastDay += timedelta(days=1)
+
+    if lastDay > datetime(2013,07,18):
+      countryPoints += ", "
+    countryPoints += '%d' % row[4]
+    oldServer = server
+
+  countryPoints += "]}"
+
+  # Points by server
+  cur.execute("select record_maps.Server, year(record_race.Timestamp), month(record_race.Timestamp), day(record_race.Timestamp), sum(Points) from record_race join record_maps on record_race.Map = record_maps.Map group by record_maps.Server, year(record_race.Timestamp), month(record_race.Timestamp), day(record_race.Timestamp) order by record_maps.Server, record_race.Timestamp;")
+  rows = cur.fetchall()
+  serverPoints = ""
+  oldServer = ""
+
+  with open("all-types") as f:
+    for server in reversed(f.read().rstrip('\n').split(' ')):
+      for row in rows:
+        if server != row[0]:
+          continue
+
+        currDay = datetime(row[1], row[2], row[3])
+
+        if server != oldServer:
+          if serverPoints != "":
+            serverPoints += "]}, "
+          lastDay = datetime(2013,07,18)
+          serverPoints += "{name: '%s', pointInterval: 24 * 3600 * 1000, pointStart: Date.UTC(%d,%d,%d), data: [" % (server, lastDay.year, lastDay.month-1, lastDay.day)
+        else:
+          lastDay += timedelta(days=1)
+
+        while lastDay < currDay:
+          if lastDay > datetime(2013,07,18):
+            serverPoints += ", "
+          serverPoints += "0"
+          lastDay += timedelta(days=1)
+
+        if lastDay > datetime(2013,07,18):
+          serverPoints += ", "
+        serverPoints += '%d' % row[4]
+        oldServer = server
+
+  serverPoints += "]}"
 
 # Maps
 releases = []
@@ -246,7 +303,7 @@ for server, item in countryRecords.iteritems():
     countryRecordsString += ", "
   countryRecordsString += '<span title="%s">%s: %d</span>' % (date, server, record)
 
-print text % (p, p2, finishes, m, nrMaps, nrPlayers, nrRanks, timeRanks, timeRanksYesterday, countryRecordsString)
+print text % (p, p2, finishes, countryPoints, serverPoints, m, nrMaps, nrPlayers, nrRanks, timeRanks, timeRanksYesterday, countryRecordsString)
 
 print """</section>
 </article>

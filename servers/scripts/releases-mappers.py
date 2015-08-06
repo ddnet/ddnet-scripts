@@ -68,13 +68,13 @@ for mapper, servers in mappers.iteritems():
   menuText += '<li><a href="#global">Mapper Profile: %s</a></li>\n' % escape(mapper)
   for type in types:
     if type in servers:
-      menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, titleType(type))
+      menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type)
   menuText += '</ul>'
   print >>tf, header('%s - Mapper Profile - DDraceNetwork' % escape(mapper), menuText, '')
 
   for type in types:
     mapsString = '<div id="%s" class="longblock div-ranks">\n' % type
-    mapsString += '<div class="block7"><h2>%s Server</h2></div><br/>\n' % titleType(type)
+    mapsString += '<div class="block7"><h2>%s Server</h2></div><br/>\n' % type
     if type not in servers:
       continue
 
@@ -111,7 +111,7 @@ for mapper, servers in mappers.iteritems():
       except IOError:
         pass
 
-      mapsString += u'<div class="blockreleases release" id="map-%s"><h3 class="inline">%s</h3><br/><h3 class="inline"><a href="/ranks/%s/#map-%s">%s</a></h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" /></a>%s<br/></div>\n' % (escape(mapName), date, server, escape(normalizeMapname(originalMapName)), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(server, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo)
+      mapsString += u'<div class="blockreleases release" id="map-%s"><h3 class="inline">%s</h3><br/><h3 class="inline"><a href="/ranks/%s/#map-%s">%s</a></h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" /></a>%s<br/></div>\n' % (escape(mapName), date, server.lower(), escape(normalizeMapname(originalMapName)), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(server, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo)
 
     mapsString += '<span class="stretch"></span></div>\n'
     serversString += mapsString
@@ -136,7 +136,7 @@ for name in sorted(mappers.iterkeys(), key=str.lower):
       maps = servers[type]
       if len(tmp):
         tmp += ', '
-      tmp += titleType(type) + ': ' + str(len(maps))
+      tmp += type + ': ' + str(len(maps))
   print '<li><a href="%s">%s</a> (%s)</li>' % (mapperWebsite(name), escape(name), tmp)
 
 print '</ul>'
