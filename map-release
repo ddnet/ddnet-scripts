@@ -64,7 +64,7 @@ Pre-requirements:
   - Check http://ddnet.tw/releases/ (/ranks and /mappers get updated every 20 min)
 
 5. announce release with clusterssh
-  $ cat .clusterssh/clustsers
+  $ cat ~/.clusterssh/clusters
   ddnet ddnet.tw ger.ddnet.tw ger2.ddnet.tw rus.ddnet.tw usa.ddnet.tw chn.ddnet.tw chl.ddnet.tw zaf.ddnet.tw can.ddnet.tw bra.ddnet.tw irn.ddnet.tw
   $ cssh ddnet
   - 10 terminal windows open
