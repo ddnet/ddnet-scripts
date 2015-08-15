@@ -8,7 +8,7 @@ Pre-requirements:
   - SSH to all DDNet servers via public key, mod account in forum
   - You need imagemagick, pngnq, optipng, clusterssh installed locally
   - My tml fork in git/tml: https://github.com/def-/tml.git
-  - SSH config:
+  - SSH config (~/.ssh/config):
 
     Host chn.ddnet.tw
       ProxyCommand ssh -q usa.ddnet.tw nc -q0 chn.ddnet.tw 22
