@@ -53,6 +53,8 @@ Pre-requirements:
   $ git add maps/Kobra\ 4.map
   $ vim types/novice/maps
   - Add a line like 4|Kobra 4|Zerodin
+    First field is the number of stars, check the map topic for that
+    Last field is the names of the mappers: First, Second, Third & Last
   $ ./git-update.sh
   - Wait until FRA has been finished (main server)
 
