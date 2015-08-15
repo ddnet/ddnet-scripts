@@ -1,0 +1,78 @@
+Map release process on DDNet
+============================
+
+Example for Kobra 4
+Regular release time is 18-20 if we have 1 release for the day. If we have 2 releases, the first at 12-14, the second 18-20.
+Planned map releases: http://forum.ddnet.tw/viewtopic.php?f=9&t=1474
+Pre-requirements:
+  - SSH to all DDNet servers via public key, mod account in forum
+  - You need imagemagick, pngnq, optipng, clusterssh installed locally
+  - My tml fork in git/tml: https://github.com/def-/tml.git
+  - SSH config:
+
+    Host chn.ddnet.tw
+      ProxyCommand ssh -q usa.ddnet.tw nc -q0 chn.ddnet.tw 22
+      User deen
+      Port 22
+
+    Host ddnet.tw *.ddnet.tw
+      User teeworlds
+      Port 6546
+
+1. map properties
+  $ cd git/tml
+  $ ./properties Kobra\ 4.map Kobra\ 4.msgpack
+  $ scp Kobra\ 4.msgpack ddnet.tw:servers/maps
+
+2. screenshot
+  - Make a screenshot of the map on test server at 1440x900, HD on, no chat, no HUD, logo or start area or spawn, whatever looks best
+    config (run with ./DDNet -f foo.cfg):
+
+    gfx_fullscreen 0
+    gfx_screen_width 1440
+    gfx_screen_height 900
+    gfx_high_detail 1
+    gfx_texture_quality 1
+    cl_showhud 0
+    cl_showchat 0
+    cl_showkillmessages 0
+
+  - Screenshot file name: Everything that's not ASCII gets converted to an underline
+  $ mv screenshot-20150815@121626.png Kobra_4.png
+  $ mkdir -p conv; for i in *png; do convert $i -resize 25% conv/$i; pngnq -s1 conv/$i; optipng -o9 conv/${i:r}-nq8.png; mv conv/${i:r}-nq8.png conv/$i; done; scp conv/* ddnet:/var/www/ranks/maps/; rm conv/*png; mv *png ~/git/ddnet/screenshots
+  - I store full size screenshots in git/ddnet/screenshots in case we ever need them (unused so far)
+
+3. release the map
+  $ ssh ddnet.tw
+  $ cd servers
+  $ mv test/maps/Kobra\ 4.cfg data/maps
+  - Check if the config is actually ok
+  $ git add data/maps/Kobra\ 4.cfg
+  $ mv test/maps/Kobra\ 4.map maps
+  - iMTG maps are in secret2/maps, race maps are in secret/maps
+  $ git add maps/Kobra\ 4.map
+  $ vim types/novice/maps
+  - Add a line like 4|Kobra 4|Zerodin
+  $ ./git-update.sh
+  - Wait until FRA has been finished (main server)
+
+4. check if it's released ok
+  - Check on server whether the map is votable
+  - Check /mapinfo and/or /map
+  - Check http://ddnet.tw/releases/ (/ranks and /mappers get updated every 20 min)
+
+5. announce release with clusterssh
+  $ cat .clusterssh/clustsers
+  ddnet ddnet.tw ger.ddnet.tw ger2.ddnet.tw rus.ddnet.tw usa.ddnet.tw chn.ddnet.tw chl.ddnet.tw zaf.ddnet.tw can.ddnet.tw bra.ddnet.tw irn.ddnet.tw
+  $ cssh ddnet
+  - 10 terminal windows open
+  $ abc
+  bc>
+  - Wait until it shows "bc>" on all servers, otherwise text will be cut off
+  bc> New map "Kobra 4" by Zerodin just released on Novice! <ENTER>
+
+6. Clean up forum
+  - Go to http://forum.ddnet.tw/viewtopic.php?f=9&t=1474
+  - Move the topic of the map to archive
+  - Write in the topic of the map that the map has been released
+  - Remove the map from Planned Releases
