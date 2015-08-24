@@ -1,5 +1,11 @@
 #!/usr/bin/env zsh
 echo '<div class="block">'
+echo '<h2 id="map-settings">Map Settings</h2>'
+cat **/{config_variables,variables}.h | ./settings.py CFGFLAG_GAME
+cat src/**/{console,netban,server,gamecontext,engine}.cpp | grep "Register(" | grep CFGFLAG_GAME | grep -v "\/\/" | ./commands.py CFGFLAG_GAME
+echo '</div>'
+
+echo '<div class="block">'
 echo '<h2 id="server-settings">Server Settings</h2>'
 cat **/{config_variables,variables}.h | ./settings.py CFGFLAG_SERVER
 echo '</div>'

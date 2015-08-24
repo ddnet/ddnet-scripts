@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 
 import sys
+import re
 
 print '<table class="settingscommands">'
 print '  <tr><th>Tuning</th><th>Description</th><th>Default</th></tr>'
@@ -12,7 +13,7 @@ def foo(x):
   return x.strip("f")
 
 for line in sys.stdin:
-  x = line.split(",")
+  x = re.findall(r'(?:[^,"]|"(?:\\.|[^"])*")+', line)
 
   result = (x[1].strip(), x[3].strip(" )\n").split('"')[-2], foo(x[2]))
 
