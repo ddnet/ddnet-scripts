@@ -45,9 +45,9 @@ Pre-requirements:
 3. release the map
   $ ssh ddnet.tw
   $ cd servers
-  $ mv test/maps/Kobra\ 4.cfg data/maps
+  $ mv test/maps/Kobra\ 4.cfg maps
   - Check if the config is actually ok
-  $ git add data/maps/Kobra\ 4.cfg
+  $ git add maps/Kobra\ 4.cfg
   $ mv test/maps/Kobra\ 4.map maps
   - iMTG maps are in secret2/maps, race maps are in secret/maps
   $ git add maps/Kobra\ 4.map
