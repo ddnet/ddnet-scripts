@@ -1,0 +1,60 @@
+Tournament preparation process on DDNet
+=======================================
+
+3-6 days prior:
+- Make a nice screenshot and prepare the msgpack file
+- Put the screenshot on ddnet.tw too
+- Announce on DDNet Forum, TW Forum, TW-Friends
+- Announce on DDNet.tw
+- Announce in Client: news and kill versionsrv (auto-restarts)
+- Announce on Server: motd/news
+  Also scripts/print.sh, first days only lower lines, comment out upper ones
+  ./git-update-files-only.sh
+  Crontab all servers to run print.sh every 2 hours
+
+24 hours before:
+- Change scripts/print.sh to run the upper part and write some nice messages
+  ./git-update-files-only.sh
+  Crontab all servers to run print.sh every minute (yes, will only print every hour at the start, then faster)
+
+- Prepare the right Tournament scripts:
+  scripts/quick-tournament.py for regular team quick tournaments (first wins)
+  scripts/solo-quick-tournament.py for the same on solo maps
+  scripts/solo-tournament.py for best time wins on solo maps
+
+  Edit the tournament file
+
+  Example run: scripts/solo-tournament.py Solo > /var/www/tournaments/38/index.html
+
+During the night before:
+- Edit motd/tournament.cfg based on info about the map and the current news from maps/*.map.cfg
+- Edit tournament-prepare.sh on each server (except ddnet.tw) to run a nice map before the tournament, also make sure the other server settings are right
+- When the server is empty, run ./tournament-prepare.sh
+- When a server is full later, edit tournament-prepare.sh to add another server
+- Prepare tournament-start.sh on ddnet.tw, update it to all servers
+  Use a fun loading screen
+- Make sure all times are correct on servers, only do an ntp sync when servers are empty as it times everyone out
+- Make sure the MySQL synchronization isn't broken anywhere
+  show slave status; as mysql root
+
+1 hour before:
+- cssh ddnet and abc
+- Occasionally write something interesting or useful, for example at 40 min and 20 min explain the tournament
+- Edit tournament-start.sh on locations with multiple servers to include them
+- Connect to all/many interesting servers to watch
+
+2 minutes before:
+- Stop crontab scripts, write manually with abc
+- When Tournament starts, switch to ./bc.py > servers/83{03,04,05}.fifo (all tournament servers)
+- Upload the Tournament map (don't add it to votes) and ./git-update-files-only.sh
+  Make sure the Tournament map is on all servers
+
+Tournament starts:
+- ./tournament-start.sh
+- Make sure the Tournament map loads everywhere
+- Broadcast interesting events of the tournament
+- Periodically run scripts/xx-tournament.py > /var/www/tournaments/xx/index.html
+
+Tournament finished:
+- Announce the winners
+- Add the map to types/*/maps and ./git-update.sh (This also turns the Tournament servers into regular servers again)
