@@ -43,6 +43,8 @@ During the night before:
 - Edit tournament-start.sh on locations with multiple servers to include them
 - Connect to all/many interesting servers to watch
 
+- Set livestream on website when it goes online
+
 2 minutes before:
 - Stop crontab scripts, write manually with abc
 - When Tournament starts, switch to ./bc.py > servers/83{03,04,05}.fifo (all tournament servers)
