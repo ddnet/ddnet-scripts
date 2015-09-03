@@ -2,7 +2,7 @@
 
 # Build DDNet releases for all platforms
 
-START_TIME=$SECONDS
+START_TIME=$(date +%s)
 renice -n 19 -p $$ > /dev/null
 ionice -n 3 -p $$
 
@@ -11,7 +11,10 @@ ionice -n 3 -p $$
 set -ex
 BUILDS=/media/ddnet/builds
 VERSION=$1
-NUMVERSION=$(python -c "s = \"$VERSION\".split('.'); t = s[2] if len(s) > 2 else '0'; print(s[0].zfill(2)+s[1]+t)")
+NUMVERSION=$(python -c "try:
+  s = \"$VERSION\".split('.'); t = s[2] if len(s) > 2 else '0'; print(s[0].zfill(2)+s[1]+t)
+except:
+  print('0000')")
 PASS="$(cat pass)"
 MACPASS="$(cat macpass)"
 
@@ -35,7 +38,7 @@ build () # for Linux and Windows
 cd /var/www/$WEBSITE/htdocs
 rm -f master.zip
 wget https://github.com/ddnet/ddnet/archive/master.zip
-TIME_PREPARATION=$(($SECONDS - $START_TIME))
+TIME_PREPARATION=$(($(date +%s) - $START_TIME))
 
 # Linux
 cd /media/ddnet/debian6
@@ -44,26 +47,26 @@ mount -t proc proc proc/
 mount -t sysfs sys sys/
 mount -o bind /dev dev/
 
-START_TIME=$SECONDS
+START_TIME=$(date +%s)
 RUN="chroot ." ARCHIVE=tar.gz build linux_x86_64
-TIME_LINUX_X86_64=$(($SECONDS - $START_TIME))
-START_TIME=$SECONDS
+TIME_LINUX_X86_64=$(($(date +%s) - $START_TIME))
+START_TIME=$(date +%s)
 RUN="chroot ." ARCHIVE=tar.gz CFLAGS=-m32 LDFLAGS=-m32 PKG_CONFIG_PATH=/usr/lib32/pkgconfig/ build linux_x86
-TIME_LINUX_X86=$(($SECONDS - $START_TIME))
+TIME_LINUX_X86=$(($(date +%s) - $START_TIME))
 
 umount proc sys dev
 cd ..
 
 # Windows
-START_TIME=$SECONDS
+START_TIME=$(date +%s)
 TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 PREFIX=x86_64-w64-mingw32- PATH=/usr/x86_64-w64-mingw32/bin:$PATH EXE=.exe ARCHIVE=zip build win64
-TIME_WINDOWS_X86_64=$(($SECONDS - $START_TIME))
-START_TIME=$SECONDS
+TIME_WINDOWS_X86_64=$(($(date +%s) - $START_TIME))
+START_TIME=$(date +%s)
 TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 PREFIX=i686-w64-mingw32- PATH=/usr/i686-w64-mingw32/bin:$PATH EXE=.exe ARCHIVE=zip build win32
-TIME_WINDOWS_X86=$(($SECONDS - $START_TIME))
+TIME_WINDOWS_X86=$(($(date +%s) - $START_TIME))
 
 # Android
-START_TIME=$SECONDS
+START_TIME=$(date +%s)
 cd /media/ddnet/commandergenius/project/jni/application/teeworlds
 sed -e "s/YYYY/$VERSION/; s/XXXX/$NUMVERSION/" AndroidAppSettings.tmpl > AndroidAppSettings.cfg
 rm -rf src
@@ -80,16 +83,16 @@ PATH=$PATH:/opt/android-sdk/build-tools/23 ./build.sh
 jarsigner -verbose -keystore ~/.android/release.keystore -storepass $PASS -sigalg MD5withRSA -digestalg SHA1 project/bin/MainActivity-release-unsigned.apk androidreleasekey
 /opt/android-sdk/build-tools/23/zipalign 4 project/bin/MainActivity-release-unsigned.apk project/bin/MainActivity-release.apk
 mv project/bin/MainActivity-release.apk $BUILDS/DDNet-${VERSION}.apk
-TIME_ANDROID=$(($SECONDS - $START_TIME))
+TIME_ANDROID=$(($(date +%s) - $START_TIME))
 
 # Mac OS X
-START_TIME=$SECONDS
+START_TIME=$(date +%s)
 cd /media/ddnet/
 qemu-system-x86_64 -k de -usb -device usb-kbd -device usb-mouse -enable-kvm -vga std -m 2048 -smp 4,cores=4 -cpu core2duo -machine q35 -device isa-applesmc,osk="$MACPASS" -kernel ./chameleon_svn2360_boot -smbios type=2 -device ide-drive,bus=ide.2,drive=MacHDD -drive id=MacHDD,if=none,file=macosx.img -netdev user,id=hub0port0,hostfwd=tcp::10022-:22 -device e1000-82545em,netdev=hub0port0,id=mac_vnet0 -vnc :4 &
 QEMU_PID=$!
 
 while ! ssh -p 10022 -o ConnectTimeout=60 localhost exit; do
-  sleep 1m
+  sleep 1
 done
 
 ssh -p 10022 localhost "
@@ -109,7 +112,7 @@ ssh -p 10022 localhost "
 mv /home/deen/.teeworlds/maps/DDNet-$VERSION-osx.dmg $BUILDS
 sleep 1m
 kill $QEMU_PID
-TIME_MACOSX=$(($SECONDS - $START_TIME))
+TIME_MACOSX=$(($(date +%s) - $START_TIME))
 
 { set +x; } 2>/dev/null
 echo ""
