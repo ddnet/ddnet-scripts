@@ -3,8 +3,8 @@
 # Build DDNet releases for all platforms
 
 START_TIME=$SECONDS
-renice -n 19 -p $PPID > /dev/null
-ionice -n 3 -p $PPID
+renice -n 19 -p $$ > /dev/null
+ionice -n 3 -p $$
 
 [ $# -ne 1 ] && echo "Usage: ./build.sh VERSION" && exit 1
 
