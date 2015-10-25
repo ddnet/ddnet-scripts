@@ -20,6 +20,6 @@ update record_points set Points=0 where Name=@update;
 # transfer
 update record_race set Name=@update where Name=@remove;
 update record_teamrace set Name=@update where Name=@remove;
-insert ignore into record_points (Name) values (@update)
+insert ignore into record_points (Name) values (@update);
 update record_points p1, record_points p2 set p1.Points = p1.Points + p2.Points where p1.Name=@update and p2.Name=@remove;
 delete from record_points where Name=@remove;
