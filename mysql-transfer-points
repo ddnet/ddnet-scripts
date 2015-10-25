@@ -14,6 +14,9 @@ set @remove = 'name2';
 select ID, count(*) c from (select ID from record_teamrace where Name=@update or Name=@remove) as x group by ID having c > 1;
 # if this returns nothing its fine otherwise the players have teamranks together which is forbidden, you can't have ranks with yourself
 
+# reset optionally
+update record_points set Points=0 where Name=@update;
+
 # transfer
 update record_race set Name=@update where Name=@remove;
 update record_teamrace set Name=@update where Name=@remove;
