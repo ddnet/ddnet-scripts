@@ -8,7 +8,7 @@ START_TIME=$(date +%s)
 renice -n 19 -p $$ > /dev/null
 ionice -n 3 -p $$
 
-PATH=$PATH:/usr/local/bin:/opt/android-sdk/tools:/opt/android-ndk:/opt/android-sdk/platform-tools
+PATH=$PATH:/usr/local/bin:/opt/android-sdk/build-tools/23.0.2:/opt/android-sdk/tools:/opt/android-ndk:/opt/android-sdk/platform-tools
 BUILDDIR=/media/ddnet
 BUILDS=$BUILDDIR/builds
 MACLOG=$BUILDS/mac.log
@@ -37,10 +37,10 @@ qemu-system-x86_64 -k de -usb -device usb-kbd -device usb-mouse \
   -drive id=MacHDD,if=none,file=macosx.img \
   -netdev user,id=hub0port0,hostfwd=tcp::10022-:22 \
   -device e1000-82545em,netdev=hub0port0,id=mac_vnet0 \
-  -vnc :4 &
+  -vnc :4 &>/dev/null &
 QEMU_PID=$!
 renice -n 17 -p $QEMU_PID
-ionice -c 2 -n 7 $QEMU_PID
+ionice -c 2 -n 7 -p $QEMU_PID
 
 # Get the sources
 cd $WEBSITE
@@ -54,7 +54,7 @@ build_macosx ()
   START_TIME=$(date +%s)
   cd $BUILDDIR
 
-  while ! ssh -p 10022 -o ConnectTimeout=10 localhost exit; do done
+  while ! ssh -p 10022 -o ConnectTimeout=10 localhost exit; do true; done
 
   ssh -p 10022 localhost "
     source .profile
@@ -63,7 +63,7 @@ build_macosx ()
     unzip -q master.zip &&
     cd ddnet-master &&
     /usr/local/bin/bam config curl.use_pkgconfig=false opus.use_pkgconfig=false \
-      opusfile.use_pkgconfig=false ogg.use_pkgconfig=false &&
+      opusfile.use_pkgconfig=false ogg.use_pkgconfig=false compiler=clang &&
     /usr/local/bin/bam release;
 
     strip DDNet_x86 DDNet_x86_64 DDNet-Server_x86 DDNet-Server_x86_64 dilate_x86 \
@@ -71,9 +71,9 @@ build_macosx ()
       config_retrieve_x86_64 &&
     python scripts/make_release.py $VERSION osx &&
     curl -F \"uploadFile=@DDNet-$VERSION-osx.dmg\" r0q.no-ip.org/tw/upload.php &&
-    halt"
+    halt" || true
 
-  mv /home/deen/.teeworlds/maps/DDNet-$VERSION-osx.dmg $BUILDS
+  mv /home/deen/.teeworlds/maps/DDNet-$VERSION-osx.dmg $BUILDS || true
   kill $QEMU_PID
   TIME_MACOSX=$(($(date +%s) - $START_TIME))
 }
@@ -166,12 +166,11 @@ rm -rf AndroidData
 cd $BUILDDIR/commandergenius
 ./changeAppSettings.sh -a
 android update project -p project
-PATH=$PATH:/opt/android-sdk/build-tools/23 ./build.sh
+./build.sh
 { jarsigner -verbose -keystore ~/.android/release.keystore -storepass $PASS \
   -sigalg MD5withRSA -digestalg SHA1 \
   project/bin/MainActivity-release-unsigned.apk androidreleasekey; } 2>/dev/null
-/opt/android-sdk/build-tools/23/zipalign 4 \
-  project/bin/MainActivity-release-unsigned.apk \
+zipalign 4 project/bin/MainActivity-release-unsigned.apk \
   project/bin/MainActivity-release.apk
 mv project/bin/MainActivity-release.apk $BUILDS/DDNet-${VERSION}.apk
 TIME_ANDROID=$(($(date +%s) - $START_TIME))
