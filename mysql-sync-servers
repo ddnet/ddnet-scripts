@@ -1,0 +1,73 @@
+# USE CSSH
+
+#inform players
+abc
+Due to fixes to the databases /save and map finishes WILL BE LOST\nand you can't see your ranks! Broadcasts will follow when we're done!<ENTER>
+
+# create dumps
+mysqldump -u teeworlds -p'TOPSECRET' --no-create-info --skip-add-drop-table --insert-ignore teeworlds > teeworlds_.sql
+
+# clear tables
+mysql -u teeworlds -p'TOPSECRET' teeworlds
+
+truncate table record_maps;
+truncate table record_points;
+truncate table record_race;
+truncate table record_saves;
+truncate table record_teamrace;
+
+exit
+
+# inform players that critical situation is over
+abc
+The most critical situation is now over, it will still take\na while until your ranks will be visible again! /save and\nfinishes should work again.<ENTER>
+
+# copy dumps to fra
+scp teeworlds_.sql ddnet.tw:/home/teeworlds
+
+# USE SSH TO FRA
+
+# primary keys
+mysql -u teeworlds -p'TOPSECRET' teeworlds
+
+alter table record_maps add primary key (Map, Server, Points, Stars, Mapper, Timestamp);
+alter table record_race add primary key (Map, Name, Timestamp, Time, Server, cp1, cp2, cp3, cp4, cp5, cp6, cp7, cp8, cp9, cp10, cp11, cp12, cp13, cp14, cp15, cp16, cp17, cp18, cp19, cp20, cp21, cp22, cp23, cp24, cp25);
+alter table record_teamrace add primary key (Map, Name, Timestamp, Time, ID);
+
+exit
+
+# import all dumps (for every server)
+mysql -u teeworlds -p'TOPSECRET' teeworlds < teeworlds_.sql
+
+# USE CSSH
+
+# inform players that points wont be visible
+abc
+Because of database fixes last night the\npoints will now be recalculated!\nDon't panic, you won't see your points for a\nfew minutes, information will follow.<ENTER>
+
+# USE SSH TO FRA
+
+# recalculate points
+mysql -u teeworlds -p'TOPSECRET' teeworlds
+
+DROP TABLE record_points;
+
+CREATE TABLE
+record_points (Name VARCHAR(16) BINARY NOT NULL, Points INT DEFAULT 0, UNIQUE KEY Name (Name)) CHARACTER SET utf8 ;
+
+INSERT INTO record_points (Name, Points)
+    SELECT Name, sum(pt) FROM (SELECT (m.Points) AS pt, r.Name
+    FROM record_race r
+            LEFT JOIN record_maps m
+                ON r.Map = m.Map
+            GROUP BY r.Map, r.Name) a
+        GROUP BY a.Name
+        HAVING sum(pt) > 0;
+
+exit
+
+# USE CSSH
+
+# inform players that points are done
+abc
+Your ranks and points should now be correct and visible again!\nWe're sorry for all ranks that got lost during the process.<ENTER>

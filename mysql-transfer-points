@@ -1,0 +1,25 @@
+# transfer ranks and points from player "name2" to player "name1"
+set @update = 'name1';
+set @remove = 'name2';
+
+
+# optional (to make sure "name1" was "name2")
+    # look at the last ranks of "name2"
+    select Timestamp from record_race where Name=@remove;
+    # check their points
+    select * from record_points where Name=@update or Name=@remove;
+
+
+# check if they have teamranks together
+select ID, count(*) c from (select ID from record_teamrace where Name=@update or Name=@remove) as x group by ID having c > 1;
+# if this returns nothing its fine otherwise the players have teamranks together which is forbidden, you can't have ranks with yourself
+
+# reset optionally
+update record_points set Points=0 where Name=@update;
+
+# transfer
+update record_race set Name=@update where Name=@remove;
+update record_teamrace set Name=@update where Name=@remove;
+insert ignore into record_points (Name) values (@update);
+update record_points p1, record_points p2 set p1.Points = p1.Points + p2.Points where p1.Name=@update and p2.Name=@remove;
+delete from record_points where Name=@remove;
