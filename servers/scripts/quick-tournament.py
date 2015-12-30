@@ -45,7 +45,7 @@ menuText = '<ul>\n'
 for type in types:
   menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type)
 menuText += '</ul>'
-print header("Quick Tournament #37 - DDraceNetwork", menuText, "")
+print header("Quick Tournament #40 - DDraceNetwork", menuText, "")
 
 f = open("tournament")
 tournamentMaps = []
@@ -288,8 +288,8 @@ with con:
     serversString += '</div>\n'
     serversString += '</div>\n'
 
-print '<div id="global" class="block div-tournament"><h2>Quick Tournament #37</h2>'
-print '<p>This tournament is played on Sunday, 2015-08-02 at 20:00 CEST.</p>'
+print '<div id="global" class="block div-tournament"><h2>Quick Tournament #40</h2>'
+print '<p>This tournament is played on Sunday, 2015-12-20 at 20:00 CET.</p>'
 print '</div>'
 print '<div id="serverranks" style="display: ">'
 print serversString

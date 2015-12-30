@@ -9,6 +9,22 @@ from cgi import escape
 reload(sys)
 sys.setdefaultencoding('utf8')
 
+def printExactSoloRecords2(recordName, className, topFinishes):
+  string = u'<div class="block2 %s"><h4>%s:</h4>\n' % (className, recordName)
+  if len(topFinishes) > 0:
+    string += '<table class="tight">\n'
+    for f in topFinishes:
+      if f[4] > 1:
+        mbS = "es"
+      else:
+        mbS = ""
+      #string += u'  <tr title="%s, %s, %d finish%s total"><td class="rank">%d.</td><td class="time">%s</td><td><a href="%s">%s</a></td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[4], mbS, f[0], escape(formatTimeExact(f[2])), escape(playerWebsite(u'%s' % f[1])), escape(f[1]))
+      string += u'  <tr title="%s, %s, %d finish%s total"><td class="rank">%d.</td><td class="time">%s</td><td><img src="/countryflags/%s.png" alt="%s" height="15" /></td><td><a href="%s">%s</a></td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[4], mbS, f[0], escape(formatTimeExact(f[2])), f[5], f[5], escape(playerWebsite(u'%s' % f[1])), escape(f[1]))
+    string += '</table>\n'
+  string += '</div>\n'
+
+  return string
+
 def printFooter():
   print """
   </section>
@@ -60,12 +76,13 @@ for type in types:
   menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type)
 menuText += '</ul>'
 
-print header("Quick Tournament #23 - DDraceNetwork", menuText, "")
+print header("Quick Tournament #38 - DDraceNetwork", menuText, "")
 
 f = open("tournament")
 tournamentMaps = []
 for line in f:
-  tournamentMaps.append(line.rstrip('\n'))
+  words = line.rstrip('\n').split('|')
+  tournamentMaps.append(tuple(words))
 
 with con:
   cur = con.cursor()
@@ -83,24 +100,16 @@ with con:
 
     maps[type] = []
 
-    for line in f:
-      words = line.rstrip('\n').split('|')
-      if len(words) == 0 or not words[0].isdigit():
+    for x in tournamentMaps:
+      thisType, stars, originalMapName, mapperName = x
+
+      if thisType != type:
         continue
 
-      stars = int(words[0])
+      stars = int(stars)
 
       totalPoints += globalPoints(type, stars)
       totalServerPoints += globalPoints(type, stars)
-
-      originalMapName = words[1]
-      if len(words) > 2:
-        mapperName = words[2]
-      else:
-        mapperName = ""
-
-      if originalMapName not in tournamentMaps:
-        continue
 
       mapName = normalizeMapname(originalMapName)
 
@@ -183,7 +192,7 @@ with con:
       countFinishes = 0
 
       try:
-        cur.execute("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, maxTimestamp from (select * from record_race where Map = '%s') as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp, max(Timestamp) as maxTimestamp from record_race where Map = '%s' group by Name order by minTime ASC) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTime;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
+        cur.execute("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, maxTimestamp, Server from (select * from record_race where Map = '%s') as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp, max(Timestamp) as maxTimestamp from record_race where Map = '%s' group by Name order by minTime ASC) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTime;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
         rows = cur.fetchall()
       except:
         pass
@@ -217,14 +226,14 @@ with con:
         if row[0] not in players:
           players[row[0]] = Player({}, {})
         if originalMapName not in players[row[0]].maps:
-          players[row[0]].maps[originalMapName] = PlayerMap(0, currentRank, globalPoints(type, stars), row[3], row[4], row[1])
+          players[row[0]].maps[originalMapName] = PlayerMap(currentRank, globalPoints(type, stars), row[3], row[4], row[1])
         else:
           players[row[0]].maps[originalMapName] = PlayerMap(players[row[0]].maps[originalMapName][0], currentRank, globalPoints(type, stars), row[3], row[4], row[1])
 
         if currentPosition > 20:
           continue
 
-        ranks.append((currentRank, row[0], row[1], row[2], row[3]))
+        ranks.append((currentRank, row[0], row[1], row[2], row[3], row[6]))
 
         if row[0] in rankLadder:
           rankLadder[row[0]] += points(currentRank)
@@ -295,7 +304,7 @@ with con:
 
       mapsString += u'<div class="block3 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" /></a>%s<br/><span title="%s">%d tee%s finished%s</span></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime))
       #mapsString += printTeamRecords("Team Records", "teamrecords", teamRanks)
-      mapsString += printExactSoloRecords("Records", "records", ranks)
+      mapsString += printExactSoloRecords2("Records", "records", ranks)
       mapsString += '<br/>\n'
 
     serverPointsRanks = sorted(serverPointsLadder.items(), key=lambda r: r[1], reverse=True)
@@ -313,8 +322,8 @@ with con:
 #teamrankRanks = sorted(teamrankLadder.items(), key=lambda r: r[1], reverse=True)
 #rankRanks = sorted(rankLadder.items(), key=lambda r: r[1], reverse=True)
 
-print '<div id="global" class="block div-tournament"><h2>Quick Tournament #30</h2>'
-print '<p>This tournament was played on 2015-04-05 from 20:00 to 21:30 CEST.</p>'
+print '<div id="global" class="block div-tournament"><h2>Quick Tournament #38</h2>'
+print '<p>This tournament was played on 2015-08-30 from 20:00 to 21:00 CEST.</p>'
 #print printLadder(teamrankRanks)
 print '</div>'
 print '<div id="serverranks" style="display: ">'

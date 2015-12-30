@@ -1,18 +1,13 @@
-$add_vote "Make sure noone is racing before voting!" "info"
+$add_vote "Make sure no one is racing before voting!" "info"
 $add_vote "Random Moderate Map" "random_map"
 $add_vote "Random Moderate Map Unfinished by Vote Caller" "random_unfinished_map"
 
 ─── NEW MAPS ───
-3|DeathHook|Pandoru & =xPeke=
-2|High Five|Zerodin
-4|Boo!|TyxpekCZ
-3|NightSky|Zaiross
-1|Planet Jupiter|Aoe
-3|Caventure II|Meliodafu
-5|Temple of Doom|Hindu & Zerodin
-5|Eternal 2|Welf
-1|Mirage|Juandissimo
-3|Hyper|Knight :3
+4|Excast 4|Åmol
+3|NightSky3|Zaiross
+4|Conscientious|Fňokurka oo7
+2|Exit|fikmesån & imp
+4|HookThrough3|[A] Awesome
 
 ─── MAPS WITH SOUND ───
 3|Spooky|Ama
@@ -20,9 +15,13 @@ $add_vote "Random Moderate Map Unfinished by Vote Caller" "random_unfinished_map
 
 ─── DUMMY MAPS ───
 1|Caventure|Meliodafu
+3|Caventure II|Meliodafu
+3|Caventure III|Meliodafu
 4|Escape from the Prison|IRGNW
 2|JustCopyFly|Vasten100
 2|Samsara|Meliodafu
+3|Samsara II|Meliodafu
+3|Samsara III|Meliodafu
 3|TakeUrLuggage|Tuna & ٭ıƞdex'<3
 
 ─── 3 PLAYER MAPS ───
@@ -35,25 +34,28 @@ $add_vote "Random Moderate Map Unfinished by Vote Caller" "random_unfinished_map
 4|0 to 100|Silex & Captain
 2|2 easy for u|Ray
 5|acan|Suppe
-4|Aequilibrium|Bixes
+5|Aequilibrium|Bixes
 4|Aftermath|٭ıƞdex'<3
 4|Afternoon|Hindu
 3|Against the Current|Themix
 4|AK|aMu & Kayumi
 2|a_simple_run|=CuBe=
-4|BackToBasics2|Shorefire
+4|Baby Aim 1.0|Aoe
+5|Baby Aim 2.0|Aoe
 5|BackToBasics|Shorefire
+4|BackToBasics2|Shorefire
+4|Boo!|TyxpekCZ
 4|Bootcamp #1|.me'
 3|Bootcamp #2|.me'
 3|Brony|Ama
+3|Broken hammer|BannZay
 4|Brown|Stervella
 4|Bubbles|Megaman
 2|Captain America|Ama
-1|Castle|Ama
+2|Castle|Ama
 3|Castle Lemongrab|RaiNy
 3|Caution|mikey12
 2|Cavings I|Ama
-5|Cemetery|{E}{L}{I}{T}{E} & ٭ıƞdex'<3
 4|Challenge|.me'
 4|Chevtzo|Kosho
 4|Circle|Saavik
@@ -63,11 +65,16 @@ $add_vote "Random Moderate Map Unfinished by Vote Caller" "random_unfinished_map
 5|Construction I|FakeDeath
 4|Cross|hannibal
 2|Cry|Hitomi
+1|Cup of Tee|Fňokurka oo7
+0|CYO|=CuBe=
 5|DarkRoad|=Typhoon=
 5|Dawn To Dusk|mikey12
 1|DayDrive|BlaGK
 5|Day One|Vasten100
+5|Day Two|Vasten100
+3|Daunell|Evoli
 5|Dead|Knight :3
+3|DeathHook|Pandoru & =xPeke=
 5|Death Sentence 2|Bixes & Themix
 3|Doable|Skeptar
 3|Dummy 2|Nigel
@@ -76,13 +83,16 @@ $add_vote "Random Moderate Map Unfinished by Vote Caller" "random_unfinished_map
 4|Easy Edge|Zerodin
 3|Easy Hook|Zerodin
 5|Elitissimo|Juandissimo & {E}{L}{I}{T}{E}
+5|Empty|IRGNW
 4|Entei|Zerodin
 4|Eternal|Welf
+5|Eternal 2|Welf
 2|Etna_1|Etna
 3|Excast|Åmol
 5|Excast 2|Åmol
 4|Excast 3|Åmol
 4|FaCe|Zerodin
+5|Fall & Rise|Meliodafu
 2|FastRun|Hitomi
 1|faye|Suppe
 4|Fender|Scratchy <3
@@ -104,6 +114,7 @@ $add_vote "Random Moderate Map Unfinished by Vote Caller" "random_unfinished_map
 2|HellGate 3.5|Hitomi
 4|HellGate X|Hitomi
 4|Herbstzeitlose|Skeptar & MµhBoµ
+2|High Five|Zerodin
 4|Holiday Adventure|Themix
 2|Hollow|Ama
 1|Hollow 2|Ama
@@ -113,6 +124,8 @@ $add_vote "Random Moderate Map Unfinished by Vote Caller" "random_unfinished_map
 4|Humpalumpa 1|aMu
 4|Humpalumpa 2|aMu
 5|HURT|MarvinProductions
+3|Hyper|Knight :3
+3|Hyper 2|Knight :3
 4|Ice Cave 1|DoNe & Various Mappers
 4|Ice Cave 2|DoNe & Various Mappers
 1|Intense 1.0|Elephant
@@ -133,12 +146,14 @@ $add_vote "Random Moderate Map Unfinished by Vote Caller" "random_unfinished_map
 5|MapleSyrup|Maple
 5|Maranko|{E}{L}{I}{T}{E}
 4|Mario_reloaded|Destoros
-1|MiddleFinger|Virus2k
+2|MiddleFinger|Virus2k
 5|Midnight|Hindu
 4|Minimum|Knight :3
 5|minion|Anqel
+1|Mirage|Juandissimo
 1|MonkeyDream|Gridwyn
 2|MonkeyDream 2|Gridwyn
+4|Monster|Fňokurka oo7
 3|moondrag|Shorefire
 3|MoonPie|Hindu
 4|Motherlode|SickCunt
@@ -149,14 +164,19 @@ $add_vote "Random Moderate Map Unfinished by Vote Caller" "random_unfinished_map
 4|New Era|Silex
 2|Next Grey|Themix
 4|NiggoDrag|Bossk
+3|NightSky|Zaiross
+3|NightSky2|Zaiross
 4|No Merci|Chill [TD]
 3|Not Adrenaline 4|Silex & Kintaro*
 5|NUT Hardcore UNITED|Zeta-Hoernchen
 3|One Way|Destoros
+5|Optimum|Knight :3
+1|Outbreak|Meliodafu
 2|P2Z_Crungle|cris
 3|P2Z_DeadlyJungle|cris
 4|P2Z_Island|cris
 3|P2Z_Soar|cris
+4|Past|imp
 2|Peaceful Jungle|Themix
 4|Peaceful Jungle 2|Themix
 2|Piranha|Hindu
@@ -165,11 +185,13 @@ $add_vote "Random Moderate Map Unfinished by Vote Caller" "random_unfinished_map
 3|Plan A|Zerodin
 3|Plan B|Zerodin
 3|Plan C|Zerodin
+1|Planet Jupiter|Aoe
 2|Plue|Hake
 3|PreciousDream|٭ıƞdex'<3
 5|Primeval Forest|Silex
 3|Purple Panic 3|Anqel
 3|PurpleViolence|Vasten100
+3|Push him|Welf
 4|Rainbow Sunrise|.me'
 4|Rapture|Bixes
 4|Ray - 2|Ray
@@ -191,6 +213,9 @@ $add_vote "Random Moderate Map Unfinished by Vote Caller" "random_unfinished_map
 2|[SI] INSTINCT|Ama
 2|[SI] KABOO|Ama
 2|[SI] LAVITA|Ama
+0|SimplePlay|SBL
+0|SimplePlay 2|SBL
+0|SimplePlay 3|SBL
 2|Simple World|<BµmM>
 2|Simple World 2|<BµmM>
 3|Simple World 3|<BµmM>
@@ -199,7 +224,8 @@ $add_vote "Random Moderate Map Unfinished by Vote Caller" "random_unfinished_map
 3|[SI] VIADANTE|Hitomi
 2|[SI] YELLOW|Hitomi
 3|SkiLLz|SkiLLz
-2|SkyFly|Rod Slide
+2|SkyFly|=xPeke=
+1|Slime|TyxpekCZ
 3|Slow Santa|Ray
 2|SomewhereDistant|٭ıƞdex'<3
 3|Sonne, Mond und Sterne|Skeptar & Punica
@@ -208,8 +234,11 @@ $add_vote "Random Moderate Map Unfinished by Vote Caller" "random_unfinished_map
 2|SunDay|Gridwyn
 5|SunDay 2|Gridwyn
 4|SunDay 3|Gridwyn
+3|Sunreal|Themix
 5|Sunrice|Zerodin
+2|Sunny Land|Themix
 4|Swoosh|mikey12
+5|Temple of Doom|Hindu & Zerodin
 4|Tetris|Waschlappen
 2|The Beginning|EpicIceTee
 4|The Problem|Zerodin
@@ -224,6 +253,7 @@ $add_vote "Random Moderate Map Unfinished by Vote Caller" "random_unfinished_map
 5|Tube|Chill [TD]
 2|Twix|Knight :3
 5|Underwater|Stalker
+1|Vizur 2|Seba0006
 3|WEEDS|Scratchy <3
 3|Wrong Forest|Zerodin
 3|Zoroark|Zerodin

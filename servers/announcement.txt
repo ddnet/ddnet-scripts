@@ -1,15 +1,20 @@
-Check out DDNet's Teamspeak server by laxa on ts.ddnet.tw
-When you want to change map make sure noone is currently racing!
-Don't block. Often the race progress is being delayed by blocking players. And only some of them do it on purpose.
-When you dont know what to do in a challenge, try to stay away from the action. Find a place from where you can have a look at the other tees without blocking them.
-Most communication in DDRace is not via chat. Watch the behavior of other tees. Teeworlds allows to show very different expressions. Observe other tees and try to understand what they want from you or others.
-Don't leave anyone. Often a group of racing tees fails because everyone tried to do the challenge alone. One by one fails.
-Add DDraceNetwork to your favorites!
+Check out DDNet's TeamSpeak server hosted by laxa on ts.ddnet.tw
+When you want to change map make sure no one is currently racing!
+Don't block! Often the race progress is being delayed by blocking players. And only some of them do it on purpose.
+When you don't know what to do in a challenge, try to stay away from the action. Find a place from where you can have a look at the other tees without blocking them.
+Watch the behavior of other tees. Most communication in DDRace is not via chat. Observe other tees and try to understand what they want from you or others.
+Teamwork is important! Often a group of racing tees fails because everyone tried to do the challenge alone - one by one fails.
+Add DDraceNetwork servers to your favorites!
 You should always help first when there is a tee that needs help. Leaving stuck tees behind could be a fatal fault, because that tee could be the one who rescues you next time.
-DDraceNetwork supports team ranks! Play in team, get a /rankteam and you will appear in the /top5team
-DDraceNetwork has a points system! For every map you finish you earn points. Check your current points with /points and compare yourself to the /top5points
+DDraceNetwork supports team ranks! Play in team, get a /rankteam and try to appear in the /top5team
+DDraceNetwork has a points system! For every map you finish you earn points, depending on its difficulty. Check your current /points and compare yourself to the /top5points
 DDraceNetwork always welcomes creative maps you made and ideas for new DDRace features you have.
 You can compare your points, global rank and team rank on DDraceNetwork's website: http://ddnet.tw
 Mappers looking to map using our new features can get our server and client on our website: http://ddnet.tw
-When you get blocked in the noob filter do not kick the blocker but instead join a team.
+When you get blocked in the noobfilter do not kick the blocker but instead join a /team.
 Keep up to date with new map releases on http://ddnet.tw/releases
+Like us on Facebook! facebook.com/DDraceNetwork
+Everyone can help test and release new maps! Visit Map Testing section on our Forum for more info.
+We need your support! Donate to DDNet to make it run longer.
+Good luck in your race!
+Join our community and register on http://forum.ddnet.tw/

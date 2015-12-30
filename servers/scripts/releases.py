@@ -29,7 +29,7 @@ menuText = '<ul>\n'
 menuText += '<li><a href="/releases/">Recent Releases</a></li>\n'
 menuText += '<li><a href="/releases/all/">All Releases</a></li>\n'
 menuText += '</ul>'
-print header("Recent Map Releases - DDraceNetwork", menuText, "")
+print header("Recent Map Releases - DDraceNetwork", menuText, "", otherIncludes='<link rel="alternate" type="application/atom+xml" title="Planned Map Releases" href="feed/">')
 
 f = open("releases")
 releases = []
@@ -81,11 +81,13 @@ for x in releases:
   except IOError:
     pass
 
-  mapsString += u'<div class="blockreleases release" id="map-%s"><h2 class="inline"><a href="/ranks/%s">%s Server</a></h2><br/><h3 class="inline">%s</h3><br/><h3 class="inline"><a href="/ranks/%s/#map-%s">%s</a></h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" /></a>%s<br/></div>\n' % (escape(mapName), server.lower(), server, date, server.lower(), escape(normalizeMapname(originalMapName)), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(server, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo)
+  mapsString += u'<div class="blockreleases release" id="map-%s"><h2 class="inline"><a href="/ranks/%s">%s Server</a></h2><br/><h3 class="inline">%s</h3><br/><h3 class="inline"><a href="/ranks/%s/#map-%s">%s</a></h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" /></a>%s<br/></p></div>\n' % (escape(mapName), server.lower(), server, date, server.lower(), escape(normalizeMapname(originalMapName)), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(server, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo)
 
 serversString += mapsString
 serversString += '<span class="stretch"></span></div>\n'
 
 print '<div id="global" class="block"><h2>Recent Map Releases</h2><br/>'
+print '<a href="feed/"><img src="/feed.svg"/></a> You can subscribe to the feed to get updated about new map releases'
+print '<p>Planned Map Releases are listed <a href="//forum.ddnet.tw/viewtopic.php?f=9&t=1474">in the forum</a></p>'
 print serversString
 printFooter()

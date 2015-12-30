@@ -150,6 +150,6 @@ with con:
 
     motdMap = '│ %s%s\\n│ Difficulty: %s (%d Point%s)' % (originalMapName, mbMapperName, pointsText, points, mbS)
 
-    with open('data/maps/%s.map.cfg' % originalMapName, 'w') as cfg:
+    with open('maps/%s.map.cfg' % originalMapName, 'w') as cfg:
       #cfg.write(execString + "\n")
       cfg.write(motdSkeleton % (serverStrings[server], localString, motdMap, motdNews))

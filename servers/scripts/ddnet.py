@@ -198,7 +198,7 @@ def splitMappers(mapperName):
     names = names[:-1] + names[-1].split(" & ")
   return names
 
-def makeAndString(names):
+def makeAndString(names, ampersand = "&"):
   if len(names) < 1:
     return ""
 
@@ -210,7 +210,7 @@ def makeAndString(names):
     if result:
       result += ", "
     result += name
-  result += " & " + names[-1]
+  result += " " + ampersand + " " + names[-1]
   return result
 
 def formatRank(rank):
@@ -635,11 +635,11 @@ def printStatus(name, servers, doc, external = False):
 
   print '<p class="toggle"><a title="Click to toggle whether empty servers are shown" href="#" onclick="showClass(\'empty\'); return false;">Show empty servers</a></p>'
 
-  #if name == "DDraceNetwork":
-  #  try:
-  #    print getTSStatus()
-  #  except:
-  #    pass
+  if name == "DDraceNetwork":
+    try:
+      print getTSStatus()
+    except:
+      pass
 
   players = None
   with open('%s/playerNames.msgpack' % webDir, 'rb') as inp:

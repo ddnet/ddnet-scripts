@@ -68,7 +68,7 @@ with con:
   cur.execute("select record_race.Server, year(record_race.Timestamp), month(record_race.Timestamp), day(record_race.Timestamp), sum(Points) from record_race join record_maps on record_race.Map = record_maps.Map group by record_race.Server, year(record_race.Timestamp), month(record_race.Timestamp), day(record_race.Timestamp) order by record_race.Server, record_race.Timestamp;")
   rows = cur.fetchall()
   countryPoints = ""
-  oldServer = ""
+  oldServer = None
 
   for row in rows:
     server = row[0]
@@ -99,7 +99,7 @@ with con:
   cur.execute("select record_maps.Server, year(record_race.Timestamp), month(record_race.Timestamp), day(record_race.Timestamp), sum(Points) from record_race join record_maps on record_race.Map = record_maps.Map group by record_maps.Server, year(record_race.Timestamp), month(record_race.Timestamp), day(record_race.Timestamp) order by record_maps.Server, record_race.Timestamp;")
   rows = cur.fetchall()
   serverPoints = ""
-  oldServer = ""
+  oldServer = None
 
   with open("all-types") as f:
     for server in reversed(f.read().rstrip('\n').split(' ')):
@@ -189,15 +189,19 @@ for server, dates in maps.iteritems():
 
 # Players by Country
 players = OrderedDict()
+startDate2 = None
 with open('%s/status/csv/bycountry' % webDir) as f:
   for line in f:
     tokens = line.rstrip('\n').split(',')
     date = datetime.strptime(tokens[0], '%Y-%m-%d %H:%M')
+    if not startDate2:
+      startDate2 = date
     for token in tokens[1:]:
       sn = token.split(':')
       if sn[0] not in players:
         players[sn[0]] = {}
       players[sn[0]][date] = int(sn[1])
+
 p = ""
 scale = 30
 for server, dates in players.iteritems():
@@ -232,18 +236,56 @@ for server, dates in players.iteritems():
     pos = (pos + 1) % scale
   p += n + "]}"
 
+p3 = ""
+scale = 720
+for server, dates in players.iteritems():
+  if dates.keys()[0] < startDate2:
+    startDate2 = dates.keys()[0]
+for server, dates in players.iteritems():
+  if len(p3) > 0:
+    p3 += ", "
+  p3 += "{name: '%s', pointInterval: %d * 2 * 60 * 1000, pointStart: Date.UTC(%d,%d,%d,%d,%d), data: [" % (server, scale, startDate2.year, startDate2.month-1, startDate2.day, startDate2.hour, startDate2.minute)
+  n = ""
+  pos = 1
+  aggNum = 0
+  lastDate = startDate2
+  for date, num in sorted(dates.iteritems()):
+    currDate = datetime(date.year, date.month, date.day, date.hour, date.minute)
+    lastDate += timedelta(minutes=2)
+    while lastDate < currDate:
+      lastDate += timedelta(minutes=2)
+      if pos == 0:
+        if len(n) > 0:
+          n += ", "
+        n += "%s" % (aggNum / 30)
+        aggNum = 0
+      pos = (pos + 1) % scale
+
+    aggNum += num
+    if pos == 0:
+      if len(n) > 0:
+        n += ", "
+      n += "%s" % (aggNum / 30)
+      aggNum = 0
+    pos = (pos + 1) % scale
+  p3 += n + "]}"
+
 # Players by Mod
 players = OrderedDict()
+startDate2 = None
 with open('%s/status/csv/bymod' % webDir) as f:
   for line in f:
     tokens = line.rstrip('\n').split(',')
     date = datetime.strptime(tokens[0], '%Y-%m-%d %H:%M')
+    if not startDate2:
+      startDate2 = date
     for token in tokens[1:]:
       sn = token.split(':')
       if sn[0] not in players:
         players[sn[0]] = {}
       players[sn[0]][date] = int(sn[1])
 p2 = ""
+scale = 30
 for server, dates in players.iteritems():
   if len(p2) > 0:
     p2 += ", "
@@ -276,6 +318,37 @@ for server, dates in players.iteritems():
     pos = (pos + 1) % scale
   p2 += n + "]}"
 
+p4 = ""
+scale = 720
+for server, dates in players.iteritems():
+  if len(p4) > 0:
+    p4 += ", "
+  p4 += "{name: '%s', pointInterval: %d * 2 * 60 * 1000, pointStart: Date.UTC(%d,%d,%d,%d,%d), data: [" % (server, scale, startDate2.year, startDate2.month-1, startDate2.day, startDate2.hour, startDate2.minute)
+  n = ""
+  pos = 1
+  aggNum = 0
+  lastDate = startDate2
+  for date, num in sorted(dates.iteritems()):
+    currDate = datetime(date.year, date.month, date.day, date.hour, date.minute)
+    lastDate += timedelta(minutes=2)
+    while lastDate < currDate:
+      lastDate += timedelta(minutes=2)
+      if pos == 0:
+        if len(n) > 0:
+          n += ", "
+        n += "%s" % (aggNum / 30)
+        aggNum = 0
+      pos = (pos + 1) % scale
+
+    aggNum += num
+    if pos == 0:
+      if len(n) > 0:
+        n += ", "
+      n += "%s" % (aggNum / 30)
+      aggNum = 0
+    pos = (pos + 1) % scale
+  p4 += n + "]}"
+
 otherIncludes = '<script type="text/javascript" src="js/jquery.min.js"></script>'
 with open('scripts/stats.js') as f:
   otherIncludes += '<script type="text/javascript">' + f.read() + '</script>'
@@ -303,7 +376,7 @@ for server, item in countryRecords.iteritems():
     countryRecordsString += ", "
   countryRecordsString += '<span title="%s">%s: %d</span>' % (date, server, record)
 
-print text % (p, p2, finishes, countryPoints, serverPoints, m, nrMaps, nrPlayers, nrRanks, timeRanks, timeRanksYesterday, countryRecordsString)
+print text % (p, p2, p3, p4, finishes, countryPoints, serverPoints, m, nrMaps, nrPlayers, nrRanks, timeRanks, timeRanksYesterday, countryRecordsString)
 
 print """</section>
 </article>

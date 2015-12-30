@@ -6,12 +6,12 @@ from collections import OrderedDict
 
 servers = OrderedDict([
     ("GER", ("ger.ddnet.tw", "DDNet GER"))
+  , ("RUS", ("rus.ddnet.tw", "DDNet RUS"))
   , ("USA", ("usa.ddnet.tw", "DDNet USA"))
   , ("CAN", ("can.ddnet.tw", "DDNet CAN"))
-  , ("RUS", ("rus.ddnet.tw", "DDNet RUS"))
   , ("CHN", ("chn.ddnet.tw", "DDNet CHN"))
   , ("CHL", ("chl.ddnet.tw", "DDNet Chile"))
-  , ("BRA", ("br.ddnet.tw", "DDNet Brazil"))
+  , ("BRA", ("br.ddnet.tw",  "DDNet Brazil"))
   , ("ZAF", ("zaf.ddnet.tw", "DDNet South Africa"))
   #, ("IRN", ("irn.ddnet.tw", "DDNet Persian"))
   ])

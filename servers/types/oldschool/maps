@@ -1,19 +1,8 @@
-$add_vote "Make sure noone is racing before voting!" "info"
+$add_vote "Make sure no one is racing before voting!" "info"
 $add_vote "Random Oldschool Map" "random_map"
 $add_vote "Random Oldschool Map Unfinished by Vote Caller" "random_unfinished_map"
 
-─── NEW MAPS ───
-1|Troj|El Futuro
-3|Flyppi|triki
-1|HDP_Zinderencio|El Futuro
-
-─── UNFINISHED MAPS ───
-5|Stereotype 2|DarkKenny
-5|Stereotype 3|DarkKenny
-5|Stereotype 4|DarkKenny
-5|Stereotype 5|DarkKenny
-
-─── OTHER OLDSCHOOL MAPS ───
+─── OLDSCHOOL MAPS ───
 1|1TeeMap
 1|AiP-Gores|Zarnexxx
 1|Amor 1|Amor
@@ -46,6 +35,7 @@ $add_vote "Random Oldschool Map Unfinished by Vote Caller" "random_unfinished_ma
 2|experiment|=CuBe=
 4|Fahrenheit|Epic Fail & Zikkie
 3|FLAP|Cøke & Moby Dog
+3|Flyppi|triki
 3|FreeDoom|???
 1|Freeze Slow 1|Silex
 1|Freeze Slow 2|Silex
@@ -63,13 +53,15 @@ $add_vote "Random Oldschool Map Unfinished by Vote Caller" "random_unfinished_ma
 3|Hardcore 7|=CuBe= & Cøke
 4|Hardcore 8|=CuBe=
 3|Hardcore 9|=CuBe=
-2|Hardstyle 1|Zoo & Fuu
-2|Hardstyle 2|Zoo & Fuu
-4|Hardstyle 3|Zoo & Fuu
-4|Hardstyle 4|Zoo & Fuu
+2|Hardstyle 1|2oo & Fuu
+2|Hardstyle 2|2oo & Fuu
+4|Hardstyle 3|2oo & Fuu
+4|Hardstyle 4|2oo & Fuu
 1|HDP_Obstaculos|El Futuro
+1|HDP_Zinderencio|El Futuro
 2|Hell Ride|Cøke
 1|HellFly|=CuBe=
+1|himmel|-Sani-
 3|Illusion|DiViNe
 2|Imagination|Heaven
 2|Im No Superman 1|Moby Dog & Puffmusiker
@@ -80,7 +72,7 @@ $add_vote "Random Oldschool Map Unfinished by Vote Caller" "random_unfinished_ma
 2|Impossible 3|sMo0g
 3|Infinity|Silex & DiViNe
 2|Insanity|sMo0g
-4|Interlude|Zoo
+4|Interlude|2oo
 4|Interlude 2|FunCat
 3|Ironprison|Ezio
 2|Jailbreak 1|Kintaro*
@@ -125,12 +117,17 @@ $add_vote "Random Oldschool Map Unfinished by Vote Caller" "random_unfinished_ma
 4|ResidentSS|-Sani- & -Sozi-
 3|Sadway|Mustdie
 3|Stereotype 1|DarkKenny
+5|Stereotype 2|DarkKenny
+5|Stereotype 3|DarkKenny
+5|Stereotype 4|DarkKenny
+5|Stereotype 5|DarkKenny
 1|StoneHell-Gores|Jebeto
 2|StrangeNight
 5|Striped Clouds|Pokemon
 2|Synergy|estern
 1|Teestar|Kintaro*
 2|Tibto|Cøke & Moby Dog
+1|Troj|El Futuro
 3|Ultimatum 1|=CuBe=
 3|Ultimatum 2|=CuBe=
 3|Ultimatum 3|=CuBe=

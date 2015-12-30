@@ -1,16 +1,6 @@
-$add_vote "Make sure noone is racing before voting!" "info"
+$add_vote "Make sure no one is racing before voting!" "info"
 $add_vote "Random DDmaX Map" "random_map"
 $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
-
-─── NEW MAPS ───
-3|Xeno Race #1|Xeno
-2|Yin&Yang|Knight :3
-4|World of Magic|Captain
-
-3|Violet|Ama
-3|WinterMine|Alborq
-2|X-Cross|Bixes
-5|Woader|Destoros
 
 ─── DDRACEMAX.EASY MAPS ───
 1|Back to the Roots 1|Bixes
@@ -69,7 +59,7 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 2|Black Jungle|Monocerotis
 2|black-mountains|Welf
 3|black-mountains 2|Welf
-2|Blue & Yellow|Spy090
+2|Blue & Yellow|Evgesha
 1|Blue Adventures 1|Panda ♥
 3|BlueRift|Raze
 2|Blue Sky|SlowFox :3
@@ -77,9 +67,9 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 2|brainbase|Barracuda
 2|Brick World|SlowFox :3
 2|Brick World 2|SlowFox :3
-2|BSWL|Spy090
+2|BSWL|Evgesha
 2|Castle of Glass|Bixes
-3|Caveman
+3|Caveman|ShadowZ
 2|CCrush|H'ero*
 2|Chaos Factory|Anqel
 2|Chaos Factory 2|Anqel
@@ -159,7 +149,7 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 1|Impulse_03|=CuBe= & Kintaro*
 2|JLI 1|KaB & Tsin
 2|Jungle|KaB
-3|JustMap|Spy090
+3|JustMap|Evgesha
 2|KitKat 1|KBeeeR
 2|KitKat 2|KBeeeR
 4|LATOM|Scratchy <3
@@ -200,7 +190,7 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 3|S-Race 2|Scratchy <3
 2|secreT|Pfandpirat
 2|Shaxx|ussi
-2|SilentNight
+2|SilentNight|Habergnite
 2|Sky line|M@TR!X
 1|skynet1|szyker
 1|skynet2|szyker
@@ -238,19 +228,24 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 2|valentees|Tsin
 4|VeryLow1|ShadowZ
 4|VeryLow2|ShadowZ
+3|Violet|Ama
 2|Winter Dream|JeanneDark
+3|WinterMine|Alborq
+2|X-Cross|Bixes
+3|Xeno Race #1|Xeno
+2|Yin&Yang|Knight :3
 
 ─── DDRACEMAX.PRO MAPS ───
 5|#MegaRosenkohl|DaSpongi :> & DaGiese :>
 4|-Ikarus-|Bixes
-4|21
+4|21|645654 & maggi323
 5|Adrenaline 3|Silex
 4|Ambrosia
 3|Alpaga|Scratchy <3
 3|Arcade|RosenVerkäufer
 3|Arcade 2|RosenVerkäufer
 4|AreaOfEffect|Aoe
-5|At Night|Teen & Loop
+5|At Night|Teengoten & Loop
 4|~AuTuMn~|KBeeeR & .me'
 4|Beachmap|estern
 4|Besbex|SBL
@@ -330,7 +325,7 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 4|Notice 1|Avaron
 4|Ntumba|maggi323
 5|Outlet|YeahxX
-4|Paik
+4|Paik|Destoros
 5|Picklock|Nomlow
 4|Poke|Destoros
 4|Rampage|Captain
@@ -341,16 +336,19 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 5|Scabrous 2|NeoN
 4|Skyfly|[*MC*]-DuBai-.? & Destoros
 4|SkyIsland|Storm
+4|Skyisland2|Storm
 4|Skyisland3|Storm
-3|skynet compilation|szyker, Tsin & noother
+4|skynet compilation|szyker, Tsin & noother
 4|Space|Silex
 5|Summer Hell|Trax, Feuerball & Silex
 5|supernice|*WuDL*
 3|The Tower|Jeet
 5|Therapy|Ama
 5|TheWalkingDead|Ezio
-4|Think! 2
+4|Think! 2|Tvgucker
 4|Veni Vidi Vici|[*MC*]-DuBai-.?
 4|Volcano|[*MC*]-DuBai-.?
 4|whatever|eci.iN*
 4|Zephronikon|Jim-panse
+5|Woader|Destoros
+4|World of Magic|Captain
