@@ -1,17 +1,21 @@
 import json, osproc, os, times, strutils, tables
 
-type Data = object
-  network_rx, network_tx: BiggestInt
-  cpu, memory_used, memory_total, swap_used, swap_total: BiggestInt
-  load: float
+type
+  Data = object
+    network_rx, network_tx: BiggestInt
+    cpu, memory_used, memory_total, swap_used, swap_total: BiggestInt
+    load: float
 
-const statsJsonFile = "/var/www/status/json/stats.json"
-const rrdDir = "/home/teeworlds/rrd"
-const freq = 30
+const
+  statsJsonFile = "/var/www/status/json/stats.json"
+  rrdDir = "/home/teeworlds/rrd"
+  freq = 30 # report new data to rrd every 30 seconds
 
-var lastUpdated: BiggestInt = 0
-var dataTable = initTable[string, Data]()
-var count = 0
+var
+  lastUpdated: BiggestInt = 0
+  dataTable = initTable[string, Data]()
+  count = 0
+  countTable = initTable[string, int]()
 
 proc rrdCreate(file, dataSources: string) =
   discard execCmd("rrdtool create " & file & " --step 30 " & dataSources &
@@ -36,7 +40,10 @@ proc updateServer(server: JsonNode) =
     else:
       error "Unhandled type in Data object"
 
-  if count == freq:
+  inc countTable.mgetOrPut(domain, 0)
+
+  # Only save data if we got 30 values in the expected time span
+  if count == freq and countTable[domain] == freq:
     let data = dataTable[domain]
     if data == Data():
       dataTable.del(domain)
@@ -60,7 +67,6 @@ proc updateServer(server: JsonNode) =
     fileCpu.rrdUpdate(min(data.cpu div freq, 100), data.load / freq)
     fileMem.rrdUpdate(data.memory_used div freq, data.memory_total div freq, data.swap_used div freq, data.swap_total div freq)
 
-
 proc updateAllServers =
   let statsJson = parseFile statsJsonFile
   let newUpdated = parseBiggestInt statsJson["updated"].str
@@ -78,10 +84,12 @@ proc updateAllServers =
 
   if count == freq:
     count = 0
+    for val in countTable.mvalues:
+      val = 0
 
 while true:
   let startTime = epochTime()
 
   updateAllServers()
 
-  sleep(int(epochTime() - startTime + 1) * 1000) # every second right now
+  sleep(int(epochTime() - startTime + 1) * 1000) # every second

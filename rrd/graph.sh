@@ -5,11 +5,10 @@ RRD_DIR=/home/teeworlds/rrd
 net()
 {
   rrdtool graph $PNG_DIR/$1-net-$2.png --rigid \
-    --width $3 --height $4 -a PNG \
+    --width $3 --height $4 --logarithmic --units=si -a PNG \
     --vertical-label "Bytes/s" --start now-$2 \
     DEF:network_rx=$RRD_DIR/$1-net.rrd:network_rx:AVERAGE \
     DEF:network_tx=$RRD_DIR/$1-net.rrd:network_tx:AVERAGE \
-    CDEF:network_rx_neg=network_rx,-1,* \
     VDEF:network_rx_a=network_rx,AVERAGE \
     VDEF:network_rx_m=network_rx,MAXIMUM \
     VDEF:network_rx_c=network_rx,LAST \
@@ -21,8 +20,8 @@ net()
     GPRINT:network_tx_a:"avg\: %8.2lf %sB" \
     GPRINT:network_tx_m:"max\: %8.2lf %sB" \
     GPRINT:network_tx_c:"cur\: %8.2lf %sB\n" \
-    AREA:network_rx_neg#e0e0e0: \
-    LINE1:network_rx_neg#636363:"in " \
+    AREA:network_rx#e0e0e0: \
+    LINE1:network_rx#636363:"in " \
     GPRINT:network_rx_a:"avg\: %8.2lf %sB" \
     GPRINT:network_rx_m:"max\: %8.2lf %sB" \
     GPRINT:network_rx_c:"cur\: %8.2lf %sB\n"
