@@ -1,0 +1,5 @@
+1 sample = 30 seconds
+
+49 days = 141120 samples = 147 * 960 pixels, each pixel is 73:30 min
+ 7 days =  20160 samples =  42 * 480 pixels, each pixel is 21:00 min
+ 1 day  =   2880 samples =   6 * 480 pixels, each pixel is 03:00 min

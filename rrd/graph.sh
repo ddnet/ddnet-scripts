@@ -1,10 +1,11 @@
 #!/bin/sh
 PNG_DIR=/var/www/stats/server
 RRD_DIR=/home/teeworlds/rrd
+RRDTOOL=/opt/rrdtool-1.6.0/bin/rrdtool
 
 net()
 {
-  rrdtool graph $PNG_DIR/$1-net-$2.png --rigid \
+  $RRDTOOL graph $PNG_DIR/$1-net-$2.png --rigid \
     --width $3 --height $4 --logarithmic --units=si -a PNG \
     --vertical-label "Bytes/s" --start now-$2 \
     DEF:network_rx=$RRD_DIR/$1-net.rrd:network_rx:AVERAGE \
@@ -29,7 +30,7 @@ net()
 
 cpu()
 {
-  rrdtool graph $PNG_DIR/$1-cpu-$2.png --rigid --lower-limit -100 --upper-limit 100 \
+  $RRDTOOL graph $PNG_DIR/$1-cpu-$2.png --rigid --lower-limit -100 --upper-limit 100 \
     --width $3 --height $4 -a PNG \
     --vertical-label "load" --start now-$2 \
     DEF:cpu=$RRD_DIR/$1-cpu.rrd:cpu:AVERAGE \
@@ -54,9 +55,9 @@ cpu()
     CDEF:cload=load_raw,load_m,/,-100,\* \
     AREA:cpu#e0e0e0: \
     LINE1:cpu#636363:"cpu" \
-    GPRINT:cpu_a:"avg\: %8.0lf %%" \
-    GPRINT:cpu_m:"max\: %8.0lf %%" \
-    GPRINT:cpu_c:"cur\: %8.0lf %%\n" \
+    GPRINT:cpu_a:"avg\: %5.0lf %%" \
+    GPRINT:cpu_m:"max\: %5.0lf %%" \
+    GPRINT:cpu_c:"cur\: %5.0lf %%\n" \
     COMMENT:"load\:" \
     AREA:cload0#00FFFF80:"0..1      " \
     AREA:cload1#00D00080:"1..2      ":STACK \
@@ -64,14 +65,14 @@ cpu()
     AREA:cload3#FF000080:"3..4      ":STACK \
     AREA:cload4#FF00FF80:"> 4\n":STACK \
     LINE:cload#636363:"" \
-    GPRINT:load_a:"       avg\: %10.2lf" \
-    GPRINT:load_m:"max\: %10.2lf" \
-    GPRINT:load_c:"cur\: %10.2lf\n"
+    GPRINT:load_a:"       avg\: %7.2lf" \
+    GPRINT:load_m:"max\: %7.2lf" \
+    GPRINT:load_c:"cur\: %7.2lf\n"
 }
 
 mem()
 {
-  rrdtool graph $PNG_DIR/$1-mem-$2.png --rigid \
+  $RRDTOOL graph $PNG_DIR/$1-mem-$2.png --rigid \
     --width $3 --height $4 -a PNG \
     --vertical-label "Bytes/s" --start now-$2 \
     DEF:memory_used_raw=$RRD_DIR/$1-mem.rrd:memory_used:AVERAGE \
@@ -105,10 +106,10 @@ mem()
 }
 
 if [ "$1" = "49d" ]; then
-  WIDTH=960
+  WIDTH=935
   HEIGHT=100
 else
-  WIDTH=432
+  WIDTH=419
   HEIGHT=150
 fi
 

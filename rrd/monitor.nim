@@ -1,4 +1,4 @@
-import json, osproc, os, times, strutils, tables
+import common, json, osproc, os, times, strutils, tables
 
 type
   Data = object
@@ -6,10 +6,7 @@ type
     cpu, memory_used, memory_total, swap_used, swap_total: BiggestInt
     load: float
 
-const
-  statsJsonFile = "/var/www/status/json/stats.json"
-  rrdDir = "/home/teeworlds/rrd"
-  freq = 30 # report new data to rrd every 30 seconds
+const freq = 30 # report new data to rrd every 30 seconds
 
 var
   lastUpdated: BiggestInt = 0
@@ -18,7 +15,7 @@ var
   countTable = initTable[string, int]()
 
 proc rrdCreate(file, dataSources: string) =
-  discard execCmd("rrdtool create " & file & " --step 30 " & dataSources &
+  discard execCmd(rrdtool & " create " & file & " --step " & $freq & " " & dataSources &
     " RRA:AVERAGE:0.5:6:480 RRA:AVERAGE:0.5:42:480 RRA:AVERAGE:0.5:147:960")
 
 proc rrdUpdate(file: string, values: varargs[string, `$`]) =
@@ -27,7 +24,7 @@ proc rrdUpdate(file: string, values: varargs[string, `$`]) =
     if valuesString.len > 0:
       valuesString.add ":"
     valuesString.add value
-  discard execCmd("rrdtool update " & file & " N:" & valuesString)
+  discard execCmd(rrdtool & " update " & file & " N:" & valuesString)
 
 proc updateServer(server: JsonNode) =
   let domain = server["type"].str
