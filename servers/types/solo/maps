@@ -3,26 +3,32 @@ $add_vote "Random Solo Map" "random_map"
 $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 
 ─── NEW MAPS ───
+3|CHILLUMINATI|ChillerDragon
+3|Freezejump|Im 'corneum
+2|BlackBear3|RayB.
+2|RockClimb|Knight :3
+2|BlackBear2|RayB.
+2|BlackBear1|RayB.
+4|Sky Movement|Noved
+2|Gorou|Ryozuki
+2|Gedan|Vasten100
+4|Safe Place|Blue
 4|Sunburst2|ŊØṼÅ
 4|Network|Alvin Risk
 2|Rocket Player|RayB.
-1|Mud|Fňokurka oo7
-1|ctf5_solo|imp
-2|Delension|BamBam
-3|Maximum speed|BannZay
 
 ─── JETPACK MAPS ───
 2|deathpack|Electricitee
 1|Joyride|Zerodin
 2|Joyride 2|Zerodin
 4|Partenack|Themix
-3|PetJack|DoNe
-3|PetJack 2|DoNe
+3|PetJack|timakro
+3|PetJack 2|timakro
 3|ROCKET-BELT|Cøke
 3|SpeedCore|Alvin Risk
 
 ─── WALLJUMP MAPS ───
-3|Art of Movement|DoNe & Chill [TD]
+3|Art of Movement|timakro & Chill [TD]
 2|MojoJump|Vasten100
 2|WallJump|Kintaro*
 
@@ -35,7 +41,7 @@ $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 3|Exchange|Delo & Kintaro*
 0|Flappy Bird|Saavik
 1|HDP_OnOff|El Futuro
-1|Rollercoaster|DoNe
+1|Rollercoaster|timakro
 1|SpaceIsKey|Delo & Kintaro*
 
 ─── OTHER SOLO MAPS ───
@@ -72,16 +78,18 @@ $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 2|Chill Let's Climb 2|Chill [TD]
 3|Croissant|artkis
 4|Crooked Mind|Themix
+1|ctf5_solo|imp
 3|DatWay|Vasten100
 2|DayLight|٭ıƞdex'<3
 2|deadrun|Harbinger
+2|Delension|BamBam
 3|Desert Mine|Blue
 3|Duodecimo|Forris
 2|Dust's Leaf|IRGNW
 4|Enormous|Gambol
 2|Equity [Easy]|Pipou & 645654
 4|Equity [Hard]|Pipou & 645654
-3|Escape|DoNe & Chill [TD]
+3|Escape|timakro & Chill [TD]
 3|Exalate|IRGNW & Kosho
 2|Extension 1.0|Jeet
 2|Extension 2.0|Jeet
@@ -136,11 +144,13 @@ $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 2|Lonely Swim 9.1|Tuna
 2|Lonely Swim 9.2|Tuna
 4|Masquerade|Forris
+3|Maximum speed|BannZay
 4|Microlity|Micro
 1|Mini Zero II|Zerodin
 1|Mini Zero|Zerodin
 3|Miracle|Bixes
 4|Movement I|Nigel
+1|Mud|Fňokurka oo7
 3|Nettex|{E}{L}{I}{T}{E}
 2|Night of Spikes|Element Finland
 1|No_Stuck|Xalcon
@@ -161,7 +171,7 @@ $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 2|Short Sky|S.O.S
 2|ShotFF|Savander
 2|SkyCave|Delo
-3|Skepsis|Juandissimo, DoNe & Soreu
+3|Skepsis|Juandissimo, timakro & Soreu
 3|SL1|LoLz
 2|solo_castle|Hallowed1986
 3|Solo Future|Gridwyn

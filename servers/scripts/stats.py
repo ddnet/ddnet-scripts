@@ -353,7 +353,11 @@ otherIncludes = '<script type="text/javascript" src="js/jquery.min.js"></script>
 with open('scripts/stats.js') as f:
   otherIncludes += '<script type="text/javascript">' + f.read() + '</script>'
 
-text = header("Statistics & Charts", "", "", False, False, otherIncludes)
+menu = """<ul>
+  <li><a href="/stats/">Player Statistics</a></li>
+  <li><a href="/stats/server/">Server Statistics</a></li>
+</ul>"""
+text = header("Statistics & Charts", menu, "", False, False, otherIncludes)
 
 with open('scripts/stats.html') as f:
   text += f.read()

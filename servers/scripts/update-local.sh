@@ -7,8 +7,8 @@ cd /home/teeworlds/servers
 types=`cat all-types`
 
 for i in $types; do
-  scripts/create-votes.py $i > types/${i:l}/votes.$$.tmp
-  mv types/${i:l}/votes.$$.tmp types/${i:l}/votes.cfg
+  scripts/create-votes.py $i > types/${i:l}/votes.$$.tmp &&
+  mv types/${i:l}/votes.$$.tmp types/${i:l}/votes.cfg &&
   split -l 40 types/${i:l}/votes.cfg types/${i:l}/votes.cfg
 done
 

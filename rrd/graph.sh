@@ -5,7 +5,7 @@ RRDTOOL=/opt/rrdtool-1.6.0/bin/rrdtool
 
 net()
 {
-  $RRDTOOL graph $PNG_DIR/$1-net-$2.png --rigid \
+  $RRDTOOL graph $PNG_DIR/$1-net-$2.png --rigid --base 1000 \
     --width $3 --height $4 --logarithmic --units=si -a PNG \
     --vertical-label "Bytes/s" --start now-$2 \
     DEF:network_rx=$RRD_DIR/$1-net.rrd:network_rx:AVERAGE \
@@ -13,26 +13,30 @@ net()
     VDEF:network_rx_a=network_rx,AVERAGE \
     VDEF:network_rx_m=network_rx,MAXIMUM \
     VDEF:network_rx_c=network_rx,LAST \
+    VDEF:network_rx_s=network_rx,TOTAL \
     VDEF:network_tx_a=network_tx,AVERAGE \
     VDEF:network_tx_m=network_tx,MAXIMUM \
     VDEF:network_tx_c=network_tx,LAST \
+    VDEF:network_tx_s=network_tx,TOTAL \
     AREA:network_tx#fee8c8: \
-    LINE1:network_tx#e34a33:"out" \
-    GPRINT:network_tx_a:"avg\: %8.2lf %sB" \
-    GPRINT:network_tx_m:"max\: %8.2lf %sB" \
-    GPRINT:network_tx_c:"cur\: %8.2lf %sB\n" \
     AREA:network_rx#e0e0e0: \
+    LINE1:network_tx#e34a33:"out" \
+    GPRINT:network_tx_a:"avg\: %6.2lf %sB" \
+    GPRINT:network_tx_m:"max\: %6.2lf %sB" \
+    GPRINT:network_tx_c:"cur\: %6.2lf %sB" \
+    GPRINT:network_tx_s:"sum\: %6.2lf %sB\n" \
     LINE1:network_rx#636363:"in " \
-    GPRINT:network_rx_a:"avg\: %8.2lf %sB" \
-    GPRINT:network_rx_m:"max\: %8.2lf %sB" \
-    GPRINT:network_rx_c:"cur\: %8.2lf %sB\n"
+    GPRINT:network_rx_a:"avg\: %6.2lf %sB" \
+    GPRINT:network_rx_m:"max\: %6.2lf %sB" \
+    GPRINT:network_rx_c:"cur\: %6.2lf %sB" \
+    GPRINT:network_rx_s:"sum\: %6.2lf %sB\n"
 }
 
 cpu()
 {
   $RRDTOOL graph $PNG_DIR/$1-cpu-$2.png --rigid --lower-limit -100 --upper-limit 100 \
     --width $3 --height $4 -a PNG \
-    --vertical-label "load" --start now-$2 \
+    --vertical-label "%" --start now-$2 \
     DEF:cpu=$RRD_DIR/$1-cpu.rrd:cpu:AVERAGE \
     DEF:load_raw=$RRD_DIR/$1-cpu.rrd:load:AVERAGE \
     CDEF:load=load_raw,UN,0,load_raw,IF \
@@ -72,9 +76,9 @@ cpu()
 
 mem()
 {
-  $RRDTOOL graph $PNG_DIR/$1-mem-$2.png --rigid \
+  $RRDTOOL graph $PNG_DIR/$1-mem-$2.png --rigid --base 1000 \
     --width $3 --height $4 -a PNG \
-    --vertical-label "Bytes/s" --start now-$2 \
+    --vertical-label "Bytes" --start now-$2 \
     DEF:memory_used_raw=$RRD_DIR/$1-mem.rrd:memory_used:AVERAGE \
     DEF:memory_total_raw=$RRD_DIR/$1-mem.rrd:memory_total:AVERAGE \
     DEF:swap_used_raw=$RRD_DIR/$1-mem.rrd:swap_used:AVERAGE \

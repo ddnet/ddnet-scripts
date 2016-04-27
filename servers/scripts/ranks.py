@@ -42,6 +42,10 @@ def printFooter():
           <td>Brutal</td>
           <td class="multiplier">3</td>
           <td class="multiplier">15</td>
+         </tr><tr>
+          <td>Dummy</td>
+          <td class="multiplier">5</td>
+          <td class="multiplier">5</td>
         </tr><tr>
           <td>DDmaX</td>
           <td class="multiplier">4</td>
@@ -392,7 +396,7 @@ with con:
       except IOError:
         traceback.print_exc()
 
-      if type == "Solo" or type == "Race":
+      if type == "Solo" or type == "Race" or type == "Dummy":
         mapsString += u'<div class="block2 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="../maps/%s.png" /></a>%s<br/><span title="%s">%d tee%s finished%s</span></p></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime))
         mapsString += printExactSoloRecords("Records", "records", ranks)
       else:
@@ -410,7 +414,7 @@ with con:
     serverRanks[type] = (totalServerPoints, serverPointsRanks, serverTeamrankRanks, serverRankRanks)
 
     serversString += printLadder("Points (%d total)" % totalServerPoints, serverPointsRanks, players)
-    if type != "Solo" and type != "Race":
+    if type != "Solo" and type != "Race" and type != "Dummy":
       serversString += printLadder("Team Rank", serverTeamrankRanks, players)
     serversString += printLadder("Rank", serverRankRanks, players)
     serversString += '<br/>'
@@ -464,7 +468,7 @@ with con:
     #sleep(0.1)
 
   lastString = ""
-  cur.execute("select l.Timestamp, l.Map, Name, Time, record_maps.Server from ((select * from record_race order by Timestamp desc limit 20) as l left join record_maps on l.Map = record_maps.Map);")
+  cur.execute("select l.Timestamp, l.Map, Name, Time, record_maps.Server from ((select * from record_race order by Timestamp desc limit 20) as l join record_maps on l.Map = record_maps.Map);")
   rows = cur.fetchall()
   #sleep(0.05)
 

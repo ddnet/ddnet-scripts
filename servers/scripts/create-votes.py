@@ -15,6 +15,7 @@ serverStrings = {
   'Novice'   : '              Novice Server',
   'Moderate' : '           Moderate Server',
   'Brutal'   : '                Brutal Server',
+  'Dummy'    : '                Dummy Server',
   'DDmaX'    : '                DDmaX Server',
   'Oldschool': '            Oldschool Server',
   'Solo'     : '                 Solo Server',

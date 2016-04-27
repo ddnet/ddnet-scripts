@@ -64,5 +64,4 @@ with con:
       if realDate != None:
         cur.execute("INSERT INTO record_maps(Map, Server, Mapper, Points, Stars, Timestamp) VALUES ('%s', '%s', '%s', '%d', '%d', '%s') ON duplicate key UPDATE Server=VALUES(Server), Mapper=VALUES(Mapper), Points=VALUES(Points), Stars=VALUES(Stars), Timestamp=VALUES(Timestamp);" % (con.escape_string(mapName), con.escape_string(type), con.escape_string(mapperName), points, stars, realDate))
       else:
-        pass
-        cur.execute("INSERT INTO record_maps(Map, Server, Mapper, Points, Stars) VALUES ('%s', '%s', '%s', '%d', '%d') ON duplicate key UPDATE Server=VALUES(Server), Mapper=VALUES(Mapper), Points=VALUES(Points), Stars=VALUES(Stars);" % (con.escape_string(mapName), con.escape_string(type), con.escape_string(mapperName), points, stars))
+        cur.execute("INSERT INTO record_maps(Map, Server, Mapper, Points, Stars, Timestamp) VALUES ('%s', '%s', '%s', '%d', '%d', 0) ON duplicate key UPDATE Server=VALUES(Server), Mapper=VALUES(Mapper), Points=VALUES(Points), Stars=VALUES(Stars), Timestamp=VALUES(Timestamp);" % (con.escape_string(mapName), con.escape_string(type), con.escape_string(mapperName), points, stars))

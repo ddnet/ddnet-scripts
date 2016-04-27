@@ -2,6 +2,32 @@ $add_vote "Make sure no one is racing before voting!" "info"
 $add_vote "Random DDmaX Map" "random_map"
 $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 
+─── DDRACEMAX.NUT MAPS ───
+3|NUT Hardcore UNITED|Zeta-Hoernchen
+3|NUT_hardcore_bestof|Zeta-Hoernchen
+3|NUT_hardcore_race1|Zeta-Hoernchen
+3|NUT_hardcore_race2|Zeta-Hoernchen
+2|NUT_hardcore_race3|Zeta-Hoernchen
+2|NUT_hardcore_race4|Zeta-Hoernchen
+3|NUT_hardcore_race5|Zeta-Hoernchen
+3|NUT_hardcore_race6|Zeta-Hoernchen
+2|NUT_race1|Zeta-Hoernchen
+2|NUT_race2|Bad-Hoernchen
+2|NUT_race3|Zeta-Hoernchen
+2|NUT_race4|Zeta-Hoernchen
+2|NUT_race5|Zeta-Hoernchen
+3|NUT_race6|Zeta-Hoernchen
+2|NUT_race7|Bad-Hoernchen
+2|NUT_race8|Zeta-Hoernchen
+2|NUT_race9|Zeta-Hoernchen
+1|NUT_short_race1|Zeta-Hoernchen
+1|NUT_short_race2|Zeta-Hoernchen
+0|NUT_short_race3|Zeta-Hoernchen
+1|NUT_short_race4|Zeta-Hoernchen
+1|NUT_short_race5|Zeta-Hoernchen
+0|NUT_short_race6|Zeta-Hoernchen
+0|NUT_short_race7|Zeta-Hoernchen
+
 ─── DDRACEMAX.EASY MAPS ───
 1|Back to the Roots 1|Bixes
 1|Back to the Roots 2|Bixes
@@ -117,15 +143,6 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 3|FWYS 2|Ama
 3|FWYS 3|Ama
 3|FWYS 4|Ama
-3|FWYS 5|Ama
-2|Genesis|Bixes
-2|Genesis-2|Bixes
-2|Get The Gifts|Ama
-3|Google|KBeeeR
-3|Green|Ama
-3|GreenDream|Knight :3
-2|GTF 1|Knight :3
-4|Halloween|Ama
 4|HappyEaster|Knight :3
 2|HellGate 1|Hitomi
 2|HellGate 1.5|Hitomi
@@ -183,7 +200,7 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 3|Reach Pluto|Trear & Pirate
 3|Regret|Knight :3
 2|Revolution|Knight :3
-2|RockBlock 1|DoNe
+2|RockBlock 1|timakro
 3|Rovo|snife 2.0
 1|run_the_cube|=CuBe=
 2|S-Race 1|Scratchy <3
@@ -284,6 +301,15 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 3|Difficult 2.1|!_Vergeboy_!
 4|Difficult 2.2|!_Vergeboy_!
 5|Difficult 2.3|!_Vergeboy_!
+3|Divided|[*MC*]-DuBai-.?
+4|DoT|Aoe
+4|Dragonscale|Cøke & Aoe
+4|Dreadful|estern
+4|Easy Way|Cøke
+5|Eclipse|Jeet
+4|Elo-Hell|YeahxX
+4|Energie|YeahxX
+3|Equalize!|Scratchy <3
 3|Divided|[*MC*]-DuBai-.?
 4|DoT|Aoe
 4|Dragonscale|Cøke & Aoe

@@ -56,6 +56,7 @@ with con:
         del teamrankRanks
         del rankRanks
         del serverRanks
+        gc.collect()
         unpacker = msgpack.Unpacker(inp)
         types = unpacker.unpack()
         maps = unpacker.unpack()
@@ -69,6 +70,17 @@ with con:
         players = unpacker.unpack()
         last = getmtime(playersFile)
       gc.collect()
+
+  def query(sql):
+    global con, cur
+    try:
+      cur.execute(sql)
+    except:
+      con = mysqlConnect()
+      con.autocommit(True)
+      cur = con.cursor()
+      cur.execute("set names 'utf8';")
+      cur.execute(sql)
 
   def printPersonalResult(name, ranks, player):
     string = '<div class="block2 ladder"><h3>%s</h3>\n<p class="pers-result">' % name
@@ -121,7 +133,7 @@ with con:
 
     try:
       print >>out, '<br/>'
-      cur.execute("select Timestamp, Map, Time from record_race where Name = '%s' order by Timestamp limit 1;" % con.escape_string(name))
+      query("select Timestamp, Map, Time from record_race where Name = '%s' order by Timestamp limit 1;" % con.escape_string(name))
       rows = cur.fetchall()
       row = rows[0]
 
@@ -147,7 +159,7 @@ with con:
 
     print >>out, '<div class="block6 ladder"><h3>Last Finishes</h3><table class="tight">'
 
-    cur.execute("select Timestamp, Map, Time from record_race where Name = '%s' order by Timestamp desc limit 10;" % con.escape_string(name))
+    query("select Timestamp, Map, Time from record_race where Name = '%s' order by Timestamp desc limit 10;" % con.escape_string(name))
     rows = cur.fetchall()
 
     for row in rows:

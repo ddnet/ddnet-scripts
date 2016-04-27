@@ -3,35 +3,14 @@ $add_vote "Random Brutal Map" "random_map"
 $add_vote "Random Brutal Map Unfinished by Vote Caller" "random_unfinished_map"
 
 ─── NEW MAPS ───
-1|Grandpa|Fňokurka oo7
-1|Memories|Fňokurka oo7
-3|The Way to the Hell|S.O.S
-2|Stay Alive|»Slayer.
-3|To the moon|Ryozuki
-3|TryThis|Skeptar
-5|Furypleasure|Åmol
-1|Run into the light|Silex & <BµmM>
-2|Nostalgia|Bolox
-
-─── DUMMY MAPS ───
-3|Adragaline|Silex
-4|Adragaline 2|Silex
-4|DarkSpy|Spyker
-4|DeepDrag|Micro
-3|Injection|Themix
-3|Injection 2|Themix
-3|Just deep fly|BannZay
-4|miA|Aoe
-3|Pataros|Skeptar & Exotix
-5|Relief|Ante.
-2|SavannaDrag|Skeptar
-2|SavannaDrag 2|Skeptar
-2|SavannaDrag 3|Skeptar
-2|SavannaDrag 4|Skeptar
-2|Skychase|SickCunt
-2|Tropical Drag|RayB.
-3|TomorrowLand|Skeptar & tobu.
-1|Zonsa|Rod Slide
+3|Kickout|Fullander
+5|Adrenaline 5|Silex & Pipou
+3|Intermediate|Themix
+3|Lockdown|Aoe, Trax & Spyker
+2|Flow|Silex
+1|Wonderland|panik
+4|Genericore 6|Åmol
+2|Reckless|Pipou
 
 ─── 3 PLAYER MAPS ───
 2|P2Z_Eclipse|cris
@@ -90,6 +69,7 @@ $add_vote "Random Brutal Map Unfinished by Vote Caller" "random_unfinished_map"
 1|chiseled|Suppe
 1|claret-blue|Suppe
 3|ClassicMonkez|Gridwyn
+2|Cold Jungle|Silex
 2|complic|Åmol
 3|Cucumber|Fňokurka oo7
 1|Cursed Treasure|Bixes & Themix
@@ -132,6 +112,7 @@ $add_vote "Random Brutal Map Unfinished by Vote Caller" "random_unfinished_map"
 3|Franky's Adventure|BooNi
 2|From Death to Destiny|Åmol & fikmesån
 3|Frozen|#eci.in`
+5|Furypleasure|Åmol
 3|Gloomy Den|SBL
 5|Generic Hell 2|Loop, Ezio & Kayumi
 5|Generic World|Loop
@@ -143,6 +124,8 @@ $add_vote "Random Brutal Map Unfinished by Vote Caller" "random_unfinished_map"
 4|Goldfield|YeahxX
 1|Goldmoon|Gianth
 3|Goldshire|Åmol & FunCat
+1|Good Ol' Days|fikmesån
+1|Grandpa|Fňokurka oo7
 1|Green Agony|Stalker
 2|Hardcore 10|=CuBe=, Kintaro* & =Typhoon=
 2|Hardcore 11|=CuBe=, Kintaro* & =Typhoon=
@@ -178,9 +161,9 @@ $add_vote "Random Brutal Map Unfinished by Vote Caller" "random_unfinished_map"
 2|Logics|aMu
 2|lost_castle|Shorefire
 2|Lost Story 2|Kintaro*
-4|Lost_Strongholds_Maze|Pipou
 2|Lucifer|Stalker
 1|LuckyStrike|LanuX & Hindu
+1|Memories|Fňokurka oo7
 4|Milthrid Core|Themix
 2|Mines of Fear|Stalker
 5|Mirai|Ezio
@@ -192,11 +175,12 @@ $add_vote "Random Brutal Map Unfinished by Vote Caller" "random_unfinished_map"
 3|Naufrage 2|SickCunt
 3|Naufrage 3|SickCunt
 3|nemesis|Lewuh
-2|Nightly Tandem|DoNe & ٭ıƞdex'<3
+2|Nightly Tandem|timakro & ٭ıƞdex'<3
 1|Nirvana|Hindu & Kayumi
 2|NoMore!|Chill [TD]
 2|NoMore! 2|Chill [TD]
 2|NoMore! 3|Chill [TD]
+2|Nostalgia|Bolox
 4|Out of Castle|Loop
 4|Pentamine|Themix
 1|Perfect World|Bixes
@@ -209,11 +193,11 @@ $add_vote "Random Brutal Map Unfinished by Vote Caller" "random_unfinished_map"
 5|Regen 2|Gridwyn
 4|Regen 3|Gridwyn
 1|Rema|Tira
-2|Repentance|BannZay
 3|Revival|»Slayer. & Lilith
 3|Roaming|mikey12
 4|Rockstar|Bixes
 2|Ruin|Silex
+1|Run into the light|Silex & <BµmM>
 3|Runaway|BlaGK
 3|Sand Dune|SickCunt
 2|Scabrous|NeoN & Silex
@@ -231,6 +215,7 @@ $add_vote "Random Brutal Map Unfinished by Vote Caller" "random_unfinished_map"
 2|Space & Time 2|Nickel
 3|Springlobe|Themix
 4|Springlobe 2|Themix
+2|Stay Alive|»Slayer.
 1|Stoned.|tobu. & Skeptar
 1|Sundara|»Slayer.
 1|Supernova|SickCunt
@@ -238,16 +223,20 @@ $add_vote "Random Brutal Map Unfinished by Vote Caller" "random_unfinished_map"
 5|Tatooine|Rapture & Gridwyn
 4|The Cursed Night|MaDLeX
 3|The Dream|Spyker
+4|The Enchanted Clearing|MaDLeX
 4|The Fusion|Bolox
 2|The Joke|TheZyZya
 2|The Joke 2|TheZyZya
 5|The Rapture|Themix
 3|The Sewer|Aoe & SBL
 1|The Uns|Tuna
+3|The Way to the Hell|S.O.S
 3|Threesome|645654, Phacrum & cris
 2|Time Eater|imp
+3|To the moon|Ryozuki
 2|Tough|Hindu
 4|TryHard|Feuerfaust Ace
+3|TryThis|Skeptar
 1|Tvyn|MarvinProductions
 3|Uncharted|Stalker
 1|Underground|Silex

@@ -318,7 +318,8 @@ class Server(Handler):
         self.playerlist.add(player)
     except StopIteration:
       self.reset()
-      log('warning', 'unexpected end of data for server ' + str(self))
+      # Ignore this as it is caused by rate limit of info packets
+      #log('warning', 'unexpected end of data for server ' + str(self))
     for player in self.playerlist:
       self._parent.playerlist.add(player)
   
@@ -432,7 +433,8 @@ class Server64(Handler):
           pass
     except StopIteration:
       self.reset()
-      log('warning', 'unexpected end of data for server ' + str(self))
+      # Ignore this as it is caused by rate limit of info packets
+      #log('warning', 'unexpected end of data for server ' + str(self))
     for player in self.playerlist:
       self._parent.playerlist.add(player)
   

@@ -29,6 +29,7 @@ pointsDict = {
   'Novice':    (1, 0),
   'Moderate':  (2, 5),
   'Brutal':    (3,15),
+  'Dummy':     (5, 5),
   'DDmaX':     (4, 0),
   'Oldschool': (6, 0),
   'Solo':      (4, 0),
@@ -290,11 +291,13 @@ def header(title, menu, header, refresh = False, stupidIncludes = False, otherIn
       <li><a href="/status/">Status</a></li>
       <li><a href="/ranks/">Ranks</a></li>
       <li><a href="/releases/">Releases</a></li>
+      <li><a href="/halloffame/">Hall of Fame</a></li>
       <li><a href="/tournament/">Tournaments</a></li>
       <li><a href="/skins/">Skin Database</a></li>
       <li><a href="/downloads/">Downloads</a></li>
       <li><a href="/stats/">Statistics</a></li>
       <li><a href="//forum.ddnet.tw/">Forum</a></li>
+      <li><a href="http://wiki.ddnet.tw/">Wiki</a></li>
     </ul>
     %s
     </menu>
@@ -431,7 +434,7 @@ def serverStatus(title):
       </table>
       <br />
       <h3 class="ip">
-        <a href="https://github.com/BotoX/ServerStatus">ServerStatus</a>
+        <a href="/stats/server/">Statistics</a>, <a href="https://github.com/BotoX/ServerStatus">ServerStatus</a>
       </h3>
     </div>
     <script src="js/jquery-1.10.2.min.js"></script>
