@@ -25,11 +25,11 @@ for server in statsJson["servers"]:
 
   case paramStr(1)
   of "1d":
-    if fileNet.get("network_rx", "3min") + fileNet.get("network_tx", "3min") > 2_000_000:
-      alert "network traffic over 2 MB/s for 3 min"
+    if fileNet.get("network_rx", "4min") + fileNet.get("network_tx", "4min") > 2_000_000:
+      alert "network traffic over 2 MB/s for 4 min"
 
-    if fileMem.get("memory_used", "3min") + fileMem.get("swap_used", "3min") > 0.9 * (fileMem.get("memory_total", "3min") + fileMem.get("swap_total", "3min")):
-      alert "memory and swap over 90% for 3 min"
+    if fileMem.get("memory_used", "4min") + fileMem.get("swap_used", "4min") > 0.9 * (fileMem.get("memory_total", "4min") + fileMem.get("swap_total", "4min")):
+      alert "memory and swap over 90% for 4 min"
 
   of "7d":
     if fileCpu.get("cpu", "21min") > 90.0:
