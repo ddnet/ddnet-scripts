@@ -1,10 +1,26 @@
 ssh root@37.235.52.151
 
+Debian:
 apt-get update
 apt-get upgrade
-apt-get install zsh vim htop git g++ libboost-dev msgpack-python python-mysqldb ntp sshfs tcpdump gdb pkg-config
-vim /etc/passwd /etc/group
+apt-get install zsh vim htop git g++ libboost-dev msgpack-python python-mysqldb sshfs tcpdump gdb pkg-config ntpdate ntp mailutils postfix
+dpkg-reconfigure tzdata
+restorecon -R -v /root/.ssh
+restorecon -R -v /home/teeworlds/.ssh
+vim /etc/hostname
+/etc/init.d/hostname.sh start
 
+CentOS:
+rpm -Uhv http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm
+rpm -Uhv http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+yum install zsh vim htop git gcc-c++ boost-devel MySQL-python python-msgpack fuse sshfs tcpdump gdb pkg-config ntpdate ntp postfix
+yum install zlib zlib-devel zlib-static openssl openssl-devel openssl-static
+rm /etc/localtime
+ln -s /usr/share/zoneinfo/Europe/Berlin !$
+ntpdate pool.ntp.org
+http://www.rackspace.com/knowledge_center/article/centos-hostname-change
+
+vim /etc/passwd /etc/group
 Create teeworlds user and set zsh
 mkdir /home/teeworlds
 chown teeworlds:teeworlds !$
@@ -12,22 +28,29 @@ passwd teeworlds
 
 vim /etc/ssh/sshd_config
 
-dpkg-reconfigure tzdata
-
 tar xvf servers.tar.gz
 tar xvf src.tar.gz
 
 Check https://downloads.mariadb.org/mariadb/repositories/
 
+Debian:
 apt-get install python-software-properties
 apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 0xcbcb082a1bb943db
 add-apt-repository 'deb http://mirror.jmu.edu/pub/mariadb/repo/5.5/debian wheezy main'
 apt-get update
 apt-get install mariadb-server libmariadbclient-dev libmysqlcppconn-dev
 
+CentOS:
+yum install mysql 
+scp mysql-connector-c++-1.1.4-linux-el6-x86-64bit.rpm 37.235.52.151:
+yum install mysql-connector-c++-1.1.4-linux-el6-x86-64bit.rpm
+
+mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -p'mc8)(12FOpQ23' mysql
+
 From root @ other server:
 scp -r /etc/zsh /etc/vim* /etc/mysql 37.235.52.151:/etc
 scp -r .config .vim* .ssh* .z* 37.235.52.151:
+CentOS cp -r /etc/zsh/* /etc
 
 From teeworlds @ other server:
 scp -r .config .vim* .ssh* .z* 37.235.52.151:
@@ -37,7 +60,20 @@ cd src
 cd ..
 
 cd servers
+vim mysql.cfg scripts/mysql.py
 vim types/*/flexname.cfg
 
 crontab -e
 vim /etc/security/limits.conf
+vim /etc/postfix/master.cf
+/etc/init.d/postfix restart
+
+vim /usr/local/bin/{ni,rni}
+chmod +x !$
+
+git config --global user.email "you@example.com"
+git config --global user.name "Your Name"
+
+vim ~/run-all.sh /etc/init.d/teeworlds-servers
+chmod +x ~/run-all.sh /etc/init.d/teeworlds-servers
+update-rc.d teeworlds-servers defaults enable

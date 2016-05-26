@@ -26,7 +26,7 @@ Tournament preparation process on DDNet
 
   Example run: scripts/solo-tournament.py Solo > /var/www/tournaments/38/index.html
 
-During the night before:
+During the night/morning before (after 1 AM):
 - Edit motd/tournament.cfg based on info about the map and the current news from maps/*.map.cfg
 - Edit tournament-prepare.sh on each server (except ddnet.tw) to run a nice map before the tournament, also make sure the other server settings are right
 - When the server is empty, run ./tournament-prepare.sh
