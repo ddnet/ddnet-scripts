@@ -25,11 +25,17 @@ for server in statsJson["servers"]:
 
   case paramStr(1)
   of "1d":
-    if fileNet.get("network_rx", "4min") + fileNet.get("network_tx", "4min") > 2_000_000:
-      alert "network traffic over 2 MB/s for 4 min"
-
     if fileMem.get("memory_used", "4min") + fileMem.get("swap_used", "4min") > 0.9 * (fileMem.get("memory_total", "4min") + fileMem.get("swap_total", "4min")):
       alert "memory and swap over 90% for 4 min"
+
+    if name == "DDNet.tw":
+      continue
+
+    if fileNet.get("network_rx", "4min") + fileNet.get("network_tx", "4min") > 3_000_000:
+      alert "network traffic over 3 MB/s for 4 min"
+
+    if fileNet.get("packets_rx", "4min") + fileNet.get("packets_tx", "4min") > 100_000:
+      alert "network packets over 100 kpps for 4 min"
 
   of "7d":
     if fileCpu.get("cpu", "21min") > 90.0:
@@ -38,6 +44,9 @@ for server in statsJson["servers"]:
       alert "Load over 10 for 21 min"
 
   of "49d":
+    if name == "DDNet Persian":
+      continue
+
     let network_rx = fileNet.get("network_rx", "4410")
     if network_rx != network_rx: # NaN
       alert "unreachable for 1 hour"

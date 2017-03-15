@@ -32,6 +32,35 @@ net()
     GPRINT:network_rx_s:"sum\: %6.2lf %sB\n"
 }
 
+packets()
+{
+  $RRDTOOL graph $PNG_DIR/$1-packets-$2.png --rigid --base 1000 \
+    --width $3 --height $4 --logarithmic --units=si -a PNG \
+    --vertical-label "Packets/s" --start now-$2 \
+    DEF:packets_rx=$RRD_DIR/$1-net.rrd:packets_rx:AVERAGE \
+    DEF:packets_tx=$RRD_DIR/$1-net.rrd:packets_tx:AVERAGE \
+    VDEF:packets_rx_a=packets_rx,AVERAGE \
+    VDEF:packets_rx_m=packets_rx,MAXIMUM \
+    VDEF:packets_rx_c=packets_rx,LAST \
+    VDEF:packets_rx_s=packets_rx,TOTAL \
+    VDEF:packets_tx_a=packets_tx,AVERAGE \
+    VDEF:packets_tx_m=packets_tx,MAXIMUM \
+    VDEF:packets_tx_c=packets_tx,LAST \
+    VDEF:packets_tx_s=packets_tx,TOTAL \
+    AREA:packets_tx#fee8c8: \
+    AREA:packets_rx#e0e0e0: \
+    LINE1:packets_tx#e34a33:"out" \
+    GPRINT:packets_tx_a:"avg\: %6.2lf %sp" \
+    GPRINT:packets_tx_m:"max\: %6.2lf %sp" \
+    GPRINT:packets_tx_c:"cur\: %6.2lf %sp" \
+    GPRINT:packets_tx_s:"sum\: %6.2lf %sp\n" \
+    LINE1:packets_rx#636363:"in " \
+    GPRINT:packets_rx_a:"avg\: %6.2lf %sp" \
+    GPRINT:packets_rx_m:"max\: %6.2lf %sp" \
+    GPRINT:packets_rx_c:"cur\: %6.2lf %sp" \
+    GPRINT:packets_rx_s:"sum\: %6.2lf %sp\n"
+}
+
 cpu()
 {
   $RRDTOOL graph $PNG_DIR/$1-cpu-$2.png --rigid --lower-limit -100 --upper-limit 100 \
@@ -118,7 +147,7 @@ else
 fi
 
 grep ', "type": ' /var/www/status/json/stats.json | sed -e 's/.*, "type": "\([a-z\.]*\)", "host": .*/\1/' | while read LINE; do
-  for graph in net cpu mem; do
+  for graph in net packets cpu mem; do
     $graph $LINE $1 $WIDTH $HEIGHT > /dev/null
   done
 done

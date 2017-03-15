@@ -2,7 +2,7 @@ import common, json, osproc, os, times, strutils, tables
 
 type
   Data = object
-    network_rx, network_tx: BiggestInt
+    network_rx, network_tx, packets_rx, packets_tx: BiggestInt
     cpu, memory_used, memory_total, swap_used, swap_total: BiggestInt
     load: float
 
@@ -54,13 +54,13 @@ proc updateServer(server: JsonNode) =
       fileMem = (rrdDir / domain) & "-mem.rrd"
 
     if not existsFile fileNet:
-      fileNet.rrdCreate("DS:network_rx:GAUGE:60:0:U DS:network_tx:GAUGE:60:0:U")
+      fileNet.rrdCreate("DS:network_rx:GAUGE:60:0:U DS:network_tx:GAUGE:60:0:U DS:packets_rx:GAUGE:60:0:U DS:packets_tx:GAUGE:60:0:U")
     if not existsFile fileCpu:
       fileCpu.rrdCreate("DS:cpu:GAUGE:60:0:100 DS:load:GAUGE:60:0:U")
     if not existsFile fileMem:
       filemem.rrdCreate("DS:memory_used:GAUGE:60:0:U DS:memory_total:GAUGE:60:0:U DS:swap_used:GAUGE:60:0:U DS:swap_total:GAUGE:60:0:U")
 
-    fileNet.rrdUpdate(data.network_rx div freq, data.network_tx div freq)
+    fileNet.rrdUpdate(data.network_rx div freq, data.network_tx div freq, data.packets_rx div freq, data.packets_tx div freq)
     fileCpu.rrdUpdate(min(data.cpu div freq, 100), data.load / freq)
     fileMem.rrdUpdate(data.memory_used div freq, data.memory_total div freq, data.swap_used div freq, data.swap_total div freq)
 
