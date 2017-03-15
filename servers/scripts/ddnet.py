@@ -291,7 +291,6 @@ def header(title, menu, header, refresh = False, stupidIncludes = False, otherIn
       <li><a href="/status/">Status</a></li>
       <li><a href="/ranks/">Ranks</a></li>
       <li><a href="/releases/">Releases</a></li>
-      <li><a href="/halloffame/">Hall of Fame</a></li>
       <li><a href="/tournament/">Tournaments</a></li>
       <li><a href="/skins/">Skin Database</a></li>
       <li><a href="/downloads/">Downloads</a></li>
@@ -563,10 +562,9 @@ def printStatus(name, servers, doc, external = False):
     serverPlayers[i] = 0
     serverPositions[i] = 0
 
-  tw = Teeworlds(timeout=5)
-  tw2 = Teeworlds(timeout=5)
-  tw3 = Teeworlds(timeout=5)
-  tw4 = Teeworlds(timeout=5)
+  tw = []
+  for i in range(4):
+    tw.append(Teeworlds(timeout=5))
 
   for countryEntry in doc:
     country = countryEntry['name']
@@ -574,41 +572,23 @@ def printStatus(name, servers, doc, external = False):
       modPlayers[typ] = 0
       for s in svs:
         serverAddress = address(s)
+        for t in tw:
+          server = Server64(t, serverAddress)
+          server.request()
+          t.serverlist.add(server)
 
-        server = Server64(tw, serverAddress)
-        server.request()
-        tw.serverlist.add(server)
-
-        server2 = Server64(tw2, serverAddress)
-        server2.request()
-        tw2.serverlist.add(server2)
-
-        server3 = Server(tw3, serverAddress)
-        server3.request()
-        tw3.serverlist.add(server3)
-
-        server4 = Server(tw4, serverAddress)
-        server4.request()
-        tw4.serverlist.add(server4)
-
-  tw.run_loop()
-  tw2.run_loop()
-  tw3.run_loop()
-  tw4.run_loop()
+  for t in tw: t.run_loop()
 
   totalPlayers = 0
   lastServer = ''
 
-  serverlists = [tw.serverlist, tw2.serverlist, tw3.serverlist, tw4.serverlist]
-
-  #for i, s in enumerate(tw.serverlist):
   i = 0
   for countryEntry in doc:
     country = countryEntry['name']
     for typ, svs in countryEntry['servers'].iteritems():
       for s in svs:
-        for serverlist in serverlists:
-          server = serverlist.servers[i]
+        for t in tw:
+          server = t.serverlist.servers[i]
 
           if server.clients < 0:
             continue
@@ -655,9 +635,9 @@ def printStatus(name, servers, doc, external = False):
     country = countryEntry['name']
     for typ, svs in countryEntry['servers'].iteritems():
       for s in svs:
-        for serverlist in serverlists:
+        for t in tw:
           try:
-            server = serverlist.servers[i]
+            server = t.serverlist.servers[i]
             mbEmpty = ""
             if server.clients < 1:
               mbEmpty = " empty\" style=\"display:none"

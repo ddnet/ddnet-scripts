@@ -80,11 +80,14 @@ class Traffic:
 	def __init__(self):
 		self.rx = collections.deque(maxlen=10)
 		self.tx = collections.deque(maxlen=10)
+		self.prx = collections.deque(maxlen=10)
+		self.ptx = collections.deque(maxlen=10)
 	def get(self):
 		f = open('/proc/net/dev', 'r')
 		net_dev = f.readlines()
 		f.close()
 		avgrx = 0; avgtx = 0
+		avgprx = 0; avgptx = 0
 
 		for dev in net_dev[2:]:
 			dev = dev.split(':')
@@ -92,21 +95,30 @@ class Traffic:
 				continue
 			dev = dev[1].split()
 			avgrx += int(dev[0])
+			avgprx += int(dev[1])
 			avgtx += int(dev[8])
+			avgptx += int(dev[9])
 
 		self.rx.append(avgrx)
 		self.tx.append(avgtx)
+		self.prx.append(avgprx)
+		self.ptx.append(avgptx)
 		avgrx = 0; avgtx = 0
+		avgprx = 0; avgptx = 0
 
 		l = len(self.rx)
 		for x in range(l - 1):
 			avgrx += self.rx[x+1] - self.rx[x]
 			avgtx += self.tx[x+1] - self.tx[x]
+			avgprx += self.prx[x+1] - self.prx[x]
+			avgptx += self.ptx[x+1] - self.ptx[x]
 
 		avgrx = int(avgrx / l / INTERVAL)
 		avgtx = int(avgtx / l / INTERVAL)
+		avgprx = int(avgprx / l / INTERVAL)
+		avgptx = int(avgptx / l / INTERVAL)
 
-		return avgrx, avgtx
+		return avgrx, avgtx, avgprx, avgptx
 
 def get_network(ip_version):
 	if(ip_version == 4):
@@ -156,7 +168,7 @@ if __name__ == '__main__':
 			traffic.get()
 			while 1:
 				CPU = get_cpu()
-				NetRx, NetTx = traffic.get()
+				NetRx, NetTx, PacketsRx, PacketsTx = traffic.get()
 				Uptime = get_uptime()
 				Load = get_load()
 				MemoryTotal, MemoryUsed, SwapTotal, SwapFree = get_memory()
@@ -180,6 +192,8 @@ if __name__ == '__main__':
 				array['cpu'] = CPU
 				array['network_rx'] = NetRx
 				array['network_tx'] = NetTx
+				array['packets_rx'] = PacketsRx
+				array['packets_tx'] = PacketsTx
 
 				s.send("update " + json.dumps(array) + "\n")
 		except KeyboardInterrupt:

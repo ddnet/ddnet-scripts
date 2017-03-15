@@ -126,7 +126,6 @@ for mapper, servers in mappers.iteritems():
 
 print header('Mappers - DDraceNetwork', '', '')
 print '<div id="global" class="longblock"><h2>Mappers</h2>'
-print '<ul>'
 
 for name in sorted(mappers.iterkeys(), key=str.lower):
   servers = mappers[name]
@@ -137,7 +136,6 @@ for name in sorted(mappers.iterkeys(), key=str.lower):
       if len(tmp):
         tmp += ', '
       tmp += type + ': ' + str(len(maps))
-  print '<li><a href="%s">%s</a> (%s)</li>' % (mapperWebsite(name), escape(name), tmp)
+  print '<p><a href="%s">%s</a> (%s)</p>' % (mapperWebsite(name), escape(name), tmp)
 
-print '</ul>'
 print '</div>'

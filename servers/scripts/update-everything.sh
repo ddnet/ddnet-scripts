@@ -6,7 +6,11 @@ types=`cat all-types`
 
 scripts/update-local.sh
 
-scripts/ranks.py $types > /var/www/ranks/index.$$.tmp && mv /var/www/ranks/index.$$.tmp /var/www/ranks/index.html
+scripts/ranks.py $types
+scripts/ranks.py --country=OLD $types
+grep name serverlist.json | sed -e 's/.*"name": "\(.*\)".*/\1/' | while read country; do
+  scripts/ranks.py --country=$country $types
+done
 
 scripts/releases-mappers.py $types > /var/www/mappers/index.$$.tmp && mv /var/www/mappers/index.$$.tmp /var/www/mappers/index.html
 

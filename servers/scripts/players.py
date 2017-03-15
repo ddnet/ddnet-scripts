@@ -124,7 +124,7 @@ with con:
 
     try:
       favServer = max(player[1].iteritems(), key=itemgetter(1))[0]
-      if favServer == None:
+      if favServer == None or favServer == "":
         favServer = 'UNK'
     except:
       favServer = 'UNK'
@@ -150,7 +150,33 @@ with con:
       print >>out, '<div class="block2 ladder"><h3>First Finish</h3>\n<p class="personal-result">%s: <a href="/ranks/%s/#map-%s">%s</a> (%s)</p></div>' % (escape(formatDate(row[0])), type.lower(), escape(normalizeMapname(row[1])), escape(row[1]), escape(formatTime(row[2])))
     except:
       pass
+
     print >>out, '</div>'
+
+    return out.getvalue()
+
+  def favoritePartners(name):
+    out = cStringIO.StringIO()
+
+    try:
+      query("select r.Name, count(r.Name) from (select Name, ID from record_teamrace where Name = '%s') as l inner join (select ID, Name from record_teamrace) as r on l.ID = r.ID and l.Name != r.Name group by r.Name order by count(r.Name) desc limit 10;" % con.escape_string(name))
+      rows = cur.fetchall()
+
+      pos = 1
+
+      if len(rows) > 1:
+        print >>out, '<div class="block6 ladder" style="margin-left: 1em;"><h3>Favorite Partners</h3>\n<table class="tight">'
+
+        for row in rows:
+          name = row[0]
+          count = row[1]
+          encodedName = slugify2(u'%s' % name.encode('utf-8'))
+          print >>out, '<tr><td>%d. <a href="/players/%s/">%s</a>: %d ranks</td></tr>' % (pos, encodedName, escape(name), count)
+          pos += 1
+
+        print >>out, '</table></div>'
+    except:
+      pass
 
     return out.getvalue()
 
@@ -172,7 +198,7 @@ with con:
         if type != '':
           break
 
-      print >> out, '<tr><td>%s: <a href="/ranks/%s/#map-%s">%s</a> (%s)</td></tr>' % (escape(formatDate(row[0])), type.lower(), escape(normalizeMapname(row[1])), escape(row[1]), escape(formatTime(row[2])))
+      print >>out, '<tr><td>%s: <a href="/ranks/%s/#map-%s">%s</a> (%s)</td></tr>' % (escape(formatDate(row[0])), type.lower(), escape(normalizeMapname(row[1])), escape(row[1]), escape(formatTime(row[2])))
 
     print >>out, '</table></div>'
 
@@ -213,7 +239,7 @@ with con:
 
     print >>out, '<div id="global" class="block div-ranks">'
     print >>out, '<div id="remote" class="right"><form id="playerform" action="/compare/" method="get">%s<input name="player" class="typeahead" type="text" placeholder="Add to comparison"><input type="submit" value="Add to comparison" style="position: absolute; left: -9999px"></form></div>' % hiddenFields
-    print >>out, '<script src="/jquery.js" type="text/javascript"></script>'
+    print >>out, '<script src="/players-data/jquery-2.2.4.min.js" type="text/javascript"></script>'
     print >>out, '<script src="/typeahead.bundle.js" type="text/javascript"></script>'
     print >>out, '<script src="/playersearch.js" type="text/javascript"></script>'
     print >>out, '<script type="text/javascript" src="/players-data/jquery.tablesorter.js"></script>'
@@ -390,10 +416,17 @@ with con:
       start_response('301 Moved Permanently', [('Location', path.rstrip('/').rsplit('.html', 1)[0] + "/")])
       return ''
 
+    parts = path.split('/')
+    rawName = u'%s' % parts[2].encode('utf-8')
     try:
-      name = deslugify2(u'%s' % path.split('/')[2].encode('utf-8'))
+      name = deslugify2(rawName)
     except:
-      name = u'%s' % path.split('/')[2].encode('utf-8')
+      name = rawName
+    slugName = slugify2(u'%s' % name.encode('utf-8'))
+    if slugName != rawName:
+      start_response('301 Moved Permanently', [('Location', "%s/%s/%s/" % (parts[0].encode('utf-8'), parts[1].encode('utf-8'), slugName.encode('utf-8')))])
+      return ''
+
     reloadData()
     player = players.get(name)
 
@@ -419,7 +452,7 @@ with con:
     hiddenFields = '<input type="hidden" name="player" value="%s">' % escape(name)
 
     print >>out, '<div id="remote" class="right"><form id="playerform" action="/compare/" method="get">%s<input name="player" class="typeahead" type="text" placeholder="Compare"><input type="submit" value="Compare" style="position: absolute; left: -9999px"></form></div>' % hiddenFields
-    print >>out, '<script src="/jquery.js" type="text/javascript"></script>'
+    print >>out, '<script src="/players-data/jquery-2.2.4.min.js" type="text/javascript"></script>'
     print >>out, '<script src="/typeahead.bundle.js" type="text/javascript"></script>'
     print >>out, '<script src="/playersearch.js" type="text/javascript"></script>'
     print >>out, '<script type="text/javascript" src="/players-data/jquery.tablesorter.js"></script>'
@@ -430,6 +463,7 @@ with con:
 
     print >>out, globalRanks(name, player)
     print >>out, lastFinishes(name)
+    print >>out, favoritePartners(name)
     print >>out, '<br/>'
     print >>out, '</div>'
 

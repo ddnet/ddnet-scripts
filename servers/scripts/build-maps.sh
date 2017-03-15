@@ -1,18 +1,22 @@
 #!/usr/bin/env zsh
-mkdir -p /home/teeworlds/maps
-cd /home/teeworlds/maps
-rm -rf *
+mkdir -p /home/teeworlds/ddnet-maps
+cd /home/teeworlds/ddnet-maps
+rm -rf types
+
+echo 'add_path $USERDIR\nadd_path $CURRENTDIR' > storage.cfg
 
 for i in `cat ../servers/all-types`; do
-  mkdir -p ${i:l}
-  grep "|" ../servers/types/${i:l}/maps | cut -d"|" -f2 | while read j; do
-    cp -- "../servers/maps/$j.map" ${i:l}
-    #cp -- "../servers/data/maps/$j.cfg" ${i:l} 2>/dev/null
-    echo "add_vote \"$j\" change_map \"$j\"" >> ${i:l}/votes.cfg
-    sleep 0.2
+  TYPEDIR=types/${i:l}
+  echo "add_path $TYPEDIR" >> storage.cfg
+  mkdir -p $TYPEDIR/maps
+  grep "|" ../servers/$TYPEDIR/maps | cut -d"|" -f2 | while read j; do
+    cp -- "../servers/maps/$j.map" $TYPEDIR/maps
+    cp ../servers/$TYPEDIR/flexvotes.cfg $TYPEDIR
+    grep -v "flexname.cfg" ../servers/$TYPEDIR/flexreset.cfg > $TYPEDIR/flexreset.cfg
+    tail -n +5 ../servers/$TYPEDIR/votes.cfg > $TYPEDIR/votes.cfg
   done
 done
 
 git add * &>/dev/null
-git commit -a -m "upd" &>/dev/null
+git commit -a -m "daily update" &>/dev/null
 git push &>/dev/null

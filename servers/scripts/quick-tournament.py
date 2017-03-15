@@ -5,6 +5,7 @@ from ddnet import *
 import sys
 import msgpack
 from cgi import escape
+import os
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -21,7 +22,9 @@ def printTeamRecords2(recordName, className, topFinishes):
   if len(topFinishes) > 0:
     string += '<table class="tight">\n'
     for f in topFinishes:
-      #string += u'  <tr title="%s, %s"><td class="rank">%d.</td><td>%s</td><td>%s</td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[0], escape(formatTimeExact(f[2])), f[1])
+      # Best time wins
+      #string += u'  <tr title="%s, %s"><td class="rank">%d.</td><td>%s</td><td><img src="/countryflags/%s.png" alt="%s" height="15" /></td><td>%s</td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[0], escape(formatTimeExact(f[2])), f[4], f[4], f[1])
+      # First finish wins
       string += u'  <tr title="%s, %s"><td class="rank">%d.</td><td>%s</td><td><img src="/countryflags/%s.png" alt="%s" height="15" /></td><td>%s</td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[0], escape(formatDateShort(f[3])), f[4], f[4], f[1])
     string += '</table>\n'
   string += '</div>\n'
@@ -40,12 +43,13 @@ totalPoints = 0
 serverRanks = {}
 
 types = sys.argv[1:]
+os.chdir("/home/teeworlds/servers/")
 
 menuText = '<ul>\n'
 for type in types:
   menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type)
 menuText += '</ul>'
-print header("Quick Tournament #42 - DDraceNetwork", menuText, "")
+print header("The Brutal Birthday Holiday Weekend - DDraceNetwork", menuText, "")
 
 f = open("tournament")
 tournamentMaps = []
@@ -95,7 +99,9 @@ with con:
       skips = 1
 
       try:
+        # Best time wins
         #cur.execute("select Name, r.ID, Time, Timestamp from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID order by r.Time, r.ID, Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
+        # First finish wins
         cur.execute("select Name, r.ID, Time, Timestamp from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Timestamp) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID order by r.Timestamp, r.ID, Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
         rows = cur.fetchall()
       except:
@@ -162,8 +168,10 @@ with con:
       countFinishes = 0
 
       try:
-        cur.execute("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, maxTimestamp from (select * from record_race where Map = '%s') as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp, max(Timestamp) as maxTimestamp from record_race where Map = '%s' group by Name order by minTimestamp ASC) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTimestamp;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
+        # Best time wins
         #cur.execute("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, maxTimestamp from (select * from record_race where Map = '%s') as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp, max(Timestamp) as maxTimestamp from record_race where Map = '%s' group by Name order by minTimestamp ASC) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTime;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
+        # First finish wins
+        cur.execute("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, maxTimestamp from (select * from record_race where Map = '%s') as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp, max(Timestamp) as maxTimestamp from record_race where Map = '%s' group by Name order by minTimestamp ASC) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTimestamp;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
         rows = cur.fetchall()
       except:
         pass
@@ -288,8 +296,8 @@ with con:
     serversString += '</div>\n'
     serversString += '</div>\n'
 
-print '<div id="global" class="block div-tournament"><h2>Quick Tournament #42</h2>'
-print '<p>This tournament is played on Saturday, 2016-04-02 at 19:00 CET.</p>'
+print '<div id="global" class="block div-tournament"><h2>The Brutal Birthday Holiday Weekend</h2>'
+print '<p>This tournament is played on Saturday and Sunday, 2016-08-06/07.</p>'
 print '</div>'
 print '<div id="serverranks" style="display: ">'
 print serversString

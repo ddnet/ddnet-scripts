@@ -76,21 +76,28 @@ with con:
       mapperName = words[2]
     else:
       mapperName = ""
-    bestTime = 0
+    #bestTime = ""
     countFinishes = 0
-    bestTeamRank = ""
-    bestRank = ""
+    averageTime = ""
+    #bestTeamRank = ""
+    #bestRank = ""
     pointsText = renderStars(int(words[0]))
 
-    try:
-      cur.execute("select Time from record_teamrace where Map = '%s' ORDER BY Time LIMIT 1;" % con.escape_string(originalMapName))
-      bestTime = formatTime(cur.fetchone()[0])
-    except:
-      pass
+    #try:
+    #  cur.execute("select Time from record_teamrace where Map = '%s' ORDER BY Time LIMIT 1;" % con.escape_string(originalMapName))
+    #  bestTime = formatTime(cur.fetchone()[0])
+    #except:
+    #  pass
 
     try:
       cur.execute("select count(Name) from (select distinct Name from record_race where Map = '%s') as r;" % con.escape_string(originalMapName))
       countFinishes = cur.fetchone()[0]
+    except:
+      pass
+
+    try:
+      cur.execute("select avg(Time) from record_race where Map = '%s';" % con.escape_string(originalMapName))
+      averageTime = formatTime(cur.fetchone()[0])
     except:
       pass
 
@@ -101,35 +108,35 @@ with con:
     if countFinishes == 0:
       text = (u' %s | %s ⚑' % (pointsText, textFinishes)).encode('utf-8')
     else:
-      try:
-        cur.execute("select Name from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY TIME LIMIT 1) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID order by Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
-        bestTeamRank = escapeOption(textJoinNames(map(lambda x: x[0], cur.fetchall())))
-      except:
-        pass
+      #try:
+      #  cur.execute("select Name from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY TIME LIMIT 1) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID order by Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
+      #  bestTeamRank = escapeOption(textJoinNames(map(lambda x: x[0], cur.fetchall())))
+      #except:
+      #  pass
 
-      if bestTeamRank == "":
-        try:
-          cur.execute("select Name, Time from record_race where Map = '%s' ORDER BY TIME LIMIT 1;" % con.escape_string(originalMapName))
-          row = cur.fetchone()
-          bestRank = escapeOption(row[0])
-          bestTime = formatTime(row[1])
-        except:
-          pass
+      #if bestTeamRank == "":
+      #  try:
+      #    cur.execute("select Name, Time from record_race where Map = '%s' ORDER BY TIME LIMIT 1;" % con.escape_string(originalMapName))
+      #    row = cur.fetchone()
+      #    bestRank = escapeOption(row[0])
+      #    bestTime = formatTime(row[1])
+      #  except:
+      #    pass
 
-        text = (u' %s | %s ⚑ | 1. %s (%s)' % (pointsText, textFinishes, bestRank, bestTime)).encode('utf-8')
+      text = (u' %s | %s ⚑ | %s ◷' % (pointsText, textFinishes, averageTime)).encode('utf-8')
 
-        if len(text) > 63:
-          d = 63 - len(text) - 3
-          bestRank = truncate(bestRank, d) + "..."
-          text = (u' %s | %s ⚑ | 1. %s (%s)' % (pointsText, textFinishes, bestRank, bestTime)).encode('utf-8')
+        #if len(text) > 63:
+        #  d = 63 - len(text) - 3
+        #  bestRank = truncate(bestRank, d) + "..."
+        #  text = (u' %s | %s ⚑ | 1. %s (%s)' % (pointsText, textFinishes, bestRank, bestTime)).encode('utf-8')
 
-      else:
-        text = (u' %s | %s ⚑ | 1. %s (%s)' % (pointsText, textFinishes, bestTeamRank, bestTime)).encode('utf-8')
+      #else:
+      #  text = (u' %s | %s ⚑ | 1. %s (%s)' % (pointsText, textFinishes, bestTeamRank, bestTime)).encode('utf-8')
 
-        if len(text) > 63:
-          d = 63 - len(text) - 3
-          bestTeamRank = truncate(bestTeamRank, d) + "..."
-          text = (u' %s | %s ⚑ | 1. %s (%s)' % (pointsText, textFinishes, bestTeamRank, bestTime)).encode('utf-8')
+      #  if len(text) > 63:
+      #    d = 63 - len(text) - 3
+      #    bestTeamRank = truncate(bestTeamRank, d) + "..."
+      #    text = (u' %s | %s ⚑ | 1. %s (%s)' % (pointsText, textFinishes, bestTeamRank, bestTime)).encode('utf-8')
 
     while text in knownTexts:
       text += " "
@@ -149,7 +156,12 @@ with con:
     if points == 1:
       mbS = ''
 
-    motdMap = '│ %s%s\\n│ Difficulty: %s (%d Point%s)' % (originalMapName, mbMapperName, pointsText, points, mbS)
+    if averageTime:
+      averageTimeText = "\\n│ Average Time: %s (%s ⚑)" % (averageTime, textFinishes)
+    else:
+      averageTimeText = ""
+
+    motdMap = '│ %s%s\\n│ Difficulty: %s (%d Point%s)%s' % (originalMapName, mbMapperName, pointsText, points, mbS, averageTimeText)
 
     with open('maps/%s.map.cfg' % originalMapName, 'w') as cfg:
       #cfg.write(execString + "\n")

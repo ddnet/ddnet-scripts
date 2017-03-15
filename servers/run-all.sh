@@ -18,7 +18,7 @@ cd secret
 nohup ./run64.sh secret > /dev/null &
 
 cd ../secret2
-nohup ./run64_hmh.sh secret2 > /dev/null &
+nohup ./run64.sh secret2 > /dev/null &
 
 cd ../secret3
 nohup ./run64.sh secret3 > /dev/null &
