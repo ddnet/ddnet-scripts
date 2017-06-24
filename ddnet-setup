@@ -3,7 +3,7 @@ ssh root@37.235.52.151
 Debian:
 apt-get update
 apt-get upgrade
-apt-get install zsh vim htop git g++ libboost-dev msgpack-python python-mysqldb sshfs tcpdump gdb pkg-config ntpdate ntp mailutils postfix
+apt-get install zsh vim htop git g++ libboost-dev msgpack-python python-mysqldb sshfs tcpdump gdb pkg-config ntpdate ntp mailutils postfix libssl-dev libmysqlclient-dev libmysqlcppconn-dev
 dpkg-reconfigure tzdata
 restorecon -R -v /root/.ssh
 restorecon -R -v /home/teeworlds/.ssh
@@ -11,8 +11,9 @@ vim /etc/hostname
 /etc/init.d/hostname.sh start
 
 CentOS:
-rpm -Uhv http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm
-rpm -Uhv http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+#rpm -Uhv http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm
+#rpm -Uhv http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+yum install -y deltarpm
 yum install zsh vim htop git gcc-c++ boost-devel MySQL-python python-msgpack fuse sshfs tcpdump gdb pkg-config ntpdate ntp postfix
 yum install zlib zlib-devel zlib-static openssl openssl-devel openssl-static
 rm /etc/localtime

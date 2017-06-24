@@ -2,32 +2,6 @@ $add_vote "Make sure no one is racing before voting!" "info"
 $add_vote "Random DDmaX Map" "random_map"
 $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 
-─── DDRACEMAX.NUT MAPS ───
-3|NUT Hardcore UNITED|Zeta-Hoernchen
-3|NUT_hardcore_bestof|Zeta-Hoernchen
-3|NUT_hardcore_race1|Zeta-Hoernchen
-3|NUT_hardcore_race2|Zeta-Hoernchen
-2|NUT_hardcore_race3|Zeta-Hoernchen
-2|NUT_hardcore_race4|Zeta-Hoernchen
-3|NUT_hardcore_race5|Zeta-Hoernchen
-3|NUT_hardcore_race6|Zeta-Hoernchen
-2|NUT_race1|Zeta-Hoernchen
-2|NUT_race2|Bad-Hoernchen
-2|NUT_race3|Zeta-Hoernchen
-2|NUT_race4|Zeta-Hoernchen
-2|NUT_race5|Zeta-Hoernchen
-3|NUT_race6|Zeta-Hoernchen
-2|NUT_race7|Bad-Hoernchen
-2|NUT_race8|Zeta-Hoernchen
-2|NUT_race9|Zeta-Hoernchen
-1|NUT_short_race1|Zeta-Hoernchen
-1|NUT_short_race2|Zeta-Hoernchen
-0|NUT_short_race3|Zeta-Hoernchen
-1|NUT_short_race4|Zeta-Hoernchen
-1|NUT_short_race5|Zeta-Hoernchen
-0|NUT_short_race6|Zeta-Hoernchen
-0|NUT_short_race7|Zeta-Hoernchen
-
 ─── DDRACEMAX.EASY MAPS ───
 1|Back to the Roots 1|Bixes
 1|Back to the Roots 2|Bixes
@@ -37,8 +11,8 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 1|EasyCore|Knight :3
 1|Everest|Mount Everest
 2|Fairy Land|Bixes
-1|GlassBox 9|Knight :3
 1|GlassBox 10|Knight :3
+1|GlassBox 9|Knight :3
 1|Grey 1|Knight :3
 1|Grey 2|Knight :3
 1|Grey 3|Knight :3
@@ -69,8 +43,8 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 2|007 - 2|KBeeeR
 3|2Long|H'ero*
 2|3way|Ama
-2|4luvz|Ama
 2|42|RosenVerkäufer
+2|4luvz|Ama
 2|84|Knight :3
 3|Angry|KBeeeR
 3|Angry 2|KBeeeR
@@ -87,8 +61,8 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 3|black-mountains 2|Welf
 2|Blue & Yellow|Evgesha
 1|Blue Adventures 1|Panda ♥
-3|BlueRift|Raze
 2|Blue Sky|SlowFox :3
+3|BlueRift|Raze
 2|BoX|Blade
 2|brainbase|Barracuda
 2|Brick World|SlowFox :3
@@ -107,9 +81,9 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 2|DaFuQ|ussi
 2|DaMap|19michael95
 2|DaMap 2|19michael95
+2|Dark Rainbow|Creepster
 3|DARKness 1|KBeeeR
 3|DARKness 2|KBeeeR
-2|Dark Rainbow|Creepster
 4|DeadEnd|Bixes
 2|Deeve1|snife 2.0
 2|Derpy 1|Evgesha
@@ -143,7 +117,17 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 3|FWYS 2|Ama
 3|FWYS 3|Ama
 3|FWYS 4|Ama
+3|FWYS 5|Ama
+2|Genesis|Bixes
+2|Genesis-2|Bixes
+2|Get The Gifts|Ama
+3|Google|KBeeeR
+3|Green|Ama
+3|GreenDream|Knight :3
+2|GTF 1|Knight :3
+4|Halloween|Ama
 4|HappyEaster|Knight :3
+3|Hell 1 V2|Knight :3
 2|HellGate 1|Hitomi
 2|HellGate 1.5|Hitomi
 2|HellGate 2|Hitomi
@@ -151,7 +135,6 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 2|HellGate 3|Hitomi
 2|HellGate 4|Hitomi
 3|HellGate 5|Hitomi
-3|Hell 1 V2|Knight :3
 2|Heroic|H'ero*
 2|HeyYa|Saavik
 3|Hook Fever|Tsin
@@ -172,10 +155,10 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 4|LATOM|Scratchy <3
 4|lemonland|LemonFace
 2|Lime|Ama
+3|Lost Story|Delo & Kintaro*
 2|Love 0.6|Pirate, Trear & Saavik
 3|lovely me|Alborq
 3|lovely me2|Alborq
-3|Lost Story|Delo & Kintaro*
 2|mario(=D)|KBeeeR
 2|Maroon|Ama
 3|Maximum|Knight :3
@@ -210,6 +193,7 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 2|SilentNight|Habergnite
 2|Sky line|M@TR!X
 1|skynet1|szyker
+2|skynet10|Tsin & szyker
 1|skynet2|szyker
 1|skynet3|szyker
 1|skynet4|szyker
@@ -218,7 +202,6 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 1|skynet7|szyker
 1|skynet8|szyker
 1|skynet9|szyker
-2|skynet10|Tsin & szyker
 3|Slim|Scratchy <3
 2|slow|Knight :3
 1|smile|KaB & Tsin
@@ -257,21 +240,20 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 4|-Ikarus-|Bixes
 4|21|645654 & maggi323
 5|Adrenaline 3|Silex
-4|Ambrosia
 3|Alpaga|Scratchy <3
+4|Ambrosia
 3|Arcade|RosenVerkäufer
 3|Arcade 2|RosenVerkäufer
 4|AreaOfEffect|Aoe
 5|At Night|Teengoten & Loop
-4|~AuTuMn~|KBeeeR & .me'
 4|Beachmap|estern
 4|Besbex|SBL
 5|Best Of|Jeet
-5|Black_City|Bixes
 4|Black & Red|Kenji
+5|Black_City|Bixes
 5|Blizzard!|Ice!
-4|blue-mountains|Welf
 5|Blue Hell|Cøke
+4|blue-mountains|Welf
 5|BrokenBlack-1|YeahxX
 4|Brownie|Phaturia
 4|Chaos 1|DiViNe
@@ -287,10 +269,10 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 4|DawnOfDust|estern
 5|Day|DiViNe
 4|DayWalker|SBL
+4|Dead Island|Draq & [*MC*]-DuBai-.?
 4|Deadline 1|Unreal
 4|Deadline 2|Unreal
 5|DeathClaw|estern
-4|Dead Island|Draq & [*MC*]-DuBai-.?
 3|Dels|NeoN
 4|Dels 2|NeoN
 4|Dels 3|NeoN
@@ -301,15 +283,6 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 3|Difficult 2.1|!_Vergeboy_!
 4|Difficult 2.2|!_Vergeboy_!
 5|Difficult 2.3|!_Vergeboy_!
-3|Divided|[*MC*]-DuBai-.?
-4|DoT|Aoe
-4|Dragonscale|Cøke & Aoe
-4|Dreadful|estern
-4|Easy Way|Cøke
-5|Eclipse|Jeet
-4|Elo-Hell|YeahxX
-4|Energie|YeahxX
-3|Equalize!|Scratchy <3
 3|Divided|[*MC*]-DuBai-.?
 4|DoT|Aoe
 4|Dragonscale|Cøke & Aoe
@@ -356,8 +329,8 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 4|Poke|Destoros
 4|Rampage|Captain
 4|Reality|Kintaro*
-3|Repeat|DiViNe
 5|Red Hell|Cøke
+3|Repeat|DiViNe
 4|Rockita|Ark :3
 5|Scabrous 2|NeoN
 4|Skyfly|[*MC*]-DuBai-.? & Destoros
@@ -375,6 +348,36 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 4|Veni Vidi Vici|[*MC*]-DuBai-.?
 4|Volcano|[*MC*]-DuBai-.?
 4|whatever|eci.iN*
-4|Zephronikon|Jim-panse
 5|Woader|Destoros
 4|World of Magic|Captain
+4|Zephronikon|Jim-panse
+4|~AuTuMn~|KBeeeR & .me'
+
+─── DDRACEMAX.NUT MAPS ───
+3|NUT Hardcore UNITED|Zeta-Hoernchen
+3|NUT_hardcore_bestof|Zeta-Hoernchen
+3|NUT_hardcore_race1|Zeta-Hoernchen
+3|NUT_hardcore_race2|Zeta-Hoernchen
+2|NUT_hardcore_race3|Zeta-Hoernchen
+2|NUT_hardcore_race4|Zeta-Hoernchen
+3|NUT_hardcore_race5|Zeta-Hoernchen
+3|NUT_hardcore_race6|Zeta-Hoernchen
+2|NUT_race1|Zeta-Hoernchen
+2|NUT_race2|Bad-Hoernchen
+2|NUT_race3|Zeta-Hoernchen
+2|NUT_race4|Zeta-Hoernchen
+3|NUT_race6|Zeta-Hoernchen
+2|NUT_race7|Bad-Hoernchen
+2|NUT_race8|Zeta-Hoernchen
+2|NUT_race9|Zeta-Hoernchen
+1|NUT_short_race1|Zeta-Hoernchen
+1|NUT_short_race2|Zeta-Hoernchen
+0|NUT_short_race3|Zeta-Hoernchen
+1|NUT_short_race4|Zeta-Hoernchen
+1|NUT_short_race5|Zeta-Hoernchen
+0|NUT_short_race6|Zeta-Hoernchen
+0|NUT_short_race7|Zeta-Hoernchen
+
+─── OTHER MAPS ───
+2|NUT_race5|Zeta-Hoernchen
+2|Paranoia|Líme.ftw!

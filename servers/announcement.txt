@@ -1,3 +1,4 @@
+Check out DDNet's Discord server by Welf on ddnet.tw/discord
 Check out DDNet's TeamSpeak server hosted by laxa on ts.ddnet.tw
 When you want to change map make sure no one is currently racing!
 Don't block! Often the race progress is being delayed by blocking players. And only some of them do it on purpose.
@@ -9,12 +10,11 @@ You should always help first when there is a tee that needs help. Leaving stuck 
 DDraceNetwork supports team ranks! Play in team, get a /rankteam and try to appear in the /top5team
 DDraceNetwork has a points system! For every map you finish you earn points, depending on its difficulty. Check your current /points and compare yourself to the /top5points
 DDraceNetwork always welcomes creative maps you made and ideas for new DDRace features you have.
-You can compare your points, global rank and team rank on DDraceNetwork's website: http://ddnet.tw
-Mappers looking to map using our new features can get our server and client on our website: http://ddnet.tw
+You can compare your points, global rank and team rank on DDraceNetwork's website: ddnet.tw
+Mappers looking to map using our new features can get our server and client on our website: ddnet.tw
 When you get blocked in the noobfilter do not kick the blocker but instead join a /team.
-Keep up to date with new map releases on http://ddnet.tw/releases
+Keep up to date with new map releases on ddnet.tw/releases
 Like us on Facebook! facebook.com/DDraceNetwork
 Everyone can help test and release new maps! Visit Map Testing section on our Forum for more info.
-We need your support! Donate to DDNet to make it run longer.
 Good luck in your race!
-Join our community and register on http://forum.ddnet.tw/
+Join our community and register on forum.ddnet.tw

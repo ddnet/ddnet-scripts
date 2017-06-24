@@ -42,7 +42,11 @@ def printFooter():
           <td>Brutal</td>
           <td class="multiplier">3</td>
           <td class="multiplier">15</td>
-         </tr><tr>
+        </tr><tr>
+          <td>Insane</td>
+          <td class="multiplier">4</td>
+          <td class="multiplier">30</td>
+        </tr><tr>
           <td>Dummy</td>
           <td class="multiplier">5</td>
           <td class="multiplier">5</td>
@@ -129,24 +133,41 @@ players = {}
 maps = {}
 totalPoints = 0
 serverRanks = {}
-types = sys.argv[1:]
+if sys.argv[1].startswith("--country="):
+  country = sys.argv[1][10:]
+  types = sys.argv[2:]
+  if country == "OLD": # Old ranks had no country
+    mbCountry = "and Server = \"\""
+    mbCountry2 = "where Server = \"\""
+  else:
+    mbCountry = "and Server = \"%s\"" % country
+    mbCountry2 = "where Server = \"%s\"" % country
+else:
+  country = None
+  types = sys.argv[1:]
+  mbCountry = ""
+  mbCountry2 = ""
 
 menuText = '<ul>'
-menuText += '<li><a href="/ranks/">Global Ranks</a></li>'
+menuText += '<li><a href="/ranks/">Global Ranks</a> (<a href="/ranks/ger/">GER</a>, <a href="/ranks/rus/">RUS</a>, <a href="/ranks/irn/">IRN</a>, <a href="/ranks/chl/">CHL</a>, <a href="/ranks/bra/">BRA</a>, <a href="/ranks/zaf/">ZAF</a>, <a href="/ranks/usa/">USA</a>, <a href="/ranks/can/">CAN</a>, <a href="/ranks/chn/">CHN</a>, <a href="/ranks/aus/">AUS</a>, <a href="/ranks/old/">OLD</a>)</li>'
 for type in types:
-  menuText += '<li><a href="/ranks/%s/">%s Server</a></li>\n' % (type.lower(), type)
+  if country == None:
+    menuText += '<li><a href="/ranks/%s/">%s Server</a></li>\n' % (type.lower(), type)
+  else:
+    menuText += '<li><a href="/ranks/%s/%s/">%s %s Server</a></li>\n' % (country.lower(), type.lower(), country, type)
 menuText += '<li><a href="#points">Points Calculation</a></li>\n'
 menuText += '</ul>'
-
-print header("Ranks - DDraceNetwork", menuText, "")
-print '<p class="toggle"><a title="Click to toggle whether only the top 10 ranks or all ranks are shown" href="#" onclick="showClass(\'allPoints\'); return false;">Top 500 / Top 20</a></p>'
 
 with con:
   cur = con.cursor()
   cur.execute("set names 'utf8';")
   for type in types:
-    filename = "%s/ranks/%s/index.html" % (webDir, type.lower())
-    tmpname = "%s/ranks/%s/index.%d.tmp" % (webDir, type.lower(), os.getpid())
+    if country == None:
+      filename = "%s/ranks/%s/index.html" % (webDir, type.lower())
+      tmpname = "%s/ranks/%s/index.%d.tmp" % (webDir, type.lower(), os.getpid())
+    else:
+      filename = "%s/ranks/%s/%s/index.html" % (webDir, country.lower(), type.lower())
+      tmpname = "%s/ranks/%s/%s/index.%d.tmp" % (webDir, country.lower(), type.lower(), os.getpid())
     directory = os.path.dirname(filename)
     if not os.path.exists(directory):
       os.makedirs(directory)
@@ -167,7 +188,10 @@ with con:
     serversString += '<script src="/jquery.js" type="text/javascript"></script>\n'
     serversString += '<script src="/typeahead.bundle.js" type="text/javascript"></script>\n'
     serversString += '<script src="/playersearch.js" type="text/javascript"></script>\n'
-    serversString += '<div class="block7"><h2>%s Server Ranks</h2></div><br/>\n' % type
+    if country == None:
+      serversString += '<div class="block7"><h2>%s Server Ranks</h2></div><br/>\n' % type
+    else:
+      serversString += '<div class="block7"><h2>%s %s Server Ranks</h2></div><br/>\n' % (country, type)
 
     mapsString = ""
 
@@ -212,7 +236,10 @@ with con:
       skips = 1
 
       try:
-        cur.execute("select Name, r.ID, Time, Timestamp from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID order by r.Time, r.ID, Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
+        if country == None:
+          cur.execute("select Name, r.ID, Time, Timestamp from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID order by r.Time, r.ID, Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
+        else:
+          cur.execute("select r.Name, r.ID, r.Time, r.Timestamp from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID join record_race on r.Map = record_race.Map and r.Name = record_race.Name and r.Time = record_race.Time %s order by r.Time, r.ID, r.Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName), mbCountry2))
         rows = cur.fetchall()
         #sleep(0.05)
       except:
@@ -243,7 +270,7 @@ with con:
         if row[0] not in players:
           players[row[0]] = Player({}, {})
         if originalMapName not in players[row[0]].maps:
-          players[row[0]].maps[originalMapName] = PlayerMap(currentRank, 0, 0, "2020-10-10 00:00:00", 0.0)
+          players[row[0]].maps[originalMapName] = PlayerMap(currentRank, 0, 0, "2030-10-10 00:00:00", 0.0)
 
         if currentPosition > 10:
           continue
@@ -274,7 +301,7 @@ with con:
       countFinishes = 0
 
       try:
-        cur.execute("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, l.Server from (select * from record_race where Map = '%s') as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp from record_race where Map = '%s' group by Name order by minTime ASC) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTime;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
+        cur.execute("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, l.Server from (select * from record_race where Map = '%s' %s) as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp from record_race where Map = '%s' %s group by Name order by minTime ASC) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTime;" % (con.escape_string(originalMapName), mbCountry, con.escape_string(originalMapName), mbCountry))
         rows = cur.fetchall()
         #sleep(0.05)
       except:
@@ -345,7 +372,7 @@ with con:
 
       if countFinishes:
         try:
-          cur.execute("select avg(Time), min(Timestamp), max(Timestamp) from record_race where Map = '%s';" % con.escape_string(originalMapName))
+          cur.execute("select avg(Time), min(Timestamp), max(Timestamp) from record_race where Map = '%s' %s;" % con.escape_string(originalMapName), mbCountry)
           rows = cur.fetchall()
           avgTime = " (average time: %s)" % formatTime(rows[0][0])
           finishTimes = "first finish: %s, last finish: %s" % (escape(formatDate(rows[0][1])), escape(formatDate(rows[0][2])))
@@ -353,7 +380,7 @@ with con:
           pass
 
         try:
-            cur.execute("select count(Name) from record_race where Map = '%s';" % con.escape_string(originalMapName))
+            cur.execute("select count(Name) from record_race where Map = '%s' %s;" % con.escape_string(originalMapName), mbCountry)
             rows = cur.fetchall()
             finishTimes += ", total finishes: %d" % rows[0][0]
         except:
@@ -362,7 +389,10 @@ with con:
       biggestTeam = ""
 
       try:
-        cur.execute("select count(Name) from record_teamrace where Map = '%s' group by ID order by count(Name) desc limit 1;" % con.escape_string(originalMapName))
+        if country == None:
+          cur.execute("select count(Name) from record_teamrace where Map = '%s' group by ID order by count(Name) desc limit 1;" % con.escape_string(originalMapName))
+        else:
+          cur.execute("select count(record_teamrace.Name) from (record_teamrace join record_race on record_teamrace.Map = record_race.Map and record_teamrace.Name = record_race.Name and record_teamrace.Time = record_race.Time) where record_teamrace.Map = '%s' %s group by ID order by count(record_teamrace.Name) desc limit 1;" % (con.escape_string(originalMapName), mbCountry))
         rows = cur.fetchall()
         #sleep(0.05)
         biggestTeam = " (biggest team: %d)" % rows[0][0]
@@ -397,10 +427,10 @@ with con:
         traceback.print_exc()
 
       if type == "Solo" or type == "Race" or type == "Dummy":
-        mapsString += u'<div class="block2 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="../maps/%s.png" /></a>%s<br/><span title="%s">%d tee%s finished%s</span></p></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime))
+        mapsString += u'<div class="block2 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" /></a>%s<br/><span title="%s">%d tee%s finished%s</span></p></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime))
         mapsString += printExactSoloRecords("Records", "records", ranks)
       else:
-        mapsString += u'<div class="block2 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="../maps/%s.png" /></a>%s<br/><span title="%s">%d tee%s finished%s</span><br/>%d team%s finished%s</p></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime), countTeamFinishes, mbS, escape(biggestTeam))
+        mapsString += u'<div class="block2 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" /></a>%s<br/><span title="%s">%d tee%s finished%s</span><br/>%d team%s finished%s</p></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime), countTeamFinishes, mbS, escape(biggestTeam))
         mapsString += printTeamRecords("Team Records", "teamrecords", teamRanks)
         mapsString += printSoloRecords("Records", "records", ranks)
       mapsString += '<br/>\n'
@@ -420,14 +450,18 @@ with con:
     serversString += '<br/>'
 
     lastString = ""
-    cur.execute("select l.Timestamp, l.Map, Name, Time from (select Timestamp, Map, Name, Time from record_race) as l join record_maps on l.Map = record_maps.Map where Server = '%s' order by l.Timestamp desc limit 10;" % type)
+    cur.execute("select l.Timestamp, l.Map, Name, Time from (select Timestamp, Map, Name, Time from record_race %s) as l join record_maps on l.Map = record_maps.Map where Server = '%s' order by l.Timestamp desc limit 10;" % (mbCountry2, type))
     rows = cur.fetchall()
     #sleep(0.05)
 
     lastString = '<div class="block4"><h3>Last Finishes</h3><table class="tight">'
 
     for row in rows:
-      lastString += '<tr><td><span title="%s">%s</span>: <a href="/ranks/%s/#map-%s">%s</a> by <a href="%s">%s</a> (%s)</td></tr>' % (escape(formatDate(row[0])), escape(formatDateShort(row[0])), type.lower(), escape(normalizeMapname(row[1])), escape(row[1]), escape(playerWebsite(row[2])), escape(row[2]), escape(formatTime(row[3])))
+      if country == None:
+        mapLink = "/ranks/%s/#map-%s" % (type.lower(), escape(normalizeMapname(row[1])))
+      else:
+        mapLink = "/ranks/%s/%s/#map-%s" % (country.lower(), type.lower(), escape(normalizeMapname(row[1])))
+      lastString += '<tr><td><span title="%s">%s</span>: <a href="%s">%s</a> by <a href="%s">%s</a> (%s)</td></tr>' % (escape(formatDate(row[0])), escape(formatDateShort(row[0])), mapLink, escape(row[1]), escape(playerWebsite(row[2])), escape(row[2]), escape(formatTime(row[3])))
 
     lastString += '</table></div><br/>'
 
@@ -455,7 +489,10 @@ with con:
     #serverMenuText += '<li><a href="#points">Points Calculation</a></li>\n'
     #serverMenuText += '</ul>'
 
-    print >>tf, header("%s Ranks - DDraceNetwork" % type, menuText, "")
+    if country == None:
+      print >>tf, header("%s Server Ranks - DDraceNetwork" % type, menuText, "")
+    else:
+      print >>tf, header("%s %s Server Ranks - DDraceNetwork" % (country, type), menuText, "")
     print >>tf, '<p class="toggle"><a title="Click to toggle whether only the top 10 ranks or all ranks are shown" href="#" onclick="showClass(\'allPoints\'); return false;">Top 500 / Top 10</a></p>'
 
     print >>tf, '<div id="serverranks" style="display: ">'
@@ -468,14 +505,18 @@ with con:
     #sleep(0.1)
 
   lastString = ""
-  cur.execute("select l.Timestamp, l.Map, Name, Time, record_maps.Server from ((select * from record_race order by Timestamp desc limit 20) as l join record_maps on l.Map = record_maps.Map);")
+  cur.execute("select l.Timestamp, l.Map, Name, Time, record_maps.Server from ((select * from record_race %s order by Timestamp desc limit 20) as l join record_maps on l.Map = record_maps.Map);" % mbCountry2)
   rows = cur.fetchall()
   #sleep(0.05)
 
   lastString = '<div class="block4"><h3>Last Finishes</h3><table>'
 
   for row in rows:
-    lastString += '<tr><td><span title="%s">%s</span>: <a href="/ranks/%s/#map-%s">%s</a> by <a href="%s">%s</a> (%s)</td></tr>' % (escape(formatDate(row[0])), escape(formatDateShort(row[0])), row[4].lower(), escape(normalizeMapname(row[1])), escape(row[1]), escape(playerWebsite(row[2])), escape(row[2]), escape(formatTime(row[3])))
+    if country == None:
+      mapLink = "/ranks/%s/#map-%s" % (row[4].lower(), escape(normalizeMapname(row[1])))
+    else:
+      mapLink = "/ranks/%s/%s/#map-%s" % (country.lower(), row[4].lower(), escape(normalizeMapname(row[1])))
+    lastString += '<tr><td><span title="%s">%s</span>: <a href="%s">%s</a> by <a href="%s">%s</a> (%s)</td></tr>' % (escape(formatDate(row[0])), escape(formatDateShort(row[0])), mapLink, escape(row[1]), escape(playerWebsite(row[2])), escape(row[2]), escape(formatTime(row[3])))
 
   lastString += '</table></div><br/>'
 
@@ -485,21 +526,45 @@ monthlyPointsRanks = sorted(monthlyPointsLadder.items(), key=lambda r: r[1], rev
 teamrankRanks = sorted(teamrankLadder.items(), key=lambda r: r[1], reverse=True)
 rankRanks = sorted(rankLadder.items(), key=lambda r: r[1], reverse=True)
 
-print '<div id="global" class="block">\n'
-print '<div id="remote" class="right"><form id="playerform" action="/players/" method="get"><input name="player" class="typeahead" type="text" placeholder="Player search"><input type="submit" value="Player search" style="position: absolute; left: -9999px"></form></div>'
-print '<script src="/jquery.js" type="text/javascript"></script>'
-print '<script src="/typeahead.bundle.js" type="text/javascript"></script>'
-print '<script src="/playersearch.js" type="text/javascript"></script>'
-print '<div class="block7"><h2>Global Ranks</h2></div><br/>'
-print printLadder("Points (%d total)" % totalPoints, pointsRanks, players, 20)
-print printLadder("Team Rank", teamrankRanks, players, 20)
-print printLadder("Rank", rankRanks, players, 20)
-print '<br/>'
-print printLadder("Points (last month)", monthlyPointsRanks, players, 20)
-print printLadder("Points (last week)", weeklyPointsRanks, players, 20)
-print lastString
-print '</div>'
-print printFooter()
+if country == None:
+  filename = "%s/ranks/index.html" % webDir
+  tmpname = "%s/ranks/index.%d.tmp" % (webDir, os.getpid())
+else:
+  filename = "%s/ranks/%s/index.html" % (webDir, country.lower())
+  tmpname = "%s/ranks/%s/index.%d.tmp" % (webDir, country.lower(), os.getpid())
+directory = os.path.dirname(filename)
+if not os.path.exists(directory):
+  os.makedirs(directory)
+
+tf = open(tmpname, 'w')
+
+if country == None:
+  print >>tf, header("Ranks - DDraceNetwork", menuText, "")
+else:
+  print >>tf, header("%s Ranks - DDraceNetwork" % country, menuText, "")
+print >>tf, '<p class="toggle"><a title="Click to toggle whether only the top 10 ranks or all ranks are shown" href="#" onclick="showClass(\'allPoints\'); return false;">Top 500 / Top 20</a></p>'
+
+print >>tf, '<div id="global" class="block">\n'
+print >>tf, '<div id="remote" class="right"><form id="playerform" action="/players/" method="get"><input name="player" class="typeahead" type="text" placeholder="Player search"><input type="submit" value="Player search" style="position: absolute; left: -9999px"></form></div>'
+print >>tf, '<script src="/jquery.js" type="text/javascript"></script>'
+print >>tf, '<script src="/typeahead.bundle.js" type="text/javascript"></script>'
+print >>tf, '<script src="/playersearch.js" type="text/javascript"></script>'
+if country == None:
+  print >>tf, '<div class="block7"><h2>Global Ranks</h2></div><br/>'
+else:
+  print >>tf, '<div class="block7"><h2>%s Ranks</h2></div><br/>' % country
+print >>tf, printLadder("Points (%d total)" % totalPoints, pointsRanks, players, 20)
+print >>tf, printLadder("Team Rank", teamrankRanks, players, 20)
+print >>tf, printLadder("Rank", rankRanks, players, 20)
+print >>tf, '<br/>'
+print >>tf, printLadder("Points (last month)", monthlyPointsRanks, players, 20)
+print >>tf, printLadder("Points (last week)", weeklyPointsRanks, players, 20)
+print >>tf, lastString
+print >>tf, '</div>'
+print >>tf, printFooter()
+
+tf.close()
+os.rename(tmpname, filename)
 
 #tmpname = '%s/players/index.%d.tmp' % (webDir, os.getpid())
 #filename = '%s/players/index.html' % webDir
@@ -520,24 +585,30 @@ print printFooter()
 #os.rename(tmpname, filename)
 #sleep(0.1)
 
-tmpname = '%s/playerNames.%d.tmp' % (webDir, os.getpid())
-filename = '%s/playerNames.msgpack' % webDir
-with open(tmpname, 'wb') as out:
-  out.write(msgpack.packb(players.keys()))
-os.rename(tmpname, filename)
-#sleep(0.1)
+if country == None:
+  #for player in players.keys():
+  #  for mapName in players[player].maps.keys():
+  #    if players[player].maps[mapName].firstFinish == "2030-10-10 00:00:00":
+  #      print "Player: %s, Map: %s, no rank for teamrank" % (player, mapName)
 
-tmpname = '%s/players.%d.tmp' % (webDir, os.getpid())
-filename = '%s/players.msgpack' % webDir
-with open(tmpname, 'wb') as out:
-  out.write(msgpack.packb(types))
-  out.write(msgpack.packb(maps))
-  out.write(msgpack.packb(totalPoints))
-  out.write(msgpack.packb(pointsRanks))
-  out.write(msgpack.packb(weeklyPointsRanks))
-  out.write(msgpack.packb(monthlyPointsRanks))
-  out.write(msgpack.packb(teamrankRanks))
-  out.write(msgpack.packb(rankRanks))
-  out.write(msgpack.packb(serverRanks))
-  out.write(msgpack.packb(players, default=str))
-os.rename(tmpname, filename)
+  tmpname = '%s/playerNames.%d.tmp' % (webDir, os.getpid())
+  filename = '%s/playerNames.msgpack' % webDir
+  with open(tmpname, 'wb') as out:
+    out.write(msgpack.packb(players.keys()))
+  os.rename(tmpname, filename)
+  #sleep(0.1)
+
+  tmpname = '%s/players.%d.tmp' % (webDir, os.getpid())
+  filename = '%s/players.msgpack' % webDir
+  with open(tmpname, 'wb') as out:
+    out.write(msgpack.packb(types))
+    out.write(msgpack.packb(maps))
+    out.write(msgpack.packb(totalPoints))
+    out.write(msgpack.packb(pointsRanks))
+    out.write(msgpack.packb(weeklyPointsRanks))
+    out.write(msgpack.packb(monthlyPointsRanks))
+    out.write(msgpack.packb(teamrankRanks))
+    out.write(msgpack.packb(rankRanks))
+    out.write(msgpack.packb(serverRanks))
+    out.write(msgpack.packb(players, default=str))
+  os.rename(tmpname, filename)

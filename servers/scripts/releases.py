@@ -87,7 +87,7 @@ serversString += mapsString
 serversString += '<span class="stretch"></span></div>\n'
 
 print '<div id="global" class="block"><h2>Recent Map Releases</h2><br/>'
-print '<a href="feed/"><img src="/feed.svg"/></a> You can subscribe to the feed to get updated about new map releases'
-print '<p>Planned Map Releases are listed <a href="//forum.ddnet.tw/viewtopic.php?f=9&t=1474">in the forum</a></p>'
+print '<a href="feed/"><img width="36" src="/feed.svg"/></a> You can subscribe to the feed to get updated about new map releases'
+print '<p>Planned Map Releases are listed <a href="//forum.ddnet.tw/viewtopic.php?f=9&t=1474">on the forum</a>. All DDNet maps can be download <a href="https://github.com/ddnet/ddnet-maps">from GitHub</a>.</p>'
 print serversString
 printFooter()

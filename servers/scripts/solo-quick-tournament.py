@@ -76,7 +76,7 @@ for type in types:
   menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type)
 menuText += '</ul>'
 
-print header("Quick Tournament #38 - DDraceNetwork", menuText, "")
+print header("Quick Tournament #45 - DDraceNetwork", menuText, "")
 
 f = open("tournament")
 tournamentMaps = []
@@ -246,8 +246,8 @@ with con:
 #teamrankRanks = sorted(teamrankLadder.items(), key=lambda r: r[1], reverse=True)
 #rankRanks = sorted(rankLadder.items(), key=lambda r: r[1], reverse=True)
 
-print '<div id="global" class="block div-tournament"><h2>Quick Tournament #38</h2>'
-print '<p>This tournament was played on 2015-08-30 from 20:00 to 21:00 CEST.</p>'
+print '<div id="global" class="block div-tournament"><h2>Quick Tournament #45</h2>'
+print '<p>This tournament was played on Sunday, 2017-04-09 at 20:00 CEST.</p>'
 #print printLadder(teamrankRanks)
 print '</div>'
 print '<div id="serverranks" style="display: ">'
