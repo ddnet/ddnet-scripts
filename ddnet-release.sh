@@ -8,8 +8,8 @@ START_TIME=$(date +%s)
 renice -n 19 -p $$ > /dev/null
 ionice -n 3 -p $$
 
-PATH=$PATH:/usr/local/bin:/opt/android-sdk/build-tools/23.0.2:/opt/android-sdk/tools:/opt/android-ndk:/opt/android-sdk/platform-tools
-BUILDDIR=/media/ddnet
+PATH=$PATH:/usr/local/bin:/opt/android-sdk/build-tools/23.0.3:/opt/android-sdk/tools:/opt/android-ndk:/opt/android-sdk/platform-tools
+BUILDDIR=/home/deen/isos/ddnet
 BUILDS=$BUILDDIR/builds
 MACLOG=$BUILDS/mac.log
 WEBSITE=/var/www/felsing.ath.cx/htdocs/dennis
@@ -44,8 +44,9 @@ ionice -c 2 -n 7 -p $QEMU_PID
 
 # Get the sources
 cd $WEBSITE
-rm -f master.zip
+rm -rf master.zip libs.zip
 wget -nv https://github.com/ddnet/ddnet/archive/master.zip
+wget -nv https://github.com/ddnet/ddnet-libs/archive/master.zip -O libs.zip
 TIME_PREPARATION=$(($(date +%s) - $START_TIME))
 
 # Mac OS X
@@ -58,9 +59,12 @@ build_macosx ()
 
   ssh -p 10022 localhost "
     source .profile
-    rm -rf ddnet-master master.zip &&
-    curl -o master.zip http://r0q.no-ip.org/dennis/master.zip &&
+    rm -rf ddnet-master master.zip libs.zip &&
+    curl -o master.zip http://felsing.hookrace.net/dennis/master.zip &&
+    curl -o libs.zip http://felsing.hookrace.net/dennis/libs.zip &&
     unzip -q master.zip &&
+    unzip -q libs.zip &&
+    mv ddnet-libs-master ddnet-master/ddnet-libs &&
     cd ddnet-master &&
     /usr/local/bin/bam config curl.use_pkgconfig=false opus.use_pkgconfig=false \
       opusfile.use_pkgconfig=false ogg.use_pkgconfig=false compiler=clang &&
@@ -68,9 +72,10 @@ build_macosx ()
 
     strip DDNet_x86 DDNet_x86_64 DDNet-Server_x86 DDNet-Server_x86_64 dilate_x86 \
       dilate_x86_64 config_store_x86 config_store_x86_64 config_retrieve_x86 \
-      config_retrieve_x86_64 &&
+      config_retrieve_x86_64 map_extract_x86 map_extract_x86_64 map_diff_x86 \
+      map_diff_x86_64 &&
     python scripts/make_release.py $VERSION osx &&
-    curl -F \"uploadFile=@DDNet-$VERSION-osx.dmg\" r0q.no-ip.org/tw/upload.php &&
+    curl -F \"uploadFile=@DDNet-$VERSION-osx.dmg\" felsing.hookrace.net/tw/upload.php &&
     halt" || true
 
   mv /home/deen/.teeworlds/maps/DDNet-$VERSION-osx.dmg $BUILDS || true
@@ -88,13 +93,15 @@ build_linux ()
 
   rm -rf ddnet-master
   unzip -q $WEBSITE/master.zip
+  unzip -q $WEBSITE/libs.zip
+  mv ddnet-libs-master ddnet-master/ddnet-libs
   chroot . sh -c "cd ddnet-master && bam config curl.use_pkgconfig=false \
     opus.use_pkgconfig=false opusfile.use_pkgconfig=false \
     ogg.use_pkgconfig=false && bam release"
   cd ddnet-master
-  strip -s DDNet DDNet-Server dilate config_store config_retrieve
+  strip -s DDNet DDNet-Server dilate config_store config_retrieve map_extract map_diff
   python scripts/make_release.py $VERSION linux_$PLATFORM
-  mv DDNet-$VERSION-linux_$PLATFORM.tar.gz $BUILDS
+  mv DDNet-$VERSION-linux_$PLATFORM.tar.xz $BUILDS
   cd ..
   rm -rf ddnet-master
 
@@ -125,12 +132,14 @@ build_windows ()
 
   rm -rf ddnet-master
   unzip -q $WEBSITE/master.zip
+  unzip -q $WEBSITE/libs.zip
+  mv ddnet-libs-master ddnet-master/ddnet-libs
   cd ddnet-master
   bam config curl.use_pkgconfig=false opus.use_pkgconfig=false \
     opusfile.use_pkgconfig=false ogg.use_pkgconfig=false
   CC=${PREFIX}gcc CXX=${PREFIX}g++ WINDRES=${PREFIX}windres bam release
   ${PREFIX}strip -s DDNet.exe DDNet-Server.exe dilate.exe \
-    config_store.exe config_retrieve.exe
+    config_store.exe config_retrieve.exe map_extract.exe map_diff.exe
   python scripts/make_release.py $VERSION win$PLATFORM
   mv DDNet-$VERSION-win$PLATFORM.zip $BUILDS
   cd ..
@@ -152,28 +161,29 @@ TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
 TIME_WINDOWS_X86=$(($(date +%s) - $START_TIME))
 
 # Android
-START_TIME=$(date +%s)
-cd $BUILDDIR/commandergenius/project/jni/application/teeworlds
-sed -e "s/YYYY/$VERSION/; s/XXXX/$NUMVERSION/" \
-  AndroidAppSettings.tmpl > AndroidAppSettings.cfg
-rm -rf src
-unzip -q $WEBSITE/master.zip
-mv ddnet-master src
-cp -r generated src/src/game/
-rm -rf AndroidData
-./AndroidPreBuild.sh
-
-cd $BUILDDIR/commandergenius
-./changeAppSettings.sh -a
-android update project -p project
-./build.sh
-{ jarsigner -verbose -keystore ~/.android/release.keystore -storepass $PASS \
-  -sigalg MD5withRSA -digestalg SHA1 \
-  project/bin/MainActivity-release-unsigned.apk androidreleasekey; } 2>/dev/null
-zipalign 4 project/bin/MainActivity-release-unsigned.apk \
-  project/bin/MainActivity-release.apk
-mv project/bin/MainActivity-release.apk $BUILDS/DDNet-${VERSION}.apk
-TIME_ANDROID=$(($(date +%s) - $START_TIME))
+# TODO: Reenable with SDL2
+#START_TIME=$(date +%s)
+#cd $BUILDDIR/commandergenius/project/jni/application/teeworlds
+#sed -e "s/YYYY/$VERSION/; s/XXXX/$NUMVERSION/" \
+#  AndroidAppSettings.tmpl > AndroidAppSettings.cfg
+#rm -rf src
+#unzip -q $WEBSITE/master.zip
+#mv ddnet-master src
+#cp -r generated src/src/game/
+#rm -rf AndroidData
+#./AndroidPreBuild.sh
+#
+#cd $BUILDDIR/commandergenius
+#./changeAppSettings.sh -a
+#android update project -p project
+#./build.sh
+#{ jarsigner -verbose -keystore ~/.android/release.keystore -storepass $PASS \
+#  -sigalg MD5withRSA -digestalg SHA1 \
+#  project/bin/MainActivity-release-unsigned.apk androidreleasekey; } 2>/dev/null
+#zipalign 4 project/bin/MainActivity-release-unsigned.apk \
+#  project/bin/MainActivity-release.apk
+#mv project/bin/MainActivity-release.apk $BUILDS/DDNet-${VERSION}.apk
+#TIME_ANDROID=$(($(date +%s) - $START_TIME))
 
 wait $MACPID
 cat $MACLOG
