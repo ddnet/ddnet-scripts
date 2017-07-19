@@ -1,4 +1,6 @@
+# Using a Debian 6 chroot, mingw and a Mac VM
 # DO NOT COPY libogg, extract directly... Changing timestamps breaks the build and requires autotools
+# strip all Windows dlls, don't strip a files
 # TODO: https://github.com/tpoechtrager/osxcross instead of VM at some point
 
 wget https://www.openssl.org/source/openssl-1.1.0f.tar.gz
@@ -74,6 +76,37 @@ cp .libs/libopusfile.a ..
 
 cd ../..
 
+# win64
+cd curl-7.54.1
+./configure --host=x86_64-w64-mingw32 --with-winssl --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
+make -j4
+x86_64-w64-mingw32-dlltool -v -D libcurl-4.dll -l ../curl-4.lib lib/.libs/*.o
+cp lib/.libs/libcurl-4.dll ../libcurl.dll
+
+cd ../libogg-1.3.2
+./configure --host=x86_64-w64-mingw32
+make -j4
+x86_64-w64-mingw32-dlltool -v -D libogg-0.dll -l ../ogg-0.lib src/.libs/*.o
+cp src/.libs/libogg-0.dll ..
+
+cd ../opus-1.2.1
+./configure --host=x86_64-w64-mingw32
+make -j4
+x86_64-w64-mingw32-dlltool -v -D libopus-0.dll -l ../opus-0.lib src/*.o
+cp .libs/libopus.a ..
+
+cd ../opusfile-0.7
+DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian6/root/win64/opus-1.2.1/.libs/ -L/home/deen/isos/ddnet/debian6/root/win64/libogg-1.3.2/src/.libs/" DEPS_CFLAGS="-I/home/deen/isos/ddnet/debian6/root/win64/opus-1.2.1/include -I/home/deen/isos/ddnet/debian6/root/win64/libogg-1.3.2/include" ./configure --host=x86_64-w64-mingw32 --disable-http
+make -j4
+x86_64-w64-mingw32-dlltool -v -D libopusfile-0.dll -l ../opusfile-0.lib src/*.o
+cp .libs/libopusfile.a ..
+
+cd ../freetype-2.8
+./configure --host=x86_64-w64-mingw32 --prefix=/usr/x86_64-w64-mingw32 CPPFLAGS="-I/usr/x86_64-w64-mingw32/include" LDFLAGS="-L/usr/x86_64-w64-mingw32/lib" PKG_CONFIG_LIBDIR=/usr/x86_64-w64-mingw32/lib/pkgconfig --with-png=no --with-bzip2=no --with-zlib=no --with-harfbuzz=no
+make -j4
+cp objs/.libs/libfreetype-6.dll ..
+x86_64-w64-mingw32-dlltool -v -D libfreetype-6.dll -l ../freetype-6.lib -d objs/.libs/libfreetype-6.dll.def
+
 # win32
 cd curl-7.54.1
 ./configure --host=i686-w64-mingw32 --with-winssl --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
@@ -99,30 +132,11 @@ make -j4
 i686-w64-mingw32-dlltool -v -D libopusfile-0.dll -l ../opusfile-0.lib src/*.o
 cp .libs/libopusfile.a ..
 
-# win64
-cd curl-7.54.1
-./configure --host=x86_64-w64-mingw32 --with-winssl --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
+cd ../freetype-2.8
+./configure --host=i686-w64-mingw32 --prefix=/usr/i686-w64-mingw32 CPPFLAGS="-I/usr/i686-w64-mingw32/include" LDFLAGS="-L/usr/i686-w64-mingw32/lib" PKG_CONFIG_LIBDIR=/usr/i686-w64-mingw32/lib/pkgconfig --with-png=no --with-bzip2=no --with-zlib=no --with-harfbuzz=no
 make -j4
-x86_64-w64-mingw32-dlltool -v -D libcurl-4.dll -l ../curl-4.lib lib/.libs/*.o
-cp lib/.libs/libcurl-4.dll ../libcurl.dll
-
-cd ../libogg-1.3.2
-./configure --host=x86_64-w64-mingw32
-make -j4
-x86_64-w64-mingw32-dlltool -v -D libogg-0.dll -l ../ogg-0.lib src/.libs/*.o
-cp src/.libs/libogg-0.dll ..
-
-cd ../opus-1.2.1
-./configure --host=x86_64-w64-mingw32
-make -j4
-x86_64-w64-mingw32-dlltool -v -D libopus-0.dll -l ../opus-0.lib src/*.o
-cp .libs/libopus.a ..
-
-cd ../opusfile-0.7
-DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian6/root/win64/opus-1.2.1/.libs/ -L/home/deen/isos/ddnet/debian6/root/win64/libogg-1.3.2/src/.libs/" DEPS_CFLAGS="-I/home/deen/isos/ddnet/debian6/root/win64/opus-1.2.1/include -I/home/deen/isos/ddnet/debian6/root/win64/libogg-1.3.2/include" ./configure --host=x86_64-w64-mingw32 --disable-http
-make -j4
-x86_64-w64-mingw32-dlltool -v -D libopusfile-0.dll -l ../opusfile-0.lib src/*.o
-cp .libs/libopusfile.a ..
+cp objs/.libs/libfreetype-6.dll ..
+i686-w64-mingw32-dlltool -v -D libfreetype-6.dll -l ../freetype-6.lib -d objs/.libs/libfreetype-6.dll.def
 
 # osx64
 cd curl-7.54.1
