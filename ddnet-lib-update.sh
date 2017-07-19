@@ -43,23 +43,25 @@ cd ../..
 cd curl-7.54.1
 ./configure --host=i686-w64-mingw32 --with-winssl --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
 make -j4
+x86_64-w64-mingw32-dlltool -v -D libcurl-4.dll -l curl-4.lib lib/.libs/*.o
 cp lib/.libs/libcurl-4.dll ../libcurl.dll
 
 # win32
 cd curl-7.54.1
 ./configure --host=x86_64-w64-mingw32 --with-winssl --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
 make -j4
+i686-w64-mingw32-dlltool -v -D libcurl-4.dll -l curl-4.lib lib/.libs/*.o
 cp lib/.libs/libcurl-4.dll ../libcurl.dll
 
 # osx
 cd curl-7.54.1
-CFLAGS="-arch i386" LDFLAGS="-arch i386" ./configure --with-darwinssl --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
+CFLAGS="-arch x86_64" CPPFLAGS="-arch x86_64" LDFLAGS= LIBS= ./configure --host=x86_64-apple-darwin12.4.0 --with-darwinssl --enable-static --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
 make -j4
 cd lib/.libs
 curl -F "uploadFile=@libcurl.a" felsing.hookrace.net/tw/upload.php
 
 cd curl-7.54.1-i686
-CFLAGS="-arch x86_64" LDFLAGS="-arch x86_64" ./configure --host=i686-apple-darwin12.4.0 --with-darwinssl --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
+CFLAGS="-arch i386" LDFLAGS="-arch i386" ./configure --host=i686-apple-darwin12.4.0 --with-darwinssl --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
 make -j4
 cd lib/.libs
 curl -F "uploadFile=@libcurl.a" felsing.hookrace.net/tw/upload.php
