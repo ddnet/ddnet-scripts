@@ -1,5 +1,5 @@
 # Using a Debian 6 chroot, mingw and a Mac VM
-# DO NOT COPY libogg, extract directly... Changing timestamps breaks the build and requires autotools
+# DO NOT COPY libogg, extract directly... Changing timestamps breaks the build and requires autotools (or cp -a)
 # strip all Windows dlls, don't strip a files
 # TODO: https://github.com/tpoechtrager/osxcross instead of VM at some point
 

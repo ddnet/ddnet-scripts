@@ -64,6 +64,7 @@ build_macosx ()
     curl -o libs.zip http://felsing.hookrace.net/dennis/libs.zip &&
     unzip -q master.zip &&
     unzip -q libs.zip &&
+    rm -rf ddnet-master/ddnet-libs
     mv ddnet-libs-master ddnet-master/ddnet-libs &&
     cd ddnet-master &&
     /usr/local/bin/bam config curl.use_pkgconfig=false opus.use_pkgconfig=false \
@@ -94,6 +95,7 @@ build_linux ()
   rm -rf ddnet-master
   unzip -q $WEBSITE/master.zip
   unzip -q $WEBSITE/libs.zip
+  rm -rf ddnet-master/ddnet-libs
   mv ddnet-libs-master ddnet-master/ddnet-libs
   chroot . sh -c "cd ddnet-master && bam config curl.use_pkgconfig=false \
     opus.use_pkgconfig=false opusfile.use_pkgconfig=false \
@@ -133,6 +135,7 @@ build_windows ()
   rm -rf ddnet-master
   unzip -q $WEBSITE/master.zip
   unzip -q $WEBSITE/libs.zip
+  rm -rf ddnet-master/ddnet-libs
   mv ddnet-libs-master ddnet-master/ddnet-libs
   cd ddnet-master
   bam config curl.use_pkgconfig=false opus.use_pkgconfig=false \
