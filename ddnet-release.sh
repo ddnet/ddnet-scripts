@@ -55,7 +55,7 @@ build_source ()
   cd $BUILDDIR
   unzip -q $WEBSITE/master.zip
   mv ddnet-master DDNet-$VERSION
-  XZ_OPT=-9 DDNet-$VERSION.tar.xz DDNet-$VERSION
+  XZ_OPT=-9 tar cfJ DDNet-$VERSION.tar.xz DDNet-$VERSION
   mv DDNet-$VERSION.tar.xz $BUILDS
   rm -rf DDNet-$VERSION
 }
