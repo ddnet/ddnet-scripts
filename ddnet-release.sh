@@ -49,6 +49,20 @@ wget -nv https://github.com/ddnet/ddnet/archive/master.zip
 wget -nv https://github.com/ddnet/ddnet-libs/archive/master.zip -O libs.zip
 TIME_PREPARATION=$(($(date +%s) - $START_TIME))
 
+# Sources
+build_source ()
+{
+  cd $BUILDDIR
+  unzip -q $WEBSITE/master.zip
+  mv ddnet-master DDNet-$VERSION
+  XZ_OPT=-9 DDNet-$VERSION.tar.xz DDNet-$VERSION
+  mv DDNet-$VERSION.tar.xz $BUILDS
+  rm -rf DDNet-$VERSION
+}
+
+build_source &
+SOURCEPID=$!
+
 # Mac OS X
 build_macosx ()
 {
@@ -188,6 +202,7 @@ TIME_WINDOWS_X86=$(($(date +%s) - $START_TIME))
 #mv project/bin/MainActivity-release.apk $BUILDS/DDNet-${VERSION}.apk
 #TIME_ANDROID=$(($(date +%s) - $START_TIME))
 
+wait $SOURCEPID
 wait $MACPID
 cat $MACLOG
 rm -f $MACLOG
