@@ -82,7 +82,7 @@ cd curl-7.54.1
 make -j4 V=1
 rm lib/.libs/libcurl-4.dll
 # Long command from make with fixed dll name
-x86_64-w64-mingw32-dlltool -v -D libcurl.dll -l ../curl.lib lib/.libs/*.o
+x86_64-w64-mingw32-dlltool -v --export-all-symbols -D libcurl.dll -l ../curl.lib lib/.libs/*.o
 cp lib/.libs/libcurl.dll ../libcurl.dll
 
 cd ../libogg-1.3.2
@@ -90,7 +90,7 @@ cd ../libogg-1.3.2
 make -j4
 rm src/.libs/libogg-0.dll
 x86_64-w64-mingw32-gcc -shared  src/.libs/framing.o src/.libs/bitwise.o    -O20 -O2   -o src/.libs/libogg.dll -Wl,--enable-auto-image-base -Xlinker --out-implib -Xlinker src/.libs/libogg.dll.a
-x86_64-w64-mingw32-dlltool -v -D libogg.dll -l ../ogg.lib src/.libs/*.o
+x86_64-w64-mingw32-dlltool -v --export-all-symbols -D libogg.dll -l ../ogg.lib src/.libs/*.o
 cp src/.libs/libogg.dll ../libogg.dll
 
 cd ../opus-1.2.1
@@ -98,7 +98,7 @@ cd ../opus-1.2.1
 make -j4 V=1
 rm .libs/libopus-0.dll
 # Long command from make with fixed dll name
-x86_64-w64-mingw32-dlltool -v -D libopus.dll -l ../opus.lib src/*.o
+x86_64-w64-mingw32-dlltool -v --export-all-symbols -D libopus.dll -l ../opus.lib src/*.o
 cp .libs/libopus.dll ../libopus.dll
 
 cd ../opusfile-0.7
@@ -106,7 +106,7 @@ DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian6/root/win64/opus-1.2.1/.l
 make -j4 V=1
 rm .libs/libopusfile-0.dll
 # Long command from make with fixed dll name
-x86_64-w64-mingw32-dlltool -v -D libopusfile.dll -l ../opusfile.lib src/*.o
+x86_64-w64-mingw32-dlltool -v --export-all-symbols -D libopusfile.dll -l ../opusfile.lib src/*.o
 cp .libs/libopusfile.dll ../libopusfile.dll
 
 cd ../freetype-2.8
@@ -114,7 +114,7 @@ cd ../freetype-2.8
 make -j4 V=1
 rm objs/.libs/libfreetype-6.dll
 # Long command from make with fixed dll name
-x86_64-w64-mingw32-dlltool -v -D libfreetype.dll -l ../freetype.lib -d objs/.libs/libfreetype-6.dll.def
+x86_64-w64-mingw32-dlltool -v --export-all-symbols -D libfreetype.dll -l ../freetype.lib -d objs/.libs/libfreetype-6.dll.def
 cp objs/.libs/libfreetype.dll ../libfreetype.dll
 
 # win32
@@ -123,7 +123,7 @@ cd curl-7.54.1
 make -j4
 rm lib/.libs/libcurl-4.dll
 # Long command from make with fixed dll name
-i686-w64-mingw32-dlltool -v -D libcurl.dll -l ../curl.lib lib/.libs/*.o
+i686-w64-mingw32-dlltool -v --export-all-symbols -D libcurl.dll -l ../curl.lib lib/.libs/*.o
 cp lib/.libs/libcurl.dll ../libcurl.dll
 
 cd ../libogg-1.3.2
@@ -131,7 +131,7 @@ cd ../libogg-1.3.2
 make -j4
 rm src/.libs/libogg-0.dll
 i686-w64-mingw32-gcc -shared  src/.libs/framing.o src/.libs/bitwise.o    -O20 -O2   -o src/.libs/libogg.dll -Wl,--enable-auto-image-base -Xlinker --out-implib -Xlinker src/.libs/libogg.dll.a
-i686-w64-mingw32-dlltool -v -D libogg.dll -l ../ogg.lib src/.libs/*.o
+i686-w64-mingw32-dlltool -v --export-all-symbols -D libogg.dll -l ../ogg.lib src/.libs/*.o
 cp src/.libs/libogg.dll ../libogg.dll
 
 cd ../opus-1.2.1
@@ -139,7 +139,7 @@ cd ../opus-1.2.1
 make -j4 V=1
 rm .libs/libopus-0.dll
 # Long command from make with fixed dll name
-i686-w64-mingw32-dlltool -v -D libopus.dll -l ../opus.lib src/*.o
+i686-w64-mingw32-dlltool -v --export-all-symbols -D libopus.dll -l ../opus.lib src/*.o
 cp .libs/libopus.dll ../libopus.dll
 
 cd ../opusfile-0.7
@@ -147,14 +147,14 @@ DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian6/root/win32/opus-1.2.1/.l
 make -j4 V=1
 rm src/.libs/libopusfile-0.dll
 # Long command from make with fixed dll name
-i686-w64-mingw32-dlltool -v -D libopusfile.dll -l ../opusfile.lib src/*.o
+i686-w64-mingw32-dlltool -v --export-all-symbols -D libopusfile.dll -l ../opusfile.lib src/*.o
 cp .libs/libopusfile.dll ../libopusfile.dll
 
 cd ../freetype-2.8
 ./configure --host=i686-w64-mingw32 --prefix=/usr/i686-w64-mingw32 CPPFLAGS="-I/usr/i686-w64-mingw32/include" LDFLAGS="-L/usr/i686-w64-mingw32/lib" PKG_CONFIG_LIBDIR=/usr/i686-w64-mingw32/lib/pkgconfig --with-png=no --with-bzip2=no --with-zlib=no --with-harfbuzz=no
 make -j4 V=1
 # Long command from make with fixed dll name
-i686-w64-mingw32-dlltool -v -D libfreetype.dll -l ../freetype.lib -d objs/.libs/libfreetype-6.dll.def
+i686-w64-mingw32-dlltool -v --export-all-symbols -D libfreetype.dll -l ../freetype.lib -d objs/.libs/libfreetype-6.dll.def
 cp objs/.libs/libfreetype.dll ../libfreetype.dll
 
 # osx64
