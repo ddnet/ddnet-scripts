@@ -79,4 +79,4 @@ chmod +x ~/run-all.sh /etc/init.d/teeworlds-servers
 update-rc.d teeworlds-servers defaults enable
 
 # Hack for getting approximate time for hosters that totally block NTP:
-date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z
+date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
