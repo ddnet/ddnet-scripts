@@ -168,25 +168,27 @@ def slugify2(name):
   return string
 
 def deslugify2(string):
-  n = u''
-  t = 0
-  i = 0
+  try:
+    n = u''
+    t = 0
+    i = 0
 
-  for c in string:
-    if t == 0:
-      if c == '-':
-        t = 1
+    for c in string:
+      if t == 0:
+        if c == '-':
+          t = 1
+        else:
+          n += c
       else:
-        n += c
-    else:
-      if c == '-':
-        n += unichr(i)
-        t = 0
-        i = 0
-      else:
-        i = i * 10 + int(c)
-
-  return n.encode('utf-8')
+        if c == '-':
+          n += unichr(i)
+          t = 0
+          i = 0
+        else:
+          i = i * 10 + int(c)
+    return n.encode('utf-8')
+  except:
+    return string
 
 def playerWebsite(name):
   return "/players/%s/" % slugify2(u'%s' % name)
@@ -283,7 +285,7 @@ def header(title, menu, header, refresh = False, stupidIncludes = False, otherIn
     %s
     %s
     %s
-    <link rel="stylesheet" type="text/css" href="/css.css?version=6" />
+    <link rel="stylesheet" type="text/css" href="/css.css?version=7" />
     <script src="/js.js" type="text/javascript"></script>
     <title>%s</title>
   </head>

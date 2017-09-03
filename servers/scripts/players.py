@@ -39,7 +39,7 @@ def tableHeader(name, id):
 
 with con:
   cur = con.cursor()
-  cur.execute("set names 'utf8';")
+  cur.execute("set names 'utf8mb4';")
 
   def reloadData():
     global types, players, maps, totalPoints, pointsRanks, weeklyPointsRanks, monthlyPointsRanks, teamrankRanks, rankRanks, serverRanks, last
@@ -79,7 +79,7 @@ with con:
       con = mysqlConnect()
       con.autocommit(True)
       cur = con.cursor()
-      cur.execute("set names 'utf8';")
+      cur.execute("set names 'utf8mb4';")
       cur.execute(sql)
 
   def printPersonalResult(name, ranks, player):
@@ -265,7 +265,7 @@ with con:
 
       unfinishedString = tableHeader("unfinTable1", "unfinTable1-" + type)
 
-      tblString = '<table class="spacey"><thead><tr><th>Map</th><th>Points</th><th colspan="%d">Time</th><th colspan="%d">Rank</th><th colspan="%d">Team Rank</th></tr><tr><th></th><th></th>%s%s%s</tr></thead><tbody>\n' % (len(namePlayers), len(namePlayers), len(namePlayers), tableText, tableText, tableText)
+      tblString = '<div style="overflow: auto;"><table class="spacey"><thead><tr><th>Map</th><th>Points</th><th colspan="%d">Time</th><th colspan="%d">Rank</th><th colspan="%d">Team Rank</th></tr><tr><th></th><th></th>%s%s%s</tr></thead><tbody>\n' % (len(namePlayers), len(namePlayers), len(namePlayers), tableText, tableText, tableText)
       found = False
       allFinished = True
 
@@ -306,7 +306,7 @@ with con:
       unfinishedString += '</tbody></table>'
       unfinishedString += tableHeader("unfinTable2", "unfinTable2-" + type) + '</tbody></table>'
       unfinishedString += tableHeader("unfinTable3", "unfinTable3-" + type) + '</tbody></table>'
-      tblString += '</tbody></table>'
+      tblString += '</tbody></table></div>'
       if found:
         print >>out, tblString
 
@@ -376,9 +376,9 @@ with con:
       qs = env['QUERY_STRING']
 
       if len(qs) > 0 and qs.startswith('player='):
-        q = qs[7:]
+        q = urllib.unquote_plus(qs[7:])
 
-        newPath = '/players/' + slugify2(u'%s' % urllib.unquote_plus(q)).encode('utf-8') + '/'
+        newPath = '/players/' + slugify2(u'%s' % q).encode('utf-8') + '/'
         start_response('301 Moved Permanently', [('Location', newPath)])
         return ''
 
@@ -401,6 +401,22 @@ with con:
               break
 
         start_response('200 OK', [('Content-Type', 'application/json')])
+        return json.dumps(jsonT)
+
+      if len(qs) > 0 and qs.startswith('json='):
+        q = urllib.unquote_plus(qs[5:])
+
+        start_response('200 OK', [('Content-Type', 'application/json')])
+
+        jsonT = []
+        reloadData()
+        player = players.get(q)
+
+        if player:
+          for map in player[0]:
+            jsonT.append(map)
+
+        #return json.dumps({'player': q, 'maps': jsonT})
         return json.dumps(jsonT)
 
       start_response('200 OK', [('Content-Type', 'text/html')])
@@ -484,7 +500,7 @@ with con:
 
       unfinishedString = tableHeader("unfinTable1", "unfinTable1-" + type)
 
-      tblString = '<table class="spacey"><thead><tr><th>Map</th><th>Points</th><th>Team Rank</th><th>Rank</th><th>Time</th><th>Finishes</th><th>First Finish</th></tr></thead><tbody>\n'
+      tblString = '<div style="overflow: auto;"><table class="spacey"><thead><tr><th>Map</th><th>Points</th><th>Team Rank</th><th>Rank</th><th>Time</th><th>Finishes</th><th>First Finish</th></tr></thead><tbody>\n'
       found = False
       allFinished = True
 
@@ -501,7 +517,7 @@ with con:
       unfinishedString += '</tbody></table>'
       unfinishedString += tableHeader("unfinTable2", "unfinTable2-" + type) + '</tbody></table>'
       unfinishedString += tableHeader("unfinTable3", "unfinTable3-" + type) + '</tbody></table>'
-      tblString += '</tbody></table>'
+      tblString += '</tbody></table></div>'
       if found:
         print >>out, tblString
 

@@ -26,7 +26,7 @@ startDate = datetime.today() - timedelta(weeks = 4)
 con = mysqlConnect()
 with con:
   cur = con.cursor()
-  cur.execute("set names 'utf8';");
+  cur.execute("set names 'utf8mb4';");
 
   cur.execute("select count(*) from record_maps;")
   rows = cur.fetchall()
@@ -198,6 +198,8 @@ with open('%s/status/csv/bycountry' % webDir) as f:
       startDate2 = date
     for token in tokens[1:]:
       sn = token.split(':')
+      if sn[0] in ["KSA", "AUS"]:
+        continue
       if sn[0] not in players:
         players[sn[0]] = {}
       players[sn[0]][date] = int(sn[1])
@@ -370,6 +372,8 @@ with open('%s/status/csv/bycountry' % webDir) as f:
     date = datetime.strptime(tokens[0], '%Y-%m-%d %H:%M')
     for token in tokens[1:]:
       sn = token.split(':')
+      if sn[0] in ["KSA", "AUS"]:
+        continue
       if sn[0] not in countryRecords or countryRecords[sn[0]][0] < int(sn[1]):
         countryRecords[sn[0]] = (int(sn[1]), date)
 countryRecordsString = ""

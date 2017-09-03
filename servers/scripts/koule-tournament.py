@@ -93,7 +93,7 @@ for line in f:
 
 with con:
   cur = con.cursor()
-  cur.execute("set names 'utf8';");
+  cur.execute("set names 'utf8mb4';");
   for type in types:
     totalServerPoints = 0
     serverRankLadder = {}

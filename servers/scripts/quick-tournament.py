@@ -49,7 +49,7 @@ menuText = '<ul>\n'
 for type in types:
   menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type)
 menuText += '</ul>'
-print header("Quick Tournament #45 - DDraceNetwork", menuText, "")
+print header("4rd Birthday Tournament #4 - DDraceNetwork", menuText, '<script src="/youtube.js" type="text/javascript"></script>')
 
 f = open("tournament")
 tournamentMaps = []
@@ -59,7 +59,7 @@ for line in f:
 
 with con:
   cur = con.cursor()
-  cur.execute("set names 'utf8';");
+  cur.execute("set names 'utf8mb4';");
   for type in types:
     totalServerPoints = 0
     serverRankLadder = {}
@@ -296,8 +296,9 @@ with con:
     serversString += '</div>\n'
     serversString += '</div>\n'
 
-print '<div id="global" class="block div-tournament"><h2>Quick Tournament #45</h2>'
-print '<p>This tournament is played on Sunday, 2017-04-09 at 20:00 CEST.</p>'
+print '<div id="global" class="block div-tournament"><h2>4th Birthday Tournament #4</h2>'
+print '<p>This tournament is played on Sunday, 2017-08-06 at 20:00 CEST as part of our <a href="https://forum.ddnet.tw/viewtopic.php?t=5449">4th Birthday Tournament</a>.</p>'
+print '<div class="video-container"><div class="ytplayer" data-id="lSy9bepW-O4"></div></div>'
 print '</div>'
 print '<div id="serverranks" style="display: ">'
 print serversString

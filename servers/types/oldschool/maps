@@ -3,13 +3,13 @@ $add_vote "Random Oldschool Map" "random_map"
 $add_vote "Random Oldschool Map Unfinished by Vote Caller" "random_unfinished_map"
 
 ─── NEW MAPS ───
-4|Triple Kill|Unreal & Feuerball
-1|Who's Faster|Silex & DiViNe
-1|himmel|-Sani-
-1|Troj|El Futuro
-3|Flyppi|triki
-1|HDP_Zinderencio|El Futuro
-1|Warch Comp|Warch
+3|Zadrotos_final|Opana
+3|EaSy_HarD 4|Chak
+2|Castoreum|Ezio & Stalker
+1|Pirateworld|Trinkflasche
+3|Last Chance|Be Happy & SlaeR
+2|Eruption|Captain & Unreal
+1|himmel 2|-Sani-
 
 ─── OTHER MAPS ───
 1|1TeeMap
@@ -44,6 +44,7 @@ $add_vote "Random Oldschool Map Unfinished by Vote Caller" "random_unfinished_ma
 2|experiment|=CuBe=
 4|Fahrenheit|Epic Fail & Zikkie
 3|FLAP|Cøke & Moby Dog
+3|Flyppi|triki
 3|FreeDoom|???
 1|Freeze Slow 1|Silex
 1|Freeze Slow 2|Silex
@@ -66,8 +67,10 @@ $add_vote "Random Oldschool Map Unfinished by Vote Caller" "random_unfinished_ma
 4|Hardstyle 3|2oo & Fuu
 4|Hardstyle 4|2oo & Fuu
 1|HDP_Obstaculos|El Futuro
+1|HDP_Zinderencio|El Futuro
 2|Hell Ride|Cøke
 1|HellFly|=CuBe=
+1|himmel|-Sani-
 2|Illusion|DiViNe
 2|Im No Superman 1|Moby Dog & Puffmusiker
 2|Im No Superman 2|Moby Dog
@@ -120,6 +123,7 @@ $add_vote "Random Oldschool Map Unfinished by Vote Caller" "random_unfinished_ma
 2|Reload 4|Cøke
 4|ResidentSS|-Sani- & -Sozi-
 3|Sadway|Mustdie
+2|Somewhere in the Sky|MaDLeX
 3|Stereotype 1|DarkKenny
 5|Stereotype 2|DarkKenny
 5|Stereotype 3|DarkKenny
@@ -130,7 +134,10 @@ $add_vote "Random Oldschool Map Unfinished by Vote Caller" "random_unfinished_ma
 5|Striped Clouds|Pokemon
 2|Synergy|estern
 1|Teestar|Kintaro*
+2|The Ultimate Rainbow|MaDLeX
 2|Tibto|Cøke & Moby Dog
+4|Triple Kill|Unreal & Feuerball
+1|Troj|El Futuro
 3|Ultimatum 1|=CuBe=
 3|Ultimatum 2|=CuBe=
 3|Ultimatum 3|=CuBe=
@@ -141,6 +148,8 @@ $add_vote "Random Oldschool Map Unfinished by Vote Caller" "random_unfinished_ma
 4|Victory 3|sMo0g & FunCat
 3|Victory 4|sMo0g
 4|Victory 5|sMo0g
+1|Warch Comp|Warch
+1|Who's Faster|Silex & DiViNe
 3|WoFs|Silex
 2|Zadrotos 1|Opana
 2|Zadrotos 2|Opana

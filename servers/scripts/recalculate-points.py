@@ -42,7 +42,7 @@ con = mysqlConnect()
 
 with con:
   cur = con.cursor()
-  cur.execute("set names 'utf8';")
+  cur.execute("set names 'utf8mb4';")
 
   cur.execute("DELETE FROM record_points;")
 

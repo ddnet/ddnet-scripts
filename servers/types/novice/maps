@@ -1,7 +1,9 @@
+$add_vote "Make sure no one is racing before voting!" "info"
 $add_vote "Random Novice Map" "random_map"
 $add_vote "Random Novice Map Unfinished by Vote Caller" "random_unfinished_map"
 
 ─── NEW MAPS ───
+4|Maui Wowie 2|RayB.
 3|Undrag2|Ninjed
 5|Blue Sapphire|jao
 3|Cuboid|stompie & Soapy Sandwich
@@ -9,7 +11,6 @@ $add_vote "Random Novice Map Unfinished by Vote Caller" "random_unfinished_map"
 5|Empire Desp|Deeper
 2|newbee|pixel
 4|Looney|☆.Sυsнι♪
-4|(wasntme)|fikmesån & snailx3
 
 ─── SELECTED MAPS ───
 3|Camouflage|Meliodafu
@@ -33,6 +34,7 @@ $add_vote "Random Novice Map Unfinished by Vote Caller" "random_unfinished_map"
 4|Little Forest|Kintaro*
 
 ─── OTHER MAPS ───
+4|(wasntme)|fikmesån & snailx3
 1|4Nubs|BamBam
 2|[School] Hammer|Hitomi
 2|[School] Hook|Hitomi

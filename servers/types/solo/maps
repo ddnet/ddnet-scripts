@@ -3,13 +3,13 @@ $add_vote "Random Solo Map" "random_map"
 $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 
 ─── NEW MAPS ───
-4|Shortgun|Cor
-2|Puzzle Box|Soapy Sandwich
-4|Grind|Jimmy Jazz
-2|MorningStar|stompie & Soapy Sandwich
-3|Casthere|Im 'corneum
-2|Whitemoon|Cellegen
-2|Solo Power|Power
+4|Eternity|Ninjed & Imperius
+4|Disposition|Ravie
+3|CrashTV|Cellegen
+3|Hermit|»Rogue.
+3|Verification 6.2|Captain
+2|Verification 6.1|Captain
+2|Verification 6|Captain
 
 ─── JETPACK MAPS ───
 2|deathpack|Electricitee
@@ -77,6 +77,7 @@ $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 4|BrokeysChallenge|MaDLeX
 2|Brown Suger
 1|Care for your Time|dcgù
+3|Casthere|Im 'corneum
 3|Catch the Colors|Dr.Dre
 5|Caverun|Noved
 2|Cheepl|IRGNW
@@ -119,6 +120,7 @@ $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 2|Gedan|Vasten100
 2|GetSpeed|Konsti
 3|GetSpeed2|Konsti
+2|GHB_DDrace|Zarnexxx
 4|ghbdtn|Gridwyn
 3|Gigabyte|Chak
 3|GLL|hi_leute_gll
@@ -126,6 +128,7 @@ $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 2|Gorou|Ryozuki
 3|Grand Shotgun|IRGNW
 3|Grid|»Slayer.
+4|Grind|Jimmy Jazz
 1|Hardcore 2 Solo
 3|HDP_Gajos9|El Futuro
 2|HDP_Run2|El Futuro
@@ -177,6 +180,7 @@ $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 1|Mini Zero|Zerodin
 1|Mini Zero II|Zerodin
 3|Miracle|Bixes
+2|MorningStar|stompie & Soapy Sandwich
 4|Movement I|Nigel
 1|Mud|Fňokurka oo7
 2|navii|Im 'corneum
@@ -194,6 +198,7 @@ $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 2|Plocky|Meliodafu
 1|Prison 1|AKc0RiZer
 2|Propagate|Element Finland
+2|Puzzle Box|Soapy Sandwich
 1|Race_Sanktoras|Sanktoras
 1|Raid|Im 'corneum
 2|RockClimb|Knight :3
@@ -206,14 +211,17 @@ $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 2|selfdragger|Jeet
 2|Short Con|Broken
 2|Short Sky|S.O.S
+4|Shortgun|Cor
 2|ShotFF|Savander
 3|Shotsky|Im 'corneum
 3|Skepsis|Juandissimo, timakro & Soreu
 3|SkipIt|xPeke
+2|SkipIt2|=xPeke=
 4|Sky Movement|Noved
 2|SkyCave|Delo
 3|SL1|LoLz
 3|Solo Future|Gridwyn
+2|Solo Power|Power
 2|solo_castle|Hallowed1986
 4|Solo_Mietzcore|Eiskaltemietz
 2|SoManyStars|Fňokurka oo7
@@ -242,6 +250,9 @@ $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 2|UpNDown|Vasten100
 3|UpNDown2|Vasten100
 3|UpNDown3|Vasten100
+2|Verification 2|Cøke
+2|Verification 2.1|Cøke
+2|Verification 2.2|Cøke
 2|Verification 3.0|Silex
 2|Verification 3.1|Silex
 2|Verification 3.2|Silex
@@ -260,3 +271,4 @@ $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 2|VoidOfSpace|Alvin Risk
 3|WALL-E T|Alvin Risk & Åmol
 3|Weird Cave|Rapture & ٭ıƞdex'<3
+2|Whitemoon|Cellegen

@@ -45,7 +45,7 @@ exec types/%s/votes.cfg""" % (server.lower(), server.lower(), server.lower(), se
 
 with con:
   cur = con.cursor()
-  cur.execute("set names 'utf8';");
+  cur.execute("set names 'utf8mb4';");
 
   knownTexts = set([])
 
@@ -106,7 +106,7 @@ with con:
       pass
 
     try:
-      cur.execute("select Timestamp from record_race where Map = '%s';" % con.escape_string(originalMapName))
+      cur.execute("select Timestamp from record_maps where Map = '%s';" % con.escape_string(originalMapName))
       releaseDate = cur.fetchone()[0].strftime('%Y-%m-%d')
     except:
       pass

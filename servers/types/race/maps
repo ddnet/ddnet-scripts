@@ -1,14 +1,15 @@
+$add_vote "Make sure no one is racing before voting!" "info"
 $add_vote "Random Race Map" "random_map"
 $add_vote "Random Race Map Unfinished by Vote Caller" "random_unfinished_map"
 
 ─── NEW MAPS ───
+4|run_2Rockets|Arem Shin
 2|pr0-move|szyker
 2|run_4fikmesan|jao
 1|run_the_cure|fikmesån & jao
 1|run_InTheHell|iKizu
 5|run_world_war_zero|cookie
 1|run_irish_luck|fikmesån
-3|Run_Aim|Aoe
 
 ─── OTHER MAPS ───
 2|Aufnahmetest_AE|teetee
@@ -26,6 +27,7 @@ $add_vote "Random Race Map Unfinished by Vote Caller" "random_unfinished_map"
 2|run_4tzoy|SkizZ
 3|run_4xerhul|SkizZ
 4|run_4xerhul2|SkizZ
+3|Run_Aim|Aoe
 3|run_alboni|Kill Mik & iTee Toni
 3|run_alkohol|Rook
 0|run_ankii|Anki

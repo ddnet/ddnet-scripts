@@ -3,13 +3,13 @@ $add_vote "Random Brutal Map" "random_map"
 $add_vote "Random Brutal Map Unfinished by Vote Caller" "random_unfinished_map"
 
 ─── NEW MAPS ───
-1|Bumblebee|ΔWΞSƟΜΞ
-2|Unbalanced|Imperius
-3|Back in the days 2|Silex
-1|nullptr|Shishigami
-1|Fox|Waschlappen
-5|Shockwave|Konsti
-3|Panic Paradise|Im 'corneum & Silex
+2|The Joke 3|TheZyZya
+3|Cosyris|Michel
+2|Punica|fokkonaut & Kayumi
+2|brainduck|٭ıƞdex'<3 & Rapture
+3|Highlife|Skeptar & ٭ıƞdex'<3
+3|Back in the days 3|Silex
+1|Rogue World|panik & RayB.
 
 ─── 3 PLAYER MAPS ───
 2|P2Z_Eclipse|cris
@@ -27,8 +27,6 @@ $add_vote "Random Brutal Map Unfinished by Vote Caller" "random_unfinished_map"
 4|Adrenaline 2|Silex
 4|Agony|TheZyZya & Juandissimo
 3|Aim 1.0|Aoe
-4|Aim 10.0|Aoe & SickCunt
-4|Aim 11.0|Aoe
 3|Aim 2.0|Aoe
 3|Aim 3.0|Aoe
 3|Aim 4.0|Aoe & Ante.
@@ -37,6 +35,8 @@ $add_vote "Random Brutal Map Unfinished by Vote Caller" "random_unfinished_map"
 3|Aim 7.0|Aoe
 4|Aim 8.0|Aoe
 4|Aim 9.0|Aoe & Hindu
+4|Aim 10.0|Aoe & SickCunt
+4|Aim 11.0|Aoe
 5|Airsky|Themix
 1|Alive|tobu.
 2|All at the beginning|{E}{L}{I}{T}{E} & ÐæR
@@ -53,6 +53,7 @@ $add_vote "Random Brutal Map Unfinished by Vote Caller" "random_unfinished_map"
 5|Atomic|Kayumi
 2|Aviate|SickCunt & [A] Awesome
 3|Back in the days|Silex
+3|Back in the days 2|Silex
 3|Baguette|artkis
 1|Behind the Darkua|GoJE GrEEN ! & Chicken
 5|Between the Heavens|Neverbloom & Chill [TD]
@@ -63,6 +64,7 @@ $add_vote "Random Brutal Map Unfinished by Vote Caller" "random_unfinished_map"
 2|Bl0odDens3|Bl0od-Dens
 3|Black&White|TyxpekCZ
 2|Blue Drag|Ante.
+1|Bumblebee|ΔWΞSƟΜΞ
 2|Burger|Waschlappen
 2|Caldera|»Rogue.
 3|Caldera 2|»Rogue.
@@ -120,6 +122,7 @@ $add_vote "Random Brutal Map Unfinished by Vote Caller" "random_unfinished_map"
 2|Fly Around|Ante.
 1|Flying in the Sky|Loop
 1|Fonders|Destoros
+1|Fox|Waschlappen
 3|Franky's Adventure|BooNi
 2|From Death to Destiny|Åmol & fikmesån
 3|Frozen|#eci.in`
@@ -157,6 +160,7 @@ $add_vote "Random Brutal Map Unfinished by Vote Caller" "random_unfinished_map"
 5|Increase|Themix
 2|Indicud|RayB., panik & Avasus
 2|Intense 3.0|Elephant
+1|Intercepter|Konsti
 4|Intermediate|Themix
 3|Into the Wild|SBL
 4|Is it Real|Varys
@@ -208,8 +212,10 @@ $add_vote "Random Brutal Map Unfinished by Vote Caller" "random_unfinished_map"
 2|NoMore! 3|Chill [TD]
 2|Nostalgia|Bolox
 1|Nucl|BannZay & Goran
+1|nullptr|Shishigami
 2|Nyanpasu|☆.Sυsнι♪
 3|Out of Castle|Loop
+3|Panic Paradise|Im 'corneum & Silex
 4|Pentamine|Themix
 1|Perfect World|Bixes
 3|Pink Destiny|TyxpekCZ
@@ -233,8 +239,10 @@ $add_vote "Random Brutal Map Unfinished by Vote Caller" "random_unfinished_map"
 2|Scabrous|NeoN & Silex
 3|Sequite|Themix
 2|Shock Value|Wladimir
+5|Shockwave|Konsti
 4|Skill Rises|Varys
 1|SkyLand|CrashtimeHD & Greeen
+2|SkyLand2|Greeen & CrashtimeHD
 3|Skywalk|Gianth
 2|Sleepy|Ante.
 3|Sleepy 2|Ante.
@@ -273,6 +281,7 @@ $add_vote "Random Brutal Map Unfinished by Vote Caller" "random_unfinished_map"
 4|TryHard|Feuerfaust Ace
 3|TryThis|Skeptar
 1|Tvyn|MarvinProductions
+2|Unbalanced|Imperius
 3|Uncharted|Stalker
 1|Underground|Silex
 2|Undisclosed|Michel

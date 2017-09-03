@@ -149,7 +149,7 @@ else:
   mbCountry2 = ""
 
 menuText = '<ul>'
-menuText += '<li><a href="/ranks/">Global Ranks</a> (<a href="/ranks/ger/">GER</a>, <a href="/ranks/rus/">RUS</a>, <a href="/ranks/irn/">IRN</a>, <a href="/ranks/chl/">CHL</a>, <a href="/ranks/bra/">BRA</a>, <a href="/ranks/zaf/">ZAF</a>, <a href="/ranks/usa/">USA</a>, <a href="/ranks/can/">CAN</a>, <a href="/ranks/chn/">CHN</a>, <a href="/ranks/aus/">AUS</a>, <a href="/ranks/old/">OLD</a>)</li>'
+menuText += '<li><a href="/ranks/">Global Ranks</a> (<a href="/ranks/ger/">GER</a>, <a href="/ranks/rus/">RUS</a>, <a href="/ranks/irn/">IRN</a>, <a href="/ranks/chl/">CHL</a>, <a href="/ranks/bra/">BRA</a>, <a href="/ranks/zaf/">ZAF</a>, <a href="/ranks/usa/">USA</a>, <a href="/ranks/can/">CAN</a>, <a href="/ranks/chn/">CHN</a>, <a href="/ranks/old/">OLD</a>)</li>'
 for type in types:
   if country == None:
     menuText += '<li><a href="/ranks/%s/">%s Server</a></li>\n' % (type.lower(), type)
@@ -160,7 +160,7 @@ menuText += '</ul>'
 
 with con:
   cur = con.cursor()
-  cur.execute("set names 'utf8';")
+  cur.execute("set names 'utf8mb4';")
   for type in types:
     if country == None:
       filename = "%s/ranks/%s/index.html" % (webDir, type.lower())
@@ -493,7 +493,7 @@ with con:
       print >>tf, header("%s Server Ranks - DDraceNetwork" % type, menuText, "")
     else:
       print >>tf, header("%s %s Server Ranks - DDraceNetwork" % (country, type), menuText, "")
-    print >>tf, '<p class="toggle"><a title="Click to toggle whether only the top 10 ranks or all ranks are shown" href="#" onclick="showClass(\'allPoints\'); return false;">Top 500 / Top 10</a></p>'
+    print >>tf, '<p class="toggle"><a href="#" onclick="showClass(\'allPoints\'); return false;">Top 500 / Top 10</a></p>'
 
     print >>tf, '<div id="serverranks" style="display: ">'
     print >>tf, serversString
@@ -542,7 +542,7 @@ if country == None:
   print >>tf, header("Ranks - DDraceNetwork", menuText, "")
 else:
   print >>tf, header("%s Ranks - DDraceNetwork" % country, menuText, "")
-print >>tf, '<p class="toggle"><a title="Click to toggle whether only the top 10 ranks or all ranks are shown" href="#" onclick="showClass(\'allPoints\'); return false;">Top 500 / Top 20</a></p>'
+print >>tf, '<p class="toggle"><a href="#" onclick="showClass(\'allPoints\'); return false;">Top 500 / Top 20</a></p>'
 
 print >>tf, '<div id="global" class="block">\n'
 print >>tf, '<div id="remote" class="right"><form id="playerform" action="/players/" method="get"><input name="player" class="typeahead" type="text" placeholder="Player search"><input type="submit" value="Player search" style="position: absolute; left: -9999px"></form></div>'
