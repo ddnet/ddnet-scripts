@@ -3,7 +3,7 @@
 import sys
 import re
 
-print '<table class="settingscommands">'
+print '<div style="overflow: auto;"><table class="settingscommands">'
 print '  <tr><th>Setting</th><th>Description</th><th>Default</th></tr>'
 
 for line in sys.stdin:
@@ -20,4 +20,4 @@ for line in sys.stdin:
 
   print '  <tr><td>%s</td><td>%s</td><td>%s</td></tr>' % result
 
-print '</table>'
+print '</table></div>'
