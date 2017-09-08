@@ -5,6 +5,7 @@
 
 wget https://www.openssl.org/source/openssl-1.1.0f.tar.gz
 wget https://curl.haxx.se/download/curl-7.54.1.tar.gz
+wget http://download.savannah.gnu.org/releases/freetype/freetype-2.8.tar.gz
 
 chroot debian6 bash
 cat /etc/apt/sources.list
@@ -185,6 +186,13 @@ cd .libs
 curl -F "uploadFile=@libopusfile.a" felsing.hookrace.net/tw/upload.php
 cd ..
 
+cd ../freetype-2.8
+./configure LIBS= LDFLAGS= CFLAGS="-arch x86_64" CPPFLAGS="-arch x86_64" --host=x86_64-apple-darwin12.4.0 --with-png=no --with-bzip2=no --with-zlib=no --with-harfbuzz=no
+make -j4
+cd objs/.libs
+curl -F "uploadFile=@libfreetype.6.dylib" felsing.hookrace.net/tw/upload.php
+cd ../..
+
 # osx32
 cd curl-7.54.1-i686
 CFLAGS="-arch i386" LDFLAGS="-arch i386" ./configure --host=i686-apple-darwin12.4.0 --with-darwinssl --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
@@ -206,10 +214,16 @@ cd .libs
 curl -F "uploadFile=@libopus.a" felsing.hookrace.net/tw/upload.php
 cd ..
 
-cd ../opusfile-0.7
+cd ../opusfile-0.7-i686
 DEPS_LIBS="-lopus -logg -L/var/root/opus-1.2.1-i686/.libs/ -L/var/root/libogg-1.3.2-i686/src/.libs/" ./configure CFLAGS="-arch i386 -I/var/root/opus-1.2.1-i686/include -I/var/root/libogg-1.3.2-i686/include" CPPFLAGS="-arch i386 -I/var/root/opus-1.2.1-i686/include -I/var/root/libogg-1.3.2-i686/include" --host=i686-apple-darwin12.4.0 --disable-http
 make -j4
 cd .libs
 curl -F "uploadFile=@libopusfile.a" felsing.hookrace.net/tw/upload.php
 cd ..
 
+cd ../freetype-2.8-i686
+./configure LIBS= LDFLAGS= CFLAGS="-arch i386" CPPFLAGS="-arch i386" --host=i686-apple-darwin12.4.0 --with-png=no --with-bzip2=no --with-zlib=no --with-harfbuzz=no
+make -j4
+cd objs/.libs
+curl -F "uploadFile=@libfreetype.6.dylib" felsing.hookrace.net/tw/upload.php
+cd ../..
