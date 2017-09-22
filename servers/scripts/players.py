@@ -521,12 +521,13 @@ with con:
       if found:
         print >>out, tblString
 
-      print >>out, '<p>'
       if allFinished:
-        print >>out, '<strong>All maps on %s finished!</strong></p>' % type
+        print >>out, '<p><strong>All maps on %s finished!</strong></p>' % type
       else:
-        print >>out, '<strong>Unfinished maps</strong></p>'
+        print >>out, '<input type="checkbox" id="checkbox_%s" checked="checked" /><label for="checkbox_%s"><p><strong>Unfinished maps (show/hide)</strong></p></label>' % type
+        print >>out, '<div class="unfinishedmaps">'
         print >>out, unfinishedString
+        print >>out, '</div>'
       print >>out, '</div>'
 
     print >>out, """  </section>
