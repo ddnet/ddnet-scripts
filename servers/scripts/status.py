@@ -10,7 +10,7 @@ servers = OrderedDict([
   , ("CHL", ("chl.ddnet.tw", "DDNet Chile"))
   , ("BRA", ("br.ddnet.tw",  "DDNet Brazil"))
   , ("ZAF", ("zaf.ddnet.tw", "DDNet South Africa"))
-  , ("IRN", ("irn.ddnet.tw", "DDNet Persian"))
+  #, ("IRN", ("irn.ddnet.tw", "DDNet Persian"))
   #, ("KSA", ("ksa.ddnet.tw", "DDNet Saudi Arabia"))
   , ("USA", ("usa.ddnet.tw", "DDNet USA"))
   , ("CAN", ("can.ddnet.tw", "DDNet CAN"))

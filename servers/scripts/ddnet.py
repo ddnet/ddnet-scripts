@@ -285,15 +285,16 @@ def header(title, menu, header, refresh = False, stupidIncludes = False, otherIn
     %s
     %s
     %s
-    <link rel="stylesheet" type="text/css" href="/css.css?version=7" />
+    <link rel="stylesheet" type="text/css" href="/css.css?version=10" />
     <script src="/js.js" type="text/javascript"></script>
     <title>%s</title>
   </head>
   <body>
     <article>
     <header>
+      <div class="fade">
       <menu class="contentleft">
-      <div class="title"><h1><a href="/"><img class="logobig" alt="DDraceNetwork" src="/ddnet2.svg"/><img class="logosmall" alt="DDraceNetwork" src="/ddnet.svg"/></a><div class="fade"></div></h1></div>
+      <div class="title"><h1><a href="/"><img class="logobig" alt="DDraceNetwork" src="/ddnet2.svg"/><img class="logosmall" alt="DDraceNetwork" src="/ddnet.svg"/></a></h1></div>
       <ul class="big">
         <li><a href="/status/">Status</a></li>
         <li><a href="/ranks/">Ranks</a></li>
@@ -307,6 +308,7 @@ def header(title, menu, header, refresh = False, stupidIncludes = False, otherIn
       </ul>
       %s
       </menu>
+      </div>
     </header>
     <section>
     %s""" % (mbRefresh, mbIncludes, otherIncludes, title, menu, header)

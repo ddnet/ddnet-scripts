@@ -164,7 +164,7 @@ with con:
 
       pos = 1
 
-      if len(rows) > 1:
+      if len(rows) > 0:
         print >>out, '<div class="block6 ladder" style="margin-left: 1em;"><h3>Favorite Partners</h3>\n<table class="tight">'
 
         for row in rows:
@@ -310,12 +310,13 @@ with con:
       if found:
         print >>out, tblString
 
-      print >>out, '<p>'
       if allFinished:
-        print >>out, '<strong>All maps on %s finished by %s!</strong></p>' % (type, orText)
+        print >>out, '<p><strong>All maps on %s finished by %s!</strong></p>' % (type, orText)
       else:
-        print >>out, '<strong>Maps unfinished by %s</strong></p>' % andText
+        print >>out, '<input type="checkbox" id="checkbox_%s" checked="checked" /><label for="checkbox_%s"><p><strong>Unfinished maps (show/hide)</strong></p></label>' % (type, type)
+        print >>out, '<div class="unfinishedmaps">'
         print >>out, unfinishedString
+        print >>out, '</div>'
       print >>out, '</div>'
 
     print >>out, """  </section>
@@ -524,7 +525,7 @@ with con:
       if allFinished:
         print >>out, '<p><strong>All maps on %s finished!</strong></p>' % type
       else:
-        print >>out, '<input type="checkbox" id="checkbox_%s" checked="checked" /><label for="checkbox_%s"><p><strong>Unfinished maps (show/hide)</strong></p></label>' % type
+        print >>out, '<input type="checkbox" id="checkbox_%s" checked="checked" /><label for="checkbox_%s"><p><strong>Unfinished maps (show/hide)</strong></p></label>' % (type, type)
         print >>out, '<div class="unfinishedmaps">'
         print >>out, unfinishedString
         print >>out, '</div>'
