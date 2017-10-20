@@ -113,7 +113,7 @@ build_linux ()
   mv ddnet-libs-master ddnet-master/ddnet-libs
   chroot . sh -c "cd ddnet-master && bam config curl.use_pkgconfig=false \
     opus.use_pkgconfig=false opusfile.use_pkgconfig=false \
-    ogg.use_pkgconfig=false && bam release"
+    ogg.use_pkgconfig=false && bam -j 4 release"
   cd ddnet-master
   strip -s DDNet DDNet-Server dilate config_store config_retrieve map_extract map_diff
   python scripts/make_release.py $VERSION linux_$PLATFORM
@@ -134,8 +134,16 @@ START_TIME=$(date +%s)
 build_linux x86_64
 TIME_LINUX_X86_64=$(($(date +%s) - $START_TIME))
 
+umount proc sys dev
+
+cd $BUILDDIR/debian6_x86
+umount proc sys dev 2> /dev/null || true
+mount -t proc proc proc/
+mount -t sysfs sys sys/
+mount -o bind /dev dev/
+
 START_TIME=$(date +%s)
-CFLAGS=-m32 LDFLAGS=-m32 PKG_CONFIG_PATH=/usr/lib32/pkgconfig/ build_linux x86
+CFLAGS=-m32 LDFLAGS=-m32 build_linux x86
 TIME_LINUX_X86=$(($(date +%s) - $START_TIME))
 
 umount proc sys dev
