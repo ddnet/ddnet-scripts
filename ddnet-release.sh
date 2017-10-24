@@ -160,13 +160,10 @@ build_windows ()
   rm -rf ddnet-master/ddnet-libs
   mv ddnet-libs-master ddnet-master/ddnet-libs
   cd ddnet-master
-  bam config curl.use_pkgconfig=false opus.use_pkgconfig=false \
-    opusfile.use_pkgconfig=false ogg.use_pkgconfig=false
-  CC=${PREFIX}gcc CXX=${PREFIX}g++ WINDRES=${PREFIX}windres bam release
-  ${PREFIX}strip -s DDNet.exe DDNet-Server.exe dilate.exe \
-    config_store.exe config_retrieve.exe map_extract.exe map_diff.exe
-  python scripts/make_release.py $VERSION win$PLATFORM
-  mv DDNet-$VERSION-win$PLATFORM.zip $BUILDS
+  cmake -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain
+  make -j4
+  make package
+  mv DDNet-*.zip $BUILDS/DDNet-$VERSION-win$PLATFORM.zip
   cd ..
   rm -rf ddnet-master
   unset PREFIX \
