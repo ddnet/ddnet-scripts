@@ -3,7 +3,7 @@ ssh root@37.235.52.151
 Debian:
 apt-get update
 apt-get upgrade
-apt-get install zsh vim htop git g++ libboost-dev msgpack-python python-mysqldb sshfs tcpdump gdb pkg-config ntpdate ntp mailutils postfix libssl-dev libmysqlclient-dev libmysqlcppconn-dev cmake unattended-upgrades apt-listchanges
+apt-get install zsh vim htop git g++ libboost-dev msgpack-python python-mysqldb sshfs tcpdump gdb pkg-config ntpdate ntp mailutils postfix libssl-dev libmariadbclient-dev libmysqlcppconn-dev cmake unattended-upgrades apt-listchanges
 dpkg-reconfigure tzdata
 dpkg-reconfigure -plow unattended-upgrades
 vim /etc/hostname
@@ -31,23 +31,14 @@ vim /etc/ssh/sshd_config
 tar xvf servers.tar.gz
 tar xvf src.tar.gz
 
-Check https://downloads.mariadb.org/mariadb/repositories/
-
-Debian:
-apt-get install python-software-properties
-apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 0xcbcb082a1bb943db
-add-apt-repository 'deb http://mirror.jmu.edu/pub/mariadb/repo/5.5/debian wheezy main'
-apt-get update
-apt-get install mariadb-server libmariadbclient-dev libmysqlcppconn-dev
-
-CentOS:
-yum install mysql 
+With mysql: CentOS:
+yum install mysql
 scp mysql-connector-c++-1.1.4-linux-el6-x86-64bit.rpm 37.235.52.151:
 yum install mysql-connector-c++-1.1.4-linux-el6-x86-64bit.rpm
 restorecon -R -v /root/.ssh
 restorecon -R -v /home/teeworlds/.ssh
 
-mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -p'mc8)(12FOpQ23' mysql
+With mysql: mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -p mysql
 
 From root @ other server:
 scp -r /etc/zsh /etc/vim* /etc/mysql 37.235.52.151:/etc
@@ -68,7 +59,7 @@ vim types/*/flexname.cfg
 crontab -e
 vim /etc/security/limits.conf
 vim /etc/postfix/master.cf
-/etc/init.d/postfix restart
+systemctl restart postfix
 
 vim /usr/local/bin/{ni,rni}
 chmod +x !$
