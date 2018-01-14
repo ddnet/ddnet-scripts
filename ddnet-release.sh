@@ -11,7 +11,6 @@ ionice -n 3 -p $$
 PATH=$PATH:/usr/local/bin:/opt/android-sdk/build-tools/23.0.3:/opt/android-sdk/tools:/opt/android-ndk:/opt/android-sdk/platform-tools
 BUILDDIR=/home/deen/isos/ddnet
 BUILDS=$BUILDDIR/builds
-MACLOG=$BUILDS/mac.log
 WEBSITE=/var/www/felsing.ath.cx/htdocs/dennis
 PASS="$(cat pass)"
 
@@ -28,159 +27,98 @@ except:
 NOW=$(date +'%F %R')
 echo "Starting build of $VERSION at $NOW"
 
-# Start the Mac OS X VM
-qemu-system-x86_64 -k de -usb -device usb-kbd -device usb-mouse \
-  -enable-kvm -vga std -m 2048 -smp 4,cores=4 -cpu core2duo -machine q35 \
-  -device isa-applesmc,osk="ourhardworkbythesewordsguardedpleasedontsteal(c)AppleComputerInc" \
-  -kernel ./chameleon_svn2360_boot -smbios type=2 \
-  -device ide-drive,bus=ide.2,drive=MacHDD \
-  -drive id=MacHDD,if=none,file=macosx.img \
-  -netdev user,id=hub0port0,hostfwd=tcp::10022-:22 \
-  -device e1000-82545em,netdev=hub0port0,id=mac_vnet0 \
-  -vnc :4 &>/dev/null &
-QEMU_PID=$!
-renice -n 17 -p $QEMU_PID
-ionice -c 2 -n 7 -p $QEMU_PID
-
-# Get the sources
-cd $WEBSITE
-rm -rf master.zip libs.zip
-wget -nv https://github.com/ddnet/ddnet/archive/master.zip
-wget -nv https://github.com/ddnet/ddnet-libs/archive/master.zip -O libs.zip
-TIME_PREPARATION=$(($(date +%s) - $START_TIME))
-
-# Sources
 build_source ()
 {
-  cd $BUILDDIR
-  unzip -q $WEBSITE/master.zip
-  mv ddnet-master DDNet-$VERSION
   XZ_OPT=-9 tar cfJ DDNet-$VERSION.tar.xz DDNet-$VERSION
   mv DDNet-$VERSION.tar.xz $BUILDS
   rm -rf DDNet-$VERSION
 }
 
-build_source &
-SOURCEPID=$!
-
-# Mac OS X
 build_macosx ()
 {
-  START_TIME=$(date +%s)
-  cd $BUILDDIR
-
-  while ! ssh -p 10022 -o ConnectTimeout=10 localhost exit; do true; done
-
-  ssh -p 10022 localhost "
-    source .profile
-    rm -rf ddnet-master master.zip libs.zip &&
-    curl -o master.zip http://felsing.hookrace.net/dennis/master.zip &&
-    curl -o libs.zip http://felsing.hookrace.net/dennis/libs.zip &&
-    unzip -q master.zip &&
-    unzip -q libs.zip &&
-    rm -rf ddnet-master/ddnet-libs
-    mv ddnet-libs-master ddnet-master/ddnet-libs &&
-    cd ddnet-master &&
-    /usr/local/bin/bam config curl.use_pkgconfig=false opus.use_pkgconfig=false \
-      opusfile.use_pkgconfig=false ogg.use_pkgconfig=false compiler=clang &&
-    /usr/local/bin/bam release;
-
-    strip DDNet_x86 DDNet_x86_64 DDNet-Server_x86 DDNet-Server_x86_64 dilate_x86 \
-      dilate_x86_64 config_store_x86 config_store_x86_64 config_retrieve_x86 \
-      config_retrieve_x86_64 map_extract_x86 map_extract_x86_64 map_diff_x86 \
-      map_diff_x86_64 &&
-    python scripts/make_release.py $VERSION osx &&
-    curl -F \"uploadFile=@DDNet-$VERSION-osx.dmg\" felsing.hookrace.net/tw/upload.php &&
-    halt" || true
-
-  mv /home/deen/.teeworlds/maps/DDNet-$VERSION-osx.dmg $BUILDS || true
-  kill $QEMU_PID
-  TIME_MACOSX=$(($(date +%s) - $START_TIME))
+  rm -rf macosx
+  mkdir macosx
+  cd macosx
+  PATH=${PATH:+$PATH:}/home/deen/git/osxcross/target/bin
+  cmake -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX10.11.sdk/ ../ddnet-master
+  make
+  make package_dmg
+  mv DDNet-*.dmg $BUILDS/DDNet-$VERSION-osx.dmg
+  cd ..
+  rm -rf macosx
 }
 
-build_macosx &> $MACLOG &
-MACPID=$!
-
-# Linux
 build_linux ()
 {
   PLATFORM=$1
+  DIR=$2
+
+  cd $DIR
+  umount proc sys dev 2> /dev/null || true
+  mount -t proc proc proc/
+  mount -t sysfs sys sys/
+  mount -o bind /dev dev/
 
   rm -rf ddnet-master
   unzip -q $WEBSITE/master.zip
   unzip -q $WEBSITE/libs.zip
   rm -rf ddnet-master/ddnet-libs
   mv ddnet-libs-master ddnet-master/ddnet-libs
-  chroot . sh -c "cd ddnet-master && bam config curl.use_pkgconfig=false \
-    opus.use_pkgconfig=false opusfile.use_pkgconfig=false \
-    ogg.use_pkgconfig=false && bam -j 4 release"
-  cd ddnet-master
-  strip -s DDNet DDNet-Server dilate config_store config_retrieve map_extract map_diff
-  python scripts/make_release.py $VERSION linux_$PLATFORM
-  mv DDNet-$VERSION-linux_$PLATFORM.tar.xz $BUILDS
-  cd ..
-  rm -rf ddnet-master
 
+  chroot . sh -c "cd ddnet-master && cmake -DPREFER_BUNDLED_LIBS=ON && make && make package"
+  mv ddnet-master/DDNet-*.tar.xz $BUILDS/DDNet-$VERSION-linux_$PLATFORM.tar.xz
+
+  rm -rf ddnet-master
+  umount proc sys dev
   unset CFLAGS LDFLAGS PKG_CONFIG_PATH
 }
-
-cd $BUILDDIR/debian6
-umount proc sys dev 2> /dev/null || true
-mount -t proc proc proc/
-mount -t sysfs sys sys/
-mount -o bind /dev dev/
-
-START_TIME=$(date +%s)
-build_linux x86_64
-TIME_LINUX_X86_64=$(($(date +%s) - $START_TIME))
-
-umount proc sys dev
-
-cd $BUILDDIR/debian6_x86
-umount proc sys dev 2> /dev/null || true
-mount -t proc proc proc/
-mount -t sysfs sys sys/
-mount -o bind /dev dev/
-
-START_TIME=$(date +%s)
-CFLAGS=-m32 LDFLAGS=-m32 build_linux x86
-TIME_LINUX_X86=$(($(date +%s) - $START_TIME))
-
-umount proc sys dev
-cd ..
 
 # Windows
 build_windows ()
 {
   PLATFORM=$1
 
-  rm -rf ddnet-master
-  unzip -q $WEBSITE/master.zip
-  unzip -q $WEBSITE/libs.zip
-  rm -rf ddnet-master/ddnet-libs
-  mv ddnet-libs-master ddnet-master/ddnet-libs
-  cd ddnet-master
-  cmake -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain
-  make -j4
+  rm -rf win$PLATFORM
+  mkdir win$PLATFORM
+  cd win$PLATFORM
+  cmake -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain ../ddnet-master
+  make
   make package
   mv DDNet-*.zip $BUILDS/DDNet-$VERSION-win$PLATFORM.zip
   cd ..
-  rm -rf ddnet-master
+  rm -rf win$PLATFORM
   unset PREFIX \
     TARGET_FAMILY TARGET_PLATFORM TARGET_ARCH
 }
 
-START_TIME=$(date +%s)
+# Get the sources
+cd $WEBSITE
+rm -rf master.zip libs.zip
+wget -nv https://github.com/ddnet/ddnet/archive/master.zip
+wget -nv https://github.com/ddnet/ddnet-libs/archive/master.zip -O libs.zip
+cd $BUILDDIR
+rm -rf ddnet-master
+unzip -q $WEBSITE/master.zip
+cp -r ddnet-master DDNet-$VERSION
+TIME_PREPARATION=$(($(date +%s) - $START_TIME))
+
+build_source &
+
+unzip -q $WEBSITE/libs.zip
+rm -rf ddnet-master/ddnet-libs
+mv ddnet-libs-master ddnet-master/ddnet-libs
+
+build_macosx &> builds/mac.log &
+build_linux x86_64 $BUILDDIR/debian6 &> builds/linux_x86_64.log &
+CFLAGS=-m32 LDFLAGS=-m32 build_linux x86 $BUILDDIR/debian6_x86 &> builds/linux_x86.log &
+
 TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
   PREFIX=x86_64-w64-mingw32- PATH=/usr/x86_64-w64-mingw32/bin:$PATH \
-  build_windows 64
-TIME_WINDOWS_X86_64=$(($(date +%s) - $START_TIME))
+  build_windows 64 &> builds/win64.log &
 
-START_TIME=$(date +%s)
 TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
   PREFIX=i686-w64-mingw32- PATH=/usr/i686-w64-mingw32/bin:$PATH \
-  build_windows 32
-TIME_WINDOWS_X86=$(($(date +%s) - $START_TIME))
+  build_windows 32 &> builds/win32.log &
 
 # Android
 # TODO: Reenable with SDL2
@@ -207,19 +145,8 @@ TIME_WINDOWS_X86=$(($(date +%s) - $START_TIME))
 #mv project/bin/MainActivity-release.apk $BUILDS/DDNet-${VERSION}.apk
 #TIME_ANDROID=$(($(date +%s) - $START_TIME))
 
-wait $SOURCEPID
-wait $MACPID
-cat $MACLOG
-rm -f $MACLOG
-
-{ set +x; } 2>/dev/null
-echo ""
-printf "Preparation:    %4s s\n" "$TIME_PREPARATION"
-printf "Linux x86_64:   %4s s\n" "$TIME_LINUX_X86_64"
-printf "Linux x86:      %4s s\n" "$TIME_LINUX_X86"
-printf "Windows x86_64: %4s s\n" "$TIME_WINDOWS_X86_64"
-printf "Windows x86:    %4s s\n" "$TIME_WINDOWS_X86"
-printf "Android:        %4s s\n" "$TIME_ANDROID"
+wait
+rm -rf ddnet-master
 
 NOW=$(date +'%F %R')
 echo "Finished build of $VERSION at $NOW"
