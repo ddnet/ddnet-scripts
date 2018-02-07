@@ -39,7 +39,7 @@ Pre-requirements:
 
   - Screenshot file name: Everything that's not a-z,A-Z,0-9 gets converted to an underline
   $ mv screenshot-20150815@121626.png Kobra_4.png
-  $ mkdir -p conv; for i in *png; do convert $i -resize 25% conv/$i; zopflipng -m --prefix conv/$i; mv conv/zopfli_$i conv/$i; done; scp conv/* ddnet:/var/www/ranks/maps/; rm conv/*png; mv *png ~/git/ddnet/screenshots
+  $ mkdir -p conv; for i in *png; do convert $i -resize 25% conv/$i; zopflipng -m --prefix conv/$i; mv conv/zopfli_$i conv/$i; done; scp conv/* ddnet.tw:/var/www/ranks/maps/; rm conv/*png; mv *png ~/git/ddnet/screenshots
   - I store full size screenshots in git/ddnet/screenshots in case we ever need them (unused so far)
 
 3. release the map
