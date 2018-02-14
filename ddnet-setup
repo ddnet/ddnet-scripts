@@ -3,7 +3,7 @@ ssh root@37.235.52.151
 Debian:
 apt-get update
 apt-get upgrade
-apt-get install zsh vim htop git g++ libboost-dev msgpack-python python-mysqldb sshfs tcpdump gdb pkg-config ntpdate ntp mailutils postfix libssl-dev libmariadbclient-dev libmysqlcppconn-dev cmake make unattended-upgrades apt-listchanges iptables-persistent
+apt-get install zsh vim htop git g++ libboost-dev msgpack-python python-mysqldb sshfs tcpdump gdb pkg-config ntpdate ntp mailutils postfix libssl-dev libmariadbclient-dev libmysqlcppconn-dev cmake make unattended-upgrades apt-listchanges iptables-persistent libwebsockets-dev
 dpkg-reconfigure tzdata
 dpkg-reconfigure -plow unattended-upgrades
 vim /etc/hostname
