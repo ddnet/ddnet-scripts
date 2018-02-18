@@ -4,11 +4,10 @@ Tournament preparation process on DDNet
 3-6 days prior:
 - Make a nice screenshot and prepare the msgpack file
 - Put the screenshot on ddnet.tw too
-- Announce on DDNet Forum, TW Forum, TW-Friends
+- Announce on DDNet Forum
 - Announce on DDNet.tw
-- Announce in Client: news and kill versionsrv (auto-restarts)
-- Announce on Server: motd/news
-  Also scripts/print.sh, first days only lower lines, comment out upper ones
+- Announce in Client: news
+- Also scripts/print.sh, first days only lower lines, comment out upper ones
   ./git-update-files-only.sh
   Crontab all servers to run print.sh every 2 hours
 
@@ -30,12 +29,11 @@ During the night/morning before (after 1 AM):
 - Edit motd/tournament.cfg based on info about the map and the current news from maps/*.map.cfg
 - Edit tournament-prepare.sh on each server (except ddnet.tw) to run a nice map before the tournament, also make sure the other server settings are right
 - When the server is empty, run ./tournament-prepare.sh
-- When a server is full later, edit tournament-prepare.sh to add another server
+- Usually only on GER: When a server is full later, edit tournament-prepare.sh to add another server
 - Prepare tournament-start.sh on ddnet.tw, update it to all servers
   Use a fun loading screen
 - Make sure all times are correct on servers, only do an ntp sync when servers are empty as it times everyone out
-- Make sure the MySQL synchronization isn't broken anywhere
-  show slave status; as mysql root
+  Without NTP can also do: date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
 
 1 hour before:
 - cssh ddnet and abc
