@@ -1,3 +1,4 @@
+Use /modhelp to notify moderators and helpers on Discord. Only if you need urgent help and no mod is on the server.
 Check out DDNet's Discord server (run by jao) on ddnet.tw/discord
 Check out DDNet's TeamSpeak server hosted by laxa on ts.ddnet.tw
 When you want to change map make sure no one is currently racing!
