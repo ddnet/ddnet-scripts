@@ -3,11 +3,11 @@ ssh root@37.235.52.151
 Debian:
 apt-get update
 apt-get upgrade
-apt-get install zsh vim htop git g++ libboost-dev msgpack-python python-mysqldb sshfs tcpdump gdb pkg-config ntpdate ntp mailutils postfix libssl-dev libmariadbclient-dev libmysqlcppconn-dev cmake make unattended-upgrades apt-listchanges iptables-persistent libwebsockets-dev
+apt-get install zsh vim htop git g++ libboost-dev msgpack-python python-mysqldb sshfs tcpdump gdb pkg-config ntpdate ntp mailutils postfix libssl-dev libmariadbclient-dev libmysqlcppconn-dev cmake make unattended-upgrades apt-listchanges iptables-persistent libwebsockets-dev libcurl4-openssl-dev
 dpkg-reconfigure tzdata
 dpkg-reconfigure -plow unattended-upgrades
 vim /etc/hostname
-/etc/init.d/hostname.sh start
+invoke-rc.d hostname.sh start
 
 CentOS:
 #rpm -Uhv http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm
