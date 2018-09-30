@@ -40,7 +40,7 @@ build_macosx ()
   mkdir macosx
   cd macosx
   PATH=${PATH:+$PATH:}/home/deen/git/osxcross/target/bin
-  cmake -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX10.11.sdk/ ../ddnet-master
+  cmake -DCMAKE_BUILD_TYPE=Release -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX10.11.sdk/ ../ddnet-master
   make
   make package_default
   mv DDNet-*.dmg $BUILDS/DDNet-$VERSION-osx.dmg
@@ -65,7 +65,7 @@ build_linux ()
   rm -rf ddnet-master/ddnet-libs
   mv ddnet-libs-master ddnet-master/ddnet-libs
 
-  chroot . sh -c "cd ddnet-master && cmake -DPREFER_BUNDLED_LIBS=ON && make && make package_default"
+  chroot . sh -c "cd ddnet-master && cmake -DCMAKE_BUILD_TYPE=Release -DPREFER_BUNDLED_LIBS=ON && make && make package_default"
   mv ddnet-master/DDNet-*.tar.xz $BUILDS/DDNet-$VERSION-linux_$PLATFORM.tar.xz
 
   rm -rf ddnet-master
@@ -81,8 +81,7 @@ build_windows ()
   rm -rf win$PLATFORM
   mkdir win$PLATFORM
   cd win$PLATFORM
-  cmake -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain ../ddnet-master
-  make
+  cmake -DCMAKE_BUILD_TYPE=Release -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain ../ddnet-master
   make package_default
   mv DDNet-*.zip $BUILDS/DDNet-$VERSION-win$PLATFORM.zip
   cd ..
