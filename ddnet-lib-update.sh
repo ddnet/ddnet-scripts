@@ -178,27 +178,27 @@ export CC=o64-clang
 export CXX=o64-clang++
 
 cd curl-7.61.1
-./configure --host=x86_64-apple-darwin15 --with-darwinssl --enable-static --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
+CFLAGS="-mmacosx-version-min=10.7" ./configure --host=x86_64-apple-darwin15 --with-darwinssl --enable-static --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
 make -j4
 cp lib/.libs/libcurl.a ..
 
 cd ../libogg-1.3.3
-./configure --host=x86_64-apple-darwin15
+./configure CFLAGS="-mmacosx-version-min=10.7" --host=x86_64-apple-darwin15
 make -j4
 cp src/.libs/libogg.a ..
 
 cd ../opus-1.2.1
-./configure --host=x86_64-apple-darwin15
+./configure CFLAGS="-mmacosx-version-min=10.7" --host=x86_64-apple-darwin15
 make -j4
 cp .libs/libopus.a ..
 
 cd ../opusfile-0.11
-PKG_CONFIG=/usr/sbin/pkg-config DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian6/root/osx64/opus-1.2.1/.libs/ -L/home/deen/isos/ddnet/debian6/root/osx64/libogg-1.3.3/src/.libs/" ./configure CFLAGS="-I/home/deen/isos/ddnet/debian6/root/osx64/opus-1.2.1/include -I/home/deen/isos/ddnet/debian6/root/osx64/libogg-1.3.3/include" CPPFLAGS="-I/home/deen/isos/ddnet/debian6/root/osx64/opus-1.2.1/include -I/home/deen/isos/ddnet/debian6/root/osx64/libogg-1.3.3/include" --host=x86_64-apple-darwin15 --disable-http
+PKG_CONFIG=/usr/sbin/pkg-config DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian6/root/osx64/opus-1.2.1/.libs/ -L/home/deen/isos/ddnet/debian6/root/osx64/libogg-1.3.3/src/.libs/" ./configure CFLAGS="-mmacosx-version-min=10.7 -I/home/deen/isos/ddnet/debian6/root/osx64/opus-1.2.1/include -I/home/deen/isos/ddnet/debian6/root/osx64/libogg-1.3.3/include" CPPFLAGS="-I/home/deen/isos/ddnet/debian6/root/osx64/opus-1.2.1/include -I/home/deen/isos/ddnet/debian6/root/osx64/libogg-1.3.3/include" --host=x86_64-apple-darwin15 --disable-http
 make -j4
 cp .libs/libopusfile.a ..
 
 cd ../freetype-2.9.1
-./configure --host=x86_64-apple-darwin15 --with-png=no --with-bzip2=no --with-zlib=no --with-harfbuzz=no
+./configure CFLAGS="-mmacosx-version-min=10.7" --host=x86_64-apple-darwin15 --with-png=no --with-bzip2=no --with-zlib=no --with-harfbuzz=no
 make -j4
 cp objs/.libs/libfreetype.6.dylib ..
 
