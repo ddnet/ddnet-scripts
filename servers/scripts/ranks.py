@@ -149,7 +149,7 @@ else:
   mbCountry2 = ""
 
 menuText = '<ul>'
-menuText += '<li><a href="/ranks/">Global Ranks</a> (<a href="/ranks/ger/">GER</a>, <a href="/ranks/rus/">RUS</a>, <a href="/ranks/irn/">IRN</a>, <a href="/ranks/chl/">CHL</a>, <a href="/ranks/bra/">BRA</a>, <a href="/ranks/zaf/">ZAF</a>, <a href="/ranks/usa/">USA</a>, <a href="/ranks/can/">CAN</a>, <a href="/ranks/chn/">CHN</a>, <a href="/ranks/old/">OLD</a>)</li>'
+menuText += '<li><a href="/ranks/">Global Ranks</a> (<a href="/ranks/ger/">GER</a>, <a href="/ranks/fra/">FRA</a>, <a href="/ranks/rus/">RUS</a>, <a href="/ranks/irn/">IRN</a>, <a href="/ranks/chl/">CHL</a>, <a href="/ranks/bra/">BRA</a>, <a href="/ranks/zaf/">ZAF</a>, <a href="/ranks/usa/">USA</a>, <a href="/ranks/can/">CAN</a>, <a href="/ranks/chn/">CHN</a>, <a href="/ranks/old/">OLD</a>)</li>'
 for type in types:
   if country == None:
     menuText += '<li><a href="/ranks/%s/">%s Server</a></li>\n' % (type.lower(), type)
@@ -427,10 +427,10 @@ with con:
         traceback.print_exc()
 
       if type == "Solo" or type == "Race" or type == "Dummy":
-        mapsString += u'<div class="block2 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" /></a>%s<br/><span title="%s">%d tee%s finished%s</span></p></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime))
+        mapsString += u'<div class="block2 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span></p></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime))
         mapsString += printExactSoloRecords("Records", "records", ranks)
       else:
-        mapsString += u'<div class="block2 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" /></a>%s<br/><span title="%s">%d tee%s finished%s</span><br/>%d team%s finished%s</p></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime), countTeamFinishes, mbS, escape(biggestTeam))
+        mapsString += u'<div class="block2 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span><br/>%d team%s finished%s</p></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime), countTeamFinishes, mbS, escape(biggestTeam))
         mapsString += printTeamRecords("Team Records", "teamrecords", teamRanks)
         mapsString += printSoloRecords("Records", "records", ranks)
       mapsString += '<br/>\n'
@@ -586,20 +586,30 @@ os.rename(tmpname, filename)
 #sleep(0.1)
 
 if country == None:
+  # types # Not needed
+  # maps
+  # totalPoints
+  # pointsRanks
+  # weeklyPointsRanks
+  # monthlyPointsRanks
+  # teamrankRanks
+  # rankRanks
+  # serverRanks
+  # players
+
   #for player in players.keys():
   #  for mapName in players[player].maps.keys():
   #    if players[player].maps[mapName].firstFinish == "2030-10-10 00:00:00":
   #      print "Player: %s, Map: %s, no rank for teamrank" % (player, mapName)
 
-  tmpname = '%s/playerNames.%d.tmp' % (webDir, os.getpid())
-  filename = '%s/playerNames.msgpack' % webDir
-  with open(tmpname, 'wb') as out:
-    out.write(msgpack.packb(players.keys()))
-  os.rename(tmpname, filename)
+  #tmpname = '%s/playerNames.%d.tmp' % (webDir, os.getpid())
+  #filename = '%s/playerNames.msgpack' % webDir
+  #with open(tmpname, 'wb') as out:
+  #  out.write(msgpack.packb(players.keys()))
+  #os.rename(tmpname, filename)
   #sleep(0.1)
 
-  tmpname = '%s/players.%d.tmp' % (webDir, os.getpid())
-  filename = '%s/players.msgpack' % webDir
+  tmpname = '%s/players.msgpack.tmp' % webDir
   with open(tmpname, 'wb') as out:
     out.write(msgpack.packb(types))
     out.write(msgpack.packb(maps))
@@ -611,4 +621,4 @@ if country == None:
     out.write(msgpack.packb(rankRanks))
     out.write(msgpack.packb(serverRanks))
     out.write(msgpack.packb(players, default=str))
-  os.rename(tmpname, filename)
+  #os.rename(tmpname, filename)

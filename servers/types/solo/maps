@@ -3,23 +3,55 @@ $add_vote "Random Solo Map" "random_map"
 $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 
 ─── NEW MAPS ───
-4|Eternity|Ninjed & Imperius
+4|Rush Clouds|bit
+3|Push it 2|Welf
+2|Wormhole|hi_leute_gll
+3|Agile|Jimmy Jazz
+1|Cavity|тυx
+2|Timebreaker|Im 'corneum
+3|nullptr.sg|Shishigami
+
+─── SELECTED MAPS ───
+2|After the Cataclysm|Soignar
+2|Allround|[A] Awesome
+3|Autumn Sunset|Themix
+3|back and forth|Bixes
+2|BlackVision|Vasten100
+3|Casthere|Im 'corneum
+5|Caverun|Noved
+3|combo|BlaGK
+4|Crooked Mind|Themix
+2|DayLight|٭ıƞdex'<3
 4|Disposition|Ravie
-3|CrashTV|Cellegen
-3|Hermit|»Rogue.
-3|Verification 6.2|Captain
-2|Verification 6.1|Captain
-2|Verification 6|Captain
+3|Freezejump|Im 'corneum
+3|IMA NINJA|Welf
+4|KeepOut|IRGNW & Juandissimo
+2|Late Evening|Bixes
+4|Lawrence|Themix
+3|Let's Swing|Juandissimo
+3|Miracle|Bixes
+1|Mud|Fňokurka oo7
+2|navii|Im 'corneum
+3|Outside|Bixes
+2|Plocky|Meliodafu
+3|Rocket Challenge|Juandissimo
+2|Rocket Player|RayB.
+3|Shotsky|Im 'corneum
+4|Sky Movement|Noved
+3|Summer Breeze|Bixes
+4|Sunburst|Skeptar & tobu.
 
 ─── JETPACK MAPS ───
 2|deathpack|Electricitee
 1|Joyride|Zerodin
 2|Joyride 2|Zerodin
+1|mazepack|Im 'corneum
 4|Partenack|Themix
 3|PetJack|timakro
 3|PetJack 2|timakro
 3|ROCKET-BELT|Cøke
 3|SpeedCore|Alvin Risk
+1|TOPOS|Im 'corneum
 
 ─── PUSH HOOK MAPS ───
 2|Killstreak 1|Tuna
@@ -27,15 +59,21 @@ $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 2|Push it|Welf
 
 ─── SPECIAL MAPS ───
+1|Care for your Time|dcgù
+3|DatWay|Vasten100
 3|Exchange|Delo & Kintaro*
 0|Flappy Bird|Saavik
-1|HDP_OnOff|El Futuro
+2|Gedan|Vasten100
 1|Rollercoaster|timakro
 1|SpaceIsKey|Delo & Kintaro*
+2|UpNDown|Vasten100
+3|UpNDown2|Vasten100
+3|UpNDown3|Vasten100
 
 ─── WALLJUMP MAPS ───
 3|Art of Movement|timakro & Chill [TD]
 2|MojoJump|Vasten100
+2|RockClimb|Knight :3
 2|WallJump|Kintaro*
 
 ─── OTHER MAPS ───
@@ -44,11 +82,9 @@ $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 2|2of4|Chill [TD]
 2|3of4|Chill [TD]
 2|4of4|Chill [TD]
-2|After the Cataclysm|Soignar
 3|AIB Quest 1|Pipou
 3|AIB Quest 2|Pipou
 3|AIB Quest 4|Pipou
-2|Allround|[A] Awesome
 3|Allround2|[A] Awesome
 2|Alpha|Kosho
 1|Anaphore|-=TeK=- pikou & Stridouille
@@ -59,9 +95,7 @@ $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 3|Aufnahmetest 2|Kintaro*
 3|Aufnahmetest 3
 3|Autumn Sky|Timbo & ٭ıƞdex'<3
-3|Autumn Sunset|Themix
 3|Awayza|Ama
-3|back and forth|Bixes
 4|Birinci|Gridwyn
 3|Bittersweet Sunset|Tuna
 2|BlackBear1|RayB.
@@ -71,43 +105,44 @@ $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 3|BlackBear5|RayB.
 3|BlackBear6|RayB.
 2|BlackBear7|RayB.
-2|BlackVision|Vasten100
 4|Broken brain|BannZay
 3|Broken space|dinner & BannZay
 4|BrokeysChallenge|MaDLeX
 2|Brown Suger
-1|Care for your Time|dcgù
-3|Casthere|Im 'corneum
+1|Bullet Master|fikmesån
 3|Catch the Colors|Dr.Dre
-5|Caverun|Noved
+4|Cave Fly|Im 'corneum
 2|Cheepl|IRGNW
 2|Chill Let's Climb|Chill [TD]
 2|Chill Let's Climb 2|Chill [TD]
 3|CHILLUMINATI|ChillerDragon
-3|combo|BlaGK
+4|Cloud Dreams|N9mkOik
+3|CrashTV|Cellegen
 3|Croissant|artkis
-4|Crooked Mind|Themix
 1|ctf5_solo|imp
 3|Daghestan|Ninjed
 3|DarkEagle|=xPeke=
 3|DarkMove|=xPeke=
-3|DatWay|Vasten100
-2|DayLight|٭ıƞdex'<3
 2|deadrun|Harbinger
 3|DeepEdge|Deeper
 2|Delension|BamBam
 3|Desert Mine|Blue
 1|Desert Night|fikmesån
+3|Dodge|Pulsar
 0|DontMove|=xPeke=
 3|Duodecimo|Forris
 2|Dust's Leaf|IRGNW
+3|Dynasty|Cellegen
+4|Embrace|Deeper & Nyanto
 4|Enormous|Gambol
 2|Equity [Easy]|Pipou & 645654
 4|Equity [Hard]|Pipou & 645654
 3|Escape|timakro & Chill [TD]
+4|Eternity|Ninjed & Imperius
 3|Exalate|IRGNW & Kosho
 2|Extension 1.0|Jeet
 2|Extension 2.0|Jeet
+3|Fall into the Future|Silex
 3|Fallen Angel|Tee 3D
 3|Flamara|Evoli & RedFight
 3|FlipLipp10|FlipLipp
@@ -116,8 +151,6 @@ $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 5|Fly to the Legends|nealson T'nP
 5|Fly to the Legends 2|nealson T'nP
 2|ForeverAlone|Delo
-3|Freezejump|Im 'corneum
-2|Gedan|Vasten100
 2|GetSpeed|Konsti
 3|GetSpeed2|Konsti
 2|GHB_DDrace|Zarnexxx
@@ -131,12 +164,14 @@ $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 4|Grind|Jimmy Jazz
 1|Hardcore 2 Solo
 3|HDP_Gajos9|El Futuro
+1|HDP_OnOff|El Futuro
 2|HDP_Run2|El Futuro
 3|HDP_run_gay25|Kaestchen & Kuadmair
 1|Heaven-time|Ñı©Ø
 3|Hell's Castle|Tuna
 2|Hell-time|Ñı©Ø
 3|Heraconx|{E}{L}{I}{T}{E}
+3|Hermit|»Rogue.
 4|Hitode|☆.Sυsнι♪
 2|Hollywood Undead|Ezio
 4|Honkstar|Honky_Tonk_Man
@@ -146,7 +181,7 @@ $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 2|Hopeless II|Juandissimo & IRGNW
 4|HyperEdge|nealson T'nP
 3|I will be back|Miper
-3|IMA NINJA|Welf
+1|Impetuous|Ravie
 2|Increase Your Speed|Wladimir
 2|Iron Island|Im 'corneum
 3|It's Time|Stalker
@@ -154,7 +189,6 @@ $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 2|Jungle Run|Kintaro*
 3|JungleBee|Exotix
 4|Just_Shotgun|Aoe
-4|KeepOut|IRGNW & Juandissimo
 2|Kobra 2 Solo|Zerodin
 2|Kobra 3 Solo|Zerodin
 2|Kobra 4 Solo|Zerodin
@@ -162,10 +196,8 @@ $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 4|Lamb|Gridwyn
 3|LaserTag|LanuX
 3|Last Jump|Kosho
-2|Late Evening|Bixes
 3|Lawliet|☆.Sυsнι♪
-4|Lawrence|Themix
-3|Let's Swing|Juandissimo
+4|Lifture|Cor
 2|Lonely Swim 3|Tuna
 1|Lonely Swim 4|Tuna
 2|Lonely Swim 9.0|Tuna
@@ -175,15 +207,12 @@ $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 4|Lunar Base|Blue
 4|Masquerade|Forris
 3|Maximum speed|BannZay
-1|mazepack|Im 'corneum
 4|Microlity|Micro
 1|Mini Zero|Zerodin
 1|Mini Zero II|Zerodin
-3|Miracle|Bixes
+1|Mirror|Pipou
 2|MorningStar|stompie & Soapy Sandwich
 4|Movement I|Nigel
-1|Mud|Fňokurka oo7
-2|navii|Im 'corneum
 3|Nettex|{E}{L}{I}{T}{E}
 4|Network|Alvin Risk
 2|Night of Spikes|Element Finland
@@ -193,19 +222,16 @@ $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 1|Nytro|BamBam
 2|Old Style|Destoros
 1|OldschoolAdventure|.me'
-3|Outside|Bixes
 4|Pharoah|mikey12
-2|Plocky|Meliodafu
 1|Prison 1|AKc0RiZer
 2|Propagate|Element Finland
 2|Puzzle Box|Soapy Sandwich
+2|Quick|Deeper
 1|Race_Sanktoras|Sanktoras
 1|Raid|Im 'corneum
-2|RockClimb|Knight :3
-3|Rocket Challenge|Juandissimo
 2|Rocket Jump|<BµmM>
-2|Rocket Player|RayB.
 3|RocketIsKey|Tropo
+2|Rope swing|Mokuz
 2|run_guy_25|Kaestchen
 4|Safe Place|Blue
 2|selfdragger|Jeet
@@ -213,11 +239,9 @@ $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 2|Short Sky|S.O.S
 4|Shortgun|Cor
 2|ShotFF|Savander
-3|Shotsky|Im 'corneum
 3|Skepsis|Juandissimo, timakro & Soreu
 3|SkipIt|xPeke
 2|SkipIt2|=xPeke=
-4|Sky Movement|Noved
 2|SkyCave|Delo
 3|SL1|LoLz
 3|Solo Future|Gridwyn
@@ -230,11 +254,11 @@ $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 4|Space Climb|Silex
 3|Spaceman|Deeper & Ninjed
 1|Spallok|Evoli
+2|Sparadrap|clefairy'
 2|Speedster|imp
 3|Spiders|Zerodin
 2|spy|Deeper
-3|Summer Breeze|Bixes
-4|Sunburst|Skeptar & tobu.
+2|Stop Over 1.0|N9mkOik
 4|Sunburst2|ŊØṼÅ
 2|Tee Legends 1|Bee & Alias
 2|Tee Legends 2|Bee & Alias
@@ -242,14 +266,10 @@ $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 1|The Space Station|Ñı©Ø
 2|Theory Of Fail|BRONOOB
 3|Thomas|Im 'corneum
-1|TOPOS|Im 'corneum
 4|Triplecan|Cøke
 5|Triplecan 2|Cøke
 2|Uniswim|Im 'corneum
 3|Universum 16|Neox & IRGNW
-2|UpNDown|Vasten100
-3|UpNDown2|Vasten100
-3|UpNDown3|Vasten100
 2|Verification 2|Cøke
 2|Verification 2.1|Cøke
 2|Verification 2.2|Cøke
@@ -263,6 +283,9 @@ $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 3|Verification 3.7|Silex
 3|Verification 3.8|Silex
 3|Verification 3.9|Silex
+2|Verification 6|Captain
+2|Verification 6.1|Captain
+3|Verification 6.2|Captain
 2|Verification 7.0|Kintaro*
 3|Verification 7.1|Kintaro*
 3|Verification 7.2|Kintaro*
@@ -271,4 +294,6 @@ $add_vote "Random Solo Map Unfinished by Vote Caller" "random_unfinished_map"
 2|VoidOfSpace|Alvin Risk
 3|WALL-E T|Alvin Risk & Åmol
 3|Weird Cave|Rapture & ٭ıƞdex'<3
+3|Where am I|Deeper
 2|Whitemoon|Cellegen
+2|WSMS|Element Finland

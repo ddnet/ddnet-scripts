@@ -11,32 +11,38 @@ sys.setdefaultencoding('utf8')
 
 def printFooter():
   print """
-  <div id="Points" class="block div-tournament">
-    <div class="back-up"><a href="#top">&#8593;</a></div>
-    <h2>Points Calculation</h2>
-    <div class="center">
-      <p>
-        Join team <strong>x</strong> using <strong>/team x</strong> and finish in it to earn a team record for this tournament.
-      </p>
-      <table class="points">
-        <tr><td>1st place</td><td>25 points</td></tr>
-        <tr><td>2nd place</td><td>18 points</td></tr>
-        <tr><td>3rd place</td><td>15 points</td></tr>
-        <tr><td>4th place</td><td>12 points</td></tr>
-        <tr><td>5th place</td><td>10 points</td></tr>
-        <tr><td>6th place</td><td>8 points</td></tr>
-        <tr><td>7th place</td><td>6 points</td></tr>
-        <tr><td>8th place</td><td>4 points</td></tr>
-        <tr><td>9th place</td><td>2 points</td></tr>
-        <tr><td>10th place</td><td>1 points</td></tr>
-      </table>
-    </div>
-    <br/>
-  </div>
   </section>
   </article>
   </body>
 </html>"""
+#def printFooter():
+#  print """
+#  <div id="Points" class="block div-tournament">
+#    <div class="back-up"><a href="#top">&#8593;</a></div>
+#    <h2>Points Calculation</h2>
+#    <div class="center">
+#      <p>
+#        Join team <strong>x</strong> using <strong>/team x</strong> and finish in it to earn a team record for this tournament.
+#      </p>
+#      <table class="points">
+#        <tr><td>1st place</td><td>25 points</td></tr>
+#        <tr><td>2nd place</td><td>18 points</td></tr>
+#        <tr><td>3rd place</td><td>15 points</td></tr>
+#        <tr><td>4th place</td><td>12 points</td></tr>
+#        <tr><td>5th place</td><td>10 points</td></tr>
+#        <tr><td>6th place</td><td>8 points</td></tr>
+#        <tr><td>7th place</td><td>6 points</td></tr>
+#        <tr><td>8th place</td><td>4 points</td></tr>
+#        <tr><td>9th place</td><td>2 points</td></tr>
+#        <tr><td>10th place</td><td>1 points</td></tr>
+#      </table>
+#    </div>
+#    <br/>
+#  </div>
+#  </section>
+#  </article>
+#  </body>
+#</html>"""
 
 def printTeamRecords2(recordName, className, topFinishes):
   string = u'<div class="block4"><h4>%s:</h4>\n' % recordName
@@ -108,12 +114,12 @@ types = sys.argv[1:]
 menuText = '<ul>\n'
 for type in types:
   menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type)
-menuText += '<li><a href="#Points">Points Calculation</a></li></ul>'
+#menuText += '<li><a href="#Points">Points Calculation</a></li></ul>'
 
-print header("4th Birthday Long Tournament  - DDraceNetwork", menuText, "")
-print '<p class="toggle"><a href="#" onclick="showClass(\'allPoints\'); return false;">All ranks / Top 10 ranks</a></p>'
+print header("Teleport Gun Event #1 - DDraceNetwork", menuText, "")
+#print '<script src="/js.js" type="text/javascript"></script><p class="toggle"><a href="#" onclick="showClass(\'allPoints\'); return false;">All ranks / Top 10 ranks</a></p>'
 
-f = open("long-tournament")
+f = open("tournament")
 tournamentMaps = []
 for line in f:
   words = line.rstrip('\n').split('|')
@@ -194,8 +200,8 @@ with con:
           else:
             players[row[0]].maps[originalMapName] = PlayerMap(players[row[0]].maps[originalMapName][0], currentRank, globalPoints(type, stars), row[3], row[4], row[1])
 
-          if currentPosition > 10:
-            continue
+          #if currentPosition > 10:
+          #  continue
           cur.execute("select Server from record_race where Map = '%s' and Name = '%s'" % (con.escape_string(originalMapName), con.escape_string(row[0])))
           rows2 = cur.fetchall()
           ranks.append((currentRank, row[0], row[1], row[2], row[3], rows2[0][0]))
@@ -258,7 +264,7 @@ with con:
         except IOError:
           pass
 
-        mapsString += u'<div class="block3 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" /></a>%s<br/><span title="%s">%d tee%s finished%s</span></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime))
+        mapsString += u'<div class="block3 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime))
         #mapsString += printTeamRecords("Team Records", "teamrecords", teamRanks)
         mapsString += printSoloRecords2("Records", "records", ranks)
         mapsString += '<br/>\n'
@@ -274,14 +280,13 @@ with con:
 
         for row in rows:
           if row[1] != ID:
-            if currentPosition <= 10:
-              fNames = []
-              for name in names:
-                fNames.append('<a href="%s">%s</a>' % (escape(playerWebsite(u'%s' % name)), escape(name)))
-              cur.execute("select Server from record_race where Map = '%s' and Name = '%s'" % (con.escape_string(originalMapName), con.escape_string(names[0])))
-              rows = cur.fetchall()
-              teamRanks.append((currentRank, joinNames(fNames), time, timestamp, rows[0][0]))
-              names = []
+            fNames = []
+            for name in names:
+              fNames.append('<a href="%s">%s</a>' % (escape(playerWebsite(u'%s' % name)), escape(name)))
+            cur.execute("select Server from record_race where Map = '%s' and Name = '%s'" % (con.escape_string(originalMapName), con.escape_string(names[0])))
+            rows = cur.fetchall()
+            teamRanks.append((currentRank, joinNames(fNames), time, timestamp, rows[0][0]))
+            names = []
 
             countTeamFinishes += 1
             if row[2] != time:
@@ -299,8 +304,8 @@ with con:
           if originalMapName not in players[row[0]].maps:
             players[row[0]].maps[originalMapName] = PlayerMap(currentRank, 0, 0, date(2015,10,10),  date(2016,10,10))
 
-          if currentPosition > 10:
-            continue
+          #if currentPosition > 10:
+          #  continue
 
           time = row[2]
           timestamp = row[3]
@@ -321,7 +326,7 @@ with con:
           else:
             serverTeamrankLadder[row[0]] = points(currentRank)
 
-        if currentPosition <= 10 and time > 0:
+        if time > 0:
           fNames = []
           for name in names:
             fNames.append('<a href="%s">%s</a>' % (escape(playerWebsite(u'%s' % name)), escape(name)))
@@ -373,8 +378,8 @@ with con:
           else:
             players[row[0]].maps[originalMapName] = PlayerMap(players[row[0]].maps[originalMapName][0], currentRank, row[3], row[4], row[1])
 
-          if currentPosition > 10:
-            continue
+          #if currentPosition > 10:
+          #  continue
 
           cur.execute("select Server from record_race where Map = '%s' and Name = '%s'" % (con.escape_string(originalMapName), con.escape_string(row[0])))
           rows2 = cur.fetchall()
@@ -447,7 +452,7 @@ with con:
         except IOError:
           pass
 
-        mapsString += u'<div class="block3 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" /></a>%s<br/><span title="%s">%d tee%s finished%s</span><br/>%d team%s finished%s</p></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime), countTeamFinishes, mbS, escape(biggestTeam))
+        mapsString += u'<div class="block3 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span><br/>%d team%s finished%s</p></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime), countTeamFinishes, mbS, escape(biggestTeam))
         mapsString += printTeamRecords2("Team Records", "teamrecords", teamRanks)
         mapsString += '<br/>\n'
 
@@ -465,9 +470,9 @@ with con:
 pointsRanks = sorted(pointsLadder.items(), key=lambda r: r[1], reverse=True)
 rankRanks = sorted(rankLadder.items(), key=lambda r: r[1], reverse=True)
 
-print '<div id="global" class="block div-tournament"><h2>4th Birthday Long Tournament</h2>'
-print '<p>This tournament runs from 2017-07-23 to 2017-08-07.<br/>The players with the best team records on these maps wins! This is part of our <a href="https://forum.ddnet.tw/viewtopic.php?t=5449">4th Birthday Tournament Event</a>.</p>'
-print printLadder(rankRanks)
+print '<div id="global" class="block div-tournament"><h2>Teleport Gun Event #1</h2>'
+print '<p>This event runs from 2018-07-27 to 2018-08-05.<br/>The players with the best times on these maps win! Read more about it on <a href="https://forum.ddnet.tw/viewtopic.php?t=6581">the forum</a>.</p>'
+#print printLadder(rankRanks)
 print '</div>'
 print '<div id="serverranks" style="display: ">'
 print serversString

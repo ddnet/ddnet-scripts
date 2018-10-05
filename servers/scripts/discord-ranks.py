@@ -19,7 +19,7 @@ def postRecord(row, names):
     oldTimeString = "new tie!"
   else:
     oldTimeString = "next best time: %s" % formatTimeExact(row[6])
-  postDiscordRecords("%s on \[[%s](https://ddnet.tw/ranks/%s/)\] [%s](https://ddnet.tw/ranks/%s/#map-%s): %s %s (%s)" % (row[4], row[5], row[5].lower(), row[1], row[5].lower(), normalizeMapname(row[1]), formatTimeExact(row[2]), names, oldTimeString))
+  postDiscordRecords("%s on \[[%s](<https://ddnet.tw/ranks/%s/>)\] [%s](<https://ddnet.tw/ranks/%s/#map-%s>): %s %s (%s)" % (row[4], row[5], row[5].lower(), row[1], row[5].lower(), normalizeMapname(row[1]), formatTimeExact(row[2]), names, oldTimeString))
 
 os.chdir("/home/teeworlds/servers/")
 
@@ -43,9 +43,9 @@ with con:
   union all
   select Name, Map, Time, Timestamp, "Top 1 teamrank" as Type, OldTime from (select ID, (select Time from record_teamrace where Map = l.Map and ID != l.ID and Timestamp < "{0}" order by Time limit 1) as OldTime from (select distinct ID, Map, Time from record_teamrace where Timestamp >= "{0}" and Timestamp < "{1}") as l left join (select Map, min(Time) as minTime from record_teamrace group by Map) as r on l.Map = r.Map where Time = minTime) as ll inner join record_teamrace as rr on ll.ID = rr.ID
   union all
-  select Name, record_race.Map as Map, Time, record_race.Timestamp as Timestamp, "Rank" as Type, NULL as OldTime from record_race join record_maps on record_race.Map = record_maps.Map where record_race.Timestamp >= "{0}" and record_race.Timestamp < "{1}" and record_maps.Points >= 30
+  select Name, record_race.Map as Map, Time, record_race.Timestamp as Timestamp, "Rank" as Type, NULL as OldTime from record_race join record_maps on record_race.Map = record_maps.Map where record_race.Timestamp >= "{0}" and record_race.Timestamp < "{1}" and (record_maps.Points >= 30 or (record_maps.Points >= 20 and record_maps.Server = "Solo") or (record_maps.Points >= 10 and record_maps.Server = "Race"))
   union all
-  select Name, record_teamrace.Map as Map, Time, record_teamrace.Timestamp as Timestamp, "Teamrank" as Type, NULL as OldTime from record_teamrace join record_maps on record_teamrace.Map = record_maps.Map where record_teamrace.Timestamp >= "{0}" and record_teamrace.Timestamp < "{1}" and record_maps.Points >= 30
+  select Name, record_teamrace.Map as Map, Time, record_teamrace.Timestamp as Timestamp, "Teamrank" as Type, NULL as OldTime from record_teamrace join record_maps on record_teamrace.Map = record_maps.Map where record_teamrace.Timestamp >= "{0}" and record_teamrace.Timestamp < "{1}" and (record_maps.Points >= 30 or (record_maps.Points >= 20 and record_maps.Server = "Solo") or (record_maps.Points >= 10 and record_maps.Server = "Race"))
   ) as lll join record_maps on lll.Map = record_maps.Map
   where lll.Map != "DontMove" and lll.Map != "Nyan Cat" group by Name, Map, Time order by lll.Timestamp;
   """.format(formatDateExact(startTime), formatDateExact(endTime)))
@@ -61,9 +61,9 @@ with con:
 
   for i, row in enumerate(rows):
     if row[4] == "Teamrank" or row[4] == "Top 1 teamrank":
-      names.append("[%s](https://ddnet.tw%s)" % (row[0], playerWebsite(row[0])))
+      names.append("[%s](<https://ddnet.tw%s>)" % (row[0], playerWebsite(row[0])))
       if i+1 >= len(rows) or rows[i+1][1] != row[1] or rows[i+1][2] != row[2]:
         postRecord(row, makeAndString(names))
         names = []
     else:
-      postRecord(row, "[%s](https://ddnet.tw%s)" % (row[0], playerWebsite(row[0])))
+      postRecord(row, "[%s](<https://ddnet.tw%s>)" % (row[0], playerWebsite(row[0])))

@@ -152,6 +152,13 @@ def globalPoints(type, stars):
   offset = mo[1]
   return stars * mult + offset
 
+def countClients(server):
+  result = 0
+  for player in server.playerlist:
+    if player.name != "(connecting)".decode('utf8') or player.clan != "".decode('utf8') or player.score != 0 or player.country != -1:
+      result += 1
+  return result
+
 #PlayerMap = namedtuple('PlayerMap', ['teamRank', 'rank', 'points', 'nrFinishes', 'firstFinish', 'time'])
 PlayerMap = namedtuple('PlayerMap', ['teamRank', 'rank', 'nrFinishes', 'firstFinish', 'time'])
 Player = namedtuple('Player', ['maps', 'servers'])
@@ -285,7 +292,7 @@ def header(title, menu, header, refresh = False, stupidIncludes = False, otherIn
     %s
     %s
     %s
-    <link rel="stylesheet" type="text/css" href="/css.css?version=10" />
+    <link rel="stylesheet" type="text/css" href="/css.css?version=11" />
     <script src="/js.js" type="text/javascript"></script>
     <title>%s</title>
   </head>
@@ -299,12 +306,11 @@ def header(title, menu, header, refresh = False, stupidIncludes = False, otherIn
         <li><a href="/status/">Status</a></li>
         <li><a href="/ranks/">Ranks</a></li>
         <li><a href="/releases/">Releases</a></li>
-        <li><a href="//forum.ddnet.tw/">Forum</a></li>
+        <li><a href="/discord">Discord</a> / <a href="//forum.ddnet.tw/">Forum</a></li>
         <li><a href="/downloads/">Downloads</a></li>
         <li><a href="/tournament/">Tournaments</a></li>
         <li><a href="/skins/">Skin Database</a></li>
         <li><a href="/stats/">Statistics</a></li>
-        <li><a href="http://wiki.ddnet.tw/">Wiki</a></li>
       </ul>
       %s
       </menu>
@@ -395,7 +401,13 @@ def printLadder(name, ranks, players, number = 10):
 
   return string
 
-def printPlayers(server, filt, players):
+def isKnownPlayer(name, con, cur):
+  if name in ("(connecting)", "nameless tee"):
+      return True
+  cur.execute("select count(distinct Name) from record_race where Name = '%s';" % (con.escape_string(name)))
+  return int(cur.fetchall()[0][0]) > 0
+
+def printPlayers(server, filt, con, cur):
   count = 0
   for player in server.playerlist:
     if filt(player):
@@ -407,8 +419,7 @@ def printPlayers(server, filt, players):
   for player in sorted(server.playerlist, key=lambda p: (-p.score, p.name.lower())):
     if filt(player):
       print("<tr>")
-
-      if player.name.encode('utf-8') in players:
+      if isKnownPlayer(player.name, con, cur):
         htmlName = '<a href=\"%s\">%s</a>' % (escape(playerWebsite(u'%s' % player.name)), escape(player.name))
       else:
         htmlName = escape(player.name)
@@ -461,17 +472,17 @@ def getTSStatus():
 
   response = svr.send_command('serverinfo')
   if response.response['msg'] != 'ok':
-      exit
+    exit
   svr_info = response.data[0]
 
   response = svr.send_command('channellist')
   if response.response['msg'] != 'ok':
-      exit
+    exit
   channel_list = response.data
 
   response = svr.send_command('clientlist')
   if response.response['msg'] != 'ok':
-      exit
+    exit
   client_list = response.data
 
   # Start building the channel / client tree.
@@ -490,58 +501,58 @@ def getTSStatus():
   # Add the channels to our tree
 
   for channel in channel_list:
-      node = {
-          'title': channel['channel_name'],
-          'isFolder': True,
-          'expand': True,
-          'children': []
-      }
-      parent = channels[int(channel['pid'])]
-      parent['children'].append(node)
-      channels[int(channel['cid'])] = node
+    node = {
+      'title': channel['channel_name'],
+      'isFolder': True,
+      'expand': True,
+      'children': []
+    }
+    parent = channels[int(channel['pid'])]
+    parent['children'].append(node)
+    channels[int(channel['cid'])] = node
 
-      if node['title'] == 'DDraceNetwork':
-          ddnetChan = node
+    if node['title'] == 'DDraceNetwork':
+      ddnetChan = node
 
   # Add the clients to the tree
 
   for client in client_list:
-      if client['client_type'] == '0':
-          node = {
-              'title': client['client_nickname'],
-              'isFolder': False
-          }
-          channel = channels[int(client['cid'])]
-          channel['children'].append(node)
+    if client['client_type'] == '0':
+      node = {
+        'title': client['client_nickname'],
+        'isFolder': False
+      }
+      channel = channels[int(client['cid'])]
+      channel['children'].append(node)
 
   tree = [channels[0]]
 
   childrenCount = 0
   def renderChannel(chan, name):
-      global childrenCount, second
-      thisCount = 0
-      result = '<div class="block3">\n<h3>%s</h3>\n<table>\n' % name
-      childrenCount
-      for child in chan['children']:
-          if not child['isFolder']:
-              result += '<tr>\n  <td>%s</td>\n</tr>\n' % child['title']
-              childrenCount += 1
-              thisCount += 1
-      result += '</table>\n</div>\n'
-      if second:
-        result += '<br/>'
-      if thisCount > 0:
-        second = not second
-        return result
-      else:
-        return ''
+    global childrenCount, second
+    thisCount = 0
+    result = '<div class="block3">\n<h3>%s</h3>\n<table>\n' % name
+    childrenCount
+    for child in chan['children']:
+      if not child['isFolder']:
+        result += '<tr>\n  <td>%s</td>\n</tr>\n' % child['title']
+        childrenCount += 1
+        thisCount += 1
+    result += '</table>\n</div>\n'
+    if second:
+      result += '<br/>'
+    if thisCount > 0:
+      second = not second
+      return result
+    else:
+      return ''
 
   text = ''
 
   text += renderChannel(ddnetChan, 'DDraceNetwork Main')
   for chan in ddnetChan['children']:
-      if chan['isFolder']:
-          text += renderChannel(chan, 'DDraceNetwork %s' % chan['title'])
+    if chan['isFolder']:
+      text += renderChannel(chan, 'DDraceNetwork %s' % chan['title'])
 
   #if childrenCount == 0:
   #  result = '<div class="block empty" style="display:none">\n'
@@ -561,147 +572,150 @@ def address(s):
   return (spl[0], int(spl[1]))
 
 def printStatus(name, servers, doc, external = False):
-  now = datetime.now()
-  date = now.strftime("%Y-%m-%d %H:%M")
-  serverPlayers = OrderedDict()
-  modPlayers = OrderedDict()
+  con = mysqlConnect()
+  with con:
+    cur = con.cursor()
+    cur.execute("set names 'utf8mb4';")
+    now = datetime.now()
+    date = now.strftime("%Y-%m-%d %H:%M")
+    serverPlayers = OrderedDict()
+    modPlayers = OrderedDict()
 
-  serverPositions = {}
+    serverPositions = {}
 
-  for i in servers:
-    serverPlayers[i] = 0
-    serverPositions[i] = 0
-
-  tw = []
-  for i in range(4):
-    tw.append(Teeworlds(timeout=5))
-
-  for countryEntry in doc:
-    country = countryEntry['name']
-    for typ, svs in countryEntry['servers'].iteritems():
-      modPlayers[typ] = 0
-      for s in svs:
-        serverAddress = address(s)
-        for i, t in enumerate(tw):
-          if i < 2:
-            server = Server64(t, serverAddress)
-          else:
-            server = Server(t, serverAddress)
-          server.request()
-          t.serverlist.add(server)
-
-  for t in tw: t.run_loop()
-
-  totalPlayers = 0
-  lastServer = ''
-
-  i = 0
-  for countryEntry in doc:
-    country = countryEntry['name']
-    for typ, svs in countryEntry['servers'].iteritems():
-      for s in svs:
-        for t in tw:
-          server = t.serverlist.servers[i]
-
-          if server.clients < 0:
-            continue
-
-          if country != lastServer:
-            lastServer = country
-            serverPositions[lastServer] = i
-          totalPlayers += max(0,server.clients)
-          if serverPlayers.has_key(country):
-            serverPlayers[country] += max(0,server.clients)
-          if modPlayers.has_key(typ):
-            modPlayers[typ] += max(0,server.clients)
-          break
-        i += 1
-
-  menuText = ""
-  if len(servers) > 1:
-    menuText += '<ul>'
     for i in servers:
-      menuText += '<li><a href="#server-%d">%s&nbsp;[%d]</a></li> ' % (serverPositions[i], servers[i][1].replace(" ","&nbsp;"), serverPlayers[i])
-    menuText += "</ul>"
+      serverPlayers[i] = 0
+      serverPositions[i] = 0
 
-  if name == "DDraceNetwork":
-    print header("[%d] %s Status" % (totalPlayers, name), menuText, serverStatus("%s Status: %d players" % (name, totalPlayers)), True, True)
-  else:
-    print header("[%d] %s Status" % (totalPlayers, name), menuText, '<div id="global" class="block"><h2>%s Status: %d players</h2></div>' % (name, totalPlayers), True)
+    tw = []
+    for i in range(4):
+      tw.append(Teeworlds(timeout=20))
 
-  print '<p class="toggle"><a title="Click to toggle whether empty servers are shown" href="#" onclick="showClass(\'empty\'); return false;">Show empty servers</a></p>'
-
-  if name == "DDraceNetwork":
-    try:
-      print getTSStatus()
-    except:
-      pass
-
-  players = None
-  with open('%s/playerNames.msgpack' % webDir, 'rb') as inp:
-    players = msgpack.unpack(inp, encoding='utf-8')
-  inp = None
-
-  #for i, s in enumerate(tw.serverlist):
-  i = 0
-  for countryEntry in doc:
-    country = countryEntry['name']
-    for typ, svs in countryEntry['servers'].iteritems():
-      for s in svs:
-        for t in tw:
-          try:
-            server = t.serverlist.servers[i]
-            mbEmpty = ""
-            if server.clients < 1:
-              mbEmpty = " empty\" style=\"display:none"
-
-            clients = server.clients
-            max_clients = server.max_clients
-            name = server.name
-
-            tmp = name.strip().split(" - ")
-            serverType = tmp[-1].split(" ")[0]
-            serverRest = " ".join(tmp[-1].split(" ")[1:])
-            if serverRest != "":
-              serverRest = " %s" % serverRest
-
-            if external or "Test" in name:
-              serverName = escape(name)
-              mapName = escape(server.map)
-            elif not "DDrace" in name or "BLOCKER" in name or "Tournament" in name or "ADMIN" in name:
-              serverName = escape(name)
-              mapName = '<a href="/maps/?map=%s">%s</a>' % (quote_plus(server.map), escape(server.map))
+    for countryEntry in doc:
+      country = countryEntry['name']
+      for typ, svs in countryEntry['servers'].iteritems():
+        modPlayers[typ] = 0
+        for s in svs:
+          serverAddress = address(s)
+          for i, t in enumerate(tw):
+            if i < 2:
+              server = Server64(t, serverAddress)
             else:
-              serverName = '%s - <a href="/ranks/%s/">%s</a>%s' % (escape(" - ".join(tmp[:-1])), escape(serverType.lower()), escape(serverType), escape(serverRest))
-              mapName = '<a href="/ranks/%s/#map-%s">%s</a>' % (escape(serverType.lower()), escape (normalizeMapname(server.map)), escape(server.map))
+              server = Server(t, serverAddress)
+            server.request()
+            t.serverlist.add(server)
+
+    for t in tw: t.run_loop()
+
+    totalPlayers = 0
+    lastServer = ''
+
+    i = 0
+    for countryEntry in doc:
+      country = countryEntry['name']
+      for typ, svs in countryEntry['servers'].iteritems():
+        for s in svs:
+          for t in tw:
+            server = t.serverlist.servers[i]
+
+            if server.clients < 0:
+              continue
+
+            clients = countClients(server)
+
+            if country != lastServer:
+              lastServer = country
+              serverPositions[lastServer] = i
+            totalPlayers += clients
+            if serverPlayers.has_key(country):
+              serverPlayers[country] += clients
+            if modPlayers.has_key(typ):
+              modPlayers[typ] += clients
+            break
+          i += 1
+
+    menuText = ""
+    if len(servers) > 1:
+      menuText += '<ul>'
+      for i in servers:
+        menuText += '<li><a href="#server-%d">%s&nbsp;[%d]</a></li> ' % (serverPositions[i], servers[i][1].replace(" ","&nbsp;"), serverPlayers[i])
+      menuText += "</ul>"
+
+    if name == "DDraceNetwork":
+      print header("[%d] %s Status" % (totalPlayers, name), menuText, serverStatus("%s Status: %d players" % (name, totalPlayers)), True, True)
+    else:
+      print header("[%d] %s Status" % (totalPlayers, name), menuText, '<div id="global" class="block"><h2>%s Status: %d players</h2></div>' % (name, totalPlayers), True)
+
+    print '<p class="toggle"><a title="Click to toggle whether empty servers are shown" href="#" onclick="showClass(\'empty\'); return false;">Show empty servers</a></p>'
+
+    if name == "DDraceNetwork":
+      try:
+        print getTSStatus()
+      except:
+        pass
+
+    inp = None
+
+    #for i, s in enumerate(tw.serverlist):
+    i = 0
+    for countryEntry in doc:
+      country = countryEntry['name']
+      for typ, svs in countryEntry['servers'].iteritems():
+        for s in svs:
+          for t in tw:
+            try:
+              server = t.serverlist.servers[i]
+              mbEmpty = ""
+              clients = countClients(server)
+              if clients < 1:
+                mbEmpty = " empty\" style=\"display:none"
+
+              max_clients = server.max_clients
+              name = server.name
+
+              tmp = name.strip().split(" - ")
+              serverType = tmp[-1].split(" ")[0]
+              serverRest = " ".join(tmp[-1].split(" ")[1:])
+              if serverRest != "":
+                serverRest = " %s" % serverRest
+
+              if external or "Test" in name:
+                serverName = escape(name)
+                mapName = escape(server.map)
+              elif not "DDrace" in name or "BLOCKER" in name or "Tournament" in name or "ADMIN" in name:
+                serverName = escape(name)
+                mapName = '<a href="/maps/?map=%s">%s</a>' % (quote_plus(server.map), escape(server.map))
+              else:
+                serverName = '%s - <a href="/ranks/%s/">%s</a>%s' % (escape(" - ".join(tmp[:-1])), escape(serverType.lower()), escape(serverType), escape(serverRest))
+                mapName = '<a href="/ranks/%s/#map-%s">%s</a>' % (escape(serverType.lower()), escape (normalizeMapname(server.map)), escape(server.map))
 
 
-            print((u'<div id="server-%d"><div class="block%s"><h3 class="ip">%s:%s</h3><h2>%s: %s [%d/%d]</h2><br/>' % (i, mbEmpty, lookupIp(s.split(":")[0]), s.split(":")[1], serverName, mapName, clients, max_clients)).encode('utf-8'))
+              print((u'<div id="server-%d"><div class="block%s"><h3 class="ip">%s:%s</h3><h2>%s: %s [%d/%d]</h2><br/>' % (i, mbEmpty, lookupIp(s.split(":")[0]), s.split(":")[1], serverName, mapName, clients, max_clients)).encode('utf-8'))
 
-            print('<div class="block3 status-players"><h3>Players</h3>')
-            printPlayers(server, lambda p: p.playing, players)
+              print('<div class="block3 status-players"><h3>Players</h3>')
+              printPlayers(server, lambda p: p.playing, con, cur)
 
-            print('</div><div class="block3 status-players"><h3>Spectators</h3>')
-            printPlayers(server, lambda p: not p.playing, players)
-            print('</div><br/></div></div>')
-          except:
-            continue
-          break
-        i += 1
-  print '<p class="toggle">Refreshed: %s</p>' % time.strftime("%Y-%m-%d %H:%M")
-  print """</section>
-  </article>
-  </body>
-  </html>"""
+              print('</div><div class="block3 status-players"><h3>Spectators</h3>')
+              printPlayers(server, lambda p: not p.playing, con, cur)
+              print('</div><br/></div></div>')
+            except:
+              continue
+            break
+          i += 1
+    print '<p class="toggle">Refreshed: %s</p>' % time.strftime("%Y-%m-%d %H:%M")
+    print """</section>
+    </article>
+    </body>
+    </html>"""
 
-  with open('%s/status/csv/bycountry' % webDir, 'a') as f:
-    f.write(date)
-    for country in serverPlayers:
-      f.write(",%s:%d" % (country, serverPlayers[country]))
-    f.write('\n')
+    with open('%s/status/csv/bycountry' % webDir, 'a') as f:
+      f.write(date)
+      for country in serverPlayers:
+        f.write(",%s:%d" % (country, serverPlayers[country]))
+      f.write('\n')
 
-  with open('%s/status/csv/bymod' % webDir, 'a') as f:
-    f.write(date)
-    for typ in modPlayers:
-      f.write(",%s:%d" % (typ, modPlayers[typ]))
-    f.write('\n')
+    with open('%s/status/csv/bymod' % webDir, 'a') as f:
+      f.write(date)
+      for typ in modPlayers:
+        f.write(",%s:%d" % (typ, modPlayers[typ]))
+      f.write('\n')

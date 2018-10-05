@@ -22,6 +22,9 @@ types=`cat all-types`
 scripts/update-local.sh
 
 scripts/ranks.py $types
+mv /var/www/players.msgpack.tmp /var/www/players.msgpack
+#scp /var/www/players.msgpack can.ddnet.tw:/var/www/players.msgpack.tmp
+#ssh can.ddnet.tw "mv /var/www/players.msgpack.tmp /var/www/players.msgpack"
 scripts/ranks.py --country=OLD $types
 grep name serverlist.json | sed -e 's/.*"name": "\(.*\)".*/\1/' | while read country; do
   scripts/ranks.py --country=$country $types

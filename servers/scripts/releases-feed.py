@@ -91,7 +91,7 @@ for x in releases:
   except IOError:
     pass
 
-  mapsString = u'<p>New map <a href="/ranks/%s/#map-%s">%s</a> %s released on the <a href="/ranks/%s/">%s Server</a></p><p>Difficulty: %s, Points: %d</p><p><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" /></a></p><p>%s</p>' % (server.lower(), escape(normalizeMapname(originalMapName)), formattedMapName, mbMapperName, server.lower(), server, escape(renderStars(stars)), globalPoints(server, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo)
+  mapsString = u'<p>New map <a href="/ranks/%s/#map-%s">%s</a> %s released on the <a href="/ranks/%s/">%s Server</a></p><p>Difficulty: %s, Points: %d</p><p><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a></p><p>%s</p>' % (server.lower(), escape(normalizeMapname(originalMapName)), formattedMapName, mbMapperName, server.lower(), server, escape(renderStars(stars)), globalPoints(server, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo)
   print """  <entry>
     <title>[%s] %s%s</title>
     <link href="/ranks/%s/#map-%s" />

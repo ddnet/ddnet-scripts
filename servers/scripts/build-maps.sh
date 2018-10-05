@@ -13,12 +13,13 @@ for i in $(cat ~/servers/all-types); do
   TYPEDIR=types/${i:l}
   echo "add_path $TYPEDIR" >> storage.cfg
   mkdir -p $TYPEDIR/maps
+  cp ../servers/$TYPEDIR/flexvotes.cfg $TYPEDIR
+  cp ../servers/$TYPEDIR/maps $TYPEDIR/maps.txt
+  grep -v "flexname.cfg" ../servers/$TYPEDIR/flexreset.cfg > $TYPEDIR/flexreset.cfg
+  tail -n +5 ../servers/$TYPEDIR/votes.cfg > $TYPEDIR/votes.cfg
   grep "|" ../servers/$TYPEDIR/maps | cut -d"|" -f2 | while read j; do
     chmod 644 -- "../servers/maps/$j.map"
     cp -- "../servers/maps/$j.map" $TYPEDIR/maps
-    cp ../servers/$TYPEDIR/flexvotes.cfg $TYPEDIR
-    grep -v "flexname.cfg" ../servers/$TYPEDIR/flexreset.cfg > $TYPEDIR/flexreset.cfg
-    tail -n +5 ../servers/$TYPEDIR/votes.cfg > $TYPEDIR/votes.cfg
   done
 done
 

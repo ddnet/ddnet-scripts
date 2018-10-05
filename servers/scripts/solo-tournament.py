@@ -10,7 +10,7 @@ reload(sys)
 sys.setdefaultencoding('utf8')
 
 def printExactSoloRecords2(recordName, className, topFinishes):
-  string = u'<div class="block2 %s"><h4>%s:</h4>\n' % (className, recordName)
+  string = u'<div class="block4 %s"><h4>%s:</h4>\n' % (className, recordName)
   if len(topFinishes) > 0:
     string += '<table class="tight">\n'
     for f in topFinishes:
@@ -48,7 +48,7 @@ def printLadder(ranks):
         skips = 1
       else:
         skips += 1
-      if currentPos > 20:
+      if currentPos > 10:
         string += '<tr class="allPoints" style="display: none">\n'
       else:
         string += '<tr>\n'
@@ -76,9 +76,10 @@ for type in types:
   menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type)
 menuText += '</ul>'
 
-print header("Quick Tournament #41 - DDraceNetwork", menuText, "")
+print header("Teleport Gun Event #2 - DDraceNetwork", menuText, "")
+#print '<script src="/js.js" type="text/javascript"></script><p class="toggle"><a href="#" onclick="showClass(\'allPoints\'); return false;">All ranks / Top 10 ranks</a></p>'
 
-f = open("tournament")
+f = open("tournament2")
 tournamentMaps = []
 for line in f:
   words = line.rstrip('\n').split('|')
@@ -135,12 +136,11 @@ with con:
 
       for row in rows:
         if row[1] != ID:
-          if currentPosition <= 20:
-            fNames = []
-            for name in names:
-              fNames.append('<a href="%s">%s</a>' % (escape(playerWebsite(u'%s' % name)), escape(name)))
-            teamRanks.append((currentRank, joinNames(fNames), time, timestamp))
-            names = []
+          fNames = []
+          for name in names:
+            fNames.append('<a href="%s">%s</a>' % (escape(playerWebsite(u'%s' % name)), escape(name)))
+          teamRanks.append((currentRank, joinNames(fNames), time, timestamp))
+          names = []
 
           countTeamFinishes += 1
           if row[2] != time:
@@ -158,8 +158,8 @@ with con:
         if originalMapName not in players[row[0]].maps:
           players[row[0]].maps[originalMapName] = PlayerMap(currentRank, 0, 0, 0, date(2015,10,10),  date(2016,10,10))
 
-        if currentPosition > 20:
-          continue
+        #if currentPosition > 10:
+        #  continue
 
         time = row[2]
         timestamp = row[3]
@@ -180,7 +180,7 @@ with con:
         else:
           serverTeamrankLadder[row[0]] = points(currentRank)
 
-      if currentPosition <= 20 and time > 0:
+      if time > 0:
         fNames = []
         for name in names:
           fNames.append('<a href="%s">%s</a>' % (escape(playerWebsite(u'%s' % name)), escape(name)))
@@ -230,8 +230,8 @@ with con:
         else:
           players[row[0]].maps[originalMapName] = PlayerMap(players[row[0]].maps[originalMapName][0], currentRank, globalPoints(type, stars), row[3], row[4], row[1])
 
-        if currentPosition > 20:
-          continue
+        #if currentPosition > 10:
+        #  continue
 
         ranks.append((currentRank, row[0], row[1], row[2], row[3], row[6]))
 
@@ -302,7 +302,7 @@ with con:
       except IOError:
         pass
 
-      mapsString += u'<div class="block3 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" /></a>%s<br/><span title="%s">%d tee%s finished%s</span></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime))
+      mapsString += u'<div class="block3 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime))
       #mapsString += printTeamRecords("Team Records", "teamrecords", teamRanks)
       mapsString += printExactSoloRecords2("Records", "records", ranks)
       mapsString += '<br/>\n'
@@ -322,8 +322,8 @@ with con:
 #teamrankRanks = sorted(teamrankLadder.items(), key=lambda r: r[1], reverse=True)
 #rankRanks = sorted(rankLadder.items(), key=lambda r: r[1], reverse=True)
 
-print '<div id="global" class="block div-tournament"><h2>Quick Tournament #41</h2>'
-print '<p>This tournament was played on 2016-01-31 from 20:00 to 21:00 CEST.</p>'
+print '<div id="global" class="block div-tournament"><h2>Teleport Gun Event #2</h2>'
+print '<p>This event runs from 2018-07-27 to 2018-08-05.<br/>The players with the best times on these maps win! Read more about it on <a href="https://forum.ddnet.tw/viewtopic.php?t=6581">the forum</a>.</p>'
 #print printLadder(teamrankRanks)
 print '</div>'
 print '<div id="serverranks" style="display: ">'

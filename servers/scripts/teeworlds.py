@@ -81,16 +81,31 @@ class MultiSocket(object):
   WRITE = 2
   EXCEPTION = 4
   
-  def __init__(self, timeout=None, interval=0):
+  def __init__(self, timeout=None, interval=0, port=None):
     self.sockets = {}
     self.queue_out = queue.Queue()
     self.timeout = timeout
     self.interval = interval
     self.sockets[socket.AF_INET] = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.SOL_UDP)
+    self.sockets[socket.AF_INET].setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    #if port:
+    #    original_port = port
+    #    success = False
+    #    while not success:
+    #        try:
+    #            self.sockets[socket.AF_INET].bind(('', port))
+    #            success = True
+    #        except socket.error as e:
+    #            if e.errno != 98:
+    #              raise
+    #            port += 1
+    #            if port > original_port + 9:
+    #                raise
     self.has_ipv6 = socket.has_ipv6
     if self.has_ipv6:
       self.sockets[socket.AF_INET6] = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM, socket.SOL_UDP)
-  
+      self.sockets[socket.AF_INET6].setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
   def select(self, type=None, timeout=None):
     timeout = self.timeout if timeout == None else timeout
     list_r = self.sockets.values() if (type&self.READ or type==None) else []
@@ -542,7 +557,7 @@ class Teeworlds(object):
     self.serverlist = ServerList()
     self.playerlist = PlayerList()
     self.masterlist = []
-    self.socket = MultiSocket(timeout=0.001)
+    self.socket = MultiSocket(timeout=0.001, port=6990)
   
   def query_masters(self):
     masters = ["master{0}.teeworlds.com".format(i) for i in range(2, 4+1)]
@@ -562,7 +577,7 @@ class Teeworlds(object):
         self.masterlist.append(master)
   
   def run_loop(self):
-    last_recv = time.time()
+    start_time = time.time()
     last_send = 0
     while True:
       try:
@@ -578,11 +593,10 @@ class Teeworlds(object):
           last_send = cur_time
           self.socket.process_queue(1)
         if not r:
-          if cur_time > last_recv + self.timeout:
+          if cur_time > start_time + self.timeout:
             break
           time.sleep(0.001)
         else:
-          last_recv = cur_time
           for sock in r:
             try:
               (data, address) = sock.recvfrom(1492)

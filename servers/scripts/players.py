@@ -35,7 +35,7 @@ con = mysqlConnect()
 con.autocommit(True)
 
 def tableHeader(name, id):
-  return '<table id="%s" class="%s"><thead><tr><th class="unMapTr">Map</th><th class="unPtsTr">Pts</th><th class="unFinTr">Finishes</th></tr></thead><tbody>\n' % (id, name)
+  return '<table id="%s" class="%s"><thead><tr><th class="unMapTr">Map</th><th class="unPtsTr">Pts</th><th class="unFinTr">Finishers</th></tr></thead><tbody>\n' % (id, name)
 
 with con:
   cur = con.cursor()
@@ -313,7 +313,7 @@ with con:
       if allFinished:
         print >>out, '<p><strong>All maps on %s finished by %s!</strong></p>' % (type, orText)
       else:
-        print >>out, '<input type="checkbox" id="checkbox_%s" checked="checked" /><label for="checkbox_%s"><p><strong>Unfinished maps (show/hide)</strong></p></label>' % (type, type)
+        print >>out, '<input type="checkbox" id="checkbox_%s" checked="checked" /><label for="checkbox_%s"><p><a><strong>Unfinished maps (show/hide)</strong></a></p></label>' % (type, type)
         print >>out, '<div class="unfinishedmaps">'
         print >>out, unfinishedString
         print >>out, '</div>'
@@ -525,7 +525,7 @@ with con:
       if allFinished:
         print >>out, '<p><strong>All maps on %s finished!</strong></p>' % type
       else:
-        print >>out, '<input type="checkbox" id="checkbox_%s" checked="checked" /><label for="checkbox_%s"><p><strong>Unfinished maps (show/hide)</strong></p></label>' % (type, type)
+        print >>out, '<input type="checkbox" id="checkbox_%s" checked="checked" /><label for="checkbox_%s"><p><a><strong>Unfinished maps (show/hide)</strong></a></p></label>' % (type, type)
         print >>out, '<div class="unfinishedmaps">'
         print >>out, unfinishedString
         print >>out, '</div>'

@@ -36,6 +36,6 @@ nohup ./run64.sh secret6 > /dev/null &
 #nohup ./run64.sh secret7 > /dev/null &
 
 cd ~/servers
-nohup (sleep 5; ./serverstatus-client.py) &
+nohup ./serverstatus-client.py &
 
 #sshfs -o reconnect testmaps@ddnet.tw:/home/teeworlds/servers/test/maps/ test/data/maps &

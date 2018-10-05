@@ -17,7 +17,7 @@ def printFooter():
 </html>"""
 
 def printSoloRecords2(recordName, className, topFinishes):
-  string = u'<div class="block2 %s"><h4>%s:</h4>\n' % (className, recordName)
+  string = u'<div class="block4 %s"><h4>%s:</h4>\n' % (className, recordName)
   if len(topFinishes) > 0:
     string += '<table class="tight">\n'
     for f in topFinishes:
@@ -76,7 +76,7 @@ for type in types:
   menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type)
 menuText += '</ul>'
 
-print header("Quick Tournament #45 - DDraceNetwork", menuText, "")
+print header("Quick Tournament #46 - DDraceNetwork", menuText, "")
 
 f = open("tournament")
 tournamentMaps = []
@@ -226,7 +226,7 @@ with con:
       except IOError:
         pass
 
-      mapsString += u'<div class="block3 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" /></a>%s<br/><span title="%s">%d tee%s finished%s</span></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime))
+      mapsString += u'<div class="block3 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime))
       #mapsString += printTeamRecords("Team Records", "teamrecords", teamRanks)
       mapsString += printSoloRecords2("Records", "records", ranks)
       mapsString += '<br/>\n'
@@ -246,8 +246,8 @@ with con:
 #teamrankRanks = sorted(teamrankLadder.items(), key=lambda r: r[1], reverse=True)
 #rankRanks = sorted(rankLadder.items(), key=lambda r: r[1], reverse=True)
 
-print '<div id="global" class="block div-tournament"><h2>Quick Tournament #45</h2>'
-print '<p>This tournament was played on Sunday, 2017-04-09 at 20:00 CEST.</p>'
+print '<div id="global" class="block div-tournament"><h2>Quick Tournament #46</h2>'
+print '<p>This tournament was played on Sunday, 2018-02-18 from 20:00 to 22:00 CET.</p>'
 #print printLadder(teamrankRanks)
 print '</div>'
 print '<div id="serverranks" style="display: ">'
