@@ -14,7 +14,6 @@ You can compare your points, global rank and team rank on DDraceNetwork's websit
 Mappers looking to map using our new features can get our server and client on our website: ddnet.tw
 When you get blocked in the noobfilter do not kick the blocker but instead join a /team.
 Keep up to date with new map releases on ddnet.tw/releases
-Like us on Facebook! facebook.com/DDraceNetwork
-Everyone can help test and release new maps! Visit Map Testing section on our Forum for more info.
+Everyone can help test and release new maps! Visit the Map Testing section on our Discord server for more info.
 Good luck in your race!
 Join our community and register on forum.ddnet.tw
