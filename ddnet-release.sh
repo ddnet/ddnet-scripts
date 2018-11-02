@@ -8,6 +8,8 @@ START_TIME=$(date +%s)
 renice -n 19 -p $$ > /dev/null
 ionice -n 3 -p $$
 
+unset CC
+unset CXX
 PATH=$PATH:/usr/local/bin:/opt/android-sdk/build-tools/23.0.3:/opt/android-sdk/tools:/opt/android-ndk:/opt/android-sdk/platform-tools
 BUILDDIR=/home/deen/isos/ddnet
 BUILDS=$BUILDDIR/builds
