@@ -79,6 +79,8 @@ vim ServerStatus/server/config.json
 systemctl restart sergate
 cd servers
 vim ddrace.cfg # sv_sql_valid_servernames
+vim scripts/status.py
+vim serverlist.json
 ./git-update-files-only.sh
 
 On mysql servers:
