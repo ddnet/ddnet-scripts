@@ -74,6 +74,11 @@ update-rc.d teeworlds-servers defaults enable
 # Hack for getting approximate time for hosters that totally block NTP:
 date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
 
+vim ~/servers/serverstatus-client.py
+add /etc/network/if-up.d/iptables
+scp /etc/iptables.up.rules from another server
+iptables-restore < /etc/iptables.up.rules
+
 On ddnet.tw:
 vim ServerStatus/server/config.json
 systemctl restart sergate
