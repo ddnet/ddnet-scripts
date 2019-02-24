@@ -1,4 +1,5 @@
 <html>
+<form action="">ID: <input type="text" name="id"><input type="submit" value="Search"></form>
 <?php
 function main() {
   if (!isset($_GET['id'])) {
@@ -10,8 +11,11 @@ function main() {
     return;
   }
 
-  $dir = new DirectoryIterator("data");
-  foreach ($dir as $fileinfo) {
+  $dirs = new DirectoryIterator("data");
+  foreach ($dirs as $dir) {
+    if ($dir->isDot()) {
+      continue;
+    }
     $paths = [
       "data/" . $dir . "/" . $_GET['id'] . ".teehistorian",
       "data/" . $dir . "/" . $_GET['id'] . ".teehistorian.xz"];
@@ -24,8 +28,8 @@ function main() {
   }
   echo $_GET['id'] . " not found";
 }
-
-main()
+main();
 ?>
-<form action="">ID: <input type="text" name="id"><input type="submit" value="Search"></form>
+<br>
+<?php echo 'Execution time: ' . number_format((microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]) * 1000, 1) . " ms";?>
 </html>
