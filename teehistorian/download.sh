@@ -1,9 +1,18 @@
 #!/bin/sh
-set -u
-set -e
+set -ue
+#/usr/local/bin/rni 19 3
 cd /media/teehistorian
 mkdir -p data
-for loc in $(cat locations); do
-  rsync -a --bwlimit=100K --no-o --no-g -H --append-verify -v "${loc}.ddnet.tw:servers/teehistorian/." "data/${loc}/" &
+for loc in $(cat all-locations); do
+  rsync -a --bwlimit=1024K --no-o --no-g -H --append-verify -v "${loc}.ddnet.tw:servers/teehistorian/." "data/${loc}/" &
+done
+for dir in data/*; do
+  if [ -d $dir -a ! -e $dir/index.txt ]; then
+    echo "game_uuid,timestamp,map_name,map_crc,map_size" > $dir/index.txt
+  fi
 done
 find data -name "*.teehistorian" -mtime +8 -exec ./archive.sh {} \;
+for i in data/*/index.txt; do
+  echo $i
+  (head -n 1 $i && tail -n +2 $i | sort --field-separator=',' --key=2,5 --key=1,1) > $i.$$.tmp && mv $i.$$.tmp $i
+done
