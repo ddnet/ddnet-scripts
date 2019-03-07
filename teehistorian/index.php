@@ -21,7 +21,7 @@ function main() {
       "data/" . $dir . "/" . $_GET['id'] . ".teehistorian.xz"];
     foreach ($paths as $path) {
       if (file_exists($path)) {
-        echo "<a href=\"" . $path . "\">" . $path . "</a>";
+        echo '<a href="' . $path . '">' . $path . '</a>';
         return;
       }
     }
@@ -31,5 +31,31 @@ function main() {
 main();
 ?>
 <br>
-<?php echo 'Execution time: ' . number_format((microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]) * 1000, 1) . " ms";?>
+<table>
+<tr><th>Index file</th><th>File size</th><th>Transfer size</th></tr>
+<?php
+function formatMiB($size) {
+  return number_format($size / 1024 / 1024, 2) . ' MiB';
+}
+
+foreach (scandir("data") as $dir) {
+  if ($dir[0] == '.') {
+    continue;
+  }
+  $paths = [
+    "data/" . $dir . "/" . "index.txt",
+    "data/" . $dir . "/" . "index.new.txt"];
+  foreach ($paths as $path) {
+    if (file_exists($path)) {
+      $size = filesize($path);
+      $sizeCompressed = filesize($path . ".gz");
+      if ($size > 0) {
+        echo '<tr><td><a href="' . $path . '">' . $path . '</a></td><td style="text-align: right;">' . formatMiB($size) . '</td><td style="text-align: right;">' . formatMiB($sizeCompressed) . '</td></tr>';
+      }
+    }
+  }
+}
+?>
+</table>
+<p>Execution time: <?php echo number_format((microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]) * 1000, 1); ?> ms</p>
 </html>
