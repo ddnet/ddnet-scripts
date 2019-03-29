@@ -2,7 +2,7 @@ import MySQLdb as mdb
 import requests
 def mysqlConnect():
   return mdb.connect(
-    'localhost',
+    '127.0.0.1',
     'teeworlds',
     'SECRETSQL',
     'teeworlds'

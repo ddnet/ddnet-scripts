@@ -2,12 +2,17 @@
 
 cd /home/teeworlds/servers
 
+if [ $(cat /proc/loadavg|head -c1) -ge 2 ]; then
+  #echo -e "Current load is > 2, not running."
+  exit 1
+fi
+
 LOCK_FILE="scripts/ranks-lock"
 
 # noclobber prevents the '>' from overwriting an existing lock file.
-if ! (set -o noclobber; echo $$ > "$LOCK_FILE"); then
-   echo -e "Already locked by the process with the PID $(cat "$LOCK_FILE"). Remove $LOCK_FILE to unlock manually."
-   exit 1
+if ! (set -o noclobber; (echo $$ > "$LOCK_FILE") 2> /dev/null); then
+  #echo -e "Already locked by the process with the PID $(cat "$LOCK_FILE"). Remove $LOCK_FILE to unlock manually."
+  exit 1
 fi
 
 cleanup()

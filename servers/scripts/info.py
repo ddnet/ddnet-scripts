@@ -50,6 +50,9 @@ def application(env, start_response):
     with open(os.path.join(serversDir, 'serverlist.json'), 'rb') as f:
       result["servers"] = json.load(f)
 
+    with open(os.path.join(serversDir, 'serverlist-kog.json'), 'rb') as f:
+      result["servers-kog"] = json.load(f)
+
     if "name" in result:
       query("select Server from record_race where Name = '%s' and Server != '' and Server != 'UNK' group by Server order by count(*) desc;" % con.escape_string(result["name"]))
       favorites = map(lambda row: row[0], cur.fetchall())

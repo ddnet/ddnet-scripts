@@ -161,7 +161,7 @@ with con:
       mapperText = "\\n│ Mapper: %s" % mapperName
 
 
-    print 'add_vote "%s%s" "change_map \\"%s\\""' % (originalMapName, mbMapperName, originalMapName)
+    print 'add_vote "%s%s" "sv_reset_file types/%s/flexreset.cfg; change_map \\"%s\\""' % (originalMapName, mbMapperName, server.lower(), originalMapName)
     print 'add_vote "%s" "info"' % text
 
     points = globalPoints(server, int(words[0]))

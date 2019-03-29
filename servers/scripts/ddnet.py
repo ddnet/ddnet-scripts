@@ -176,23 +176,9 @@ def slugify2(name):
 
 def deslugify2(string):
   try:
-    n = u''
-    t = 0
-    i = 0
-
-    for c in string:
-      if t == 0:
-        if c == '-':
-          t = 1
-        else:
-          n += c
-      else:
-        if c == '-':
-          n += unichr(i)
-          t = 0
-          i = 0
-        else:
-          i = i * 10 + int(c)
+    n = string
+    for special_char in re.findall('(-([\d]+)-)', n):
+      n = n.replace(special_char[0], unichr(int(special_char[1])))
     return n.encode('utf-8')
   except:
     return string
@@ -292,8 +278,9 @@ def header(title, menu, header, refresh = False, stupidIncludes = False, otherIn
     %s
     %s
     %s
-    <link rel="stylesheet" type="text/css" href="/css.css?version=11" />
-    <script src="/js.js" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="/css.css?version=12" />
+    <link rel="stylesheet" type="text/css" href="/css-halloween.css" />
+    <script type="text/javascript" src="/js.js"></script>
     <title>%s</title>
   </head>
   <body>
@@ -311,6 +298,7 @@ def header(title, menu, header, refresh = False, stupidIncludes = False, otherIn
         <li><a href="/tournament/">Tournaments</a></li>
         <li><a href="/skins/">Skin Database</a></li>
         <li><a href="/stats/">Statistics</a></li>
+        <li><a href="/switch-theme/">Switch Theme</a></li>
       </ul>
       %s
       </menu>
@@ -464,6 +452,31 @@ def serverStatus(title):
 
 childrenCount = 0
 second = False
+
+def getDiscordStatus():
+  return """<div class="block">
+<h3 class="ip"><a href="https://ddnet.tw/discord">ddnet.tw/discord</a></h3><h2>DDNet Discord</h2>
+<a href="https://ddnet.tw/discord"><img alt="Discord" src="discord.png"></a>
+</div>"""
+
+#  import urllib2, json
+#  j = json.load(urllib2.urlopen(urllib2.Request(
+#    'https://discordapp.com/api/guilds/252358080522747904/embed.json',
+#    headers={'User-Agent': 'Mozilla/5.0'})))
+#  num_online = 0
+#  num_total = 0
+#
+#  for member in j["members"]:
+#    if member["status"] == "online":
+#      num_online += 1
+#    num_total += 1
+#
+#  return """<div class="block">
+#<h3 class="ip"><a href="https://ddnet.tw/discord">ddnet.tw/discord</a></h3><h2>DDNet Discord</h2>
+#<p>Online: {}</p>
+#<p>Total Members: {}</p>
+#</div>""".format(num_online, num_total)
+
 def getTSStatus():
   import ts3
   global childrenCount
@@ -539,8 +552,8 @@ def getTSStatus():
         childrenCount += 1
         thisCount += 1
     result += '</table>\n</div>\n'
-    if second:
-      result += '<br/>'
+    #if second:
+    #  result += '<br/>'
     if thisCount > 0:
       second = not second
       return result
@@ -558,11 +571,11 @@ def getTSStatus():
   #  result = '<div class="block empty" style="display:none">\n'
   #else:
   result = '<div class="block">\n'
-  result += '<h3 class="ip">ts.ddnet.tw</h3>'
+  result += '<h3 class="ip"><a href="ts3server://ts.ddnet.tw">ts.ddnet.tw</a></h3>'
   mbS = ''
   if childrenCount != 1:
     mbS = 's'
-  result += '<h2>DDNet Teamspeak Status: %d user%s</h2>\n' % (childrenCount, mbS)
+  result += '<h2>DDNet Teamspeak</h2>\n'
   result += text
   result += '<br/></div>'
   return result
@@ -649,6 +662,10 @@ def printStatus(name, servers, doc, external = False):
     print '<p class="toggle"><a title="Click to toggle whether empty servers are shown" href="#" onclick="showClass(\'empty\'); return false;">Show empty servers</a></p>'
 
     if name == "DDraceNetwork":
+      #try:
+      #  print getDiscordStatus()
+      #except:
+      #  pass
       try:
         print getTSStatus()
       except:

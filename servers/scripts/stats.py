@@ -20,6 +20,7 @@ locale.setlocale(locale.LC_ALL, 'en_US')
 reload(sys)
 sys.setdefaultencoding('utf8')
 
+ignoredCountries = ("KSA", "AUS") #, "GER2", "FRA")
 startDate = datetime.today() - timedelta(weeks = 4)
 
 # Finishes
@@ -198,7 +199,7 @@ with open('%s/status/csv/bycountry' % webDir) as f:
       startDate2 = date
     for token in tokens[1:]:
       sn = token.split(':')
-      if sn[0] in ["KSA", "AUS"]:
+      if sn[0] in ignoredCountries:
         continue
       if sn[0] not in players:
         players[sn[0]] = {}
@@ -372,10 +373,11 @@ with open('%s/status/csv/bycountry' % webDir) as f:
     date = datetime.strptime(tokens[0], '%Y-%m-%d %H:%M')
     for token in tokens[1:]:
       sn = token.split(':')
-      if sn[0] in ["KSA", "AUS"]:
+      if sn[0] in ignoredCountries:
         continue
       if sn[0] not in countryRecords or countryRecords[sn[0]][0] < int(sn[1]):
         countryRecords[sn[0]] = (int(sn[1]), date)
+
 countryRecordsString = ""
 for server, item in countryRecords.iteritems():
   record = item[0]
@@ -384,7 +386,32 @@ for server, item in countryRecords.iteritems():
     countryRecordsString += ", "
   countryRecordsString += '<span title="%s">%s: %d</span>' % (date, server, record)
 
-print text % (p, p2, p3, p4, finishes, countryPoints, serverPoints, m, nrMaps, nrPlayers, nrRanks, timeRanks, timeRanksYesterday, countryRecordsString)
+# Country averages
+countryAverages = OrderedDict()
+numElements = 0
+with open('%s/status/csv/bycountry' % webDir) as f:
+  for line in f:
+    tokens = line.rstrip('\n').split(',')
+    date = datetime.strptime(tokens[0], '%Y-%m-%d %H:%M')
+    if date < startDate:
+      continue
+    for token in tokens[1:]:
+      sn = token.split(':')
+      if sn[0] in ignoredCountries:
+        continue
+      if sn[0] not in countryAverages:
+        countryAverages[sn[0]] = int(sn[1])
+      else:
+        countryAverages[sn[0]] += int(sn[1])
+    numElements += 1
+
+countryAveragesString = ""
+for server, sumElements in countryAverages.iteritems():
+  if len(countryAveragesString) > 0:
+    countryAveragesString += ", "
+  countryAveragesString += '%s: %.2f' % (server, float(sumElements) / float(numElements))
+
+print text % (p, p2, p3, p4, finishes, countryPoints, serverPoints, m, nrMaps, nrPlayers, nrRanks, timeRanks, timeRanksYesterday, countryRecordsString, countryAveragesString)
 
 print """</section>
 </article>

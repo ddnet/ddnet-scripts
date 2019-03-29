@@ -86,13 +86,11 @@ with con:
     string = '<div class="block2 ladder"><h3>%s</h3>\n<p class="pers-result">' % name
 
     found = False
-    currentPos = 0
     currentRank = 0
     skips = 1
     lastPoints = 0
 
     for r in ranks:
-      currentPos += 1
       if r[1] != lastPoints:
         lastPoints = r[1]
         currentRank += skips
@@ -163,16 +161,25 @@ with con:
       rows = cur.fetchall()
 
       pos = 1
+      lastFinishes = 0
+      skips = 0
 
       if len(rows) > 0:
         print >>out, '<div class="block6 ladder" style="margin-left: 1em;"><h3>Favorite Partners</h3>\n<table class="tight">'
 
         for row in rows:
           name = row[0]
-          count = row[1]
+          finishes = row[1]
+
+          if finishes != lastFinishes:
+            lastFinishes = finishes
+            pos += skips
+            skips = 1
+          else:
+            skips += 1
+
           encodedName = slugify2(u'%s' % name.encode('utf-8'))
-          print >>out, '<tr><td>%d. <a href="/players/%s/">%s</a>: %d ranks</td></tr>' % (pos, encodedName, escape(name), count)
-          pos += 1
+          print >>out, '<tr><td>%d. <a href="/players/%s/">%s</a>: %d ranks</td></tr>' % (pos, encodedName, escape(name), finishes)
 
         print >>out, '</table></div>'
     except:
