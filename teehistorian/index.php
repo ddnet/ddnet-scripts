@@ -32,7 +32,7 @@ main();
 ?>
 <br>
 <table>
-<tr><th>Index file</th><th>File size</th><th>Transfer size</th></tr>
+<tr><th>Index file</th><th>File size</th><th>Transfer size</th><th>Last modified</th></tr>
 <?php
 function formatMiB($size) {
   return number_format($size / 1024 / 1024, 2) . ' MiB';
@@ -50,7 +50,7 @@ foreach (scandir("data") as $dir) {
       $size = filesize($path);
       $sizeCompressed = filesize($path . ".gz");
       if ($size > 0) {
-        echo '<tr><td><a href="' . $path . '">' . $path . '</a></td><td style="text-align: right;">' . formatMiB($size) . '</td><td style="text-align: right;">' . formatMiB($sizeCompressed) . '</td></tr>';
+        echo '<tr><td><a href="' . $path . '">' . $path . '</a></td><td style="text-align: right;">' . formatMiB($size) . '</td><td style="text-align: right;">' . formatMiB($sizeCompressed) . '</td><td>' . date("Y-m-d H:i", filemtime($path)) . '</td></tr>';
       }
     }
   }
