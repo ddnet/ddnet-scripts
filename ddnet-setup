@@ -48,6 +48,8 @@ CentOS cp -r /etc/zsh/* /etc
 From teeworlds @ other server:
 scp -r .config .vim* .ssh* .z* 37.235.52.151:
 
+vim /etc/ssmtp/ssmtp.conf # hostname
+
 cd src
 ./build.sh
 cd ..
