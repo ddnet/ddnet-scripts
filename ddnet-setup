@@ -3,22 +3,11 @@ ssh root@37.235.52.151
 Debian:
 apt-get update
 apt-get upgrade
-apt-get install bsdutils tree zsh vim htop git g++ libboost-dev msgpack-python python-requests python-mysqldb sshfs tcpdump gdb pkg-config ntpdate ntp mailutils ssmtp libssl-dev libmariadbclient-dev libmysqlcppconn-dev cmake make unattended-upgrades apt-listchanges iptables-persistent libwebsockets-dev libcurl4-openssl-dev
+apt-get install bsdutils tree zsh vim htop git g++ libboost-dev msgpack-python python-requests python-libdns python-mysqldb sshfs tcpdump gdb pkg-config ntpdate ntp mailutils ssmtp libssl-dev libmariadbclient-dev libmysqlcppconn-dev cmake make unattended-upgrades apt-listchanges iptables-persistent libwebsockets-dev libcurl4-openssl-dev
 dpkg-reconfigure tzdata
 dpkg-reconfigure -plow unattended-upgrades
 vim /etc/hostname
 invoke-rc.d hostname.sh start
-
-CentOS:
-#rpm -Uhv http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm
-#rpm -Uhv http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
-yum install -y deltarpm
-yum install zsh vim htop git gcc-c++ boost-devel MySQL-python python-msgpack fuse sshfs tcpdump gdb pkg-config ntpdate ntp ssmtp
-yum install zlib zlib-devel zlib-static openssl openssl-devel openssl-static
-rm /etc/localtime
-ln -s /usr/share/zoneinfo/Europe/Berlin !$
-ntpdate pool.ntp.org
-http://www.rackspace.com/knowledge_center/article/centos-hostname-change
 
 vim /etc/passwd /etc/group
 Create teeworlds user and set zsh
@@ -30,20 +19,14 @@ vim /etc/ssh/sshd_config
 
 tar xvf servers.tar.gz
 tar xvf src.tar.gz
-
-With mysql: CentOS:
-yum install mysql
-scp mysql-connector-c++-1.1.4-linux-el6-x86-64bit.rpm 37.235.52.151:
-yum install mysql-connector-c++-1.1.4-linux-el6-x86-64bit.rpm
-restorecon -R -v /root/.ssh
-restorecon -R -v /home/teeworlds/.ssh
+tar xvf dnsbl.tar.gz
 
 With mysql: mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -p mysql
 
 From root @ other server:
 scp -r /etc/zsh /etc/vim* /etc/mysql /etc/ssmtp 37.235.52.151:/etc
-scp -r .config .vim* .ssh* .z* 37.235.52.151:
-CentOS cp -r /etc/zsh/* /etc
+scp -r /etc/systemd/system/dnsbl-iphub.service 37.235.52.151:/etc/systemd/system
+scp -r weekly .config .vim* .ssh* .z* 37.235.52.151:
 
 From teeworlds @ other server:
 scp -r .config .vim* .ssh* .z* 37.235.52.151:
