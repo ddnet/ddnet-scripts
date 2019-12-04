@@ -17,6 +17,9 @@ passwd teeworlds
 
 vim /etc/ssh/sshd_config
 
+Create tars on other servers and scp them over:
+tar --exclude='teehistorian' -zcf servers.tar.gz servers
+
 tar xvf servers.tar.gz
 tar xvf src.tar.gz
 tar xvf dnsbl.tar.gz
