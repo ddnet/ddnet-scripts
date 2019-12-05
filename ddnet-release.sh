@@ -31,9 +31,9 @@ echo "Starting build of $VERSION at $NOW"
 
 build_source ()
 {
-  XZ_OPT=-9 tar cfJ DDNet-$VERSION.tar.xz DDNet-$VERSION
-  mv DDNet-$VERSION.tar.xz $BUILDS
-  rm -rf DDNet-$VERSION
+  XZ_OPT=-9 tar cfJ "DDNet-$VERSION.tar.xz" "DDNet-$VERSION"
+  mv "DDNet-$VERSION.tar.xz" "$BUILDS"
+  rm -rf "DDNet-$VERSION"
 }
 
 build_macosx ()
@@ -45,7 +45,7 @@ build_macosx ()
   cmake -DCMAKE_BUILD_TYPE=Release -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX10.11.sdk/ ../ddnet-master
   make
   make package_default
-  mv DDNet-*.dmg $BUILDS/DDNet-$VERSION-osx.dmg
+  mv DDNet-*.dmg "$BUILDS/DDNet-$VERSION-osx.dmg"
   cd ..
   rm -rf macosx
 }
@@ -55,7 +55,7 @@ build_linux ()
   PLATFORM=$1
   DIR=$2
 
-  cd $DIR
+  cd "$DIR"
   umount proc sys dev 2> /dev/null || true
   mount -t proc proc proc/
   mount -t sysfs sys sys/
@@ -68,7 +68,7 @@ build_linux ()
   mv ddnet-libs-master ddnet-master/ddnet-libs
 
   chroot . sh -c "cd ddnet-master && cmake -DCMAKE_BUILD_TYPE=Release -DPREFER_BUNDLED_LIBS=ON && make && make package_default"
-  mv ddnet-master/DDNet-*.tar.xz $BUILDS/DDNet-$VERSION-linux_$PLATFORM.tar.xz
+  mv ddnet-master/DDNet-*.tar.xz "$BUILDS/DDNet-$VERSION-linux_$PLATFORM.tar.xz"
 
   rm -rf ddnet-master
   umount proc sys dev
@@ -80,14 +80,14 @@ build_windows ()
 {
   PLATFORM=$1
 
-  rm -rf win$PLATFORM
-  mkdir win$PLATFORM
-  cd win$PLATFORM
-  cmake -DCMAKE_BUILD_TYPE=Release -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain ../ddnet-master
+  rm -rf "win$PLATFORM"
+  mkdir "win$PLATFORM"
+  cd "win$PLATFORM"
+  cmake -DCMAKE_BUILD_TYPE=Release -DPREFER_BUNDLED_LIBS=ON "-DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain" ../ddnet-master
   make package_default
-  mv DDNet-*.zip $BUILDS/DDNet-$VERSION-win$PLATFORM.zip
+  mv DDNet-*.zip "$BUILDS/DDNet-$VERSION-win$PLATFORM.zip"
   cd ..
-  rm -rf win$PLATFORM
+  rm -rf "win$PLATFORM"
   unset PREFIX \
     TARGET_FAMILY TARGET_PLATFORM TARGET_ARCH
 }
@@ -100,7 +100,7 @@ wget -nv https://github.com/ddnet/ddnet-libs/archive/master.zip -O libs.zip
 cd $BUILDDIR
 rm -rf ddnet-master
 unzip -q $WEBSITE/master.zip
-cp -r ddnet-master DDNet-$VERSION
+cp -r ddnet-master "DDNet-$VERSION"
 TIME_PREPARATION=$(($(date +%s) - $START_TIME))
 
 build_source &
