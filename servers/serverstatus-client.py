@@ -144,15 +144,15 @@ if __name__ == '__main__':
 				s.send(bytes(USER + ':' + PASSWORD + '\n', 'utf-8'))
 				data = s.recv(1024)
 				if data.find(str.encode("Authentication successful")) < 0:
-					print(data)
+					print(data.decode('utf-8'))
 					raise socket.error
 			else:
-				print(data)
+				print(data.decode('utf-8'))
 				raise socket.error
 
-			print(data)
+			print(data.decode('utf-8'))
 			data = s.recv(1024)
-			print(data)
+			print(data.decode('utf-8'))
 
 			timer = 0
 			check_ip = 0
@@ -161,7 +161,7 @@ if __name__ == '__main__':
 			elif data.find(str.encode("IPv6")) > -1:
 				check_ip = 4
 			else:
-				print(data)
+				print(data.decode('utf-8'))
 				raise socket.error
 
 			traffic = Traffic()
