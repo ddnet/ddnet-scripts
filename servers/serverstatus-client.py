@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 SERVER = "ddnet.tw"
@@ -55,7 +55,7 @@ def get_load():
 	return os.getloadavg()[0]
 
 def get_time():
-	stat_file = file("/proc/stat", "r")
+	stat_file = open("/proc/stat", "r")
 	time_list = stat_file.readline().split(' ')[2:6]
 	stat_file.close()
 	for i in range(len(time_list))  :
@@ -140,10 +140,10 @@ if __name__ == '__main__':
 			s.settimeout(10.0)
 			s.connect((SERVER, PORT))
 			data = s.recv(1024)
-			if data.find("Authentication required") > -1:
-				s.send(USER + ':' + PASSWORD + '\n')
+			if data.find(str.encode("Authentication required")) > -1:
+				s.send(bytes(USER + ':' + PASSWORD + '\n', 'utf-8'))
 				data = s.recv(1024)
-				if data.find("Authentication successful") < 0:
+				if data.find(str.encode("Authentication successful")) < 0:
 					print(data)
 					raise socket.error
 			else:
@@ -156,9 +156,9 @@ if __name__ == '__main__':
 
 			timer = 0
 			check_ip = 0
-			if data.find("IPv4") > -1:
+			if data.find(str.encode("IPv4")) > -1:
 				check_ip = 6
-			elif data.find("IPv6") > -1:
+			elif data.find(str.encode("IPv6")) > -1:
 				check_ip = 4
 			else:
 				print(data)
@@ -195,7 +195,7 @@ if __name__ == '__main__':
 				array['packets_rx'] = PacketsRx
 				array['packets_tx'] = PacketsTx
 
-				s.send("update " + json.dumps(array) + "\n")
+				s.send(bytes("update " + json.dumps(array) + "\n", 'utf-8'))
 		except KeyboardInterrupt:
 			raise
 		except socket.error:
