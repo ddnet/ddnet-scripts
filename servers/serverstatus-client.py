@@ -73,8 +73,7 @@ def get_cpu():
 	st = sum(t)
 	if st == 0:
 		st = 1
-	result = 100-(t[len(t)-1]*100.00/st)
-	return round(result)
+	return 100-(t[len(t)-1]*100.00/st)
 
 class Traffic:
 	def __init__(self):
