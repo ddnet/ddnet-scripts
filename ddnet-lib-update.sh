@@ -1,8 +1,7 @@
 # Using a Debian 6 chroot, mingw and osxcross
 # DO NOT COPY libogg, extract directly... Changing timestamps breaks the build and requires autotools (or cp -a)
 
-wget https://www.openssl.org/source/openssl-1.1.1d.tar.gz
-wget https://curl.haxx.se/download/curl-7.67.0.tar.gz
+wget https://curl.haxx.se/download/curl-7.68.0.tar.gz
 wget http://download.savannah.gnu.org/releases/freetype/freetype-2.10.1.tar.gz
 wget http://downloads.xiph.org/releases/ogg/libogg-1.3.4.tar.gz
 wget https://archive.mozilla.org/pub/opus/opus-1.3.1.tar.gz
@@ -15,23 +14,11 @@ deb http://archive.debian.org/debian squeeze main contrib non-free
 
 mkdir x86-64
 cd x86-64
-tar xvf ../openssl-1.1.1d.tar.gz
-tar xvf ../curl-7.67.0.tar.gz
 tar xvf ../libogg-1.3.4.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.11.tar.gz
 
-cd openssl-1.1.1d
-./config
-make -j4
-cp libssl.a libcrypto.a ..
-
-cd ../curl-7.67.0
-LDFLAGS="-L/root/x86-64/openssl-1.1.1d" LD_LIBRARY_PATH="/root/x86-64/openssl-1.1.1d" ./configure --with-ssl=/root/x86-64/openssl-1.1.1d --disable-shared --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --enable-file
-CPPFLAGS="-I/root/x86-64/openssl-1.1.1d/include" LDFLAGS="-L/root/x86-64/openssl-1.1.1d" LD_LIBRARY_PATH="/root/x86-64/openssl-1.1.1d" make -j4
-cp lib/.libs/libcurl.a ..
-
-cd ../libogg-1.3.4
+cd libogg-1.3.4
 ./configure CFLAGS=-fPIC
 make -j4
 cp src/.libs/libogg.a ..
@@ -50,24 +37,11 @@ cd ../..
 
 mkdir x86
 cd x86
-tar xvf ../openssl-1.1.1d.tar.gz
-tar xvf ../curl-7.67.0.tar.gz
 tar xvf ../libogg-1.3.4.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.11.tar.gz
 
-cd openssl-1.1.1d
-CFLAGS=-m32 LDFLAGS=-m32 PKG_CONFIG_PATH=/usr/lib32/pkgconfig MACHINE=i686-pc-linux-gnu ./config
-CFLAGS=-m32 LDFLAGS=-m32 PKG_CONFIG_PATH=/usr/lib32/pkgconfig MACHINE=i686-pc-linux-gnu make -j4
-cp libssl.a libcrypto.a ..
-
-cd ../curl-7.67.0
-# Somehow need to create libz.so and librt.so manually in /lib32 and /usr/lib32...
-CFLAGS=-m32 LDFLAGS="-m32 -L/root/x86/openssl-1.1.1d" LD_LIBRARY_PATH="/root/x86/openssl-1.1.1d" ./configure --host=i686-pc-linux-gnu --with-ssl=/root/x86/openssl-1.1.1d --disable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --enable-file
-LD_LIBRARY_PATH="/root/x86/openssl-1.1.1d" CFLAGS=-m32 LDFLAGS="-m32 -L/root/x86/openssl-1.1.1d" make -j4
-cp lib/.libs/libcurl.a ..
-
-cd ../libogg-1.3.4
+cd libogg-1.3.4
 CFLAGS=-m32 LDFLAGS=-m32 ./configure
 CFLAGS=-m32 LDFLAGS=-m32 make -j4
 cp src/.libs/libogg.a ..
@@ -86,14 +60,13 @@ cd ../..
 
 mkdir win64
 cd win64
-tar xvf ../openssl-1.1.1d.tar.gz
-tar xvf ../curl-7.67.0.tar.gz
+tar xvf ../curl-7.68.0.tar.gz
 tar xvf ../libogg-1.3.4.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.11.tar.gz
 tar xvf ../freetype-2.10.1.tar.gz
 
-cd curl-7.67.0
+cd curl-7.68.0
 ./configure --host=x86_64-w64-mingw32 --with-winssl --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
 make -j4 V=1
 rm lib/.libs/libcurl-4.dll
@@ -142,14 +115,13 @@ cd ../..
 
 mkdir win32
 cd win32
-tar xvf ../openssl-1.1.1d.tar.gz
-tar xvf ../curl-7.67.0.tar.gz
+tar xvf ../curl-7.68.0.tar.gz
 tar xvf ../libogg-1.3.4.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.11.tar.gz
 tar xvf ../freetype-2.10.1.tar.gz
 
-cd curl-7.67.0
+cd curl-7.68.0
 ./configure --host=i686-w64-mingw32 --with-winssl --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
 make -j4 V=1
 rm lib/.libs/libcurl-4.dll
@@ -197,8 +169,7 @@ cd ../..
 
 mkdir mac64
 cd mac64
-tar xvf ../openssl-1.1.1d.tar.gz
-tar xvf ../curl-7.67.0.tar.gz
+tar xvf ../curl-7.68.0.tar.gz
 tar xvf ../libogg-1.3.4.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.11.tar.gz
@@ -208,7 +179,7 @@ export PATH=/home/deen/git/osxcross/target/bin/:$PATH
 export CC=o64-clang
 export CXX=o64-clang++
 
-cd curl-7.67.0
+cd curl-7.68.0
 CFLAGS="-mmacosx-version-min=10.7" ./configure --host=x86_64-apple-darwin15 --with-darwinssl --enable-static --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
 make -j4
 cp lib/.libs/libcurl.a ..
