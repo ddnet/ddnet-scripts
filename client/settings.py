@@ -1,10 +1,10 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 import sys
 import re
 
-print '<div style="overflow: auto;"><table class="settingscommands">'
-print '  <tr><th>Setting</th><th>Description</th><th>Default</th></tr>'
+print('<div style="overflow: auto;"><table class="settingscommands">')
+print('  <tr><th>Setting</th><th>Description</th><th>Default</th></tr>')
 
 names = {}
 results = []
@@ -32,6 +32,6 @@ for line in sys.stdin:
     results.append(line)
 
 for line in results:
-  print line
+  print(line)
 
-print '</table></div>'
+print('</table></div>')

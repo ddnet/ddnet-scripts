@@ -1,10 +1,10 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 import sys
 import re
 
-print '<table class="settingscommands">'
-print '  <tr><th>Tuning</th><th>Description</th><th>Default</th></tr>'
+print('<table class="settingscommands">')
+print('  <tr><th>Tuning</th><th>Description</th><th>Default</th></tr>')
 
 def foo(x):
   if x.endswith("f / TicksPerSecond"):
@@ -17,6 +17,6 @@ for line in sys.stdin:
 
   result = (x[1].strip(), x[3].strip(" )\n").split('"')[-2], foo(x[2]))
 
-  print '  <tr><td>%s</td><td>%s</td><td>%s</td></tr>' % result
+  print('  <tr><td>%s</td><td>%s</td><td>%s</td></tr>' % result)
 
-print '</table>'
+print('</table>')

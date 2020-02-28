@@ -33,5 +33,5 @@ echo '</div>'
 
 echo '<div class="block">'
 echo '<h2 id="tunings">Tunings</h2>'
-cat src/game/tuning.h | grep MACRO_TUNING | $DIR/tunings.py
+grep MACRO_TUNING src/game/tuning.h | $DIR/tunings.py
 echo '</div>'
