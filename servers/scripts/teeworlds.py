@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 #  A library to get the serverlist & information for Teeworlds servers
 #  Copyright (C) 2011  m!nus <m1nus@online.de>

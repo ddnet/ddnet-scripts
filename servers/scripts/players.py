@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
 from ddnet import *
@@ -17,16 +17,7 @@ from os.path import getmtime
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-types = None
-players = None
-maps = None
-totalPoints = None
-pointsRanks = None
-weeklyPointsRanks = None
-monthlyPointsRanks = None
-teamrankRanks = None
-rankRanks = None
-serverRanks = None
+data = {}
 last = None
 
 playersFile = '%s/players.msgpack' % webDir
@@ -42,34 +33,29 @@ with con:
   cur.execute("set names 'utf8mb4';")
 
   def reloadData():
-    global types, players, maps, totalPoints, pointsRanks, weeklyPointsRanks, monthlyPointsRanks, teamrankRanks, rankRanks, serverRanks, last
+    global data, last
     now = datetime.now()
     if not last or last < getmtime(playersFile):
-      with open(playersFile, 'rb') as inp:
-        del types
-        del players
-        del maps
-        del totalPoints
-        del pointsRanks
-        del weeklyPointsRanks
-        del monthlyPointsRanks
-        del teamrankRanks
-        del rankRanks
-        del serverRanks
+      try:
+        del data
         gc.collect()
+      except NameError:
+        pass
+      with open(playersFile, 'rb') as inp:
         unpacker = msgpack.Unpacker(inp)
-        types = unpacker.unpack()
-        maps = unpacker.unpack()
-        totalPoints = unpacker.unpack()
-        pointsRanks = unpacker.unpack()
-        weeklyPointsRanks = unpacker.unpack()
-        monthlyPointsRanks = unpacker.unpack()
-        teamrankRanks = unpacker.unpack()
-        rankRanks = unpacker.unpack()
-        serverRanks = unpacker.unpack()
-        players = unpacker.unpack()
-        last = getmtime(playersFile)
+        data = {}
+        data['types'] = unpacker.unpack()
+        data['maps'] = unpacker.unpack()
+        data['totalPoints'] = unpacker.unpack()
+        data['pointsRanks'] = unpacker.unpack()
+        data['weeklyPointsRanks'] = unpacker.unpack()
+        data['monthlyPointsRanks'] = unpacker.unpack()
+        data['teamrankRanks'] = unpacker.unpack()
+        data['rankRanks'] = unpacker.unpack()
+        data['serverRanks'] = unpacker.unpack()
+        data['players'] = unpacker.unpack()
       gc.collect()
+      last = getmtime(playersFile)
 
   def query(sql):
     global con, cur
@@ -113,12 +99,12 @@ with con:
     out = cStringIO.StringIO()
 
     print >>out, '<div class="block7">'
-    print >>out, printPersonalResult("Points (%d total)" % totalPoints, pointsRanks, name)
-    print >>out, printPersonalResult("Team Rank", teamrankRanks, name)
-    print >>out, printPersonalResult("Rank", rankRanks, name)
+    print >>out, printPersonalResult("Points (%d total)" % data['totalPoints'], data['pointsRanks'], name)
+    print >>out, printPersonalResult("Team Rank", data['teamrankRanks'], name)
+    print >>out, printPersonalResult("Rank", data['rankRanks'], name)
     print >>out, '<br/>'
-    print >>out, printPersonalResult("Points (last month)", monthlyPointsRanks, name)
-    print >>out, printPersonalResult("Points (last week)", weeklyPointsRanks, name)
+    print >>out, printPersonalResult("Points (last month)", data['monthlyPointsRanks'], name)
+    print >>out, printPersonalResult("Points (last week)", data['weeklyPointsRanks'], name)
 
     try:
       favServer = max(player[1].iteritems(), key=itemgetter(1))[0]
@@ -137,8 +123,8 @@ with con:
 
       for row in rows:
         type = ''
-        for t in types:
-          for (map, points, finishes) in maps[t]:
+        for t in data['types']:
+          for (map, points, finishes) in data['maps'][t]:
             if row[1] == map:
               type = t
               break
@@ -197,8 +183,8 @@ with con:
 
     for row in rows:
       type = ''
-      for t in types:
-        for (map, points, finishes) in maps[t]:
+      for t in data['types']:
+        for (map, points, finishes) in data['maps'][t]:
           if row[1] == map:
             type = t
             break
@@ -234,7 +220,7 @@ with con:
 
     menuText = '<ul>'
     menuText += '<li><a href="#global">Comparison of %s</a></li>' % andText
-    for type in types:
+    for type in data['types']:
       menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type)
     menuText += '</ul>'
 
@@ -259,15 +245,15 @@ with con:
       print >>out, '<br/>'
     print >>out, '</div>'
 
-    for type in types:
-      maps2 = maps[type]
+    for type in data['types']:
+      maps2 = data['maps'][type]
       print >>out, '<div id="%s" class="block div-ranks"><h2>%s Server</h2>' % (type, type)
 
       for (name, player) in namePlayers:
         print >>out, '<div class="block2 ladder"><h2>%s</h2></div>' % name
-        print >>out, printPersonalResult("Points (%d total)" % serverRanks[type][0], serverRanks[type][1], name)
-        print >>out, printPersonalResult("Team Rank", serverRanks[type][2], name)
-        print >>out, printPersonalResult("Rank", serverRanks[type][3], name)
+        print >>out, printPersonalResult("Points (%d total)" % data['serverRanks'][type][0], data['serverRanks'][type][1], name)
+        print >>out, printPersonalResult("Team Rank", data['serverRanks'][type][2], name)
+        print >>out, printPersonalResult("Rank", data['serverRanks'][type][3], name)
         print >>out, '<br/>'
 
       unfinishedString = tableHeader("unfinTable1", "unfinTable1-" + type)
@@ -354,7 +340,7 @@ with con:
       namePlayers = []
       for n in path.split('/')[2:-1]:
         name = deslugify2(u'%s' % n.encode('utf-8'))
-        player = players.get(name)
+        player = data['players'].get(name)
 
         if not player:
           start_response('404 Not Found', [('Content-Type', 'text/html')])
@@ -396,13 +382,13 @@ with con:
 
         jsonT = []
         reloadData()
-        for r in pointsRanks:
+        for r in data['pointsRanks']:
           if r[0].lower().startswith(ql):
             jsonT.append({'name': r[0], 'points': r[1]})
             if len(jsonT) > 10:
               break
 
-        for r in pointsRanks:
+        for r in data['pointsRanks']:
           if ql in r[0].lower() and {'name': r[0], 'points': r[1]} not in jsonT:
             jsonT.append({'name': r[0], 'points': r[1]})
             if len(jsonT) > 10:
@@ -418,7 +404,7 @@ with con:
 
         jsonT = []
         reloadData()
-        player = players.get(q)
+        player = data['players'].get(q)
 
         if player:
           for map in player[0]:
@@ -452,7 +438,7 @@ with con:
       return ''
 
     reloadData()
-    player = players.get(name)
+    player = data['players'].get(name)
 
     if not player:
       start_response('404 Not Found', [('Content-Type', 'text/html')])
@@ -465,7 +451,7 @@ with con:
 
     menuText = '<ul>'
     menuText += '<li><a href="#global">Global Ranks for %s</a></li>' % escape(name)
-    for type in types:
+    for type in data['types']:
       menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type)
     menuText += '</ul>'
 
@@ -491,8 +477,8 @@ with con:
     print >>out, '<br/>'
     print >>out, '</div>'
 
-    for type in types:
-      maps2 = maps[type]
+    for type in data['types']:
+      maps2 = data['maps'][type]
 
       count = 0
       for map, points, finishes in maps2:
@@ -501,9 +487,9 @@ with con:
 
       print >>out, '<div id="%s" class="block div-ranks"><h2></h2><h2 class="inline">%s Server</h2> <h3 class="inline">(%d/%d maps finished)</h3><br/>' % (type, type, count, len(maps2))
 
-      print >>out, printPersonalResult("Points (%d total)" % serverRanks[type][0], serverRanks[type][1], name)
-      print >>out, printPersonalResult("Team Rank", serverRanks[type][2], name)
-      print >>out, printPersonalResult("Rank", serverRanks[type][3], name)
+      print >>out, printPersonalResult("Points (%d total)" % data['serverRanks'][type][0], data['serverRanks'][type][1], name)
+      print >>out, printPersonalResult("Team Rank", data['serverRanks'][type][2], name)
+      print >>out, printPersonalResult("Rank", data['serverRanks'][type][3], name)
       print >>out, '<br/>'
 
       unfinishedString = tableHeader("unfinTable1", "unfinTable1-" + type)

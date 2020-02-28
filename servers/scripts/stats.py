@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
 from ddnet import *
@@ -20,7 +20,7 @@ locale.setlocale(locale.LC_ALL, 'en_US')
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-ignoredCountries = ("KSA", "AUS") #, "GER2", "FRA")
+ignoredCountries = ("KSA", "AUS", "GER2") #, "FRA")
 startDate = datetime.today() - timedelta(weeks = 4)
 
 # Finishes

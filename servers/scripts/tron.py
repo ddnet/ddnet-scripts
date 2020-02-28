@@ -1,4 +1,4 @@
-#!/usr/bin/python -u
+#!/usr/bin/python2 -u
 # coding: utf8
 import random
 import time

@@ -10,7 +10,9 @@ for i in `cat all-types`; do
   #split -l 40 types/${i:l}/votes.cfg types/${i:l}/votes.cfg
 done
 
-(for i in test/maps/*.map; do b=$(basename "$i" .map); echo "add_vote \"$b\" \"change_map \\\"$b\\\"\""; done) > types/test/votes.$$.tmp
+echo "add_vote \"reload map\" \"reload\"" >> types/test/votes.$$.tmp
+echo "add_vote \"─── TESTING MAPS ───\" \"info\"" >> types/test/votes.$$.tmp
+(for i in test/maps/*.map; do b=$(basename "$i" .map); echo "add_vote \"$b\" \"change_map \\\"$b\\\"\""; done) >> types/test/votes.$$.tmp
 mv types/test/votes.$$.tmp types/test/votes.cfg
 
 for server in secret secret2 secret3 secret4 secret5 secret6 secret7; do
@@ -18,7 +20,7 @@ for server in secret secret2 secret3 secret4 secret5 secret6 secret7; do
   mv types/$server/votes.$$.tmp types/$server/votes.cfg
 done
 
-tar cfz votes.$$.tmp.tar.gz types/*/votes.cfg maps/*.map.cfg
+tar cfz votes.$$.tmp.tar.gz types/*/votes.cfg maps/*.map.cfg maps/.*.map.cfg
 mv votes.$$.tmp.tar.gz votes.tar.gz
 
 for i in `cat all-locations`; do

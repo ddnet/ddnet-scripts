@@ -1,18 +1,14 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
 from ddnet import *
 import sys
 import msgpack
 from cgi import escape
-from pytz import timezone
 from datetime import datetime
 
 reload(sys)
 sys.setdefaultencoding('utf8')
-
-def formatTime(str):
-  return timezone("Europe/Berlin").localize(datetime.strptime(str, "%Y-%m-%d %H:%M")).isoformat("T")
 
 def printFooter():
   print """
@@ -45,7 +41,7 @@ print """<?xml version="1.0" encoding="utf-8"?>
   <link href="http://ddnet.tw/releases/" />
   <id>http://ddnet.tw/releases/</id>
   <updated>%s</updated>
-""" % formatTime(releases[0][0])
+""" % formatDateFeedStr(releases[0][0])
 
 for x in releases:
   date, server, y = x
@@ -106,6 +102,6 @@ for x in releases:
       </div>
     </content>
   </entry>
-""" % (server, escape(originalMapName), mbRawMapperName, server.lower(), escape(normalizeMapname(originalMapName)), escape(mapName), formatTime(date), rawMapperName, mapsString)
+""" % (server, escape(originalMapName), mbRawMapperName, server.lower(), escape(normalizeMapname(originalMapName)), escape(mapName), formatDateFeedStr(date), rawMapperName, mapsString)
 
 print "</feed>"

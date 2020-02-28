@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 import sys
 f = open('/home/teeworlds/servers/scripts/asciiart').readlines()
 for line in sys.stdin:

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
 from ddnet import *
@@ -15,7 +15,7 @@ reload(sys)
 sys.setdefaultencoding('utf8')
 
 lastModified = datetime.fromtimestamp(os.path.getmtime('%s/players.msgpack' % webDir))
-print('Points last updated: %s' % lastModified.strftime('%m-%d-%Y %H:%M:%S'))
+#print('Points last updated: %s' % lastModified.strftime('%m-%d-%Y %H:%M:%S'))
 
 types = None
 players = None

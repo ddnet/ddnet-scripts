@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
 from ddnet import *
@@ -161,6 +161,7 @@ menuText += '</ul>'
 with con:
   cur = con.cursor()
   cur.execute("set names 'utf8mb4';")
+  #cur.execute("set profiling = 1;")
   for type in types:
     if country == None:
       filename = "%s/ranks/%s/index.html" % (webDir, type.lower())
@@ -239,7 +240,7 @@ with con:
         if country == None:
           cur.execute("select Name, r.ID, Time, Timestamp from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID order by r.Time, r.ID, Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
         else:
-          cur.execute("select r.Name, r.ID, r.Time, r.Timestamp from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID join record_race on r.Map = record_race.Map and r.Name = record_race.Name and r.Time = record_race.Time %s order by r.Time, r.ID, r.Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName), mbCountry2))
+          cur.execute("select distinct r.Name, r.ID, r.Time, r.Timestamp from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID join record_race on r.Map = record_race.Map and r.Name = record_race.Name and r.Time = record_race.Time %s order by r.Time, r.ID, r.Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName), mbCountry2))
         rows = cur.fetchall()
         #sleep(0.05)
       except:
@@ -272,20 +273,16 @@ with con:
         if originalMapName not in players[row[0]].maps:
           players[row[0]].maps[originalMapName] = PlayerMap(currentRank, 0, 0, "2030-10-10 00:00:00", 0.0)
 
-        if currentPosition > 10:
-          continue
+        if currentPosition <= 10:
+          time = row[2]
+          timestamp = row[3]
+          names.append(row[0])
 
-        time = row[2]
-        timestamp = row[3]
-        names.append(row[0])
+        if currentRank <= 10 and row[0] not in namesOnMap:
+          namesOnMap[row[0]] = True
 
-        if row[0] in namesOnMap:
-          continue
-
-        namesOnMap[row[0]] = True
-
-        teamrankLadder[row[0]] += points(currentRank)
-        serverTeamrankLadder[row[0]] += points(currentRank)
+          teamrankLadder[row[0]] += points(currentRank)
+          serverTeamrankLadder[row[0]] += points(currentRank)
 
       if currentPosition <= 10 and time > 0:
         fNames = []
@@ -349,13 +346,11 @@ with con:
           else:
             players[row[0]].servers[row[5]] += 1
 
-        if currentPosition > 10:
-          continue
-
-        ranks.append((currentRank, row[0], row[1], row[2], row[3]))
-
-        rankLadder[row[0]] += points(currentRank)
-        serverRankLadder[row[0]] += points(currentRank)
+        if currentPosition <= 10:
+          ranks.append((currentRank, row[0], row[1], row[2], row[3]))
+        if currentRank <= 10:
+          rankLadder[row[0]] += points(currentRank)
+          serverRankLadder[row[0]] += points(currentRank)
 
       if countTeamFinishes == 1:
         mbS = ""
@@ -520,6 +515,10 @@ with con:
 
   lastString += '</table></div><br/>'
 
+  #cur.execute('show profiles')
+  #for row in cur:
+  #  print(row)
+
 pointsRanks = sorted(pointsLadder.items(), key=lambda r: r[1], reverse=True)
 weeklyPointsRanks = sorted(weeklyPointsLadder.items(), key=lambda r: r[1], reverse=True)
 monthlyPointsRanks = sorted(monthlyPointsLadder.items(), key=lambda r: r[1], reverse=True)
@@ -609,8 +608,9 @@ if country == None:
   #os.rename(tmpname, filename)
   #sleep(0.1)
 
-  tmpname = '%s/players.msgpack.tmp' % webDir
-  with open(tmpname, 'wb') as out:
+  msgpackFile = '%s/players.msgpack' % webDir
+  msgpackTmpFile = '%s.tmp' % msgpackFile
+  with open(msgpackTmpFile, 'wb') as out:
     out.write(msgpack.packb(types))
     out.write(msgpack.packb(maps))
     out.write(msgpack.packb(totalPoints))
@@ -621,4 +621,4 @@ if country == None:
     out.write(msgpack.packb(rankRanks))
     out.write(msgpack.packb(serverRanks))
     out.write(msgpack.packb(players, default=str))
-  #os.rename(tmpname, filename)
+  os.rename(msgpackTmpFile, msgpackFile)

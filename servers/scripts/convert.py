@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 import sys
 s = 'broadcast "'
 for line in sys.stdin:

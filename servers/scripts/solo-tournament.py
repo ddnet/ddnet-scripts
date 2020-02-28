@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
 from ddnet import *
@@ -76,10 +76,10 @@ for type in types:
   menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type)
 menuText += '</ul>'
 
-print header("Teleport Gun Event #2 - DDraceNetwork", menuText, "")
+print header("Shooting Range Tournament - DDraceNetwork", menuText, "")
 #print '<script src="/js.js" type="text/javascript"></script><p class="toggle"><a href="#" onclick="showClass(\'allPoints\'); return false;">All ranks / Top 10 ranks</a></p>'
 
-f = open("tournament2")
+f = open("tournament")
 tournamentMaps = []
 for line in f:
   words = line.rstrip('\n').split('|')
@@ -322,8 +322,8 @@ with con:
 #teamrankRanks = sorted(teamrankLadder.items(), key=lambda r: r[1], reverse=True)
 #rankRanks = sorted(rankLadder.items(), key=lambda r: r[1], reverse=True)
 
-print '<div id="global" class="block div-tournament"><h2>Teleport Gun Event #2</h2>'
-print '<p>This event runs from 2018-07-27 to 2018-08-05.<br/>The players with the best times on these maps win! Read more about it on <a href="https://forum.ddnet.tw/viewtopic.php?t=6581">the forum</a>.</p>'
+print '<div id="global" class="block div-tournament"><h2>Shooting Range Tournament</h2>'
+print '<p>This tournament is played on Sunday, 2020-02-16 at 20:00 CET.</p>'
 #print printLadder(teamrankRanks)
 print '</div>'
 print '<div id="serverranks" style="display: ">'

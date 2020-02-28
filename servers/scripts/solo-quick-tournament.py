@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
 from ddnet import *
@@ -76,7 +76,7 @@ for type in types:
   menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type)
 menuText += '</ul>'
 
-print header("Quick Tournament #46 - DDraceNetwork", menuText, "")
+print header("Quick Tournament #48 - DDraceNetwork", menuText, '<script src="/youtube.js" type="text/javascript"></script>')
 
 f = open("tournament")
 tournamentMaps = []
@@ -246,8 +246,9 @@ with con:
 #teamrankRanks = sorted(teamrankLadder.items(), key=lambda r: r[1], reverse=True)
 #rankRanks = sorted(rankLadder.items(), key=lambda r: r[1], reverse=True)
 
-print '<div id="global" class="block div-tournament"><h2>Quick Tournament #46</h2>'
-print '<p>This tournament was played on Sunday, 2018-02-18 from 20:00 to 22:00 CET.</p>'
+print '<div id="global" class="block div-tournament"><h2>Quick Tournament #48</h2>'
+print '<p>This tournament is played on Sunday, 2019-07-07 at 20:00 CEST.</p>'
+print '<div class="video-container"><div class="ytplayer" data-id="LqJK6HcsN18"></div></div>'
 #print printLadder(teamrankRanks)
 print '</div>'
 print '<div id="serverranks" style="display: ">'

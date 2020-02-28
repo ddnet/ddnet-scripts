@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
 from ddnet import *
@@ -55,7 +55,7 @@ with con:
             stars2, origMapName = y.split('|')
             mapperName2 = ""
 
-          if mapName == origMapName and date >= datetime(2013,11,01):
+          if mapName == origMapName and date >= datetime(2013,10,15):
             realDate = dateString
             break
         except:
