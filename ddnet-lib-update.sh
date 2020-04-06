@@ -1,7 +1,7 @@
 # Using a Debian 6 chroot, mingw and osxcross
 # DO NOT COPY libogg, extract directly... Changing timestamps breaks the build and requires autotools (or cp -a)
 
-wget https://curl.haxx.se/download/curl-7.68.0.tar.gz
+wget https://curl.haxx.se/download/curl-7.69.1.tar.gz
 wget http://download.savannah.gnu.org/releases/freetype/freetype-2.10.1.tar.gz
 wget http://downloads.xiph.org/releases/ogg/libogg-1.3.4.tar.gz
 wget https://archive.mozilla.org/pub/opus/opus-1.3.1.tar.gz
@@ -60,13 +60,13 @@ cd ../..
 
 mkdir win64
 cd win64
-tar xvf ../curl-7.68.0.tar.gz
+tar xvf ../curl-7.69.1.tar.gz
 tar xvf ../libogg-1.3.4.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.11.tar.gz
 tar xvf ../freetype-2.10.1.tar.gz
 
-cd curl-7.68.0
+cd curl-7.69.1
 ./configure --host=x86_64-w64-mingw32 --with-winssl --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
 make -j4 V=1
 rm lib/.libs/libcurl-4.dll
@@ -115,13 +115,13 @@ cd ../..
 
 mkdir win32
 cd win32
-tar xvf ../curl-7.68.0.tar.gz
+tar xvf ../curl-7.69.1.tar.gz
 tar xvf ../libogg-1.3.4.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.11.tar.gz
 tar xvf ../freetype-2.10.1.tar.gz
 
-cd curl-7.68.0
+cd curl-7.69.1
 ./configure --host=i686-w64-mingw32 --with-winssl --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
 make -j4 V=1
 rm lib/.libs/libcurl-4.dll
@@ -169,7 +169,7 @@ cd ../..
 
 mkdir mac64
 cd mac64
-tar xvf ../curl-7.68.0.tar.gz
+tar xvf ../curl-7.69.1.tar.gz
 tar xvf ../libogg-1.3.4.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.11.tar.gz
@@ -179,18 +179,19 @@ export PATH=/home/deen/git/osxcross/target/bin/:$PATH
 export CC=o64-clang
 export CXX=o64-clang++
 
-cd curl-7.68.0
-CFLAGS="-mmacosx-version-min=10.7" ./configure --host=x86_64-apple-darwin15 --with-darwinssl --enable-static --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
+cd curl-7.69.1
+# Fix path to /System/Library/Frameworks/Security.framework in configure, TODO: Open a bug
+CFLAGS="-mmacosx-version-min=10.9" ./configure --host=x86_64-apple-darwin15 --with-darwinssl --enable-static --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
 make -j4
 cp lib/.libs/libcurl.a ..
 
 cd ../libogg-1.3.4
-./configure CFLAGS="-mmacosx-version-min=10.7" --host=x86_64-apple-darwin15
+./configure CFLAGS="-mmacosx-version-min=10.9" --host=x86_64-apple-darwin15
 make -j4
 cp src/.libs/libogg.a ..
 
 cd ../opus-1.3.1
-./configure CFLAGS="-mmacosx-version-min=10.7" --host=x86_64-apple-darwin15
+./configure CFLAGS="-mmacosx-version-min=10.9" --host=x86_64-apple-darwin15
 make -j4
 cp .libs/libopus.a ..
 
@@ -200,6 +201,6 @@ make -j4
 cp .libs/libopusfile.a ..
 
 cd ../freetype-2.10.1
-./configure CFLAGS="-mmacosx-version-min=10.7" --host=x86_64-apple-darwin15 --with-png=no --with-bzip2=no --with-zlib=no --with-harfbuzz=no
+./configure CFLAGS="-mmacosx-version-min=10.9" --host=x86_64-apple-darwin15 --with-png=no --with-bzip2=no --with-zlib=no --with-harfbuzz=no
 make -j4
 cp objs/.libs/libfreetype.6.dylib ..
