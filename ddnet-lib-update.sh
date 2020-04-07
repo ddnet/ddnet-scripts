@@ -71,7 +71,7 @@ tar xvf ../freetype-2.10.1.tar.gz
 cd SDL2-2.0.12
 ./configure --host=x86_64-w64-mingw32
 make -j4
-cp build/.libs/SDL2.dll ..
+cp build/.libs/SDL2.dll build/.libs/libSDL2.dll.a ..
 
 cd ../curl-7.69.1
 ./configure --host=x86_64-w64-mingw32 --with-winssl --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
@@ -132,7 +132,7 @@ tar xvf ../freetype-2.10.1.tar.gz
 cd SDL2-2.0.12
 ./configure --host=i686-w64-mingw32
 make -j4
-cp build/.libs/SDL2.dll ..
+cp build/.libs/SDL2.dll build/.libs/libSDL2.dll.a ..
 
 cd ../curl-7.69.1
 ./configure --host=i686-w64-mingw32 --with-winssl --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
