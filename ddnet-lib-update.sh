@@ -73,6 +73,7 @@ cd SDL2-2.0.12
 make -j4
 cp build/.libs/SDL2.dll build/.libs/libSDL2.dll.a ..
 strip -s ../SDL2.dll
+x86_64-w64-mingw32-dlltool -v --export-all-symbols -D SDL2.dll -l ../SDL2.lib build/.libs/*.o
 
 cd ../curl-7.69.1
 ./configure --host=x86_64-w64-mingw32 --with-winssl --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
@@ -135,6 +136,7 @@ cd SDL2-2.0.12
 make -j4
 cp build/.libs/SDL2.dll build/.libs/libSDL2.dll.a ..
 strip -s ../SDL2.dll
+i686-w64-mingw32-dlltool -v --export-all-symbols -D SDL2.dll -l ../SDL2.lib build/.libs/*.o
 
 cd ../curl-7.69.1
 ./configure --host=i686-w64-mingw32 --with-winssl --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
