@@ -195,7 +195,7 @@ export CC=o64-clang
 export CXX=o64-clang++
 
 cd curl-7.69.1
-# Fix path to /System/Library/Frameworks/Security.framework in configure, TODO: Open a bug
+# Fix path to /System/Library/Frameworks/Security.framework in configure, fixed in curl in next release
 CFLAGS="-mmacosx-version-min=10.9" ./configure --host=x86_64-apple-darwin15 --with-darwinssl --enable-static --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
 make -j4
 cp lib/.libs/libcurl.a ..

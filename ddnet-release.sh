@@ -42,7 +42,7 @@ build_macosx ()
   mkdir macosx
   cd macosx
   PATH=${PATH:+$PATH:}/home/deen/git/osxcross/target/bin
-  cmake -DCMAKE_BUILD_TYPE=Release -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX10.15.sdk/ ../ddnet-master
+  cmake -DCMAKE_BUILD_TYPE=Release -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX10.13.sdk/ ../ddnet-master
   make -j2
   make package_default
   mv DDNet-*.dmg $BUILDS/DDNet-$VERSION-osx.dmg
