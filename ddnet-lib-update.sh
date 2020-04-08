@@ -196,17 +196,17 @@ export CXX=o64-clang++
 
 cd curl-7.69.1
 # Fix path to /System/Library/Frameworks/Security.framework in configure, fixed in curl in next release
-CFLAGS="-mmacosx-version-min=10.9" ./configure --host=x86_64-apple-darwin15 --with-darwinssl --enable-static --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
+CFLAGS="-mmacosx-version-min=10.7" ./configure --host=x86_64-apple-darwin15 --without-ssl --with-secure-transport --enable-static --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
 make -j4
 cp lib/.libs/libcurl.a ..
 
 cd ../libogg-1.3.4
-./configure CFLAGS="-mmacosx-version-min=10.9" --host=x86_64-apple-darwin15
+./configure CFLAGS="-mmacosx-version-min=10.7" --host=x86_64-apple-darwin15
 make -j4
 cp src/.libs/libogg.a ..
 
 cd ../opus-1.3.1
-./configure CFLAGS="-mmacosx-version-min=10.9" --host=x86_64-apple-darwin15
+./configure CFLAGS="-mmacosx-version-min=10.7" --host=x86_64-apple-darwin15
 make -j4
 cp .libs/libopus.a ..
 
@@ -216,6 +216,6 @@ make -j4
 cp .libs/libopusfile.a ..
 
 cd ../freetype-2.10.1
-./configure CFLAGS="-mmacosx-version-min=10.9" --host=x86_64-apple-darwin15 --with-png=no --with-bzip2=no --with-zlib=no --with-harfbuzz=no
+./configure CFLAGS="-mmacosx-version-min=10.7" --host=x86_64-apple-darwin15 --with-png=no --with-bzip2=no --with-zlib=no --with-harfbuzz=no
 make -j4
 cp objs/.libs/libfreetype.6.dylib ..
