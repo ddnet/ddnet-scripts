@@ -18,7 +18,6 @@ lastModified = datetime.fromtimestamp(os.path.getmtime('%s/players.msgpack' % we
 #print('Points last updated: %s' % lastModified.strftime('%m-%d-%Y %H:%M:%S'))
 
 types = None
-players = None
 maps = None
 totalPoints = None
 pointsRanks = None
@@ -39,7 +38,6 @@ with open('%s/players.msgpack' % webDir, 'rb') as inp:
   teamrankRanks = unpacker.unpack()
   rankRanks = unpacker.unpack()
   serverRanks = unpacker.unpack()
-  players = unpacker.unpack()
 
 con = mysqlConnect()
 

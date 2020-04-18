@@ -309,8 +309,9 @@ def header(title, menu, header, refresh = False, stupidIncludes = False, otherIn
       <ul class="big">
         <li><a href="/status/">Status</a></li>
         <li><a href="/ranks/">Ranks</a></li>
-        <li><a href="/releases/">Releases</a></li>
+        <li><a href="/releases/">Map Releases</a></li>
         <li><a href="/discord">Discord</a> / <a href="//forum.ddnet.tw/">Forum</a></li>
+        <li><a href="//wiki.ddnet.tw/">Wiki</a></li>
         <li><a href="/downloads/">Downloads</a></li>
         <li><a href="/tournament/">Tournaments</a></li>
         <li><a href="/skins/">Skin Database</a></li>

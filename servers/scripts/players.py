@@ -7,6 +7,7 @@ from cgi import escape
 from datetime import datetime, timedelta
 import cStringIO
 import msgpack
+from diskcache import Cache
 from operator import itemgetter
 import urllib
 import json
@@ -21,6 +22,7 @@ data = {}
 last = None
 
 playersFile = '%s/players.msgpack' % webDir
+playersCache = '/home/teeworlds/servers/players-cache'
 
 con = mysqlConnect()
 con.autocommit(True)
@@ -53,7 +55,6 @@ with con:
         data['teamrankRanks'] = unpacker.unpack()
         data['rankRanks'] = unpacker.unpack()
         data['serverRanks'] = unpacker.unpack()
-        data['players'] = unpacker.unpack()
       gc.collect()
       last = getmtime(playersFile)
 
@@ -325,8 +326,100 @@ with con:
   def application(env, start_response):
     path = env['PATH_INFO']
 
-    if path.startswith('/compare/'):
-      if len(path.split('/')) > 20:
+    with Cache(playersCache) as cache:
+      if path.startswith('/compare/'):
+        if len(path.split('/')) > 20:
+          start_response('404 Not Found', [('Content-Type', 'text/html')])
+          with open('%s/players/index.html' % webDir, 'rb') as err:
+            return err.read()
+
+        if (not path.endswith("/")) or path.endswith(".html"):
+          start_response('301 Moved Permanently', [('Location', path.rstrip('/').rsplit('.html', 1)[0] + "/")])
+          return ''
+
+        reloadData()
+
+        namePlayers = []
+        for n in path.split('/')[2:-1]:
+          name = deslugify2(u'%s' % n.encode('utf-8'))
+          player = cache.get(name)
+
+          if not player:
+            start_response('404 Not Found', [('Content-Type', 'text/html')])
+            with open('%s/players/index.html' % webDir, 'rb') as err:
+              return err.read()
+
+          namePlayers.append((name, player))
+
+        if len(namePlayers) == 0:
+          qs = env['QUERY_STRING'].split('&player=')
+          if not qs[0].startswith('player='):
+            start_response('404 Not Found', [('Content-Type', 'text/html')])
+            with open('%s/players/index.html' % webDir, 'rb') as err:
+              return err.read()
+          qs[0] = qs[0][7:]
+
+          newPath = '/compare/'
+          for q in qs:
+            newPath += slugify2(u'%s' % urllib.unquote_plus(q)).encode('utf-8') + '/'
+          start_response('301 Moved Permanently', [('Location', newPath)])
+          return ''
+
+        start_response('200 OK', [('Content-Type', 'text/html')])
+        return comparison(namePlayers)
+
+      if path == '/players/':
+        qs = env['QUERY_STRING']
+
+        if len(qs) > 0 and qs.startswith('player='):
+          q = urllib.unquote_plus(qs[7:])
+
+          newPath = '/players/' + slugify2(u'%s' % q).encode('utf-8') + '/'
+          start_response('301 Moved Permanently', [('Location', newPath)])
+          return ''
+
+        if len(qs) > 0 and qs.startswith('query='):
+          q = urllib.unquote_plus(qs[6:])
+          ql = q.lower()
+
+          jsonT = []
+          reloadData()
+          for r in data['pointsRanks']:
+            if r[0].lower().startswith(ql):
+              jsonT.append({'name': r[0], 'points': r[1]})
+              if len(jsonT) > 10:
+                break
+
+          for r in data['pointsRanks']:
+            if ql in r[0].lower() and {'name': r[0], 'points': r[1]} not in jsonT:
+              jsonT.append({'name': r[0], 'points': r[1]})
+              if len(jsonT) > 10:
+                break
+
+          start_response('200 OK', [('Content-Type', 'application/json')])
+          return json.dumps(jsonT)
+
+        if len(qs) > 0 and qs.startswith('json='):
+          q = urllib.unquote_plus(qs[5:])
+
+          start_response('200 OK', [('Content-Type', 'application/json')])
+
+          jsonT = []
+          reloadData()
+          player = cache.get(q)
+
+          if player:
+            for map in player[0]:
+              jsonT.append(map)
+
+          #return json.dumps({'player': q, 'maps': jsonT})
+          return json.dumps(jsonT)
+
+        start_response('200 OK', [('Content-Type', 'text/html')])
+        with open('%s/players/index.html' % webDir, 'rb') as err:
+          return err.read()
+
+      if len(path.split('/')) > 4:
         start_response('404 Not Found', [('Content-Type', 'text/html')])
         with open('%s/players/index.html' % webDir, 'rb') as err:
           return err.read()
@@ -335,201 +428,110 @@ with con:
         start_response('301 Moved Permanently', [('Location', path.rstrip('/').rsplit('.html', 1)[0] + "/")])
         return ''
 
+      parts = path.split('/')
+      rawName = u'%s' % parts[2].encode('utf-8')
+      try:
+        name = deslugify2(rawName)
+      except:
+        name = rawName
+      slugName = slugify2(u'%s' % name.encode('utf-8'))
+      if slugName != rawName:
+        start_response('301 Moved Permanently', [('Location', "%s/%s/%s/" % (parts[0].encode('utf-8'), parts[1].encode('utf-8'), slugName.encode('utf-8')))])
+        return ''
+
       reloadData()
+      player = cache.get(name)
 
-      namePlayers = []
-      for n in path.split('/')[2:-1]:
-        name = deslugify2(u'%s' % n.encode('utf-8'))
-        player = data['players'].get(name)
-
-        if not player:
-          start_response('404 Not Found', [('Content-Type', 'text/html')])
-          with open('%s/players/index.html' % webDir, 'rb') as err:
-            return err.read()
-
-        namePlayers.append((name, player))
-
-      if len(namePlayers) == 0:
-        qs = env['QUERY_STRING'].split('&player=')
-        if not qs[0].startswith('player='):
-          start_response('404 Not Found', [('Content-Type', 'text/html')])
-          with open('%s/players/index.html' % webDir, 'rb') as err:
-            return err.read()
-        qs[0] = qs[0][7:]
-
-        newPath = '/compare/'
-        for q in qs:
-          newPath += slugify2(u'%s' % urllib.unquote_plus(q)).encode('utf-8') + '/'
-        start_response('301 Moved Permanently', [('Location', newPath)])
-        return ''
+      if not player:
+        start_response('404 Not Found', [('Content-Type', 'text/html')])
+        with open('%s/players/index.html' % webDir, 'rb') as err:
+          return err.read()
 
       start_response('200 OK', [('Content-Type', 'text/html')])
-      return comparison(namePlayers)
 
-    if path == '/players/':
-      qs = env['QUERY_STRING']
+      out = cStringIO.StringIO()
 
-      if len(qs) > 0 and qs.startswith('player='):
-        q = urllib.unquote_plus(qs[7:])
+      menuText = '<ul>'
+      menuText += '<li><a href="#global">Global Ranks for %s</a></li>' % escape(name)
+      for type in data['types']:
+        menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type)
+      menuText += '</ul>'
 
-        newPath = '/players/' + slugify2(u'%s' % q).encode('utf-8') + '/'
-        start_response('301 Moved Permanently', [('Location', newPath)])
-        return ''
+      print >>out, header("%s - Player Profile - DDraceNetwork" % escape(name), menuText, "")
 
-      if len(qs) > 0 and qs.startswith('query='):
-        q = urllib.unquote_plus(qs[6:])
-        ql = q.lower()
+      print >>out, '<div id="global" class="block div-ranks">'
 
-        jsonT = []
-        reloadData()
-        for r in data['pointsRanks']:
-          if r[0].lower().startswith(ql):
-            jsonT.append({'name': r[0], 'points': r[1]})
-            if len(jsonT) > 10:
-              break
+      hiddenFields = '<input type="hidden" name="player" value="%s">' % escape(name)
 
-        for r in data['pointsRanks']:
-          if ql in r[0].lower() and {'name': r[0], 'points': r[1]} not in jsonT:
-            jsonT.append({'name': r[0], 'points': r[1]})
-            if len(jsonT) > 10:
-              break
+      print >>out, '<div id="remote" class="right"><form id="playerform" action="/compare/" method="get">%s<input name="player" class="typeahead" type="text" placeholder="Compare"><input type="submit" value="Compare" style="position: absolute; left: -9999px"></form></div>' % hiddenFields
+      print >>out, '<script src="/players-data/jquery-2.2.4.min.js" type="text/javascript"></script>'
+      print >>out, '<script src="/typeahead.bundle.js" type="text/javascript"></script>'
+      print >>out, '<script src="/playersearch.js" type="text/javascript"></script>'
+      print >>out, '<script type="text/javascript" src="/players-data/jquery.tablesorter.js"></script>'
+      print >>out, '<script type="text/javascript" src="/players-data/sorter.js"></script>'
+      print >>out, '<link rel="stylesheet" type="text/css" href="/players-data/css-sorter.css">'
 
-        start_response('200 OK', [('Content-Type', 'application/json')])
-        return json.dumps(jsonT)
+      print >>out, '<div class="block7"><h2>Global Ranks for %s</h2></div><br/>' % escape(name)
 
-      if len(qs) > 0 and qs.startswith('json='):
-        q = urllib.unquote_plus(qs[5:])
-
-        start_response('200 OK', [('Content-Type', 'application/json')])
-
-        jsonT = []
-        reloadData()
-        player = data['players'].get(q)
-
-        if player:
-          for map in player[0]:
-            jsonT.append(map)
-
-        #return json.dumps({'player': q, 'maps': jsonT})
-        return json.dumps(jsonT)
-
-      start_response('200 OK', [('Content-Type', 'text/html')])
-      with open('%s/players/index.html' % webDir, 'rb') as err:
-        return err.read()
-
-    if len(path.split('/')) > 4:
-      start_response('404 Not Found', [('Content-Type', 'text/html')])
-      with open('%s/players/index.html' % webDir, 'rb') as err:
-        return err.read()
-
-    if (not path.endswith("/")) or path.endswith(".html"):
-      start_response('301 Moved Permanently', [('Location', path.rstrip('/').rsplit('.html', 1)[0] + "/")])
-      return ''
-
-    parts = path.split('/')
-    rawName = u'%s' % parts[2].encode('utf-8')
-    try:
-      name = deslugify2(rawName)
-    except:
-      name = rawName
-    slugName = slugify2(u'%s' % name.encode('utf-8'))
-    if slugName != rawName:
-      start_response('301 Moved Permanently', [('Location', "%s/%s/%s/" % (parts[0].encode('utf-8'), parts[1].encode('utf-8'), slugName.encode('utf-8')))])
-      return ''
-
-    reloadData()
-    player = data['players'].get(name)
-
-    if not player:
-      start_response('404 Not Found', [('Content-Type', 'text/html')])
-      with open('%s/players/index.html' % webDir, 'rb') as err:
-        return err.read()
-
-    start_response('200 OK', [('Content-Type', 'text/html')])
-
-    out = cStringIO.StringIO()
-
-    menuText = '<ul>'
-    menuText += '<li><a href="#global">Global Ranks for %s</a></li>' % escape(name)
-    for type in data['types']:
-      menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type)
-    menuText += '</ul>'
-
-    print >>out, header("%s - Player Profile - DDraceNetwork" % escape(name), menuText, "")
-
-    print >>out, '<div id="global" class="block div-ranks">'
-
-    hiddenFields = '<input type="hidden" name="player" value="%s">' % escape(name)
-
-    print >>out, '<div id="remote" class="right"><form id="playerform" action="/compare/" method="get">%s<input name="player" class="typeahead" type="text" placeholder="Compare"><input type="submit" value="Compare" style="position: absolute; left: -9999px"></form></div>' % hiddenFields
-    print >>out, '<script src="/players-data/jquery-2.2.4.min.js" type="text/javascript"></script>'
-    print >>out, '<script src="/typeahead.bundle.js" type="text/javascript"></script>'
-    print >>out, '<script src="/playersearch.js" type="text/javascript"></script>'
-    print >>out, '<script type="text/javascript" src="/players-data/jquery.tablesorter.js"></script>'
-    print >>out, '<script type="text/javascript" src="/players-data/sorter.js"></script>'
-    print >>out, '<link rel="stylesheet" type="text/css" href="/players-data/css-sorter.css">'
-
-    print >>out, '<div class="block7"><h2>Global Ranks for %s</h2></div><br/>' % escape(name)
-
-    print >>out, globalRanks(name, player)
-    print >>out, lastFinishes(name)
-    print >>out, favoritePartners(name)
-    print >>out, '<br/>'
-    print >>out, '</div>'
-
-    for type in data['types']:
-      maps2 = data['maps'][type]
-
-      count = 0
-      for map, points, finishes in maps2:
-        if map in player[0]:
-          count += 1
-
-      print >>out, '<div id="%s" class="block div-ranks"><h2></h2><h2 class="inline">%s Server</h2> <h3 class="inline">(%d/%d maps finished)</h3><br/>' % (type, type, count, len(maps2))
-
-      print >>out, printPersonalResult("Points (%d total)" % data['serverRanks'][type][0], data['serverRanks'][type][1], name)
-      print >>out, printPersonalResult("Team Rank", data['serverRanks'][type][2], name)
-      print >>out, printPersonalResult("Rank", data['serverRanks'][type][3], name)
+      print >>out, globalRanks(name, player)
+      print >>out, lastFinishes(name)
+      print >>out, favoritePartners(name)
       print >>out, '<br/>'
-
-      unfinishedString = tableHeader("unfinTable1", "unfinTable1-" + type)
-
-      tblString = '<div style="overflow: auto;"><table class="spacey"><thead><tr><th>Map</th><th>Points</th><th>Team Rank</th><th>Rank</th><th>Time</th><th>Finishes</th><th>First Finish</th></tr></thead><tbody>\n'
-      found = False
-      allFinished = True
-
-      for map, points, finishes in maps2:
-        normMap = normalizeMapname(map)
-        if map in player[0]:
-          found = True
-
-          tblString += '<tr><td><a href="/ranks/%s/#map-%s">%s</a></td><td class="smallpoints">%d</td><td class="rank">%s</td><td class="rank">%s</td><td class="rank">%s</td><td class="rank">%d</td><td class="rank">%s</td></tr>\n' % (type.lower(), escape(normMap), escape(map), points, formatRank(player[0][map][0]), formatRank(player[0][map][1]), escape(formatTime(player[0][map][4])), player[0][map][2], escape(formatDate(datetime.strptime(player[0][map][3], "%Y-%m-%d %H:%M:%S"))))
-        else:
-          allFinished = False
-          unfinishedString += '<tr><td><a href="/ranks/%s/#map-%s">%s</a></td><td class="rank">%d</td><td class="rank">%d</td></tr>' % (type.lower(), escape(normMap), escape(map), points, finishes)
-
-      unfinishedString += '</tbody></table>'
-      unfinishedString += tableHeader("unfinTable2", "unfinTable2-" + type) + '</tbody></table>'
-      unfinishedString += tableHeader("unfinTable3", "unfinTable3-" + type) + '</tbody></table>'
-      tblString += '</tbody></table></div>'
-      if found:
-        print >>out, tblString
-
-      if allFinished:
-        print >>out, '<p><strong>All maps on %s finished!</strong></p>' % type
-      else:
-        print >>out, '<input type="checkbox" id="checkbox_%s" checked="checked" /><label for="checkbox_%s"><p><a><strong>Unfinished maps (show/hide)</strong></a></p></label>' % (type, type)
-        print >>out, '<div class="unfinishedmaps">'
-        print >>out, unfinishedString
-        print >>out, '</div>'
       print >>out, '</div>'
 
-    print >>out, """  </section>
+      for type in data['types']:
+        maps2 = data['maps'][type]
+
+        count = 0
+        for map, points, finishes in maps2:
+          if map in player[0]:
+            count += 1
+
+        print >>out, '<div id="%s" class="block div-ranks"><h2></h2><h2 class="inline">%s Server</h2> <h3 class="inline">(%d/%d maps finished)</h3><br/>' % (type, type, count, len(maps2))
+
+        print >>out, printPersonalResult("Points (%d total)" % data['serverRanks'][type][0], data['serverRanks'][type][1], name)
+        print >>out, printPersonalResult("Team Rank", data['serverRanks'][type][2], name)
+        print >>out, printPersonalResult("Rank", data['serverRanks'][type][3], name)
+        print >>out, '<br/>'
+
+        unfinishedString = tableHeader("unfinTable1", "unfinTable1-" + type)
+
+        tblString = '<div style="overflow: auto;"><table class="spacey"><thead><tr><th>Map</th><th>Points</th><th>Team Rank</th><th>Rank</th><th>Time</th><th>Finishes</th><th>First Finish</th></tr></thead><tbody>\n'
+        found = False
+        allFinished = True
+
+        for map, points, finishes in maps2:
+          normMap = normalizeMapname(map)
+          if map in player[0]:
+            found = True
+
+            tblString += '<tr><td><a href="/ranks/%s/#map-%s">%s</a></td><td class="smallpoints">%d</td><td class="rank">%s</td><td class="rank">%s</td><td class="rank">%s</td><td class="rank">%d</td><td class="rank">%s</td></tr>\n' % (type.lower(), escape(normMap), escape(map), points, formatRank(player[0][map][0]), formatRank(player[0][map][1]), escape(formatTime(player[0][map][4])), player[0][map][2], escape(formatDate(player[0][map][3])))
+          else:
+            allFinished = False
+            unfinishedString += '<tr><td><a href="/ranks/%s/#map-%s">%s</a></td><td class="rank">%d</td><td class="rank">%d</td></tr>' % (type.lower(), escape(normMap), escape(map), points, finishes)
+
+        unfinishedString += '</tbody></table>'
+        unfinishedString += tableHeader("unfinTable2", "unfinTable2-" + type) + '</tbody></table>'
+        unfinishedString += tableHeader("unfinTable3", "unfinTable3-" + type) + '</tbody></table>'
+        tblString += '</tbody></table></div>'
+        if found:
+          print >>out, tblString
+
+        if allFinished:
+          print >>out, '<p><strong>All maps on %s finished!</strong></p>' % type
+        else:
+          print >>out, '<input type="checkbox" id="checkbox_%s" checked="checked" /><label for="checkbox_%s"><p><a><strong>Unfinished maps (show/hide)</strong></a></p></label>' % (type, type)
+          print >>out, '<div class="unfinishedmaps">'
+          print >>out, unfinishedString
+          print >>out, '</div>'
+        print >>out, '</div>'
+
+      print >>out, """  </section>
   </article>
   </body>
   </html>"""
 
-    #h = hpy()
-    #print h.heap()
+      #h = hpy()
+      #print h.heap()
 
-    return out.getvalue()
+      return out.getvalue()

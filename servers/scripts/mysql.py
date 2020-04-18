@@ -13,6 +13,3 @@ def postDiscord(msg):
 
 def postDiscordRecords(msg):
   requests.post('https://discordapp.com/api/webhooks/SECRETHOOK2', json={'content': msg})
-
-def postDiscordSuspicious(msg):
-  requests.post('https://discordapp.com/api/webhooks/SECRETHOOK3', json={'content': msg})

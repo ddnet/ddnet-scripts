@@ -40,16 +40,10 @@ def postRecord(row, namesDiscord, namesHtml, namesTitle):
   else:
     oldTimeString = "next best time: %s" % formatTimeExact(row[6])
 
-  msg = "%s %s on \[[%s](<https://ddnet.tw/ranks/%s/>)\] [%s](<https://ddnet.tw/ranks/%s/#map-%s>): %s %s (%s)" % (countryCodeMapping.get(row[8], ''), row[4][2:], row[5], row[5].lower(), row[1], row[5].lower(), normalizeMapname(row[1]), formatTimeExact(row[2]), namesDiscord, oldTimeString)
-  postDiscordRecords(msg)
+  improvementString = ' - %.1f%% improvement!' % ((1 - row[2] / row[6]) * 100) if row[6] else ''
 
-  if row[6]:
-    improvement = (1 - row[2] / row[6]) * 100
-    if improvement >= 15:
-      msg += ' // %d%% improvement' % improvement
-      if improvement >= 30:
-        msg = '**%s**' % msg
-      postDiscordSuspicious(msg)
+  msg = "%s %s on \[[%s](<https://ddnet.tw/ranks/%s/>)\] [%s](<https://ddnet.tw/ranks/%s/#map-%s>): %s %s (%s%s)" % (countryCodeMapping.get(row[8], ''), row[4][2:], row[5], row[5].lower(), row[1], row[5].lower(), normalizeMapname(row[1]), formatTimeExact(row[2]), namesDiscord, oldTimeString, improvementString)
+  postDiscordRecords(msg)
 
   content = '<img src="/countryflags/%s.png" alt="%s" height="20" /> %s on [<a href="https://ddnet.tw/ranks/%s/">%s</a>] <a href="https://ddnet.tw/ranks/%s/#map-%s">%s</a>: %s %s (%s)' % (row[8], row[8], row[4][2:], row[5].lower(), row[5], row[5].lower(), normalizeMapname(row[1]), row[1], formatTimeExact(row[2]), namesHtml, oldTimeString)
   title = '[%s] %s on [%s] %s: %s %s (%s)' % (row[8], row[4][2:], row[5], row[1], formatTimeExact(row[2]), namesTitle, oldTimeString)

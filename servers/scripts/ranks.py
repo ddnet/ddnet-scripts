@@ -9,8 +9,9 @@ from urllib import quote_plus
 from datetime import datetime, timedelta
 from collections import defaultdict
 import msgpack
+from diskcache import Cache
 import traceback
-from time import sleep, strftime
+from time import strftime
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -198,14 +199,11 @@ with con:
 
     maps[type] = []
 
-    #subtypes = []
-
     for line in f:
       if line.startswith('───') and line.endswith('───\n'):
         subname = line.lstrip('─ ').rstrip('\n─ ')
         if mapsString != '':
           mapsString += '<br/></div>\n'
-        #subtypes.append(subname.lower())
         mapsString += '<div class="longblock div-ranks"><h2 id="%s">%s</h2><br/>\n' % (subname.lower().replace(' ', '-'), titleSubtype(subname))
         continue
 
@@ -242,7 +240,6 @@ with con:
         else:
           cur.execute("select distinct r.Name, r.ID, r.Time, r.Timestamp from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID join record_race on r.Map = record_race.Map and r.Name = record_race.Name and r.Time = record_race.Time %s order by r.Time, r.ID, r.Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName), mbCountry2))
         rows = cur.fetchall()
-        #sleep(0.05)
       except:
         traceback.print_exc()
       if len(rows) > 0:
@@ -300,7 +297,6 @@ with con:
       try:
         cur.execute("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, l.Server from (select * from record_race where Map = '%s' %s) as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp from record_race where Map = '%s' %s group by Name order by minTime ASC) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTime;" % (con.escape_string(originalMapName), mbCountry, con.escape_string(originalMapName), mbCountry))
         rows = cur.fetchall()
-        #sleep(0.05)
       except:
         traceback.print_exc()
 
@@ -389,7 +385,6 @@ with con:
         else:
           cur.execute("select count(record_teamrace.Name) from (record_teamrace join record_race on record_teamrace.Map = record_race.Map and record_teamrace.Name = record_race.Name and record_teamrace.Time = record_race.Time) where record_teamrace.Map = '%s' %s group by ID order by count(record_teamrace.Name) desc limit 1;" % (con.escape_string(originalMapName), mbCountry))
         rows = cur.fetchall()
-        #sleep(0.05)
         biggestTeam = " (biggest team: %d)" % rows[0][0]
       except:
         pass
@@ -447,7 +442,6 @@ with con:
     lastString = ""
     cur.execute("select l.Timestamp, l.Map, Name, Time from (select Timestamp, Map, Name, Time from record_race %s) as l join record_maps on l.Map = record_maps.Map where Server = '%s' order by l.Timestamp desc limit 10;" % (mbCountry2, type))
     rows = cur.fetchall()
-    #sleep(0.05)
 
     lastString = '<div class="block4"><h3>Last Finishes</h3><table class="tight">'
 
@@ -470,20 +464,6 @@ with con:
 
     tf = open(tmpname, 'w')
 
-    #serverMenuText = '<ul>'
-    #serverMenuText += '<li><a href="/ranks/">Global Ranks</a></li>'
-    #for type2 in types:
-    #  if type == type2:
-    #    subMenu = '<ul style="font-size: 90%">'
-    #    for subtype in subtypes:
-    #      subMenu += '<li><a href="#%s">%s</a></li>' % (subtype.replace(' ','-'), titleSubtype(subtype))
-    #    subMenu += '</ul>'
-    #    serverMenuText += '<li><a href="/ranks/%s/">%s Server</a>%s</li>\n' % (type2.lower(), type2, subMenu)
-    #  else:
-    #    serverMenuText += '<li><a href="/ranks/%s/">%s Server</a></li>\n' % (type2.lower(), type2)
-    #serverMenuText += '<li><a href="#points">Points Calculation</a></li>\n'
-    #serverMenuText += '</ul>'
-
     if country == None:
       print >>tf, header("%s Server Ranks - DDraceNetwork" % type, menuText, "")
     else:
@@ -497,12 +477,10 @@ with con:
 
     tf.close()
     os.rename(tmpname, filename)
-    #sleep(0.1)
 
   lastString = ""
   cur.execute("select l.Timestamp, l.Map, Name, Time, record_maps.Server from ((select * from record_race %s order by Timestamp desc limit 20) as l join record_maps on l.Map = record_maps.Map);" % mbCountry2)
   rows = cur.fetchall()
-  #sleep(0.05)
 
   lastString = '<div class="block4"><h3>Last Finishes</h3><table>'
 
@@ -520,10 +498,15 @@ with con:
   #  print(row)
 
 pointsRanks = sorted(pointsLadder.items(), key=lambda r: r[1], reverse=True)
+del pointsLadder
 weeklyPointsRanks = sorted(weeklyPointsLadder.items(), key=lambda r: r[1], reverse=True)
+del weeklyPointsLadder
 monthlyPointsRanks = sorted(monthlyPointsLadder.items(), key=lambda r: r[1], reverse=True)
+del monthlyPointsLadder
 teamrankRanks = sorted(teamrankLadder.items(), key=lambda r: r[1], reverse=True)
+del teamrankLadder
 rankRanks = sorted(rankLadder.items(), key=lambda r: r[1], reverse=True)
+del rankLadder
 
 if country == None:
   filename = "%s/ranks/index.html" % webDir
@@ -565,49 +548,7 @@ print >>tf, printFooter()
 tf.close()
 os.rename(tmpname, filename)
 
-#tmpname = '%s/players/index.%d.tmp' % (webDir, os.getpid())
-#filename = '%s/players/index.html' % webDir
-#with open(tmpname, 'wb') as out:
-#  print >>out, header("Player not found - DDraceNetwork", "", "")
-#  print >>out, '<div id="global" class="longblock"><h2>Player not found</h2><h3>Maybe who you\'re looking for is in this list:</h3>'
-#  print >>out, '<ol>'
-#
-#  for player in sorted(players.keys()):
-#    print >>out, '<li><a href="%s">%s</a></li>' % (playerWebsite(u'%s' % player), escape(player))
-#
-#  print >>out, '</ol>'
-#  print >>out, '</div>'
-#  print >>out, """  </section>
-#</article>
-#</body>
-#</html>"""
-#os.rename(tmpname, filename)
-#sleep(0.1)
-
 if country == None:
-  # types # Not needed
-  # maps
-  # totalPoints
-  # pointsRanks
-  # weeklyPointsRanks
-  # monthlyPointsRanks
-  # teamrankRanks
-  # rankRanks
-  # serverRanks
-  # players
-
-  #for player in players.keys():
-  #  for mapName in players[player].maps.keys():
-  #    if players[player].maps[mapName].firstFinish == "2030-10-10 00:00:00":
-  #      print "Player: %s, Map: %s, no rank for teamrank" % (player, mapName)
-
-  #tmpname = '%s/playerNames.%d.tmp' % (webDir, os.getpid())
-  #filename = '%s/playerNames.msgpack' % webDir
-  #with open(tmpname, 'wb') as out:
-  #  out.write(msgpack.packb(players.keys()))
-  #os.rename(tmpname, filename)
-  #sleep(0.1)
-
   msgpackFile = '%s/players.msgpack' % webDir
   msgpackTmpFile = '%s.tmp' % msgpackFile
   with open(msgpackTmpFile, 'wb') as out:
@@ -620,5 +561,8 @@ if country == None:
     out.write(msgpack.packb(teamrankRanks))
     out.write(msgpack.packb(rankRanks))
     out.write(msgpack.packb(serverRanks))
-    out.write(msgpack.packb(players, default=str))
   os.rename(msgpackTmpFile, msgpackFile)
+
+  with Cache('/home/teeworlds/servers/players-cache') as cache:
+    for player, value in players.items():
+        cache[player] = value

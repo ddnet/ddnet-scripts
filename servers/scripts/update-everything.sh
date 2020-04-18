@@ -27,9 +27,6 @@ types=`cat all-types`
 scripts/update-local.sh
 
 scripts/ranks.py $types
-# Trigger a reload of the players.msgpack while we have memory available from the just-closed ranks.py
-curl -s -o /dev/null https://ddnet.tw/players/nameless-32-tee/
-sleep 5m
 grep name serverlist.json | sed -e 's/.*"name": "\(.*\)".*/\1/' | while read country; do
   scripts/ranks.py --country=$country $types
 done
