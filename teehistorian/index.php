@@ -1,4 +1,50 @@
 <html>
+<?php if(isset($_SERVER['PHP_AUTH_USER'])) {
+	$auths = fopen("ddrace_auths.cfg", "r");
+	if(!$auths) {
+		exit;
+	}
+
+	$hash = null;
+	$salt = null;
+	while(!feof($auths)) {
+		$line = fgets($auths);
+		if($line[0] == '#') {
+			continue;
+		}
+
+		$tokens = explode(" ", $line);
+		if($tokens[0] !== "auth_add_p") {
+			continue;
+		}
+
+		if($tokens[1] === $_SERVER['PHP_AUTH_USER']) {
+			$hash = $tokens[3];
+			$salt = $tokens[4];
+			break;
+		}
+	}
+
+	if(!$hash)
+	{
+		header('WWW-Authenticate: Basic realm="teehistorian"');
+		header('HTTP/1.0 401 Unauthorized');
+		echo "401 Unauthorized";
+		exit;
+	}
+
+	$ctx = hash_init("md5");
+	hash_update($ctx, $_SERVER['PHP_AUTH_PW']);
+	hash_update($ctx, hex2bin($salt));
+
+	if($hash !== hash_final($ctx))
+	{
+		header('WWW-Authenticate: Basic realm="teehistorian"');
+		header('HTTP/1.0 401 Unauthorized');
+		echo "401 Unauthorized";
+		exit;
+	}
+?>
 <form action="">ID: <input type="text" name="id"><input type="submit" value="Search"></form>
 <?php
 function main() {
@@ -58,4 +104,10 @@ foreach (scandir("data") as $dir) {
 ?>
 </table>
 <p>Execution time: <?php echo number_format((microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]) * 1000, 1); ?> ms</p>
+<?php } else {
+	header('WWW-Authenticate: Basic realm="teehistorian"');
+	header('HTTP/1.0 401 Unauthorized');
+	echo "401 Unauthorized";
+	exit;
+}?>
 </html>
