@@ -24,8 +24,8 @@ $file = null;
 if(!empty($_GET['id'])) {
 	if(!preg_match('/^[0-9a-fA-F\-]+$/', $_GET['id']))
 		$error = "invalid ?id parameter passed";
-	else
-		$file = getFile($_GET['id']);
+	else if(!($file = getFile($_GET['id'])))
+		$error = "'{$_GET['id']}' not found";
 }
 
 if($type === "html") { ?>
@@ -66,8 +66,8 @@ if($type === "html") { ?>
 					if($size > 0) {
 						echo '<tr>';
 						echo "<td><a href='$path'>$path</a></td>";
-						echo "<td style='text-align: right;'>{formatMiB($size)}</td>";
-						echo "<td style='text-align: right;'>{formatMiB($sizeCompressed)}</td>";
+						echo "<td style='text-align: right;'>" . formatMiB($size)} . "</td>";
+						echo "<td style='text-align: right;'>" . formatMiB($sizeCompressed)} . "</td>";
 						echo "<td style='text-align: right;'>" . date('Y-m-d H:i', filemtime($path)) . "</td>";
 						echo '</tr>';
 					}
@@ -95,7 +95,7 @@ else {
 		}
 
 		http_response_code(200);
-		$uri = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . "://${_SERVER['HTTP_HOST']}${_SERVER['PHP_SELF']}";
+		$uri = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . "://{$_SERVER['HTTP_HOST']}{$_SERVER['PHP_SELF']}";
 		$uri = dirname($uri) . "/" . $file;
 		echo json_encode(['url' => $uri]);
 	}
