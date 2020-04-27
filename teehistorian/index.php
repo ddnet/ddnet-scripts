@@ -96,7 +96,7 @@ else {
 
 		http_response_code(200);
 		
-		$host = !empty($_SERVER['X_FORWARDED_HOST'] ? $_SERVER['X_FORWARDED_HOST'] : $_SERVER['HTTP_HOST'];
+		$host = !empty($_SERVER['X_FORWARDED_HOST']) ? $_SERVER['X_FORWARDED_HOST'] : $_SERVER['HTTP_HOST'];
 		$uri = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . "://$host{$_SERVER['PHP_SELF']}";
 		$uri = dirname($uri) . "/" . $file;
 		echo json_encode(['url' => $uri]);
