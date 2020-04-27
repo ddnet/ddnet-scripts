@@ -66,8 +66,8 @@ if($type === "html") { ?>
 					if($size > 0) {
 						echo '<tr>';
 						echo "<td><a href='$path'>$path</a></td>";
-						echo "<td style='text-align: right;'>" . formatMiB($size)} . "</td>";
-						echo "<td style='text-align: right;'>" . formatMiB($sizeCompressed)} . "</td>";
+						echo "<td style='text-align: right;'>" . formatMiB($size) . "</td>";
+						echo "<td style='text-align: right;'>" . formatMiB($sizeCompressed) . "</td>";
 						echo "<td style='text-align: right;'>" . date('Y-m-d H:i', filemtime($path)) . "</td>";
 						echo '</tr>';
 					}
