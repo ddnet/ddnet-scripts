@@ -94,6 +94,26 @@ build_windows ()
     TARGET_FAMILY TARGET_PLATFORM TARGET_ARCH
 }
 
+build_windows_videorecorder ()
+{
+  PLATFORM=$1
+
+  rm -rf win$PLATFORM-videorecorder
+  mkdir win$PLATFORM-videorecorder
+  cd win$PLATFORM-videorecorder
+  cmake -DVIDEORECORDER=ON -DCMAKE_BUILD_TYPE=Release -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain ../ddnet-master
+  make package_default
+  unzip DDNet-$VERSION-win$PLATFORM.zip
+  rm DDNet-$VERSION-win$PLATFORM.zip
+  mv DDNet-$VERSION-win$PLATFORM DDNet-$VERSION-videorecorder-win$PLATFORM
+  zip -9r DDNet-$VERSION-videorecorder-win$PLATFORM.zip DDNet-$VERSION-videorecorder-win$PLATFORM
+  mv DDNet-$VERSION-videorecorder-win$PLATFORM.zip $BUILDS
+  cd ..
+  rm -rf win$PLATFORM-videorecorder
+  unset PREFIX \
+    TARGET_FAMILY TARGET_PLATFORM TARGET_ARCH
+}
+
 # Get the sources
 cd $WEBSITE
 rm -rf master.zip libs.zip
@@ -118,6 +138,10 @@ CFLAGS=-m32 LDFLAGS=-m32 build_linux x86 $BUILDDIR/debian6_x86 &> builds/linux_x
 TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
   PREFIX=x86_64-w64-mingw32- PATH=/usr/x86_64-w64-mingw32/bin:$PATH \
   build_windows 64 &> builds/win64.log &
+
+TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
+  PREFIX=x86_64-w64-mingw32- PATH=/usr/x86_64-w64-mingw32/bin:$PATH \
+  build_windows_videorecorder 64 &> builds/win64-videorecorder.log &
 
 TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
   PREFIX=i686-w64-mingw32- PATH=/usr/i686-w64-mingw32/bin:$PATH \
