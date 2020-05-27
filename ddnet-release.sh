@@ -101,7 +101,7 @@ build_windows_videorecorder ()
   rm -rf win$PLATFORM-videorecorder
   mkdir win$PLATFORM-videorecorder
   cd win$PLATFORM-videorecorder
-  cmake -DVIDEORECORDER=ON -DCMAKE_BUILD_TYPE=Release -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain ../ddnet-master
+  cmake -DVIDEORECORDER=ON -DAUTOUPDATE=OFF -DCMAKE_BUILD_TYPE=Release -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain ../ddnet-master
   make package_default
   unzip DDNet-$VERSION-win$PLATFORM.zip
   rm DDNet-$VERSION-win$PLATFORM.zip
