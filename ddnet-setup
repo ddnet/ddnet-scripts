@@ -3,7 +3,7 @@ ssh root@37.235.52.151
 Debian:
 apt-get update
 apt-get upgrade
-apt-get install bsdutils tree zsh vim htop git g++ libboost-dev python-msgpack python-requests python-dnspython python-mysqldb sshfs tcpdump gdb pkg-config ntpdate ntp mailutils ssmtp libssl-dev libmariadbclient-dev libmysqlcppconn-dev cmake make unattended-upgrades apt-listchanges iptables-persistent libwebsockets-dev libcurl4-openssl-dev python3
+apt-get install bsdutils tree zsh vim htop git g++ libboost-dev python-msgpack python-requests python-dnspython python-mysqldb sshfs tcpdump gdb pkg-config ntpdate ntp mailutils msmtp msmtp-mta libssl-dev libmariadbclient-dev libmysqlcppconn-dev cmake make unattended-upgrades apt-listchanges iptables-persistent libwebsockets-dev libcurl4-openssl-dev python3
 dpkg-reconfigure tzdata
 dpkg-reconfigure -plow unattended-upgrades
 vim /etc/hostname
