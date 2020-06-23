@@ -36,8 +36,8 @@ make -j4
 cp .libs/libopusfile.a ..
 
 cd ../SDL2-2.0.12
-./configure
-make -j4
+./configure CFLAGS=-fPIC
+CFLAGS=-fPIC make -j4
 cp build/.libs/libSDL2.a ..
 
 cd ../..
@@ -60,13 +60,13 @@ CFLAGS=-m32 LDFLAGS=-m32 make -j4
 cp .libs/libopus.a ..
 
 cd ../opusfile-0.11
-CFLGS=-m32 LDFLAGS=-m32 DEPS_LIBS="-lopus -logg -L/root/x86/opus-1.3.1/.libs/ -L/root/x86/libogg-1.3.4/src/.libs/" DEPS_CFLAGS="-m32 -I/root/x86/opus-1.3.1/include -I/root/x86/libogg-1.3.4/include"  ./configure --disable-http
-CFLGS=-m32 LDFLAGS=-m32 make -j4
+CFLAGS=-m32 LDFLAGS=-m32 DEPS_LIBS="-lopus -logg -L/root/x86/opus-1.3.1/.libs/ -L/root/x86/libogg-1.3.4/src/.libs/" DEPS_CFLAGS="-m32 -I/root/x86/opus-1.3.1/include -I/root/x86/libogg-1.3.4/include"  ./configure --disable-http
+CFLAGS=-m32 LDFLAGS=-m32 make -j4
 cp .libs/libopusfile.a ..
 
 cd ../SDL2-2.0.12
-./configure
-make -j4
+./configure CFLAGS=-fPIC
+CFLAGS=-fPIC make -j4
 cp build/.libs/libSDL2.a ..
 
 cd ../..
