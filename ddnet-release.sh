@@ -175,5 +175,19 @@ TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
 wait
 rm -rf ddnet-master
 
+rm -rf steam
+mkdir steam
+cd steam
+unzip $BUILDS/DDNet-$VERSION-win64.zip
+tar xvf $BUILDS/DDNet-$VERSION-linux_x86_64.tar.xz
+7z x $BUILDS/DDNet-$VERSION-osx.dmg # might have problems with symlinks
+mv DDNet-$VERSION-win64/data data
+zip -9r DDNet-$VERSION-data.zip data
+zip -9r DDNet-$VERSION-win64.zip data
+rm -r DDNet-$VERSION-linux_x86_64/data
+zip -9r DDNet-$VERSION-linux_x86_64.zip DDNet-$VERSION-linux_x86_64
+rm -r DDNet-$VERSION-osx/DDNet.app/Contents/Resources/data DDNet-$VERSION-osx/DDNet-Server.app/Contents/Resources/data
+zip -9r DDNet-$VERSION-linux_x86_64.zip DDNet-$VERSION-osx
+
 NOW=$(date +'%F %R')
 echo "Finished build of $VERSION at $NOW"
