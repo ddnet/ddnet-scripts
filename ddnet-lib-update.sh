@@ -18,6 +18,7 @@ cd x86-64
 tar xvf ../libogg-1.3.4.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.11.tar.gz
+tar xvf ../SDL2-2.0.12.tar.gz
 
 cd libogg-1.3.4
 ./configure CFLAGS=-fPIC
@@ -34,6 +35,11 @@ DEPS_LIBS="-lopus -logg -L/root/x86-64/opus-1.3.1/.libs/ -L/root/x86-64/libogg-1
 make -j4
 cp .libs/libopusfile.a ..
 
+cd ../SDL2-2.0.12
+./configure
+make -j4
+cp build/.libs/libSDL2.a ..
+
 cd ../..
 
 mkdir x86
@@ -41,6 +47,7 @@ cd x86
 tar xvf ../libogg-1.3.4.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.11.tar.gz
+tar xvf ../SDL2-2.0.12.tar.gz
 
 cd libogg-1.3.4
 CFLAGS=-m32 LDFLAGS=-m32 ./configure
@@ -56,6 +63,11 @@ cd ../opusfile-0.11
 CFLGS=-m32 LDFLAGS=-m32 DEPS_LIBS="-lopus -logg -L/root/x86/opus-1.3.1/.libs/ -L/root/x86/libogg-1.3.4/src/.libs/" DEPS_CFLAGS="-m32 -I/root/x86/opus-1.3.1/include -I/root/x86/libogg-1.3.4/include"  ./configure --disable-http
 CFLGS=-m32 LDFLAGS=-m32 make -j4
 cp .libs/libopusfile.a ..
+
+cd ../SDL2-2.0.12
+./configure
+make -j4
+cp build/.libs/libSDL2.a ..
 
 cd ../..
 
