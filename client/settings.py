@@ -2,6 +2,7 @@
 
 import sys
 import re
+import html
 
 print('<div style="overflow: auto;"><table class="settingscommands">')
 print('  <tr><th>Setting</th><th>Description</th><th>Default</th></tr>')
@@ -18,9 +19,9 @@ for line in sys.stdin:
   name = x[1].lstrip()
 
   if "STR" in line:
-    result = (name, y[-2], x[3].lstrip())
+    result = (html.escape(name), html.escape(y[-2]), html.escape(x[3].lstrip()))
   elif "INT" in line:
-    result = (name, y[-2], x[-5].lstrip())
+    result = (html.escape(name), html.escape(y[-2]), html.escape(x[-5].lstrip()))
 
   line = '  <tr><td>%s</td><td>%s</td><td>%s</td></tr>' % result
 

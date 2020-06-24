@@ -2,6 +2,7 @@
 
 import sys
 import re
+import html
 
 print('<table class="settingscommands">')
 print('  <tr><th>Command</th><th>Arguments</th><th>Description</th></tr>')
@@ -13,7 +14,7 @@ for line in sys.stdin:
   x = re.findall(r'(?:[^\s,"]|"(?:\\.|[^"])*")+', line)
   y = line.split('"')
 
-  result = (y[1], y[3], y[-2])
+  result = (html.escape(y[1]), html.escape(y[3]), html.escape(y[-2]))
 
   print('  <tr><td>%s</td><td>%s</td><td>%s</td></tr>' % result)
 
