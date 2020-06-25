@@ -173,7 +173,6 @@ TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
 #TIME_ANDROID=$(($(date +%s) - $START_TIME))
 
 wait
-rm -rf ddnet-master
 
 rm -rf steam
 mkdir steam
@@ -185,9 +184,12 @@ mv DDNet-$VERSION-win64/data data
 zip -9r DDNet-$VERSION-data.zip data
 zip -9r DDNet-$VERSION-win64.zip DDNet-$VERSION-win64
 rm -r DDNet-$VERSION-linux_x86_64/data
+cp ddnet-master/ddnet-libs/sdl/linux/lib64/libSDL2-2.0.so.0 DDNet-$VERSION-linux_x86_64
 zip -9r DDNet-$VERSION-linux_x86_64.zip DDNet-$VERSION-linux_x86_64
 rm -r DDNet-$VERSION-osx/DDNet.app/Contents/Resources/data DDNet-$VERSION-osx/DDNet-Server.app/Contents/Resources/data
 zip -9r DDNet-$VERSION-linux_x86_64.zip DDNet-$VERSION-osx
+
+rm -rf ddnet-master
 
 NOW=$(date +'%F %R')
 echo "Finished build of $VERSION at $NOW"
