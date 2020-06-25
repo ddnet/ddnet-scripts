@@ -4,7 +4,7 @@ import sys
 import re
 import html
 
-print('<div style="overflow: scroll;"><table class="settingscommands">')
+print('<div style="overflow-x: auto;"><table class="settingscommands">')
 print('  <tr><th>Command</th><th>Arguments</th><th>Description</th></tr>')
 
 for line in sys.stdin:
