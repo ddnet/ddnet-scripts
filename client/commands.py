@@ -4,7 +4,7 @@ import sys
 import re
 import html
 
-print('<table class="settingscommands">')
+print('<div style="overflow: scroll;"><table class="settingscommands">')
 print('  <tr><th>Command</th><th>Arguments</th><th>Description</th></tr>')
 
 for line in sys.stdin:
@@ -18,4 +18,4 @@ for line in sys.stdin:
 
   print('  <tr><td>%s</td><td>%s</td><td>%s</td></tr>' % result)
 
-print('</table>')
+print('</table></div>')

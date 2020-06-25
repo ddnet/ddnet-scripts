@@ -4,7 +4,7 @@ import sys
 import re
 import html
 
-print('<div style="overflow: auto;"><table class="settingscommands">')
+print('<div style="overflow: scroll;"><table class="settingscommands">')
 print('  <tr><th>Setting</th><th>Description</th><th>Default</th></tr>')
 
 names = {}
