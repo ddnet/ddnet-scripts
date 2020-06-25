@@ -38,7 +38,8 @@ cp .libs/libopusfile.a ..
 cd ../SDL2-2.0.12
 ./configure CFLAGS=-fPIC
 CFLAGS=-fPIC make -j4
-cp build/.libs/libSDL2.a ..
+cp build/.libs/libSDL2-2.0.so.0.12.0 ../libSDL2-2.0.so.0
+strip -s ../libSDL2-2.0.so.0
 
 cd ../..
 
@@ -67,7 +68,8 @@ cp .libs/libopusfile.a ..
 cd ../SDL2-2.0.12
 ./configure CFLAGS=-fPIC
 CFLAGS=-fPIC make -j4
-cp build/.libs/libSDL2.a ..
+cp build/.libs/libSDL2-2.0.so.0.12.0 ../libSDL2-2.0.so.0
+strip -s ../libSDL2-2.0.so.0
 
 cd ../..
 
