@@ -36,7 +36,7 @@ make -j4
 cp .libs/libopusfile.a ..
 
 cd ../SDL2-2.0.12
-./configure CFLAGS=-fPIC
+./configure --enable-input-tslib=no CFLAGS=-fPIC
 CFLAGS=-fPIC make -j4
 cp build/.libs/libSDL2-2.0.so.0.12.0 ../libSDL2-2.0.so.0
 strip -s ../libSDL2-2.0.so.0
@@ -66,7 +66,7 @@ CFLAGS=-m32 LDFLAGS=-m32 make -j4
 cp .libs/libopusfile.a ..
 
 cd ../SDL2-2.0.12
-./configure CFLAGS=-fPIC
+./configure --enable-input-tslib=no CFLAGS=-fPIC
 CFLAGS=-fPIC make -j4
 cp build/.libs/libSDL2-2.0.so.0.12.0 ../libSDL2-2.0.so.0
 strip -s ../libSDL2-2.0.so.0

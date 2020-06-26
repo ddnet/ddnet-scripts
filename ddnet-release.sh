@@ -181,25 +181,37 @@ cd steam
 unzip $BUILDS/DDNet-$VERSION-win64.zip
 mv DDNet-$VERSION-win64/data data
 zip -9r DDNet-$VERSION-data.zip data
-zip -9r DDNet-$VERSION-win64.zip DDNet-$VERSION-win64
+mv DDNet-$VERSION-win64 ddnet
+zip -9r DDNet-$VERSION-win64.zip ddnet
+rm -r ddnet
 
 unzip $BUILDS/DDNet-$VERSION-win32.zip
 rm -r DDNet-$VERSION-win32/data
-zip -9r DDNet-$VERSION-win32.zip DDNet-$VERSION-win32
+mv DDNet-$VERSION-win32 ddnet
+zip -9r DDNet-$VERSION-win32.zip ddnet
+rm -r ddnet
 
 tar xvf $BUILDS/DDNet-$VERSION-linux_x86_64.tar.xz
 rm -r DDNet-$VERSION-linux_x86_64/data
 cp $BUILDDIR/ddnet-master/ddnet-libs/sdl/linux/lib64/libSDL2-2.0.so.0 DDNet-$VERSION-linux_x86_64
-zip -9r DDNet-$VERSION-linux_x86_64.zip DDNet-$VERSION-linux_x86_64
+mv DDNet-$VERSION-linux_x86_64 ddnet
+zip -9r DDNet-$VERSION-linux_x86_64.zip ddnet
+rm -r ddnet
 
 tar xvf $BUILDS/DDNet-$VERSION-linux_x86.tar.xz
 rm -r DDNet-$VERSION-linux_x86/data
-cp $BUILDDIR/ddnet-master/ddnet-libs/sdl/linux/lib32/libSDL2-2.0.so.0 DDNet-$VERSION-linux_x86_32
-zip -9r DDNet-$VERSION-linux_x86.zip DDNet-$VERSION-linux_x86
+cp $BUILDDIR/ddnet-master/ddnet-libs/sdl/linux/lib32/libSDL2-2.0.so.0 DDNet-$VERSION-linux_x86
+mv DDNet-$VERSION-linux_x86 ddnet
+zip -9r DDNet-$VERSION-linux_x86.zip ddnet
+rm -r ddnet
 
 7z x $BUILDS/DDNet-$VERSION-osx.dmg # might have problems with symlinks
 rm -r DDNet-$VERSION-osx/DDNet.app/Contents/Resources/data DDNet-$VERSION-osx/DDNet-Server.app/Contents/Resources/data
-zip -9r DDNet-$VERSION-osx.zip DDNet-$VERSION-osx
+mkdir ddnet
+mv DDNet-$VERSION-osx/DDNet.app/Contents/MacOS/DDNet DDNet-$VERSION-osx/DDNet-Server.app/Contents/MacOS/DDNet-Server ddnet
+mv DDNet-$VERSION-osx/DDNet.app/Contents/Frameworks .
+zip -9r DDNet-$VERSION-osx.zip ddnet Frameworks
+rm -r ddnet
 
 rm -rf ddnet-master
 
