@@ -103,7 +103,7 @@ for mapper, servers in mappers.iteritems():
           height = unpacker.unpack()
           tiles = unpacker.unpack()
 
-          formattedMapName = '<span title="%dx%d">%s</span>' % (width, height, escape(originalMapName))
+          formattedMapName = '<span title="Map size: %dx%d">%s</span>' % (width, height, escape(originalMapName))
 
           mbMapInfo = "<br/>"
           for tile in sorted(tiles.keys(), key=lambda i:order(i)):
