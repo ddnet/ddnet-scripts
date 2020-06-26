@@ -177,17 +177,29 @@ wait
 rm -rf steam
 mkdir steam
 cd steam
+
 unzip $BUILDS/DDNet-$VERSION-win64.zip
-tar xvf $BUILDS/DDNet-$VERSION-linux_x86_64.tar.xz
-7z x $BUILDS/DDNet-$VERSION-osx.dmg # might have problems with symlinks
 mv DDNet-$VERSION-win64/data data
 zip -9r DDNet-$VERSION-data.zip data
 zip -9r DDNet-$VERSION-win64.zip DDNet-$VERSION-win64
+
+unzip $BUILDS/DDNet-$VERSION-win32.zip
+rm -r DDNet-$VERSION-win32/data
+zip -9r DDNet-$VERSION-win32.zip DDNet-$VERSION-win32
+
+tar xvf $BUILDS/DDNet-$VERSION-linux_x86_64.tar.xz
 rm -r DDNet-$VERSION-linux_x86_64/data
 cp $BUILDDIR/ddnet-master/ddnet-libs/sdl/linux/lib64/libSDL2-2.0.so.0 DDNet-$VERSION-linux_x86_64
 zip -9r DDNet-$VERSION-linux_x86_64.zip DDNet-$VERSION-linux_x86_64
+
+tar xvf $BUILDS/DDNet-$VERSION-linux_x86.tar.xz
+rm -r DDNet-$VERSION-linux_x86/data
+cp $BUILDDIR/ddnet-master/ddnet-libs/sdl/linux/lib32/libSDL2-2.0.so.0 DDNet-$VERSION-linux_x86_32
+zip -9r DDNet-$VERSION-linux_x86.zip DDNet-$VERSION-linux_x86
+
+7z x $BUILDS/DDNet-$VERSION-osx.dmg # might have problems with symlinks
 rm -r DDNet-$VERSION-osx/DDNet.app/Contents/Resources/data DDNet-$VERSION-osx/DDNet-Server.app/Contents/Resources/data
-zip -9r DDNet-$VERSION-linux_x86_64.zip DDNet-$VERSION-osx
+zip -9r DDNet-$VERSION-osx.zip DDNet-$VERSION-osx
 
 rm -rf ddnet-master
 
