@@ -63,14 +63,17 @@ build_linux ()
   mount -t sysfs sys sys/
   mount -o bind /dev dev/
 
-  rm -rf ddnet-master
+  rm -rf ddnet-master ddnet-master-steam ddnet-libs-master
   unzip -q $WEBSITE/master.zip
   unzip -q $WEBSITE/libs.zip
   rm -rf ddnet-master/ddnet-libs
   mv ddnet-libs-master ddnet-master/ddnet-libs
+  cp -r ddnet-master ddnet-master-steam
 
-  chroot . sh -c "cd ddnet-master && cmake -DCMAKE_BUILD_TYPE=Release -DPREFER_BUNDLED_LIBS=ON && make && make package_default"
+  chroot . sh -c "cd ddnet-master && cmake -DCMAKE_BUILD_TYPE=Release -DPREFER_BUNDLED_LIBS=ON && make package_default"
+  chroot . sh -c "cd ddnet-master-steam && cmake -DCMAKE_BUILD_TYPE=Release -DAUTOUPDATE=OFF -DPREFER_BUNDLED_LIBS=ON && make -j2 package_default"
   mv ddnet-master/DDNet-*.tar.xz $BUILDS/DDNet-$VERSION-linux_$PLATFORM.tar.xz
+  mv ddnet-master-steam/DDNet-*.tar.xz ../DDNet-$VERSION-steam-linux_$PLATFORM.tar.xz
 
   rm -rf ddnet-master
   umount proc sys dev
@@ -81,28 +84,42 @@ build_linux ()
 build_windows ()
 {
   PLATFORM=$1
+  BUILDOPTS=$2
+  SUFFIX=$3
+  DIR=win$PLATFORM$SUFFIX
 
-  rm -rf win$PLATFORM
-  mkdir win$PLATFORM
-  cd win$PLATFORM
-  cmake -DCMAKE_BUILD_TYPE=Release -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain ../ddnet-master
+  rm -rf $DIR
+  mkdir $DIR
+  cd $DIR
+  cmake -DCMAKE_BUILD_TYPE=Release -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain $BUILDOPTS ../ddnet-master
   make package_default
+  unset PREFIX \
+    TARGET_FAMILY TARGET_PLATFORM TARGET_ARCH
+}
+
+build_windows_website ()
+{
+  PLATFORM=$1
+  build_windows $PLATFORM
   mv DDNet-*.zip $BUILDS/DDNet-$VERSION-win$PLATFORM.zip
   cd ..
   rm -rf win$PLATFORM
-  unset PREFIX \
-    TARGET_FAMILY TARGET_PLATFORM TARGET_ARCH
+}
+
+build_windows_steam ()
+{
+  PLATFORM=$1
+  build_windows $PLATFORM "-DAUTOUPDATE=OFF" "-steam"
+  mv DDNet-$VERSION-win$PLATFORM.zip ../DDNet-$VERSION-steam-win$PLATFORM.zip
+  cd ..
+  rm -rf win$PLATFORM-steam
 }
 
 build_windows_videorecorder ()
 {
   PLATFORM=$1
+  build_windows $PLATFORM "-DVIDEORECORDER=ON -DAUTOUPDATE=OFF" "-videorecorder"
 
-  rm -rf win$PLATFORM-videorecorder
-  mkdir win$PLATFORM-videorecorder
-  cd win$PLATFORM-videorecorder
-  cmake -DVIDEORECORDER=ON -DAUTOUPDATE=OFF -DCMAKE_BUILD_TYPE=Release -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain ../ddnet-master
-  make package_default
   unzip DDNet-$VERSION-win$PLATFORM.zip
   rm DDNet-$VERSION-win$PLATFORM.zip
   mv DDNet-$VERSION-win$PLATFORM DDNet-$VERSION-videorecorder-win$PLATFORM
@@ -110,8 +127,6 @@ build_windows_videorecorder ()
   mv DDNet-$VERSION-videorecorder-win$PLATFORM.zip $BUILDS
   cd ..
   rm -rf win$PLATFORM-videorecorder
-  unset PREFIX \
-    TARGET_FAMILY TARGET_PLATFORM TARGET_ARCH
 }
 
 # Get the sources
@@ -137,7 +152,11 @@ CFLAGS=-m32 LDFLAGS=-m32 build_linux x86 $BUILDDIR/debian6_x86 &> builds/linux_x
 
 TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
   PREFIX=x86_64-w64-mingw32- PATH=/usr/x86_64-w64-mingw32/bin:$PATH \
-  build_windows 64 &> builds/win64.log &
+  build_windows_website 64 &> builds/win64.log &
+
+TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
+  PREFIX=x86_64-w64-mingw32- PATH=/usr/x86_64-w64-mingw32/bin:$PATH \
+  build_windows_steam 64 &> builds/win64-steam.log &
 
 TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
   PREFIX=x86_64-w64-mingw32- PATH=/usr/x86_64-w64-mingw32/bin:$PATH \
@@ -145,7 +164,11 @@ TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
 
 TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
   PREFIX=i686-w64-mingw32- PATH=/usr/i686-w64-mingw32/bin:$PATH \
-  build_windows 32 &> builds/win32.log &
+  build_windows_website 32 &> builds/win32.log &
+
+TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
+  PREFIX=i686-w64-mingw32- PATH=/usr/i686-w64-mingw32/bin:$PATH \
+  build_windows_steam 32 &> builds/win32-steam.log &
 
 # Android
 # TODO: Reenable with SDL2
@@ -177,41 +200,44 @@ wait
 rm -rf steam
 mkdir steam
 cd steam
+mkdir ddnet
 
-unzip $BUILDS/DDNet-$VERSION-win64.zip
-mv DDNet-$VERSION-win64/data data
-zip -9r DDNet-$VERSION-data.zip data
+unzip ../DDNet-$VERSION-steam-win64.zip
+mv DDNet-$VERSION-win64/data ddnet/data
+zip -9r DDNet-$VERSION-data.zip ddnet
+rm -r ddnet
+
 mv DDNet-$VERSION-win64 ddnet
 zip -9r DDNet-$VERSION-win64.zip ddnet
 rm -r ddnet
 
-unzip $BUILDS/DDNet-$VERSION-win32.zip
+unzip ../DDNet-$VERSION-steam-win32.zip
 rm -r DDNet-$VERSION-win32/data
 mv DDNet-$VERSION-win32 ddnet
 zip -9r DDNet-$VERSION-win32.zip ddnet
 rm -r ddnet
 
-tar xvf $BUILDS/DDNet-$VERSION-linux_x86_64.tar.xz
+tar xvf ../DDNet-$VERSION-steam-linux_x86_64.tar.xz
 rm -r DDNet-$VERSION-linux_x86_64/data
 cp $BUILDDIR/ddnet-master/ddnet-libs/sdl/linux/lib64/libSDL2-2.0.so.0 DDNet-$VERSION-linux_x86_64
 mv DDNet-$VERSION-linux_x86_64 ddnet
 zip -9r DDNet-$VERSION-linux_x86_64.zip ddnet
 rm -r ddnet
 
-tar xvf $BUILDS/DDNet-$VERSION-linux_x86.tar.xz
+tar xvf ../DDNet-$VERSION-steam-linux_x86.tar.xz
 rm -r DDNet-$VERSION-linux_x86/data
 cp $BUILDDIR/ddnet-master/ddnet-libs/sdl/linux/lib32/libSDL2-2.0.so.0 DDNet-$VERSION-linux_x86
 mv DDNet-$VERSION-linux_x86 ddnet
 zip -9r DDNet-$VERSION-linux_x86.zip ddnet
 rm -r ddnet
 
-7z x $BUILDS/DDNet-$VERSION-osx.dmg # might have problems with symlinks
+7z x $BUILDS/DDNet-$VERSION-osx.dmg
 rm -r DDNet-$VERSION-osx/DDNet.app/Contents/Resources/data DDNet-$VERSION-osx/DDNet-Server.app/Contents/Resources/data
 mkdir ddnet
 mv DDNet-$VERSION-osx/DDNet.app/Contents/MacOS/DDNet DDNet-$VERSION-osx/DDNet-Server.app/Contents/MacOS/DDNet-Server ddnet
 mv DDNet-$VERSION-osx/DDNet.app/Contents/Frameworks .
 zip -9r DDNet-$VERSION-osx.zip ddnet Frameworks
-rm -r ddnet
+rm -r ddnet Frameworks DDNet-14.0.3-osx
 
 rm -rf ddnet-master
 
