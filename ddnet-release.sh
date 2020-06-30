@@ -237,7 +237,7 @@ mkdir ddnet
 mv DDNet-$VERSION-osx/DDNet.app/Contents/MacOS/DDNet DDNet-$VERSION-osx/DDNet-Server.app/Contents/MacOS/DDNet-Server ddnet
 mv DDNet-$VERSION-osx/DDNet.app/Contents/Frameworks .
 zip -9r DDNet-$VERSION-osx.zip ddnet Frameworks
-rm -r ddnet Frameworks DDNet-14.0.3-osx
+rm -r ddnet Frameworks DDNet-$VERSION-osx
 
 rm -rf ddnet-master
 
