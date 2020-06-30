@@ -75,7 +75,7 @@ build_linux ()
   mv ddnet-master/DDNet-*.tar.xz $BUILDS/DDNet-$VERSION-linux_$PLATFORM.tar.xz
   mv ddnet-master-steam/DDNet-*.tar.xz ../DDNet-$VERSION-steam-linux_$PLATFORM.tar.xz
 
-  rm -rf ddnet-master
+  rm -rf ddnet-master ddnet-master-steam
   umount proc sys dev
   unset CFLAGS LDFLAGS PKG_CONFIG_PATH
 }
