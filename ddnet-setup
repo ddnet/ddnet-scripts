@@ -79,3 +79,5 @@ On mysql servers:
 iptables -I INPUT -p tcp --dport 3306 -s $IP -j ACCEPT
 iptables-save > /etc/iptables.up.rules
 mysql # grant for teeworlds, blocker, zcatch users
+
+Make sure teehistorian backups work and inform other teehistorian consumers
