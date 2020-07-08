@@ -7,6 +7,7 @@ wget http://download.savannah.gnu.org/releases/freetype/freetype-2.10.1.tar.gz
 wget http://downloads.xiph.org/releases/ogg/libogg-1.3.4.tar.gz
 wget https://archive.mozilla.org/pub/opus/opus-1.3.1.tar.gz
 wget https://downloads.xiph.org/releases/opus/opusfile-0.11.tar.gz
+wget https://www.sqlite.org/2020/sqlite-autoconf-3320300.tar.gz
 
 chroot debian6 bash
 cat /etc/apt/sources.list
@@ -19,6 +20,7 @@ tar xvf ../libogg-1.3.4.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.11.tar.gz
 tar xvf ../SDL2-2.0.8.tar.gz
+tar xvf ../sqlite-autoconf-3320300.zip
 
 cd libogg-1.3.4
 ./configure CFLAGS=-fPIC
@@ -41,6 +43,11 @@ CFLAGS=-fPIC make -j4
 cp build/.libs/libSDL2-2.0.so.0.8.0 ../libSDL2-2.0.so.0
 strip -s ../libSDL2-2.0.so.0
 
+cd ../sqlite-autoconf-3320300
+./configure CFLAGS=-fPIC
+make -j4
+cp .libs/libsqlite3.a ..
+
 cd ../..
 
 mkdir x86
@@ -49,6 +56,7 @@ tar xvf ../libogg-1.3.4.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.11.tar.gz
 tar xvf ../SDL2-2.0.8.tar.gz
+tar xvf ../sqlite-autoconf-3320300.zip
 
 cd libogg-1.3.4
 CFLAGS=-m32 LDFLAGS=-m32 ./configure
@@ -71,6 +79,11 @@ CFLAGS="-fPIC -m32" make -j4
 cp build/.libs/libSDL2-2.0.so.0.8.0 ../libSDL2-2.0.so.0
 strip -s ../libSDL2-2.0.so.0
 
+cd ../sqlite-autoconf-3320300
+./configure CFLAGS="-fPIC -m32"
+make -j4
+cp .libs/libsqlite3.a ..
+
 cd ../..
 
 mkdir win64
@@ -81,6 +94,8 @@ tar xvf ../libogg-1.3.4.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.11.tar.gz
 tar xvf ../freetype-2.10.1.tar.gz
+tar xvf ../sqlite-autoconf-3320300.zip
+tar xvf ../
 
 cd SDL2-2.0.8
 ./configure --host=x86_64-w64-mingw32
@@ -130,6 +145,11 @@ rm objs/.libs/libfreetype-6.dll
 x86_64-w64-mingw32-dlltool -v --export-all-symbols -D libfreetype.dll -l ../freetype.lib -d objs/.libs/libfreetype-6.dll.def
 cp objs/.libs/libfreetype.dll ../libfreetype.dll
 
+cd ../sqlite-autoconf-3320300
+./configure --host=x86_64-w64-mingw32
+make -j4
+cp .libs/libsqlite3-0.dll ..
+
 cd ..
 for i in *.dll; do x86_64-w64-mingw32-strip -s $i; done
 
@@ -143,6 +163,7 @@ tar xvf ../libogg-1.3.4.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.11.tar.gz
 tar xvf ../freetype-2.10.1.tar.gz
+tar xvf ../sqlite-autoconf-3320300.zip
 
 cd SDL2-2.0.8
 ./configure --host=i686-w64-mingw32
@@ -191,6 +212,11 @@ make -j4 V=1
 i686-w64-mingw32-dlltool -v --export-all-symbols -D libfreetype.dll -l ../freetype.lib -d objs/.libs/libfreetype-6.dll.def
 cp objs/.libs/libfreetype.dll ../libfreetype.dll
 
+cd ../sqlite-autoconf-3320300
+./configure --host=i686-w64-mingw32
+make -j4
+cp .libs/libsqlite3-0.dll ..
+
 cd ..
 for i in *.dll; do i686-w64-mingw32-strip -s $i; done
 
@@ -203,6 +229,7 @@ tar xvf ../libogg-1.3.4.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.11.tar.gz
 tar xvf ../freetype-2.10.1.tar.gz
+tar xvf ../sqlite-autoconf-3320300.zip
 
 export PATH=/home/deen/git/osxcross/target/bin/:$PATH
 export CC=o64-clang
@@ -233,3 +260,8 @@ cd ../freetype-2.10.1
 ./configure CFLAGS="-mmacosx-version-min=10.9" --host=x86_64-apple-darwin17 --with-png=no --with-bzip2=no --with-zlib=no --with-harfbuzz=no
 make -j4
 cp objs/.libs/libfreetype.6.dylib ..
+
+cd ../sqlite-autoconf-3320300
+./configure --host=x86_64-apple-darwin17 CFLAGS=-fPIC
+make -j4
+cp libs/libsqlite3.0.dylib ..
