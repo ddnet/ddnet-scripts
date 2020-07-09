@@ -44,7 +44,7 @@ cp build/.libs/libSDL2-2.0.so.0.8.0 ../libSDL2-2.0.so.0
 strip -s ../libSDL2-2.0.so.0
 
 cd ../sqlite-autoconf-3320300
-./configure CFLAGS=-fPIC
+./configure CFLAGS="-fPIC -DSQLITE_OMIT_LOAD_EXTENSION"
 make -j4
 cp .libs/libsqlite3.a ..
 
@@ -80,7 +80,7 @@ cp build/.libs/libSDL2-2.0.so.0.8.0 ../libSDL2-2.0.so.0
 strip -s ../libSDL2-2.0.so.0
 
 cd ../sqlite-autoconf-3320300
-./configure CFLAGS="-fPIC -m32"
+./configure CFLAGS="-fPIC -m32 -DSQLITE_OMIT_LOAD_EXTENSION"
 make -j4
 cp .libs/libsqlite3.a ..
 
@@ -146,7 +146,7 @@ x86_64-w64-mingw32-dlltool -v --export-all-symbols -D libfreetype.dll -l ../free
 cp objs/.libs/libfreetype.dll ../libfreetype.dll
 
 cd ../sqlite-autoconf-3320300
-./configure --host=x86_64-w64-mingw32
+./configure --host=x86_64-w64-mingw32 CFLAGS=-DSQLITE_OMIT_LOAD_EXTENSION
 make -j4
 cp .libs/libsqlite3-0.dll ..
 
@@ -213,7 +213,7 @@ i686-w64-mingw32-dlltool -v --export-all-symbols -D libfreetype.dll -l ../freety
 cp objs/.libs/libfreetype.dll ../libfreetype.dll
 
 cd ../sqlite-autoconf-3320300
-./configure --host=i686-w64-mingw32
+./configure --host=i686-w64-mingw32 CFLAGS=-DSQLITE_OMIT_LOAD_EXTENSION
 make -j4
 cp .libs/libsqlite3-0.dll ..
 
@@ -262,6 +262,6 @@ make -j4
 cp objs/.libs/libfreetype.6.dylib ..
 
 cd ../sqlite-autoconf-3320300
-./configure --host=x86_64-apple-darwin17 CFLAGS=-fPIC
+./configure --host=x86_64-apple-darwin17 CFLAGS="-fPIC -DSQLITE_OMIT_LOAD_EXTENSION"
 make -j4
-cp libs/libsqlite3.0.dylib ..
+cp .libs/libsqlite3.0.dylib ..
