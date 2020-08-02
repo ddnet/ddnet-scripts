@@ -149,6 +149,7 @@ cd ../sqlite-autoconf-3320300
 ./configure --host=x86_64-w64-mingw32 CFLAGS=-DSQLITE_OMIT_LOAD_EXTENSION
 make -j4
 cp .libs/libsqlite3-0.dll ..
+x86_64-w64-mingw32-dlltool -v --export-all-symbols  -D sqlite3.dll -l ../sqlite3.lib .libs/*.o
 
 cd ..
 for i in *.dll; do x86_64-w64-mingw32-strip -s $i; done
@@ -216,6 +217,7 @@ cd ../sqlite-autoconf-3320300
 ./configure --host=i686-w64-mingw32 CFLAGS=-DSQLITE_OMIT_LOAD_EXTENSION
 make -j4
 cp .libs/libsqlite3-0.dll ..
+i686-w64-mingw32-dlltool -v --export-all-symbols  -D sqlite3.dll -l ../sqlite3.lib .libs/*.o
 
 cd ..
 for i in *.dll; do i686-w64-mingw32-strip -s $i; done
