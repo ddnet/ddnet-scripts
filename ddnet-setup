@@ -3,7 +3,7 @@ ssh root@37.235.52.151
 Debian:
 apt-get update
 apt-get upgrade
-apt-get install bsdutils tree zsh vim htop git g++ libboost-dev python-msgpack python-requests python-dnspython python-mysqldb sshfs tcpdump gdb pkg-config ntpdate ntp mailutils msmtp msmtp-mta libssl-dev libmariadbclient-dev libmysqlcppconn-dev cmake make unattended-upgrades apt-listchanges iptables-persistent libwebsockets-dev libcurl4-openssl-dev python3 python3-dnslib python3-cachetools dnsmasq
+apt-get install bsdutils tree zsh vim htop git g++ libboost-dev python-msgpack python-requests python-dnspython python-mysqldb sshfs tcpdump gdb pkg-config ntpdate ntp mailutils msmtp msmtp-mta libssl-dev libmariadbclient-dev libmysqlcppconn-dev cmake make unattended-upgrades apt-listchanges iptables-persistent libwebsockets-dev libcurl4-openssl-dev python3 python3-dnslib python3-cachetools dnsmasq strace dnsutils
 dpkg-reconfigure tzdata
 dpkg-reconfigure -plow unattended-upgrades
 vim /etc/hostname
@@ -27,9 +27,11 @@ tar xvf dnsbl.tar.gz
 With mysql: mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -p mysql
 
 From root @ other server:
-scp -r /etc/zsh /etc/vim* /etc/mysql /etc/ssmtp /etc/dnsmasq.d /etc/dnsmasq.conf 37.235.52.151:/etc
+scp -r /etc/zsh /etc/vim* /etc/mysql /etc/ssmtp /etc/dnsmasq.d /etc/dnsmasq.conf /etc/resolv.dnsmasq.conf 37.235.52.151:/etc
 scp -r /etc/systemd/system/dnsbl-iphub.service 37.235.52.151:/etc/systemd/system
 scp -r weekly .config .vim* .ssh* .z* 37.235.52.151:
+
+systemctl restart dnsmasq
 
 From teeworlds @ other server:
 scp -r .config .vim* .ssh* .z* 37.235.52.151:
