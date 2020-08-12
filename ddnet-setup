@@ -4,6 +4,7 @@ Debian:
 apt-get update
 apt-get upgrade
 apt-get install bsdutils tree zsh vim htop git g++ libboost-dev python-msgpack python-requests python-dnspython python-mysqldb sshfs tcpdump gdb pkg-config ntpdate ntp mailutils msmtp msmtp-mta libssl-dev libmariadbclient-dev libmysqlcppconn-dev cmake make unattended-upgrades apt-listchanges iptables-persistent libwebsockets-dev libcurl4-openssl-dev python3 python3-dnslib python3-cachetools dnsmasq strace dnsutils sqlite3 libsqlite3-dev
+Install libmysqlcppconn-dev & libmysqlcppconn7v5 from testing: https://serverfault.com/questions/22414/how-can-i-run-debian-stable-but-install-some-packages-from-testing (https://github.com/ddnet/ddnet/issues/2558)
 dpkg-reconfigure tzdata
 dpkg-reconfigure -plow unattended-upgrades
 vim /etc/hostname
