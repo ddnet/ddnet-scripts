@@ -98,7 +98,8 @@ tar xvf ../sqlite-autoconf-3320300.zip
 tar xvf ../
 
 cd SDL2-2.0.8
-./configure --host=x86_64-w64-mingw32
+./configure --host=x86_64-w64-mingw32 --enable-ime
+echo "#define SDL_DISABLE_WINDOWS_IME" >> include/SDL_config.h
 make -j4
 cp build/.libs/SDL2.dll build/.libs/libSDL2.dll.a ..
 x86_64-w64-mingw32-dlltool -v --export-all-symbols -D SDL2.dll -l ../SDL2.lib build/.libs/*.o
@@ -167,7 +168,8 @@ tar xvf ../freetype-2.10.1.tar.gz
 tar xvf ../sqlite-autoconf-3320300.zip
 
 cd SDL2-2.0.8
-./configure --host=i686-w64-mingw32
+./configure --host=i686-w64-mingw32 --enable-ime
+echo "#define SDL_DISABLE_WINDOWS_IME" >> include/SDL_config.h
 make -j4
 cp build/.libs/SDL2.dll build/.libs/libSDL2.dll.a ..
 i686-w64-mingw32-dlltool -v --export-all-symbols -D SDL2.dll -l ../SDL2.lib build/.libs/*.o
