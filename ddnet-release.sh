@@ -38,9 +38,9 @@ build_source ()
 
 build_macosx ()
 {
-  rm -rf macosx
-  mkdir macosx
-  cd macosx
+  rm -rf macosx_$1
+  mkdir macosx_$1
+  cd macosx_$1
   PATH=${PATH:+$PATH:}/home/deen/git/osxcross/target/bin
   eval `osxcross-conf`
   export OSXCROSS_OSX_VERSION_MIN=10.9
@@ -49,7 +49,23 @@ build_macosx ()
   make package_default
   mv DDNet-*.dmg $BUILDS/DDNet-$VERSION-osx.dmg
   cd ..
-  rm -rf macosx
+  rm -rf macosx_$1
+}
+
+build_macosx_website ()
+{
+  build_macosx website
+  mv DDNet-*.dmg $BUILDS/DDNet-$VERSION-osx.dmg
+  cd ..
+  rm -rf macosx_website
+}
+
+build_macosx_steam ()
+{
+  build_macosx steam
+  mv DDNet-*.dmg $BUILDS/DDNet-$VERSION-osx-steam.dmg
+  cd ..
+  rm -rf macosx_steam
 }
 
 build_linux ()
@@ -71,7 +87,7 @@ build_linux ()
   cp -r ddnet-master ddnet-master-steam
 
   chroot . sh -c "cd ddnet-master && cmake -DCMAKE_BUILD_TYPE=Release -DPREFER_BUNDLED_LIBS=ON && make package_default"
-  chroot . sh -c "cd ddnet-master-steam && cmake -DCMAKE_BUILD_TYPE=Release -DAUTOUPDATE=OFF -DPREFER_BUNDLED_LIBS=ON && make -j2 package_default"
+  chroot . sh -c "cd ddnet-master-steam && cmake -DCMAKE_BUILD_TYPE=Release -DAUTOUPDATE=OFF -DPREFER_BUNDLED_LIBS=ON && CXXFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' CPPFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' make -j2 package_default"
   mv ddnet-master/DDNet-*.tar.xz $BUILDS/DDNet-$VERSION-linux_$PLATFORM.tar.xz
   mv ddnet-master-steam/DDNet-*.tar.xz ../DDNet-$VERSION-steam-linux_$PLATFORM.tar.xz
 
@@ -146,7 +162,8 @@ unzip -q $WEBSITE/libs.zip
 rm -rf ddnet-master/ddnet-libs
 mv ddnet-libs-master ddnet-master/ddnet-libs
 
-build_macosx &> builds/mac.log &
+build_macosx_website &> builds/mac.log &
+CXXFLAGS='-DPLATFORM_SUFFIX="-steam"' CPPFLAGS='-DPLATFORM_SUFFIX="-steam"' build_macosx_steam &> builds/mac.log &
 build_linux x86_64 $BUILDDIR/debian6 &> builds/linux_x86_64.log &
 CFLAGS=-m32 LDFLAGS=-m32 build_linux x86 $BUILDDIR/debian6_x86 &> builds/linux_x86.log &
 
@@ -156,6 +173,7 @@ TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
 
 TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
   PREFIX=x86_64-w64-mingw32- PATH=/usr/x86_64-w64-mingw32/bin:$PATH \
+  CXXFLAGS='-DPLATFORM_SUFFIX="-steam"' CPPFLAGS='-DPLATFORM_SUFFIX="-steam"' \
   build_windows_steam 64 &> builds/win64-steam.log &
 
 TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
@@ -168,6 +186,7 @@ TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
 
 TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
   PREFIX=i686-w64-mingw32- PATH=/usr/i686-w64-mingw32/bin:$PATH \
+  CXXFLAGS='-DPLATFORM_SUFFIX="-steam"' CPPFLAGS='-DPLATFORM_SUFFIX="-steam"' \
   build_windows_steam 32 &> builds/win32-steam.log &
 
 # Android
