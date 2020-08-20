@@ -22,6 +22,7 @@ tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.11.tar.gz
 tar xvf ../SDL2-2.0.8.tar.gz
 tar xvf ../sqlite-autoconf-3320300.zip
+tar xvf ../ffmpeg-4.3.1.tar.gz
 
 cd libogg-1.3.4
 ./configure CFLAGS=-fPIC
@@ -49,6 +50,11 @@ cd ../sqlite-autoconf-3320300
 make -j4
 cp .libs/libsqlite3.a ..
 
+# https://github.com/alberthdev/alberthdev-misc/wiki/Build-your-own-tiny-FFMPEG
+# TODO x264 first
+cd ../ffmpeg-4.3.1
+./configure --extra-cflags=-fPIC
+
 cd ../..
 
 mkdir x86
@@ -58,6 +64,7 @@ tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.11.tar.gz
 tar xvf ../SDL2-2.0.8.tar.gz
 tar xvf ../sqlite-autoconf-3320300.zip
+tar xvf ../ffmpeg-4.3.1.tar.gz
 
 cd libogg-1.3.4
 CFLAGS=-m32 LDFLAGS=-m32 ./configure
@@ -96,6 +103,7 @@ tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.11.tar.gz
 tar xvf ../freetype-2.10.1.tar.gz
 tar xvf ../sqlite-autoconf-3320300.zip
+tar xvf ../ffmpeg-4.3.1.tar.gz
 tar xvf ../
 
 cd SDL2-2.0.8
@@ -167,6 +175,7 @@ tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.11.tar.gz
 tar xvf ../freetype-2.10.1.tar.gz
 tar xvf ../sqlite-autoconf-3320300.zip
+tar xvf ../ffmpeg-4.3.1.tar.gz
 
 cd SDL2-2.0.8
 ./configure --host=i686-w64-mingw32 --enable-ime
@@ -235,6 +244,7 @@ tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.11.tar.gz
 tar xvf ../freetype-2.10.1.tar.gz
 tar xvf ../sqlite-autoconf-3320300.zip
+tar xvf ../ffmpeg-4.3.1.tar.gz
 
 export PATH=/home/deen/git/osxcross/target/bin/:$PATH
 export CC=o64-clang

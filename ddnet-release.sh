@@ -47,9 +47,6 @@ build_macosx ()
   cmake -DCMAKE_BUILD_TYPE=Release -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX10.13.sdk/ ../ddnet-master
   make -j2
   make package_default
-  mv DDNet-*.dmg $BUILDS/DDNet-$VERSION-osx.dmg
-  cd ..
-  rm -rf macosx_$1
 }
 
 build_macosx_website ()
@@ -63,7 +60,7 @@ build_macosx_website ()
 build_macosx_steam ()
 {
   build_macosx steam
-  mv DDNet-*.dmg $BUILDS/DDNet-$VERSION-osx-steam.dmg
+  mv DDNet-*.dmg ../DDNet-$VERSION-steam-osx.dmg
   cd ..
   rm -rf macosx_steam
 }
@@ -163,7 +160,7 @@ rm -rf ddnet-master/ddnet-libs
 mv ddnet-libs-master ddnet-master/ddnet-libs
 
 build_macosx_website &> builds/mac.log &
-CXXFLAGS='-DPLATFORM_SUFFIX="-steam"' CPPFLAGS='-DPLATFORM_SUFFIX="-steam"' build_macosx_steam &> builds/mac.log &
+CXXFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' CPPFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' build_macosx_steam &> builds/mac-steam.log &
 build_linux x86_64 $BUILDDIR/debian6 &> builds/linux_x86_64.log &
 CFLAGS=-m32 LDFLAGS=-m32 build_linux x86 $BUILDDIR/debian6_x86 &> builds/linux_x86.log &
 
@@ -250,7 +247,7 @@ mv DDNet-$VERSION-linux_x86 ddnet
 zip -9r DDNet-$VERSION-linux_x86.zip ddnet
 rm -r ddnet
 
-7z x $BUILDS/DDNet-$VERSION-osx.dmg
+7z x ../DDNet-$VERSION-steam-osx.dmg
 rm -r DDNet-$VERSION-osx/DDNet.app/Contents/Resources/data DDNet-$VERSION-osx/DDNet-Server.app/Contents/Resources/data
 mkdir ddnet
 mv DDNet-$VERSION-osx/DDNet.app/Contents/MacOS/DDNet DDNet-$VERSION-osx/DDNet-Server.app/Contents/MacOS/DDNet-Server ddnet
