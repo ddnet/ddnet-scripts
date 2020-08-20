@@ -8,6 +8,7 @@ wget http://downloads.xiph.org/releases/ogg/libogg-1.3.4.tar.gz
 wget https://archive.mozilla.org/pub/opus/opus-1.3.1.tar.gz
 wget https://downloads.xiph.org/releases/opus/opusfile-0.11.tar.gz
 wget https://www.sqlite.org/2020/sqlite-autoconf-3320300.tar.gz
+wget https://ffmpeg.org/releases/ffmpeg-4.3.1.tar.gz
 
 chroot debian6 bash
 cat /etc/apt/sources.list

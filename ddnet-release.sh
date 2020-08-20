@@ -173,7 +173,7 @@ TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
 
 TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
   PREFIX=x86_64-w64-mingw32- PATH=/usr/x86_64-w64-mingw32/bin:$PATH \
-  CXXFLAGS='-DPLATFORM_SUFFIX="-steam"' CPPFLAGS='-DPLATFORM_SUFFIX="-steam"' \
+  CXXFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' CPPFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' \
   build_windows_steam 64 &> builds/win64-steam.log &
 
 TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
@@ -186,7 +186,7 @@ TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
 
 TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
   PREFIX=i686-w64-mingw32- PATH=/usr/i686-w64-mingw32/bin:$PATH \
-  CXXFLAGS='-DPLATFORM_SUFFIX="-steam"' CPPFLAGS='-DPLATFORM_SUFFIX="-steam"' \
+  CXXFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' CPPFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' \
   build_windows_steam 32 &> builds/win32-steam.log &
 
 # Android
