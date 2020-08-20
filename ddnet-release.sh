@@ -38,8 +38,8 @@ build_source ()
 
 build_macosx ()
 {
-  rm -rf macosx_$1
-  mkdir macosx_$1
+  rm -rf macosx$1
+  mkdir macosx$1
   cd macosx_$1
   PATH=${PATH:+$PATH:}/home/deen/git/osxcross/target/bin
   eval `osxcross-conf`
@@ -51,18 +51,18 @@ build_macosx ()
 
 build_macosx_website ()
 {
-  build_macosx website
+  build_macosx
   mv DDNet-*.dmg $BUILDS/DDNet-$VERSION-osx.dmg
   cd ..
-  rm -rf macosx_website
+  rm -rf macosx
 }
 
 build_macosx_steam ()
 {
-  build_macosx steam
+  build_macosx -steam
   mv DDNet-*.dmg ../DDNet-$VERSION-steam-osx.dmg
   cd ..
-  rm -rf macosx_steam
+  rm -rf macosx-steam
 }
 
 build_linux ()
