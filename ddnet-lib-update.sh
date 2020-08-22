@@ -8,6 +8,7 @@ wget http://downloads.xiph.org/releases/ogg/libogg-1.3.4.tar.gz
 wget https://archive.mozilla.org/pub/opus/opus-1.3.1.tar.gz
 wget https://downloads.xiph.org/releases/opus/opusfile-0.11.tar.gz
 wget https://www.sqlite.org/2020/sqlite-autoconf-3320300.tar.gz
+wget https://code.videolan.org/videolan/x264/-/archive/master/x264-master.tar.bz2
 wget https://ffmpeg.org/releases/ffmpeg-4.3.1.tar.gz
 
 chroot debian6 bash
@@ -22,6 +23,7 @@ tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.11.tar.gz
 tar xvf ../SDL2-2.0.8.tar.gz
 tar xvf ../sqlite-autoconf-3320300.zip
+tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-4.3.1.tar.gz
 
 cd libogg-1.3.4
@@ -51,9 +53,13 @@ make -j4
 cp .libs/libsqlite3.a ..
 
 # https://github.com/alberthdev/alberthdev-misc/wiki/Build-your-own-tiny-FFMPEG
-# TODO x264 first
+cd ../x264-master
+./configure --enable-static --disable-cli --disable-gpl --disable-avs --disable-swscale --disable-lavf --disable-ffms --disable-gpac --disable-lsmash --disable-interlaced --enable-pic
+make -j4
+
 cd ../ffmpeg-4.3.1
-./configure --extra-cflags=-fPIC
+./configure --disable-all --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264 --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-gpl --extra-cflags="-fPIC -I../x264-master" --extra-cxxflags="-fPIC -I../x264-master" --extra-ldflags="-L../x264-master -ldl"
+make -j4
 
 cd ../..
 
@@ -64,6 +70,7 @@ tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.11.tar.gz
 tar xvf ../SDL2-2.0.8.tar.gz
 tar xvf ../sqlite-autoconf-3320300.zip
+tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-4.3.1.tar.gz
 
 cd libogg-1.3.4
@@ -103,8 +110,8 @@ tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.11.tar.gz
 tar xvf ../freetype-2.10.1.tar.gz
 tar xvf ../sqlite-autoconf-3320300.zip
+tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-4.3.1.tar.gz
-tar xvf ../
 
 cd SDL2-2.0.8
 ./configure --host=x86_64-w64-mingw32 --enable-ime
@@ -175,6 +182,7 @@ tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.11.tar.gz
 tar xvf ../freetype-2.10.1.tar.gz
 tar xvf ../sqlite-autoconf-3320300.zip
+tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-4.3.1.tar.gz
 
 cd SDL2-2.0.8
@@ -244,6 +252,7 @@ tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.11.tar.gz
 tar xvf ../freetype-2.10.1.tar.gz
 tar xvf ../sqlite-autoconf-3320300.zip
+tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-4.3.1.tar.gz
 
 export PATH=/home/deen/git/osxcross/target/bin/:$PATH
