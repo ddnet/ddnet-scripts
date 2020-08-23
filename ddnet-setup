@@ -30,7 +30,7 @@ tar xvf dnsbl.tar.gz
 With mysql: mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -p mysql
 
 From root @ other server:
-scp -r /etc/zsh /etc/vim* /etc/mysql /etc/ssmtp /etc/dnsmasq.d /etc/dnsmasq.conf /etc/resolv.dnsmasq.conf 37.235.52.151:/etc
+scp -r /etc/zsh /etc/vim* /etc/mysql /etc/ssmtp /etc/dnsmasq.d /etc/dnsmasq.conf /etc/resolv.dnsmasq.conf /etc/resolv.conf 37.235.52.151:/etc
 scp -r /etc/systemd/system/dnsbl-iphub.service 37.235.52.151:/etc/systemd/system
 scp -r weekly .config .vim* .ssh* .z* 37.235.52.151:
 
