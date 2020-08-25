@@ -224,26 +224,30 @@ zip -9r DDNet-$VERSION-data.zip ddnet
 rm -r ddnet
 
 mv DDNet-$VERSION-win64 ddnet
+cp ~/steamworks/sdk/redistributable_bin/win64/steam_api64.dll ddnet/steam_api.dll
 zip -9r DDNet-$VERSION-win64.zip ddnet
 rm -r ddnet
 
 unzip ../DDNet-$VERSION-steam-win32.zip
 rm -r DDNet-$VERSION-win32/data
 mv DDNet-$VERSION-win32 ddnet
+cp ~/steamworks/sdk/redistributable_bin/steam_api.dll ddnet
 zip -9r DDNet-$VERSION-win32.zip ddnet
 rm -r ddnet
 
 tar xvf ../DDNet-$VERSION-steam-linux_x86_64.tar.xz
 rm -r DDNet-$VERSION-linux_x86_64/data
-cp $BUILDDIR/ddnet-master/ddnet-libs/sdl/linux/lib64/libSDL2-2.0.so.0 DDNet-$VERSION-linux_x86_64
 mv DDNet-$VERSION-linux_x86_64 ddnet
+cp $BUILDDIR/ddnet-master/ddnet-libs/sdl/linux/lib64/libSDL2-2.0.so.0 ddnet
+cp ~/steamworks/sdk/redistributable_bin/linux64/libsteam_api.so ddnet
 zip -9r DDNet-$VERSION-linux_x86_64.zip ddnet
 rm -r ddnet
 
 tar xvf ../DDNet-$VERSION-steam-linux_x86.tar.xz
 rm -r DDNet-$VERSION-linux_x86/data
-cp $BUILDDIR/ddnet-master/ddnet-libs/sdl/linux/lib32/libSDL2-2.0.so.0 DDNet-$VERSION-linux_x86
 mv DDNet-$VERSION-linux_x86 ddnet
+cp $BUILDDIR/ddnet-master/ddnet-libs/sdl/linux/lib32/libSDL2-2.0.so.0 ddnet
+cp ~/steamworks/sdk/redistributable_bin/linux32/libsteam_api.so ddnet
 zip -9r DDNet-$VERSION-linux_x86.zip ddnet
 rm -r ddnet
 
@@ -251,6 +255,7 @@ rm -r ddnet
 rm -r DDNet-$VERSION-osx/DDNet.app/Contents/Resources/data DDNet-$VERSION-osx/DDNet-Server.app/Contents/Resources/data
 mkdir ddnet
 mv DDNet-$VERSION-osx/DDNet.app/Contents/MacOS/DDNet DDNet-$VERSION-osx/DDNet-Server.app/Contents/MacOS/DDNet-Server ddnet
+cp ~/steamworks/sdk/redistributable_bin/osx/libsteam_api.dylib ddnet
 mv DDNet-$VERSION-osx/DDNet.app/Contents/Frameworks .
 zip -9r DDNet-$VERSION-osx.zip ddnet Frameworks
 rm -r ddnet Frameworks DDNet-$VERSION-osx
