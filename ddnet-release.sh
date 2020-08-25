@@ -40,7 +40,7 @@ build_macosx ()
 {
   rm -rf macosx$1
   mkdir macosx$1
-  cd macosx_$1
+  cd macosx$1
   PATH=${PATH:+$PATH:}/home/deen/git/osxcross/target/bin
   eval `osxcross-conf`
   export OSXCROSS_OSX_VERSION_MIN=10.9
