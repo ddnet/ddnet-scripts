@@ -5,7 +5,8 @@ cd /media/teehistorian
 mkdir -p data
 
 for loc in $(cat all-locations); do
-  rsync -a --bwlimit=1024K --no-o --no-g -H --append-verify -v "${loc}.ddnet.tw:servers/teehistorian/." "data/${loc}/" &
+  # rsync's -z compression is better than ssh's -C
+  rsync -z -a --bwlimit=1024K --no-o --no-g -H --append-verify --rsync-path='nice -n19 ionice -c3 rsync' -e 'ssh -o Compression=no' -v "${loc}.ddnet.tw:servers/teehistorian/." "data/${loc}/" &
 done
 
 for dir in data/*; do
