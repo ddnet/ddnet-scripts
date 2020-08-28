@@ -252,14 +252,14 @@ zip -9r DDNet-$VERSION-linux_x86.zip ddnet
 rm -r ddnet
 
 7z x ../DDNet-$VERSION-steam-osx.dmg
-rm -r DDNet-*-osx/DDNet.app/Contents/Resources/data DDNet-$VERSION-osx/DDNet-Server.app/Contents/Resources/data
+rm -r DDNet-*-osx/DDNet.app/Contents/Resources/data DDNet-*-osx/DDNet-Server.app/Contents/Resources/data
 mkdir ddnet
-mv DDNet-*-osx/DDNet.app/Contents/MacOS/DDNet DDNet-$VERSION-osx/DDNet-Server.app/Contents/MacOS/DDNet-Server* ddnet
+mv DDNet-*-osx/DDNet.app/Contents/MacOS/DDNet DDNet-*-osx/DDNet-Server.app/Contents/MacOS/DDNet-Server* ddnet
 mv DDNet-*-osx/DDNet.app/Contents/Frameworks .
 cp -r DDNet-*-osx/DDNet-Server.app/Contents/Frameworks/* Frameworks
 cp $BUILDDIR/steamworks/sdk/redistributable_bin/osx/libsteam_api.dylib Frameworks
 zip -9r DDNet-$VERSION-osx.zip ddnet Frameworks
-rm -r ddnet Frameworks DDNet-$VERSION-osx
+rm -r ddnet Frameworks DDNet-*-osx
 
 rm -rf ddnet-master
 

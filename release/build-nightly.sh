@@ -1,4 +1,5 @@
 #!/usr/bin/zsh
+autoload zmv
 set -e
 cd /home/deen/isos/ddnet
 ./build.sh nightly &> builds/DDNet-nightly.log
