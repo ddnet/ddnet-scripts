@@ -123,7 +123,7 @@ build_windows_steam ()
 {
   PLATFORM=$1
   build_windows $PLATFORM "-DAUTOUPDATE=OFF" "-steam"
-  mv DDNet-$VERSION-win$PLATFORM.zip ../DDNet-$VERSION-steam-win$PLATFORM.zip
+  mv DDNet-*.zip ../DDNet-$VERSION-steam-win$PLATFORM.zip
   cd ..
   rm -rf win$PLATFORM-steam
 }
@@ -133,9 +133,9 @@ build_windows_videorecorder ()
   PLATFORM=$1
   build_windows $PLATFORM "-DVIDEORECORDER=ON -DAUTOUPDATE=OFF" "-videorecorder"
 
-  unzip DDNet-$VERSION-win$PLATFORM.zip
-  rm DDNet-$VERSION-win$PLATFORM.zip
-  mv DDNet-$VERSION-win$PLATFORM DDNet-$VERSION-videorecorder-win$PLATFORM
+  unzip DDNet-*-win$PLATFORM.zip
+  rm DDNet-*-win$PLATFORM.zip
+  mv DDNet-*-win$PLATFORM DDNet-$VERSION-videorecorder-win$PLATFORM
   zip -9r DDNet-$VERSION-videorecorder-win$PLATFORM.zip DDNet-$VERSION-videorecorder-win$PLATFORM
   mv DDNet-$VERSION-videorecorder-win$PLATFORM.zip $BUILDS
   cd ..
@@ -219,44 +219,44 @@ cd steam
 mkdir ddnet
 
 unzip ../DDNet-$VERSION-steam-win64.zip
-mv DDNet-$VERSION-win64/data ddnet/data
+mv DDNet-*-win64/data ddnet/data
 zip -9r DDNet-$VERSION-data.zip ddnet
 rm -r ddnet
 
-mv DDNet-$VERSION-win64 ddnet
+mv DDNet-*-win64 ddnet
 cp $BUILDDIR/steamworks/sdk/redistributable_bin/win64/steam_api64.dll ddnet/libsteam_api.dll
 zip -9r DDNet-$VERSION-win64.zip ddnet
 rm -r ddnet
 
 unzip ../DDNet-$VERSION-steam-win32.zip
-rm -r DDNet-$VERSION-win32/data
-mv DDNet-$VERSION-win32 ddnet
+rm -r DDNet-*-win32/data
+mv DDNet-*-win32 ddnet
 cp $BUILDDIR/steamworks/sdk/redistributable_bin/steam_api.dll ddnet/libsteam_api.dll
 zip -9r DDNet-$VERSION-win32.zip ddnet
 rm -r ddnet
 
 tar xvf ../DDNet-$VERSION-steam-linux_x86_64.tar.xz
-rm -r DDNet-$VERSION-linux_x86_64/data
-mv DDNet-$VERSION-linux_x86_64 ddnet
+rm -r DDNet-*-linux_x86_64/data
+mv DDNet-*-linux_x86_64 ddnet
 cp $BUILDDIR/ddnet-master/ddnet-libs/sdl/linux/lib64/libSDL2-2.0.so.0 ddnet
 cp $BUILDDIR/steamworks/sdk/redistributable_bin/linux64/libsteam_api.so ddnet
 zip -9r DDNet-$VERSION-linux_x86_64.zip ddnet
 rm -r ddnet
 
 tar xvf ../DDNet-$VERSION-steam-linux_x86.tar.xz
-rm -r DDNet-$VERSION-linux_x86/data
-mv DDNet-$VERSION-linux_x86 ddnet
+rm -r DDNet-*-linux_x86/data
+mv DDNet-*-linux_x86 ddnet
 cp $BUILDDIR/ddnet-master/ddnet-libs/sdl/linux/lib32/libSDL2-2.0.so.0 ddnet
 cp $BUILDDIR/steamworks/sdk/redistributable_bin/linux32/libsteam_api.so ddnet
 zip -9r DDNet-$VERSION-linux_x86.zip ddnet
 rm -r ddnet
 
 7z x ../DDNet-$VERSION-steam-osx.dmg
-rm -r DDNet-$VERSION-osx/DDNet.app/Contents/Resources/data DDNet-$VERSION-osx/DDNet-Server.app/Contents/Resources/data
+rm -r DDNet-*-osx/DDNet.app/Contents/Resources/data DDNet-$VERSION-osx/DDNet-Server.app/Contents/Resources/data
 mkdir ddnet
-mv DDNet-$VERSION-osx/DDNet.app/Contents/MacOS/DDNet DDNet-$VERSION-osx/DDNet-Server.app/Contents/MacOS/DDNet-Server* ddnet
-mv DDNet-$VERSION-osx/DDNet.app/Contents/Frameworks .
-cp -r DDNet-$VERSION-osx/DDNet-Server.app/Contents/Frameworks/* Frameworks
+mv DDNet-*-osx/DDNet.app/Contents/MacOS/DDNet DDNet-$VERSION-osx/DDNet-Server.app/Contents/MacOS/DDNet-Server* ddnet
+mv DDNet-*-osx/DDNet.app/Contents/Frameworks .
+cp -r DDNet-*-osx/DDNet-Server.app/Contents/Frameworks/* Frameworks
 cp $BUILDDIR/steamworks/sdk/redistributable_bin/osx/libsteam_api.dylib Frameworks
 zip -9r DDNet-$VERSION-osx.zip ddnet Frameworks
 rm -r ddnet Frameworks DDNet-$VERSION-osx

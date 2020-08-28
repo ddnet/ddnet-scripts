@@ -24,7 +24,6 @@ Create tars on other servers and scp them over:
 tar --exclude='teehistorian' --exclude='*.sql' -zcf servers.tar.gz servers
 
 tar xvf servers.tar.gz
-tar xvf src.tar.gz
 tar xvf dnsbl.tar.gz
 
 With mysql: mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -p mysql
@@ -43,14 +42,11 @@ scp -r .config .vim* .ssh* .z* 37.235.52.151:
 
 vim /etc/ssmtp/ssmtp.conf # hostname
 vim /etc/hosts # ddnet.tw
-
-cd src
-./build.sh
-cd ..
+ping master3.teeworlds.com
 
 cd servers
 vim mysql.cfg scripts/mysql.py
-vim types/*/flexname.cfg
+sed -i "s/GER/Brazil/" types/*/flexname.cfg servers/*.cfg
 
 crontab -e
 vim /etc/security/limits.conf
