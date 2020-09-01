@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 
 # Build DDNet releases for all platforms
 
@@ -79,12 +79,13 @@ build_linux ()
   rm -rf ddnet-master ddnet-master-steam ddnet-libs-master
   unzip -q $WEBSITE/master.zip
   unzip -q $WEBSITE/libs.zip
+  #mv ddnet-pr-revert-revert ddnet-master
   rm -rf ddnet-master/ddnet-libs
   mv ddnet-libs-master ddnet-master/ddnet-libs
   cp -r ddnet-master ddnet-master-steam
 
   chroot . sh -c "cd ddnet-master && cmake -DCMAKE_BUILD_TYPE=Release -DPREFER_BUNDLED_LIBS=ON && make package_default"
-  chroot . sh -c "cd ddnet-master-steam && cmake -DCMAKE_BUILD_TYPE=Release -DAUTOUPDATE=OFF -DPREFER_BUNDLED_LIBS=ON && CXXFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' CPPFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' make -j2 package_default"
+  chroot . sh -c "cd ddnet-master-steam && cmake -DCMAKE_BUILD_TYPE=Release -DSTEAM=ON -DAUTOUPDATE=OFF -DPREFER_BUNDLED_LIBS=ON && CXXFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' CPPFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' make -j2 package_default"
   mv ddnet-master/DDNet-*.tar.xz $BUILDS/DDNet-$VERSION-linux_$PLATFORM.tar.xz
   mv ddnet-master-steam/DDNet-*.tar.xz ../DDNet-$VERSION-steam-linux_$PLATFORM.tar.xz
 
@@ -122,7 +123,7 @@ build_windows_website ()
 build_windows_steam ()
 {
   PLATFORM=$1
-  build_windows $PLATFORM "-DAUTOUPDATE=OFF" "-steam"
+  build_windows $PLATFORM "-DAUTOUPDATE=OFF -DSTEAM=ON" "-steam"
   mv DDNet-*.zip ../DDNet-$VERSION-steam-win$PLATFORM.zip
   cd ..
   rm -rf win$PLATFORM-steam
@@ -150,6 +151,7 @@ wget -nv -O libs.zip https://github.com/ddnet/ddnet-libs/archive/master.zip
 cd $BUILDDIR
 rm -rf ddnet-master
 unzip -q $WEBSITE/master.zip
+#mv ddnet-pr-revert-revert ddnet-master
 cp -r ddnet-master DDNet-$VERSION
 TIME_PREPARATION=$(($(date +%s) - $START_TIME))
 
@@ -224,14 +226,14 @@ zip -9r DDNet-$VERSION-data.zip ddnet
 rm -r ddnet
 
 mv DDNet-*-win64 ddnet
-cp $BUILDDIR/steamworks/sdk/redistributable_bin/win64/steam_api64.dll ddnet/libsteam_api.dll
+cp $BUILDDIR/steamworks/sdk/redistributable_bin/win64/steam_api64.dll ddnet/steam_api.dll
 zip -9r DDNet-$VERSION-win64.zip ddnet
 rm -r ddnet
 
 unzip ../DDNet-$VERSION-steam-win32.zip
 rm -r DDNet-*-win32/data
 mv DDNet-*-win32 ddnet
-cp $BUILDDIR/steamworks/sdk/redistributable_bin/steam_api.dll ddnet/libsteam_api.dll
+cp $BUILDDIR/steamworks/sdk/redistributable_bin/steam_api.dll ddnet/steam_api.dll
 zip -9r DDNet-$VERSION-win32.zip ddnet
 rm -r ddnet
 
