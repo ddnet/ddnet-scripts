@@ -21,7 +21,7 @@ passwd teeworlds
 vim /etc/ssh/sshd_config
 
 Create tars on other servers and scp them over:
-tar --exclude='teehistorian' --exclude='*.sql' --exclude='*.log*' --exclude='*.fifo' -zcf servers.tar.gz servers dnsbl
+tar --exclude='teehistorian' --exclude='*.sql' --exclude='*.log*' --exclude='*.fifo' --exclude='nohup.out' -zcf servers.tar.gz servers dnsbl run-all.sh
 
 tar xvf servers.tar.gz
 
@@ -43,30 +43,31 @@ vim /etc/ssmtp/ssmtp.conf # hostname
 vim /etc/hosts # ddnet.tw
 ping master3.teeworlds.com
 
-cd servers
-vim mysql.cfg scripts/mysql.py
-sed -i "s/GER/Brazil/" types/*/flexname.cfg servers/*.cfg
-
-crontab -e
 vim /etc/security/limits.conf
-
 vim /usr/local/bin/{ni,rni}
 chmod +x !$
 
+vim /etc/init.d/teeworlds-servers
+chmod +x /etc/init.d/teeworlds-servers
+update-rc.d teeworlds-servers defaults enable
+
+vim /etc/network/if-up.d/iptables
+chmod +x /etc/network/if-up.d/iptables
+
+scp /etc/iptables.up.rules from another server
+iptables-restore < /etc/iptables.up.rules
+
 git config --global user.email "you@example.com"
 git config --global user.name "Your Name"
-
-vim ~/run-all.sh /etc/init.d/teeworlds-servers
-chmod +x ~/run-all.sh /etc/init.d/teeworlds-servers
-update-rc.d teeworlds-servers defaults enable
+vim ~/run-all.sh
+chmod +x ~/run-all.sh
+cd servers
+vim mysql.cfg scripts/mysql.py serverstatus-client.py
+ed -i "s/GER/Brazil/" types/*/flexname.cfg servers/*.cfg
+crontab -e
 
 # Hack for getting approximate time for hosters that totally block NTP:
 date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
-
-vim ~/servers/serverstatus-client.py
-add /etc/network/if-up.d/iptables
-scp /etc/iptables.up.rules from another server
-iptables-restore < /etc/iptables.up.rules
 
 On ddnet.tw:
 vim ServerStatus/server/config.json

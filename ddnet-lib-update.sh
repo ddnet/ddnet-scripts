@@ -55,11 +55,11 @@ cp .libs/libsqlite3.a ..
 
 # https://github.com/alberthdev/alberthdev-misc/wiki/Build-your-own-tiny-FFMPEG
 cd ../x264-master
-./configure --enable-static --disable-cli --disable-gpl --disable-avs --disable-swscale --disable-lavf --disable-ffms --disable-gpac --disable-lsmash --disable-interlaced --enable-pic
-make -j4
+CFLAGS="-O2 -fno-fast-math" ./configure --enable-static --disable-cli --disable-gpl --disable-avs --disable-swscale --disable-lavf --disable-ffms --disable-gpac --disable-lsmash --disable-interlaced --enable-pic
+CFLAGS="-O2 -fno-fast-math" make -j4
 
 cd ../ffmpeg-4.3.1
-./configure --disable-all --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264 --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-gpl --extra-cflags="-fPIC -I../x264-master" --extra-cxxflags="-fPIC -I../x264-master" --extra-ldflags="-L../x264-master -ldl"
+./configure --disable-all --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-fPIC -I../x264-master" --extra-cxxflags="-fPIC -I../x264-master" --extra-ldflags="-L../x264-master -ldl"
 make -j4
 
 cd ../..
