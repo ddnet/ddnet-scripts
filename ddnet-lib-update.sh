@@ -53,14 +53,15 @@ cd ../sqlite-autoconf-3320300
 make -j4
 cp .libs/libsqlite3.a ..
 
-# https://github.com/alberthdev/alberthdev-misc/wiki/Build-your-own-tiny-FFMPEG
 cd ../x264-master
 CFLAGS="-O2 -fno-fast-math" ./configure --enable-static --disable-cli --disable-gpl --disable-avs --disable-swscale --disable-lavf --disable-ffms --disable-gpac --disable-lsmash --disable-interlaced --enable-pic
 CFLAGS="-O2 -fno-fast-math" make -j4
+cp libx264.a ..
 
 cd ../ffmpeg-4.3.1
 ./configure --disable-all --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-fPIC -I../x264-master" --extra-cxxflags="-fPIC -I../x264-master" --extra-ldflags="-L../x264-master -ldl"
 make -j4
+cp */*.a ..
 
 cd ../..
 
@@ -99,6 +100,16 @@ cd ../sqlite-autoconf-3320300
 ./configure CFLAGS="-fPIC -m32 -DSQLITE_OMIT_LOAD_EXTENSION"
 make -j4
 cp .libs/libsqlite3.a ..
+
+cd ../x264-master
+AS=nasm CFLAGS="-m32 -O2 -fno-fast-math" LDFLAGS=-m32 ./configure --enable-static --disable-cli --disable-gpl --disable-avs --disable-swscale --disable-lavf --disable-ffms --disable-gpac --disable-lsmash --disable-interlaced --enable-pic --host=i686-linux
+CFLAGS="-m32 -O2 -fno-fast-math" LDFLAGS=-m32 make -j4
+cp libx264.a ..
+
+cd ../ffmpeg-4.3.1
+./configure --disable-all --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-m32 -fPIC -I../x264-master" --extra-cxxflags="-m32 -fPIC -I../x264-master" --extra-ldflags="-m32 -L../x264-master -ldl" --cpu=i686
+make -j4
+cp */*.a ..
 
 cd ../..
 
@@ -168,6 +179,15 @@ cd ../sqlite-autoconf-3320300
 make -j4
 cp .libs/libsqlite3-0.dll ..
 x86_64-w64-mingw32-dlltool -v --export-all-symbols  -D sqlite3.dll -l ../sqlite3.lib .libs/*.o
+
+cd ../x264-master
+AS=nasm CFLAGS="-I/usr/x86_64-w64-mingw32/include" LDFLAGS="-L/usr/x86_64-w64-mingw32/lib" ./configure --enable-static --disable-cli --disable-gpl --disable-avs --disable-swscale --disable-lavf --disable-ffms --disable-gpac --disable-lsmash --disable-interlaced --host=x86_64-mingw32 --prefix=/usr/x86_64-w64-mingw32 --cross-prefix=x86_64-w64-mingw32-
+make -j4
+
+cd ../ffmpeg-4.3.1
+./configure --disable-all --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-I../x264-master" --extra-cxxflags="-I../x264-master" --extra-ldflags="-L../x264-master" --arch=x86_64 --target_os=mingw32 --cross-prefix=x86_64-w64-mingw32- --disable-static --enable-shared
+make -j4
+cp libavcodec/avcodec-58.dll libavformat/avformat-58.dll libavutil/avutil-56.dll libswresample/swresample-3.dll libswscale/swscale-5.dll libavcodec/avcodec.lib libavformat/avformat.lib libavutil/avutil.lib libswresample/swresample.lib libswscale/swscale.lib ..
 
 cd ..
 for i in *.dll; do x86_64-w64-mingw32-strip -s $i; done
@@ -240,6 +260,15 @@ make -j4
 cp .libs/libsqlite3-0.dll ..
 i686-w64-mingw32-dlltool -v --export-all-symbols  -D sqlite3.dll -l ../sqlite3.lib .libs/*.o
 
+cd ../x264-master
+AS=nasm CFLAGS="-I/usr/i686-w64-mingw32/include" LDFLAGS="-L/usr/i686-w64-mingw32/lib" ./configure --enable-static --disable-cli --disable-gpl --disable-avs --disable-swscale --disable-lavf --disable-ffms --disable-gpac --disable-lsmash --disable-interlaced --host=i686-mingw32 --prefix=/usr/i686-w64-mingw32 --cross-prefix=i686-w64-mingw32-
+make -j4
+
+cd ../ffmpeg-4.3.1
+./configure --disable-all --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-I../x264-master" --extra-cxxflags="-I../x264-master" --extra-ldflags="-L../x264-master" --arch=i686 --target_os=mingw32 --cross-prefix=i686-w64-mingw32- --disable-static --enable-shared
+make -j4
+cp libavcodec/avcodec-58.dll libavformat/avformat-58.dll libavutil/avutil-56.dll libswresample/swresample-3.dll libswscale/swscale-5.dll libavcodec/avcodec.lib libavformat/avformat.lib libavutil/avutil.lib libswresample/swresample.lib libswscale/swscale.lib ..
+
 cd ..
 for i in *.dll; do i686-w64-mingw32-strip -s $i; done
 
@@ -290,3 +319,12 @@ cd ../sqlite-autoconf-3320300
 ./configure --host=x86_64-apple-darwin17 CFLAGS="-fPIC -DSQLITE_OMIT_LOAD_EXTENSION"
 make -j4
 cp .libs/libsqlite3.0.dylib ..
+
+cd ../x264-master
+AS=nasm CFLAGS="-mmacosx-version-min=10.9 -I/usr/x86_64-apple-darwin17/include" LDFLAGS="-L/usr/x86_64-apple-darwin17/lib" ./configure --enable-static --disable-cli --disable-gpl --disable-avs --disable-swscale --disable-lavf --disable-ffms --disable-gpac --disable-lsmash --disable-interlaced --host=x86_64-apple-darwin17 --prefix=/usr/x86_64-apple-darwin17 --cross-prefix=x86_64-apple-darwin17-
+make -j4
+
+cd ../ffmpeg-4.3.1
+./configure --disable-all --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-cxxflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-ldflags="-L../x264-master" --arch=x86_64 --target_os=darwin --cross-prefix=x86_64-apple-darwin17- --disable-static --enable-shared --cc=$CC --cxx=$CXX
+make -j4
+cp libavcodec/libavcodec.58.dylib libavformat/libavformat.58.dylib libavutil/libavutil.56.dylib libswresample/libswresample.3.dylib libswscale/libswscale.5.dylib ..
