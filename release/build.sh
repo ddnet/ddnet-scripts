@@ -44,7 +44,7 @@ build_macosx ()
   PATH=${PATH:+$PATH:}/home/deen/git/osxcross/target/bin
   eval `osxcross-conf`
   export OSXCROSS_OSX_VERSION_MIN=10.9
-  cmake -DCMAKE_BUILD_TYPE=Release -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX10.13.sdk/ ../ddnet-master
+  cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX10.13.sdk/ ../ddnet-master
   make -j2
   make package_default
 }
@@ -79,13 +79,14 @@ build_linux ()
   rm -rf ddnet-master ddnet-master-steam ddnet-libs-master
   unzip -q $WEBSITE/master.zip
   unzip -q $WEBSITE/libs.zip
-  #mv ddnet-pr-revert-revert ddnet-master
+  #mv ddnet-pr-ffmpeg2 ddnet-master
   rm -rf ddnet-master/ddnet-libs
-  mv ddnet-libs-master ddnet-master/ddnet-libs
+  #mv ddnet-libs-pr-ffmpeg2 ddnet-master/ddnet-libs
+  mv ddnet-libs-paster ddnet-master/ddnet-libs
   cp -r ddnet-master ddnet-master-steam
 
-  chroot . sh -c "cd ddnet-master && cmake -DCMAKE_BUILD_TYPE=Release -DPREFER_BUNDLED_LIBS=ON && make package_default"
-  chroot . sh -c "cd ddnet-master-steam && cmake -DCMAKE_BUILD_TYPE=Release -DSTEAM=ON -DAUTOUPDATE=OFF -DPREFER_BUNDLED_LIBS=ON && CXXFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' CPPFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' make -j2 package_default"
+  chroot . sh -c "cd ddnet-master && cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DPREFER_BUNDLED_LIBS=ON && make package_default"
+  chroot . sh -c "cd ddnet-master-steam && cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DSTEAM=ON -DAUTOUPDATE=OFF -DPREFER_BUNDLED_LIBS=ON && CXXFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' CPPFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' make -j2 package_default"
   mv ddnet-master/DDNet-*.tar.xz $BUILDS/DDNet-$VERSION-linux_$PLATFORM.tar.xz
   mv ddnet-master-steam/DDNet-*.tar.xz ../DDNet-$VERSION-steam-linux_$PLATFORM.tar.xz
 
@@ -105,7 +106,7 @@ build_windows ()
   rm -rf $DIR
   mkdir $DIR
   cd $DIR
-  cmake -DCMAKE_BUILD_TYPE=Release -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain $BUILDOPTS ../ddnet-master
+  cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain $BUILDOPTS ../ddnet-master
   make package_default
   unset PREFIX \
     TARGET_FAMILY TARGET_PLATFORM TARGET_ARCH
@@ -129,29 +130,17 @@ build_windows_steam ()
   rm -rf win$PLATFORM-steam
 }
 
-build_windows_videorecorder ()
-{
-  PLATFORM=$1
-  build_windows $PLATFORM "-DVIDEORECORDER=ON -DAUTOUPDATE=OFF" "-videorecorder"
-
-  unzip DDNet-*-win$PLATFORM.zip
-  rm DDNet-*-win$PLATFORM.zip
-  mv DDNet-*-win$PLATFORM DDNet-$VERSION-videorecorder-win$PLATFORM
-  zip -9r DDNet-$VERSION-videorecorder-win$PLATFORM.zip DDNet-$VERSION-videorecorder-win$PLATFORM
-  mv DDNet-$VERSION-videorecorder-win$PLATFORM.zip $BUILDS
-  cd ..
-  rm -rf win$PLATFORM-videorecorder
-}
-
 # Get the sources
 cd $WEBSITE
 rm -rf master.zip libs.zip
+#wget -nv -O master.zip https://github.com/def-/ddnet/archive/pr-ffmpeg2.zip
+#wget -nv -O libs.zip https://github.com/ddnet/ddnet-libs/archive/pr-ffmpeg2.zip
 wget -nv -O master.zip https://github.com/ddnet/ddnet/archive/master.zip
 wget -nv -O libs.zip https://github.com/ddnet/ddnet-libs/archive/master.zip
 cd $BUILDDIR
 rm -rf ddnet-master
 unzip -q $WEBSITE/master.zip
-#mv ddnet-pr-revert-revert ddnet-master
+#mv ddnet-pr-ffmpeg2 ddnet-master
 cp -r ddnet-master DDNet-$VERSION
 TIME_PREPARATION=$(($(date +%s) - $START_TIME))
 
@@ -159,6 +148,7 @@ build_source &
 
 unzip -q $WEBSITE/libs.zip
 rm -rf ddnet-master/ddnet-libs
+#mv ddnet-libs-pr-ffmpeg2 ddnet-master/ddnet-libs
 mv ddnet-libs-master ddnet-master/ddnet-libs
 
 build_macosx_website &> builds/mac.log &
@@ -174,10 +164,6 @@ TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
   PREFIX=x86_64-w64-mingw32- PATH=/usr/x86_64-w64-mingw32/bin:$PATH \
   CXXFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' CPPFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' \
   build_windows_steam 64 &> builds/win64-steam.log &
-
-TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
-  PREFIX=x86_64-w64-mingw32- PATH=/usr/x86_64-w64-mingw32/bin:$PATH \
-  build_windows_videorecorder 64 &> builds/win64-videorecorder.log &
 
 TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
   PREFIX=i686-w64-mingw32- PATH=/usr/i686-w64-mingw32/bin:$PATH \
