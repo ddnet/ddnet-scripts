@@ -82,7 +82,7 @@ build_linux ()
   #mv ddnet-pr-ffmpeg2 ddnet-master
   rm -rf ddnet-master/ddnet-libs
   #mv ddnet-libs-pr-ffmpeg2 ddnet-master/ddnet-libs
-  mv ddnet-libs-paster ddnet-master/ddnet-libs
+  mv ddnet-libs-master ddnet-master/ddnet-libs
   cp -r ddnet-master ddnet-master-steam
 
   chroot . sh -c "cd ddnet-master && cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DPREFER_BUNDLED_LIBS=ON && make package_default"
