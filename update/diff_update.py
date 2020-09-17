@@ -23,8 +23,10 @@ def collect_file_paths(root):
                 dirpath_relative = []
             else:
                 dirpath_relative = list(os.path.split(os.path.relpath(dirpath, root)))
+                if len(dirpath_relative) > 0 and dirpath_relative[0] == "":
+                    dirpath_relative = dirpath_relative[1:]
             relative_path = "/".join(dirpath_relative + [filename])
-            if relative_path not in ("DDNet", "DDNet-Server", "DDNet.exe", "DDNet-Server.exe"):
+            if "." in filename and not filename.endswith(".exe"):
                 result.append((relative_path, absolute_path))
     return sorted(result)
 
@@ -109,7 +111,6 @@ versions in the current working directory
 
     data.insert(0, {"version": args.version2, "client": True, "server": True})
     compare_multiple(pairs, data[0])
-    print('  },')
 
     with open("update.json.new", "w") as json_file:
         json.dump(data, json_file, indent=2, sort_keys=False)

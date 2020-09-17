@@ -22,6 +22,10 @@ tar xvf /var/www/downloads/DDNet-$VERSION-linux_x86_64.tar.xz
 
 ./diff_update.py $OLD_VERSION $VERSION
 
+mv data data.old
+mv DDNet-$VERSION-win64/data data
+rm -r data.old
+
 for i in DDNet-$VERSION-win32/*.{exe,dll}; do mcp $i ${i:r:t}-win32.${i:e}; done
 for i in DDNet-$VERSION-win64/*.{exe,dll}; do mcp $i ${i:r:t}-win64.${i:e}; done
 for i in DDNet-$VERSION-linux_x86/{DDNet,DDNet-Server}; do mcp $i ${i:r:t}-linux-x86; done
