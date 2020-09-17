@@ -11,6 +11,7 @@ wget https://downloads.xiph.org/releases/opus/opusfile-0.11.tar.gz
 wget https://www.sqlite.org/2020/sqlite-autoconf-3320300.tar.gz
 wget https://code.videolan.org/videolan/x264/-/archive/master/x264-master.tar.bz2
 wget https://ffmpeg.org/releases/ffmpeg-4.3.1.tar.gz
+wget https://github.com/warmcat/libwebsockets/archive/v4.1.1.tar.gz
 
 chroot debian6 bash
 cat /etc/apt/sources.list
@@ -26,6 +27,7 @@ tar xvf ../SDL2-2.0.12.tar.gz
 tar xvf ../sqlite-autoconf-3320300.zip
 tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-4.3.1.tar.gz
+tar xvf ../v4.1.1.tar.gz
 
 cd libogg-1.3.4
 ./configure CFLAGS=-fPIC
@@ -63,6 +65,11 @@ cd ../ffmpeg-4.3.1
 make -j4
 cp */*.a ..
 
+cd ../libwebsockets-4.1.1
+CFLAGS=-fPIC LDFLAGS=-fPIC cmake -DLWS_UNIX_SOCK=OFF -DLWS_WITH_SSL=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
+make -j4
+cp lib/libwebsockets.a ..
+
 cd ../..
 
 mkdir x86
@@ -74,6 +81,7 @@ tar xvf ../SDL2-2.0.12.tar.gz
 tar xvf ../sqlite-autoconf-3320300.zip
 tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-4.3.1.tar.gz
+tar xvf ../v4.1.1.tar.gz
 
 cd libogg-1.3.4
 CFLAGS=-m32 LDFLAGS=-m32 ./configure
@@ -111,6 +119,11 @@ cd ../ffmpeg-4.3.1
 make -j4
 cp */*.a ..
 
+cd ../libwebsockets-4.1.1
+CFLAGS="-m32 -fPIC" LDFLAGS="-m32 -fPIC" cmake -DLWS_UNIX_SOCK=OFF -DLWS_WITH_SSL=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
+make -j4
+cp lib/libwebsockets.a ..
+
 cd ../..
 
 mkdir win64
@@ -124,6 +137,7 @@ tar xvf ../freetype-2.10.1.tar.gz
 tar xvf ../sqlite-autoconf-3320300.zip
 tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-4.3.1.tar.gz
+tar xvf ../v4.1.1.tar.gz
 
 cd SDL2-2.0.8
 ./configure --host=x86_64-w64-mingw32 --enable-ime
@@ -189,6 +203,11 @@ cd ../ffmpeg-4.3.1
 make -j4
 cp libavcodec/avcodec-58.dll libavformat/avformat-58.dll libavutil/avutil-56.dll libswresample/swresample-3.dll libswscale/swscale-5.dll libavcodec/avcodec.lib libavformat/avformat.lib libavutil/avutil.lib libswresample/swresample.lib libswscale/swscale.lib ..
 
+cd ../libwebsockets-4.1.1
+cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-w64.cmake -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
+make -j4
+cp lib/libwebsockets.dll.a bin/libwebsockets.dll ..
+
 cd ..
 for i in *.dll; do x86_64-w64-mingw32-strip -s $i; done
 
@@ -205,6 +224,7 @@ tar xvf ../freetype-2.10.1.tar.gz
 tar xvf ../sqlite-autoconf-3320300.zip
 tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-4.3.1.tar.gz
+tar xvf ../v4.1.1.tar.gz
 
 cd SDL2-2.0.8
 ./configure --host=i686-w64-mingw32 --enable-ime
@@ -269,6 +289,11 @@ cd ../ffmpeg-4.3.1
 make -j4
 cp libavcodec/avcodec-58.dll libavformat/avformat-58.dll libavutil/avutil-56.dll libswresample/swresample-3.dll libswscale/swscale-5.dll libavcodec/avcodec.lib libavformat/avformat.lib libavutil/avutil.lib libswresample/swresample.lib libswscale/swscale.lib ..
 
+cd ../libwebsockets-4.1.1
+cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-w32.cmake -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
+make -j4
+cp lib/libwebsockets.dll.a bin/libwebsockets.dll ..
+
 cd ..
 for i in *.dll; do i686-w64-mingw32-strip -s $i; done
 
@@ -284,6 +309,7 @@ tar xvf ../freetype-2.10.1.tar.gz
 tar xvf ../sqlite-autoconf-3320300.zip
 tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-4.3.1.tar.gz
+tar xvf ../v4.1.1.tar.gz
 
 export PATH=/home/deen/git/osxcross/target/bin/:$PATH
 export CC=o64-clang
@@ -328,3 +354,9 @@ cd ../ffmpeg-4.3.1
 ./configure --disable-all --disable-appkit --disable-bzlib --disable-avfoundation --disable-coreimage --disable-securetransport --disable-audiotoolbox --disable-cuda-llvm --disable-videotoolbox --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-cxxflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-ldflags="-L../x264-master" --arch=x86_64 --target_os=darwin --cross-prefix=x86_64-apple-darwin17- --disable-static --enable-shared --cc=$CC --cxx=$CXX
 make -j4
 cp libavcodec/libavcodec.58.dylib libavformat/libavformat.58.dylib libavutil/libavutil.56.dylib libswresample/libswresample.3.dylib libswscale/libswscale.5.dylib ..
+
+cd ../libwebsockets-4.1.1
+# own cross-osx.cmake
+cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-osx.cmake -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
+make -j4 lib/libwebsockets.17.dylib
+cp lib/libwebsockets.17.dylib ..

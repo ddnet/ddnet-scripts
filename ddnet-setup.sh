@@ -35,7 +35,7 @@ iptables -A serverinfo -m hashlimit --hashlimit-above 1000/s --hashlimit-burst 2
 iptables -A serverinfo -m hashlimit --hashlimit-above 20/s --hashlimit-burst 100 --hashlimit-mode srcip --hashlimit-name si_srcip -j DROP
 iptables-save > /etc/iptables.up.rules
 
-tar -C / xvf ddnet-setup.tar.gz
+tar -C / -xvf ddnet-setup.tar.gz
 
 systemctl enable dnsbl-iphub
 systemctl start dnsbl-iphub
@@ -74,7 +74,6 @@ su - teeworlds "./run-all.sh"
 # vim ServerStatus/server/config.json
 # systemctl restart sergate
 # cd servers
-# vim ddrace.cfg # sv_sql_valid_servernames
 # vim scripts/status.py
 # vim serverlist.json
 # vim all-locations
