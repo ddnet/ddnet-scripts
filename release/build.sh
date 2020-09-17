@@ -85,8 +85,8 @@ build_linux ()
   mv ddnet-libs-master ddnet-master/ddnet-libs
   cp -r ddnet-master ddnet-master-steam
 
-  chroot . sh -c "cd ddnet-master && cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=ON -DPREFER_BUNDLED_LIBS=ON && make package_default"
-  chroot . sh -c "cd ddnet-master-steam && cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=ON -DSTEAM=ON -DAUTOUPDATE=OFF -DPREFER_BUNDLED_LIBS=ON && CXXFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' CPPFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' make -j2 package_default"
+  chroot . sh -c "cd ddnet-master && cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=ON -DAUTOUPDATE=ON -DPREFER_BUNDLED_LIBS=ON && make package_default"
+  chroot . sh -c "cd ddnet-master-steam && cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=ON -DSTEAM=ON -DPREFER_BUNDLED_LIBS=ON && CXXFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' CPPFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' make -j2 package_default"
   mv ddnet-master/DDNet-*.tar.xz $BUILDS/DDNet-$VERSION-linux_$PLATFORM.tar.xz
   mv ddnet-master-steam/DDNet-*.tar.xz ../DDNet-$VERSION-steam-linux_$PLATFORM.tar.xz
 
@@ -115,7 +115,7 @@ build_windows ()
 build_windows_website ()
 {
   PLATFORM=$1
-  build_windows $PLATFORM
+  build_windows $PLATFORM "-DAUTOUPDATE=ON"
   mv DDNet-*.zip $BUILDS/DDNet-$VERSION-win$PLATFORM.zip
   cd ..
   rm -rf win$PLATFORM
@@ -124,7 +124,7 @@ build_windows_website ()
 build_windows_steam ()
 {
   PLATFORM=$1
-  build_windows $PLATFORM "-DAUTOUPDATE=OFF -DSTEAM=ON" "-steam"
+  build_windows $PLATFORM "-DSTEAM=ON" "-steam"
   mv DDNet-*.zip ../DDNet-$VERSION-steam-win$PLATFORM.zip
   cd ..
   rm -rf win$PLATFORM-steam
@@ -156,23 +156,23 @@ CXXFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' CPPFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' 
 build_linux x86_64 $BUILDDIR/debian6 &> builds/linux_x86_64.log &
 CFLAGS=-m32 LDFLAGS=-m32 build_linux x86 $BUILDDIR/debian6_x86 &> builds/linux_x86.log &
 
-TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
+(TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
   PREFIX=x86_64-w64-mingw32- PATH=/usr/x86_64-w64-mingw32/bin:$PATH \
-  build_windows_website 64 &> builds/win64.log &
+  build_windows_website 64
 
 TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
   PREFIX=x86_64-w64-mingw32- PATH=/usr/x86_64-w64-mingw32/bin:$PATH \
   CXXFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' CPPFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' \
-  build_windows_steam 64 &> builds/win64-steam.log &
+  build_windows_steam 64) &> builds/win64.log &
 
-TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
+(TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
   PREFIX=i686-w64-mingw32- PATH=/usr/i686-w64-mingw32/bin:$PATH \
-  build_windows_website 32 &> builds/win32.log &
+  build_windows_website 32
 
 TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
   PREFIX=i686-w64-mingw32- PATH=/usr/i686-w64-mingw32/bin:$PATH \
   CXXFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' CPPFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' \
-  build_windows_steam 32 &> builds/win32-steam.log &
+  build_windows_steam 32) &> builds/win32.log &
 
 # Android
 # TODO: Reenable with SDL2
