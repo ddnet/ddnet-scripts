@@ -4,7 +4,6 @@
 
 [ $# -ne 1 ] && echo "Usage: ./build.sh VERSION" && exit 1
 
-START_TIME=$(date +%s)
 renice -n 19 -p $$ > /dev/null
 ionice -n 3 -p $$
 
@@ -15,6 +14,14 @@ BUILDDIR=/home/deen/isos/ddnet
 BUILDS=$BUILDDIR/builds
 WEBSITE=/var/www/felsing.ath.cx/htdocs/dennis
 PASS="$(cat pass)"
+
+MAIN_REPO_USER=ddnet
+MAIN_REPO_NAME=ddnet
+MAIN_REPO_BRANCH=master
+
+LIBS_REPO_USER=ddnet
+LIBS_REPO_NAME=ddnet-libs
+LIBS_REPO_BRANCH=master
 
 set -ex
 
@@ -44,7 +51,7 @@ build_macosx ()
   PATH=${PATH:+$PATH:}/home/deen/git/osxcross/target/bin
   eval `osxcross-conf`
   export OSXCROSS_OSX_VERSION_MIN=10.9
-  cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX10.13.sdk/ ../ddnet-master
+  cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX10.13.sdk/ ../ddnet-source
   make -j2
   make package_default
 }
@@ -76,21 +83,20 @@ build_linux ()
   mount -t sysfs sys sys/
   mount -o bind /dev dev/
 
-  rm -rf ddnet-master ddnet-master-steam ddnet-libs-master
-  unzip -q $WEBSITE/master.zip
+  rm -rf ddnet-source ddnet-source-steam ddnet-libs-source $MAIN_REPO_NAME-$MAIN_REPO_BRANCH $LIBS_REPO_NAME-$LIBS_REPO_BRANCH
+  unzip -q $WEBSITE/main.zip
   unzip -q $WEBSITE/libs.zip
-  #mv ddnet-pr-ffmpeg2 ddnet-master
-  rm -rf ddnet-master/ddnet-libs
-  #mv ddnet-libs-pr-ffmpeg2 ddnet-master/ddnet-libs
-  mv ddnet-libs-master ddnet-master/ddnet-libs
-  cp -r ddnet-master ddnet-master-steam
+  mv $MAIN_REPO_NAME-$MAIN_REPO_BRANCH ddnet-source
+  rm -rf ddnet-source/ddnet-libs
+  mv $LIBS_REPO_NAME-$LIBS_REPO_BRANCH ddnet-source/ddnet-libs
+  cp -r ddnet-source ddnet-source-steam
 
-  chroot . sh -c "cd ddnet-master && cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=OFF -DAUTOUPDATE=ON -DPREFER_BUNDLED_LIBS=ON && make package_default"
-  chroot . sh -c "cd ddnet-master-steam && cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=OFF -DSTEAM=ON -DPREFER_BUNDLED_LIBS=ON && CXXFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' CPPFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' make -j2 package_default"
-  mv ddnet-master/DDNet-*.tar.xz $BUILDS/DDNet-$VERSION-linux_$PLATFORM.tar.xz
-  mv ddnet-master-steam/DDNet-*.tar.xz ../DDNet-$VERSION-steam-linux_$PLATFORM.tar.xz
+  chroot . sh -c "cd ddnet-source && cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=OFF -DAUTOUPDATE=ON -DPREFER_BUNDLED_LIBS=ON && make package_default"
+  chroot . sh -c "cd ddnet-source-steam && cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=OFF -DSTEAM=ON -DPREFER_BUNDLED_LIBS=ON && CXXFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' CPPFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' make -j2 package_default"
+  mv ddnet-source/DDNet-*.tar.xz $BUILDS/DDNet-$VERSION-linux_$PLATFORM.tar.xz
+  mv ddnet-source-steam/DDNet-*.tar.xz ../DDNet-$VERSION-steam-linux_$PLATFORM.tar.xz
 
-  rm -rf ddnet-master ddnet-master-steam
+  rm -rf ddnet-source ddnet-source-steam
   umount proc sys dev
   unset CFLAGS LDFLAGS PKG_CONFIG_PATH
 }
@@ -106,7 +112,7 @@ build_windows ()
   rm -rf $DIR
   mkdir $DIR
   cd $DIR
-  cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain $BUILDOPTS ../ddnet-master
+  cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain $BUILDOPTS ../ddnet-source
   make package_default
   unset PREFIX \
     TARGET_FAMILY TARGET_PLATFORM TARGET_ARCH
@@ -132,27 +138,23 @@ build_windows_steam ()
 
 # Get the sources
 cd $WEBSITE
-rm -rf master.zip libs.zip
-#wget -nv -O master.zip https://github.com/def-/ddnet/archive/pr-ffmpeg2.zip
-#wget -nv -O libs.zip https://github.com/ddnet/ddnet-libs/archive/pr-ffmpeg2.zip
-wget -nv -O master.zip https://github.com/ddnet/ddnet/archive/master.zip
-wget -nv -O libs.zip https://github.com/ddnet/ddnet-libs/archive/master.zip
+rm -rf main.zip libs.zip
+wget -nv -O main.zip https://github.com/$MAIN_REPO_USER/$MAIN_REPO_NAME/archive/$MAIN_REPO_BRANCH.zip
+wget -nv -O libs.zip https://github.com/$LIBS_REPO_USER/$LIBS_REPO_NAME/archive/$LIBS_REPO_BRANCH.zip
 cd $BUILDDIR
-rm -rf ddnet-master
-unzip -q $WEBSITE/master.zip
-#mv ddnet-pr-ffmpeg2 ddnet-master
-cp -r ddnet-master DDNet-$VERSION
-TIME_PREPARATION=$(($(date +%s) - $START_TIME))
+rm -rf ddnet-source $MAIN_REPO_NAME-$MAIN_REPO_BRANCH $LIBS_REPO_NAME-$LIBS_REPO_BRANCH
+unzip -q $WEBSITE/main.zip
+mv $MAIN_REPO_NAME-$MAIN_REPO_BRANCH ddnet-source
+cp -r ddnet-source DDNet-$VERSION
 
 build_source &
 
 unzip -q $WEBSITE/libs.zip
-rm -rf ddnet-master/ddnet-libs
-#mv ddnet-libs-pr-ffmpeg2 ddnet-master/ddnet-libs
-mv ddnet-libs-master ddnet-master/ddnet-libs
+rm -rf ddnet-source/ddnet-libs
+mv $LIBS_REPO_NAME-$LIBS_REPO_BRANCH ddnet-source/ddnet-libs
 
-build_macosx_website &> builds/mac.log &
-CXXFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' CPPFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' build_macosx_steam &> builds/mac-steam.log &
+(build_macosx_website
+CXXFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' CPPFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' build_macosx_steam) &> builds/mac.log &
 build_linux x86_64 $BUILDDIR/debian6 &> builds/linux_x86_64.log &
 CFLAGS=-m32 LDFLAGS=-m32 build_linux x86 $BUILDDIR/debian6_x86 &> builds/linux_x86.log &
 
@@ -173,31 +175,6 @@ TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
   PREFIX=i686-w64-mingw32- PATH=/usr/i686-w64-mingw32/bin:$PATH \
   CXXFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' CPPFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' \
   build_windows_steam 32) &> builds/win32.log &
-
-# Android
-# TODO: Reenable with SDL2
-#START_TIME=$(date +%s)
-#cd $BUILDDIR/commandergenius/project/jni/application/teeworlds
-#sed -e "s/YYYY/$VERSION/; s/XXXX/$NUMVERSION/" \
-#  AndroidAppSettings.tmpl > AndroidAppSettings.cfg
-#rm -rf src
-#unzip -q $WEBSITE/master.zip
-#mv ddnet-master src
-#cp -r generated src/src/game/
-#rm -rf AndroidData
-#./AndroidPreBuild.sh
-#
-#cd $BUILDDIR/commandergenius
-#./changeAppSettings.sh -a
-#android update project -p project
-#./build.sh
-#{ jarsigner -verbose -keystore ~/.android/release.keystore -storepass $PASS \
-#  -sigalg MD5withRSA -digestalg SHA1 \
-#  project/bin/MainActivity-release-unsigned.apk androidreleasekey; } 2>/dev/null
-#zipalign 4 project/bin/MainActivity-release-unsigned.apk \
-#  project/bin/MainActivity-release.apk
-#mv project/bin/MainActivity-release.apk $BUILDS/DDNet-${VERSION}.apk
-#TIME_ANDROID=$(($(date +%s) - $START_TIME))
 
 wait
 
@@ -226,7 +203,7 @@ rm -r ddnet
 tar xvf ../DDNet-$VERSION-steam-linux_x86_64.tar.xz
 rm -r DDNet-*-linux_x86_64/data
 mv DDNet-*-linux_x86_64 ddnet
-cp $BUILDDIR/ddnet-master/ddnet-libs/sdl/linux/lib64/libSDL2-2.0.so.0 ddnet
+cp $BUILDDIR/ddnet-source/ddnet-libs/sdl/linux/lib64/libSDL2-2.0.so.0 ddnet
 cp $BUILDDIR/steamworks/sdk/redistributable_bin/linux64/libsteam_api.so ddnet
 zip -9r DDNet-$VERSION-linux_x86_64.zip ddnet
 rm -r ddnet
@@ -234,7 +211,7 @@ rm -r ddnet
 tar xvf ../DDNet-$VERSION-steam-linux_x86.tar.xz
 rm -r DDNet-*-linux_x86/data
 mv DDNet-*-linux_x86 ddnet
-cp $BUILDDIR/ddnet-master/ddnet-libs/sdl/linux/lib32/libSDL2-2.0.so.0 ddnet
+cp $BUILDDIR/ddnet-source/ddnet-libs/sdl/linux/lib32/libSDL2-2.0.so.0 ddnet
 cp $BUILDDIR/steamworks/sdk/redistributable_bin/linux32/libsteam_api.so ddnet
 zip -9r DDNet-$VERSION-linux_x86.zip ddnet
 rm -r ddnet
@@ -249,7 +226,7 @@ cp $BUILDDIR/steamworks/sdk/redistributable_bin/osx/libsteam_api.dylib Framework
 zip -9r DDNet-$VERSION-osx.zip ddnet Frameworks
 rm -r ddnet Frameworks DDNet-*-osx
 
-rm -rf ddnet-master
+rm -rf ddnet-source
 
 NOW=$(date +'%F %R')
 echo "Finished build of $VERSION at $NOW"

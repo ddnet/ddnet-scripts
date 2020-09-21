@@ -39,6 +39,9 @@ fi
 
 cp update.json update.json.old && mv update.json.new update.json
 
+rm -r DDNet-$OLD_VERSION-*
+rm -r DDNet-$VERSION-*
+
 cd /var/www/downloads
 rm -f DDNet-latest-win32.zip DDNet-latest-win64.zip DDNet-latest-linux_x86_64.tar.xz DDNet-latest-linux_x86.tar.xz DDNet-latest-osx.dmg
 ln -s DDNet-$VERSION-win32.zip DDNet-latest-win32.zip
