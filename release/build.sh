@@ -13,15 +13,14 @@ PATH=$PATH:/usr/local/bin:/opt/android-sdk/build-tools/23.0.3:/opt/android-sdk/t
 BUILDDIR=/home/deen/isos/ddnet
 BUILDS=$BUILDDIR/builds
 WEBSITE=/var/www/felsing.ath.cx/htdocs/dennis
-PASS="$(cat pass)"
 
-MAIN_REPO_USER=ddnet
-MAIN_REPO_NAME=ddnet
-MAIN_REPO_BRANCH=master
+MAIN_REPO_USER="${MAIN_REPO_USER:-ddnet}"
+MAIN_REPO_NAME="${MAIN_REPO_NAME:-ddnet}"
+MAIN_REPO_BRANCH="${MAIN_REPO_BRANCH:-master}"
 
-LIBS_REPO_USER=ddnet
-LIBS_REPO_NAME=ddnet-libs
-LIBS_REPO_BRANCH=master
+LIBS_REPO_USER="${LIBS_REPO_USER:-ddnet}"
+LIBS_REPO_NAME="${LIBS_REPO_NAME:-ddnet-libs}"
+LIBS_REPO_BRANCH="${LIBS_REPO_BRANCH:-master}"
 
 set -ex
 
