@@ -14,7 +14,6 @@ for i in *.zip; do
   cd ..
 done
 zmv -W 'DDNet-nightly-*' '*'
-cd /home/deen/isos/ddnet/steamcmd/
-steamcmd +login deen_ddnet "$(cat pass)" +run_app_build app_build_412220.vdf +quit
+steamcmd +login deen_ddnet "$(cat pass)" +run_app_build /home/deen/isos/ddnet/steamcmd/app_build_412220.vdf +quit
 cd ..
 rm -rf builds/DDNet-nightly* builds/*.log DDNet-nightly* steam/*

@@ -14,8 +14,9 @@ for i in *.zip; do
   unzip ../$i
   cd ..
 done
-zmv -W "DDNet-$1-\*" "\*"
+zmv -W "DDNet-$1-*" '*'
+cd /home/deen/isos/ddnet/steamcmd/
 sed -e "s/Nightly Build/$1/" app_build_412220.vdf | sed -e "s/\"beta\"/\"releasecandidates\"/" > rc.vdf
-steamcmd +login deen_ddnet "$(cat pass)" +run_app_build rc.vdf +quit
+steamcmd +login deen_ddnet "$(cat pass)" +run_app_build /home/deen/isos/ddnet/steamcmd/rc.vdf +quit
 cd ..
 rm -rf builds/DDNet-$1* builds/*.log DDNet-$1* steam/*
