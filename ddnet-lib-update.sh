@@ -141,7 +141,27 @@ tar xvf ../v4.1.1.tar.gz
 
 cd SDL2-2.0.8
 ./configure --host=x86_64-w64-mingw32 --enable-ime
-echo "#define SDL_DISABLE_WINDOWS_IME" >> include/SDL_config.h
+echo "--- foo.c	2020-09-22 16:07:25.358951807 +0200
++++ src/video/windows/SDL_windowskeyboard.c	2020-09-22 16:07:50.365763770 +0200
+@@ -370,7 +370,6 @@
+     videodata->ime_available = SDL_TRUE;
+     IME_UpdateInputLocale(videodata);
+     IME_SetupAPI(videodata);
+-    videodata->ime_uiless = UILess_SetupSinks(videodata);
+     IME_UpdateInputLocale(videodata);
+     IME_Disable(videodata, hwnd);
+ }
+@@ -878,9 +877,6 @@
+     case WM_INPUTLANGCHANGE:
+         IME_InputLangChanged(videodata);
+         break;
+-    case WM_IME_SETCONTEXT:
+-        *lParam = 0;
+-        break;
+     case WM_IME_STARTCOMPOSITION:
+         trap = SDL_TRUE;
+         break;
+" | patch src/video/windows/SDL_windowskeyboard.c
 make -j4
 cp build/.libs/SDL2.dll build/.libs/libSDL2.dll.a ..
 x86_64-w64-mingw32-dlltool -v --export-all-symbols -D SDL2.dll -l ../SDL2.lib build/.libs/*.o
@@ -228,7 +248,27 @@ tar xvf ../v4.1.1.tar.gz
 
 cd SDL2-2.0.8
 ./configure --host=i686-w64-mingw32 --enable-ime
-echo "#define SDL_DISABLE_WINDOWS_IME" >> include/SDL_config.h
+echo "--- foo.c	2020-09-22 16:07:25.358951807 +0200
++++ src/video/windows/SDL_windowskeyboard.c	2020-09-22 16:07:50.365763770 +0200
+@@ -370,7 +370,6 @@
+     videodata->ime_available = SDL_TRUE;
+     IME_UpdateInputLocale(videodata);
+     IME_SetupAPI(videodata);
+-    videodata->ime_uiless = UILess_SetupSinks(videodata);
+     IME_UpdateInputLocale(videodata);
+     IME_Disable(videodata, hwnd);
+ }
+@@ -878,9 +877,6 @@
+     case WM_INPUTLANGCHANGE:
+         IME_InputLangChanged(videodata);
+         break;
+-    case WM_IME_SETCONTEXT:
+-        *lParam = 0;
+-        break;
+     case WM_IME_STARTCOMPOSITION:
+         trap = SDL_TRUE;
+         break;
+" | patch src/video/windows/SDL_windowskeyboard.c
 make -j4
 cp build/.libs/SDL2.dll build/.libs/libSDL2.dll.a ..
 i686-w64-mingw32-dlltool -v --export-all-symbols -D SDL2.dll -l ../SDL2.lib build/.libs/*.o
