@@ -1,6 +1,10 @@
 #!/usr/bin/env zsh
 
 # Build DDNet releases for all platforms
+# Prerequesites:
+# pacman -S mingw-w64-binutils mingw-w64-gcc mingw-w64-crt mingw-w64-headers mingw-w64-winpthreads openssl-1.0
+# https://github.com/tpoechtrager/osxcross build osxcross and its compiler-rt.sh (don't forget to install)
+# https://github.com/mozilla/libdmg-hfsplus build and install
 
 [ $# -ne 1 ] && echo "Usage: ./build.sh VERSION" && exit 1
 
@@ -12,7 +16,6 @@ unset CXX
 PATH=$PATH:/usr/local/bin:/opt/android-sdk/build-tools/23.0.3:/opt/android-sdk/tools:/opt/android-ndk:/opt/android-sdk/platform-tools
 BUILDDIR=/home/deen/isos/ddnet
 BUILDS=$BUILDDIR/builds
-WEBSITE=/var/www/felsing.ath.cx/htdocs/dennis
 
 MAIN_REPO_USER="${MAIN_REPO_USER:-ddnet}"
 MAIN_REPO_NAME="${MAIN_REPO_NAME:-ddnet}"
@@ -50,9 +53,8 @@ build_macosx ()
   PATH=${PATH:+$PATH:}/home/deen/git/osxcross/target/bin
   eval `osxcross-conf`
   export OSXCROSS_OSX_VERSION_MIN=10.9
-  cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX10.13.sdk/ ../ddnet-source
-  make -j2
-  make package_default
+  cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX10.13.sdk/ $2 ../ddnet-source
+  make -j2 package_default
 }
 
 build_macosx_website ()
@@ -65,7 +67,7 @@ build_macosx_website ()
 
 build_macosx_steam ()
 {
-  build_macosx -steam
+  build_macosx -steam "-DINFORM_UPDATE=OFF"
   mv DDNet-*.dmg ../DDNet-$VERSION-steam-osx.dmg
   cd ..
   rm -rf macosx-steam
@@ -77,21 +79,22 @@ build_linux ()
   DIR=$2
 
   cd $DIR
+  mkdir -p proc sys dev
   umount proc sys dev 2> /dev/null || true
   mount -t proc proc proc/
   mount -t sysfs sys sys/
   mount -o bind /dev dev/
 
   rm -rf ddnet-source ddnet-source-steam ddnet-libs-source $MAIN_REPO_NAME-$MAIN_REPO_BRANCH $LIBS_REPO_NAME-$LIBS_REPO_BRANCH
-  unzip -q $WEBSITE/main.zip
-  unzip -q $WEBSITE/libs.zip
+  unzip -q $BUILDDIR/main.zip
+  unzip -q $BUILDDIR/libs.zip
   mv $MAIN_REPO_NAME-$MAIN_REPO_BRANCH ddnet-source
   rm -rf ddnet-source/ddnet-libs
   mv $LIBS_REPO_NAME-$LIBS_REPO_BRANCH ddnet-source/ddnet-libs
   cp -r ddnet-source ddnet-source-steam
 
-  chroot . sh -c "cd ddnet-source && cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=OFF -DAUTOUPDATE=ON -DPREFER_BUNDLED_LIBS=ON && make package_default"
-  chroot . sh -c "cd ddnet-source-steam && cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=OFF -DSTEAM=ON -DPREFER_BUNDLED_LIBS=ON && CXXFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' CPPFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' make -j2 package_default"
+  chroot . sh -c "cd ddnet-source && cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=OFF -DAUTOUPDATE=ON -DPREFER_BUNDLED_LIBS=ON && make -j2 package_default"
+  chroot . sh -c "cd ddnet-source-steam && cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=OFF -DSTEAM=ON -DPREFER_BUNDLED_LIBS=ON -DINFORM_UPDATE=OFF && CXXFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' CPPFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' make -j2 package_default"
   mv ddnet-source/DDNet-*.tar.xz $BUILDS/DDNet-$VERSION-linux_$PLATFORM.tar.xz
   mv ddnet-source-steam/DDNet-*.tar.xz ../DDNet-$VERSION-steam-linux_$PLATFORM.tar.xz
 
@@ -112,7 +115,7 @@ build_windows ()
   mkdir $DIR
   cd $DIR
   cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain $BUILDOPTS ../ddnet-source
-  make package_default
+  make -j2 package_default
   unset PREFIX \
     TARGET_FAMILY TARGET_PLATFORM TARGET_ARCH
 }
@@ -129,26 +132,24 @@ build_windows_website ()
 build_windows_steam ()
 {
   PLATFORM=$1
-  build_windows $PLATFORM "-DSTEAM=ON" "-steam"
+  build_windows $PLATFORM "-DSTEAM=ON -DINFORM_UPDATE=OFF" "-steam"
   mv DDNet-*.zip ../DDNet-$VERSION-steam-win$PLATFORM.zip
   cd ..
   rm -rf win$PLATFORM-steam
 }
 
 # Get the sources
-cd $WEBSITE
 rm -rf main.zip libs.zip
 wget -nv -O main.zip https://github.com/$MAIN_REPO_USER/$MAIN_REPO_NAME/archive/$MAIN_REPO_BRANCH.zip
 wget -nv -O libs.zip https://github.com/$LIBS_REPO_USER/$LIBS_REPO_NAME/archive/$LIBS_REPO_BRANCH.zip
-cd $BUILDDIR
 rm -rf ddnet-source $MAIN_REPO_NAME-$MAIN_REPO_BRANCH $LIBS_REPO_NAME-$LIBS_REPO_BRANCH
-unzip -q $WEBSITE/main.zip
+unzip -q main.zip
 mv $MAIN_REPO_NAME-$MAIN_REPO_BRANCH ddnet-source
 cp -r ddnet-source DDNet-$VERSION
 
 build_source &
 
-unzip -q $WEBSITE/libs.zip
+unzip -q libs.zip
 rm -rf ddnet-source/ddnet-libs
 mv $LIBS_REPO_NAME-$LIBS_REPO_BRANCH ddnet-source/ddnet-libs
 

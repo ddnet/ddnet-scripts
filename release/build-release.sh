@@ -1,5 +1,6 @@
 #!/usr/bin/zsh
-# Run with: MAIN_REPO_USER=def- MAIN_REPO_BRANCH=pr-15.0.5 ./build-rc.sh 15.0.5-rc2
+# For RC run with: MAIN_REPO_USER=def- MAIN_REPO_BRANCH=pr-15.0.5 ./build-release.sh 15.0.5-rc2
+# For Release run with: ./build-release.sh 15.0.5 and set live for beta, default manually
 autoload zmv
 set -e
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin::/opt/android-sdk/tools:/opt/android-sdk/tools/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl

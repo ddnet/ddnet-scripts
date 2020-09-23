@@ -23,6 +23,7 @@ addgroup teeworlds
 adduser --gecos "" --home /home/teeworlds --shell /usr/bin/zsh --disabled-password --ingroup users teeworlds
 sed -E -i "s/^#?Port .*/Port 6546/" /etc/ssh/sshd_config
 sed -E -i "s/^#?PermitRootLogin .*/PermitRootLogin yes/" /etc/ssh/sshd_config
+systemctl restart ssh
 
 iptables -t raw -A PREROUTING -p udp -j NOTRACK
 iptables -t raw -A OUTPUT -p udp -j NOTRACK
@@ -36,6 +37,7 @@ iptables -A serverinfo -m hashlimit --hashlimit-above 20/s --hashlimit-burst 100
 iptables-save > /etc/iptables.up.rules
 
 tar -C / -xvf ddnet-setup.tar.gz
+rm ddnet-setup.tar.gz
 
 systemctl enable dnsbl-iphub
 systemctl start dnsbl-iphub
@@ -62,6 +64,7 @@ done
 
 nohup ./serverstatus-client.py &" > /home/teeworlds/servers/run-all.sh
 chmod +x /home/teeworlds/servers/run-all.sh
+chmod +x /home/teeworlds/run-all.sh
 
 su - teeworlds "./run-all.sh"
 
