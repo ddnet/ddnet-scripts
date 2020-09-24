@@ -1,10 +1,11 @@
 #!/usr/bin/env zsh
 
 # Build DDNet releases for all platforms
-# Prerequesites:
+# Prerequisites:
 # pacman -S mingw-w64-binutils mingw-w64-gcc mingw-w64-crt mingw-w64-headers mingw-w64-winpthreads openssl-1.0
 # https://github.com/tpoechtrager/osxcross build osxcross and its compiler-rt.sh (don't forget to install)
 # https://github.com/mozilla/libdmg-hfsplus build and install
+# steamworks sdk
 
 [ $# -ne 1 ] && echo "Usage: ./build.sh VERSION" && exit 1
 
@@ -16,6 +17,12 @@ unset CXX
 PATH=$PATH:/usr/local/bin:/opt/android-sdk/build-tools/23.0.3:/opt/android-sdk/tools:/opt/android-ndk:/opt/android-sdk/platform-tools
 BUILDDIR=/home/deen/isos/ddnet
 BUILDS=$BUILDDIR/builds
+
+# Flags to pass to cmake when building a regular website build, Steam build is
+# always without autoupdater and without update info. For nightlies and RCs use:
+# UPDATE_FLAGS="-DAUTOUPDATE=OFF -DINFORM_UPDATE=OFF" UPDATE_FLAGS_MACOSX=-DINFORM_UPDATE=OFF
+UPDATE_FLAGS="${UPDATE_FLAGS:-\"-DAUTOUPDATE=ON\"}"
+UPDATE_FLAGS_MACOSX="${UPDATE_FLAGS_MACOSX:-}"
 
 MAIN_REPO_USER="${MAIN_REPO_USER:-ddnet}"
 MAIN_REPO_NAME="${MAIN_REPO_NAME:-ddnet}"
@@ -59,7 +66,7 @@ build_macosx ()
 
 build_macosx_website ()
 {
-  build_macosx
+  build_macosx $UPDATE_FLAGS_MACOSX
   mv DDNet-*.dmg $BUILDS/DDNet-$VERSION-osx.dmg
   cd ..
   rm -rf macosx
@@ -93,8 +100,12 @@ build_linux ()
   mv $LIBS_REPO_NAME-$LIBS_REPO_BRANCH ddnet-source/ddnet-libs
   cp -r ddnet-source ddnet-source-steam
 
-  chroot . sh -c "cd ddnet-source && cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=OFF -DAUTOUPDATE=ON -DPREFER_BUNDLED_LIBS=ON && make -j2 package_default"
-  chroot . sh -c "cd ddnet-source-steam && cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=OFF -DSTEAM=ON -DPREFER_BUNDLED_LIBS=ON -DINFORM_UPDATE=OFF && CXXFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' CPPFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' make -j2 package_default"
+  chroot . sh -c "cd ddnet-source && \
+    cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=OFF $UPDATE_FLAGS -DPREFER_BUNDLED_LIBS=ON && \
+    CPPFLAGS=\"-DGAME_RELEASE_VERSION=\\\"$VERSION\\\"\" make -j2 package_default"
+  chroot . sh -c "cd ddnet-source-steam && \
+    cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=OFF -DSTEAM=ON -DPREFER_BUNDLED_LIBS=ON -DINFORM_UPDATE=OFF && \
+    CPPFLAGS=\"-DPLATFORM_SUFFIX=\\\"-steam\\\" -DGAME_RELEASE_VERSION=\\\"$VERSION\\\"\" make -j2 package_default"
   mv ddnet-source/DDNet-*.tar.xz $BUILDS/DDNet-$VERSION-linux_$PLATFORM.tar.xz
   mv ddnet-source-steam/DDNet-*.tar.xz ../DDNet-$VERSION-steam-linux_$PLATFORM.tar.xz
 
@@ -123,7 +134,7 @@ build_windows ()
 build_windows_website ()
 {
   PLATFORM=$1
-  build_windows $PLATFORM "-DAUTOUPDATE=ON"
+  build_windows $PLATFORM $UPDATE_FLAGS
   mv DDNet-*.zip $BUILDS/DDNet-$VERSION-win$PLATFORM.zip
   cd ..
   rm -rf win$PLATFORM
@@ -153,27 +164,32 @@ unzip -q libs.zip
 rm -rf ddnet-source/ddnet-libs
 mv $LIBS_REPO_NAME-$LIBS_REPO_BRANCH ddnet-source/ddnet-libs
 
-(build_macosx_website
-CXXFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' CPPFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' build_macosx_steam) &> builds/mac.log &
+(CPPFLAGS="-DGAME_RELEASE_VERSION=\\\"$VERSION\\\"" \
+  build_macosx_website
+  CPPFLAGS="-DGAME_RELEASE_VERSION=\\\"$VERSION\\\" -DPLATFORM_SUFFIX=\\\"-steam\\\"" \
+  build_macosx_steam) &> builds/mac.log &
+
 build_linux x86_64 $BUILDDIR/debian6 &> builds/linux_x86_64.log &
 CFLAGS=-m32 LDFLAGS=-m32 build_linux x86 $BUILDDIR/debian6_x86 &> builds/linux_x86.log &
 
 (TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
   PREFIX=x86_64-w64-mingw32- PATH=/usr/x86_64-w64-mingw32/bin:$PATH \
+  CPPFLAGS="-DGAME_RELEASE_VERSION=\\\"$VERSION\\\"" \
   build_windows_website 64
 
 TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
   PREFIX=x86_64-w64-mingw32- PATH=/usr/x86_64-w64-mingw32/bin:$PATH \
-  CXXFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' CPPFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' \
+  CPPFLAGS="-DGAME_RELEASE_VERSION=\\\"$VERSION\\\" -DPLATFORM_SUFFIX=\\\"-steam\\\"" \
   build_windows_steam 64) &> builds/win64.log &
 
 (TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
   PREFIX=i686-w64-mingw32- PATH=/usr/i686-w64-mingw32/bin:$PATH \
+  CPPFLAGS="-DGAME_RELEASE_VERSION=\\\"$VERSION\\\"" \
   build_windows_website 32
 
 TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
   PREFIX=i686-w64-mingw32- PATH=/usr/i686-w64-mingw32/bin:$PATH \
-  CXXFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' CPPFLAGS='-DPLATFORM_SUFFIX=\"-steam\"' \
+  CPPFLAGS="-DGAME_RELEASE_VERSION=\\\"$VERSION\\\" -DPLATFORM_SUFFIX=\\\"-steam\\\"" \
   build_windows_steam 32) &> builds/win32.log &
 
 wait
