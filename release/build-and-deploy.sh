@@ -4,14 +4,14 @@ set -e
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 cd /home/deen/isos/ddnet
 if [ "$1" = "nightly" ]; then
-  UPDATE_FLAGS="-DAUTOUPDATE=OFF -DINFORM_UPDATE=OFF" \
-  UPDATE_FLAGS_MACOSX="-DINFORM_UPDATE=OFF" \
-  VERSION="nightly$(date +%Y%m%d)"
+  export UPDATE_FLAGS="-DAUTOUPDATE=OFF -DINFORM_UPDATE=OFF"
+  export UPDATE_FLAGS_MACOSX="-DINFORM_UPDATE=OFF"
+  export VERSION="nightly$(date +%Y%m%d)"
   ./build.sh $VERSION &> builds/DDNet-nightly.log
 elif [ "$1" = "rc" ]; then
-  UPDATE_FLAGS="-DAUTOUPDATE=OFF -DINFORM_UPDATE=OFF" \
-  UPDATE_FLAGS_MACOSX="-DINFORM_UPDATE=OFF" \
-  VERSION=$2
+  export UPDATE_FLAGS="-DAUTOUPDATE=OFF -DINFORM_UPDATE=OFF"
+  export UPDATE_FLAGS_MACOSX="-DINFORM_UPDATE=OFF"
+  export VERSION=$2
   ./build.sh $VERSION &> builds/DDNet-$VERSION.log
 elif [ "$1" = "release" ]; then
   VERSION=$2

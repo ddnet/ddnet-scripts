@@ -18,6 +18,8 @@ PATH=$PATH:/usr/local/bin:/opt/android-sdk/build-tools/23.0.3:/opt/android-sdk/t
 BUILDDIR=/home/deen/isos/ddnet
 BUILDS=$BUILDDIR/builds
 
+set -ex
+
 # Flags to pass to cmake when building a regular website build, Steam build is
 # always without autoupdater and without update info. For nightlies and RCs use:
 # UPDATE_FLAGS="-DAUTOUPDATE=OFF -DINFORM_UPDATE=OFF" UPDATE_FLAGS_MACOSX=-DINFORM_UPDATE=OFF
@@ -32,16 +34,7 @@ LIBS_REPO_USER="${LIBS_REPO_USER:-ddnet}"
 LIBS_REPO_NAME="${LIBS_REPO_NAME:-ddnet-libs}"
 LIBS_REPO_BRANCH="${LIBS_REPO_BRANCH:-master}"
 
-set -ex
-
 VERSION=$1
-NUMVERSION=$(python -c "try:
-  s = \"$VERSION\".split('.')
-  t = s[2] if len(s) > 2 else '0'
-  print(s[0].zfill(2) + s[1] + t)
-except:
-  print('0000')")
-
 NOW=$(date +'%F %R')
 echo "Starting build of $VERSION at $NOW"
 
@@ -60,13 +53,13 @@ build_macosx ()
   PATH=${PATH:+$PATH:}/home/deen/git/osxcross/target/bin
   eval `osxcross-conf`
   export OSXCROSS_OSX_VERSION_MIN=10.9
-  cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX10.13.sdk/ $2 ../ddnet-source
+  cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX10.13.sdk/ $(echo $2) ../ddnet-source
   make -j2 package_default
 }
 
 build_macosx_website ()
 {
-  build_macosx $UPDATE_FLAGS_MACOSX
+  build_macosx "" $UPDATE_FLAGS_MACOSX
   mv DDNet-*.dmg $BUILDS/DDNet-$VERSION-osx.dmg
   cd ..
   rm -rf macosx
@@ -101,11 +94,11 @@ build_linux ()
   cp -r ddnet-source ddnet-source-steam
 
   chroot . sh -c "cd ddnet-source && \
-    cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=OFF $UPDATE_FLAGS -DPREFER_BUNDLED_LIBS=ON && \
-    CPPFLAGS=\"-DGAME_RELEASE_VERSION=\\\"$VERSION\\\"\" make -j2 package_default"
+    cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=OFF $(echo $UPDATE_FLAGS) -DPREFER_BUNDLED_LIBS=ON && \
+    CXXFLAGS=\"-DGAME_RELEASE_VERSION=\\\"$VERSION\\\"\" CPPFLAGS=\"-DGAME_RELEASE_VERSION=\\\"$VERSION\\\"\" make -j2 package_default"
   chroot . sh -c "cd ddnet-source-steam && \
     cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=OFF -DSTEAM=ON -DPREFER_BUNDLED_LIBS=ON -DINFORM_UPDATE=OFF && \
-    CPPFLAGS=\"-DPLATFORM_SUFFIX=\\\"-steam\\\" -DGAME_RELEASE_VERSION=\\\"$VERSION\\\"\" make -j2 package_default"
+    CXXFLAGS=\"-DPLATFORM_SUFFIX=\\\"-steam\\\" -DGAME_RELEASE_VERSION=\\\"$VERSION\\\"\" CPPFLAGS=\"-DPLATFORM_SUFFIX=\\\"-steam\\\" -DGAME_RELEASE_VERSION=\\\"$VERSION\\\"\" make -j2 package_default"
   mv ddnet-source/DDNet-*.tar.xz $BUILDS/DDNet-$VERSION-linux_$PLATFORM.tar.xz
   mv ddnet-source-steam/DDNet-*.tar.xz ../DDNet-$VERSION-steam-linux_$PLATFORM.tar.xz
 
@@ -125,7 +118,7 @@ build_windows ()
   rm -rf $DIR
   mkdir $DIR
   cd $DIR
-  cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain $BUILDOPTS ../ddnet-source
+  cmake -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain $(echo $BUILDOPTS) ../ddnet-source
   make -j2 package_default
   unset PREFIX \
     TARGET_FAMILY TARGET_PLATFORM TARGET_ARCH
