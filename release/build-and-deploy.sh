@@ -2,11 +2,17 @@
 autoload zmv
 set -e
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+MAIN_REPO_USER="${MAIN_REPO_USER:-ddnet}"
+MAIN_REPO_NAME="${MAIN_REPO_NAME:-ddnet}"
+MAIN_REPO_BRANCH="${MAIN_REPO_BRANCH:-master}"
+
 cd /home/deen/isos/ddnet
+
 if [ "$1" = "nightly" ]; then
   export UPDATE_FLAGS="-DAUTOUPDATE=OFF -DINFORM_UPDATE=OFF"
   export UPDATE_FLAGS_MACOSX="-DINFORM_UPDATE=OFF"
-  export VERSION="nightly$(date +%Y%m%d)"
+  V="$(curl -s https://raw.githubusercontent.com/$MAIN_REPO_USER/$MAIN_REPO_NAME/$MAIN_REPO_BRANCH/src/game/version.h | grep "^#define GAME_RELEASE_VERSION" | cut -d'"' -f2)"
+  export VERSION="$V-$(date +%Y%m%d)"
   ./build.sh $VERSION &> builds/DDNet-nightly.log
 elif [ "$1" = "rc" ]; then
   export UPDATE_FLAGS="-DAUTOUPDATE=OFF -DINFORM_UPDATE=OFF"
@@ -31,6 +37,7 @@ else
   exit 1
 fi
 
+zmv -W "builds/DDNet-$VERSION*" "builds/DDNet-nightly*"
 scp -q builds/DDNet-$VERSION* ddnet:/var/www/downloads/tmp
 ssh ddnet mv /var/www/downloads/tmp/DDNet-$VERSION\* /var/www/downloads
 cd steam
