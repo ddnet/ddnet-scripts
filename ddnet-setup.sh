@@ -13,10 +13,11 @@ set -x -e
 NAME_LOWER=$1
 NAME_UPPER=`echo $1 | tr '[:lower:]' '[:upper:]'`
 NAME_INGAME=$2
+NAME_SQL=`echo $NAME_UPPER | head -c3`
 
 apt-get -y update
 apt-get -y upgrade
-apt-get -y install bsdutils tree zsh vim htop git g++ libboost-dev python-msgpack python-requests python-dnspython python-mysqldb sshfs tcpdump gdb pkg-config ntpdate ntp mailutils msmtp msmtp-mta libssl-dev libmariadbclient-dev libmysqlcppconn-dev cmake make unattended-upgrades apt-listchanges iptables-persistent libwebsockets-dev libcurl4-openssl-dev python3 python3-dnslib python3-cachetools dnsmasq strace dnsutils sqlite3 libsqlite3-dev mariadb-client rsync libreadline-dev binutils-dev libpcap-dev libnl-genl-3-dev dh-autoreconf conntrack ncdu iperf3 psmisc ethtool net-tools mtr-tiny adduser
+apt-get -y install bsdutils tree zsh vim htop git g++ libboost-dev python-msgpack python-requests python-dnspython python-mysqldb sshfs tcpdump gdb pkg-config ntpdate ntp mailutils msmtp msmtp-mta libssl-dev libmariadbclient-dev libmysqlcppconn-dev cmake make unattended-upgrades apt-listchanges iptables-persistent libwebsockets-dev libcurl4-openssl-dev python3 python3-dnslib python3-cachetools dnsmasq strace dnsutils sqlite3 libsqlite3-dev mariadb-client rsync libreadline-dev binutils-dev libpcap-dev libnl-genl-3-dev dh-autoreconf conntrack ncdu iperf3 psmisc ethtool net-tools mtr-tiny adduser cron
 
 hostnamectl set-hostname ddnet$NAME_LOWER
 addgroup teeworlds
@@ -46,11 +47,12 @@ dpkg-reconfigure -f noninteractive unattended-upgrades
 apt-get -y update
 apt-get -y -t testing install libmysqlcppconn-dev libmysqlcppconn7v5
 
+chsh --shell /usr/bin/zsh
 sed -i "s/hostname=.*/hostname=$NAME_LOWER.ddnet.tw/" /etc/ssmtp/ssmtp.conf
 update-rc.d teeworlds-servers defaults enable
 
 echo "8298 8300 8303 8304 8305 8306 8308 8309 8311 8312" > /home/teeworlds/servers/all-servers
-sed -i "s/^sv_sql_servername .*/sv_sql_servername \"$NAME_UPPER\"/" /home/teeworlds/servers/mysql.cfg
+sed -i "s/^sv_sql_servername .*/sv_sql_servername \"$NAME_SQL\"/" /home/teeworlds/servers/mysql.cfg
 sed -i "s/^USER = .*/USER = \"ddnet$NAME_LOWER\"/" /home/teeworlds/servers/serverstatus-client.py
 sed -i "s/^sv_name \"DDNet [A-Za-z0-9]* /sv_name \"DDNet $NAME_INGAME /" /home/teeworlds/servers/types/*/flexname.cfg /home/teeworlds/servers/servers/*.cfg
 

@@ -37,9 +37,15 @@ else
   exit 1
 fi
 
-zmv -W "builds/DDNet-$VERSION*" "builds/DDNet-nightly*"
-scp -q builds/DDNet-$VERSION* ddnet:/var/www/downloads/tmp
-ssh ddnet mv /var/www/downloads/tmp/DDNet-$VERSION\* /var/www/downloads
+if [ "$1" = "nightly" ]; then
+  zmv -W "builds/DDNet-$VERSION*" "builds/DDNet-nightly*"
+  scp -q builds/DDNet-nightly* ddnet:/var/www/downloads/tmp
+  ssh ddnet mv /var/www/downloads/tmp/DDNet-nightly\* /var/www/downloads
+else
+  scp -q builds/DDNet-$VERSION* ddnet:/var/www/downloads/tmp
+  ssh ddnet mv /var/www/downloads/tmp/DDNet-$VERSION\* /var/www/downloads
+fi
+
 cd steam
 for i in *.zip; do
   mkdir ${i:r}
@@ -49,10 +55,11 @@ for i in *.zip; do
 done
 zmv -W "DDNet-$VERSION-*" '*'
 cd /home/deen/isos/ddnet/steamcmd/
-sed -e "s/Nightly Build/$VERSION/" app_build_412220.vdf > tmp.vdf
+sed -e "s/Nightly Build/$1: $VERSION/" app_build_412220.vdf > tmp.vdf
 if [ "$1" != "nightly" ]; then
   sed -i "s/\"beta\"/\"releasecandidates\"/" tmp.vdf
 fi
 steamcmd +login deen_ddnet "$(cat pass)" +run_app_build /home/deen/isos/ddnet/steamcmd/tmp.vdf +quit
+
 cd ..
-rm -rf builds/DDNet-$VERSION* builds/*.log DDNet-$VERSION* steam/*
+rm -rf builds/* DDNet-$VERSION* steam/*
