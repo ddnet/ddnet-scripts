@@ -44,6 +44,8 @@ systemctl enable dnsbl-iphub
 systemctl start dnsbl-iphub
 systemctl restart dnsmasq
 dpkg-reconfigure -f noninteractive unattended-upgrades
+ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime
+dpkg-reconfigure -f noninteractive tzdata
 apt-get -y update
 apt-get -y -t testing install libmysqlcppconn-dev libmysqlcppconn7v5
 

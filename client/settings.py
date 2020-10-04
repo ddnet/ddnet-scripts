@@ -18,10 +18,12 @@ for line in sys.stdin:
   y = line.split('"')
   name = x[1].lstrip()
 
-  if "STR" in line:
+  if "MACRO_CONFIG_STR" in line:
     result = (html.escape(name), html.escape(y[-2]), html.escape(x[3].lstrip()))
-  elif "INT" in line:
-    result = (html.escape(name), html.escape(y[-2]), html.escape(x[-5].lstrip()))
+  elif "MACRO_CONFIG_INT" in line:
+    result = (html.escape(name), html.escape(y[-2]), html.escape(x[2].lstrip()))
+  elif "MACRO_CONFIG_COL" in line:
+    result = (html.escape(name), html.escape(y[-2]), html.escape(x[2].lstrip()))
 
   line = '  <tr><td>%s</td><td>%s</td><td>%s</td></tr>' % result
 
