@@ -23,7 +23,7 @@ set -ex
 # Flags to pass to cmake when building a regular website build, Steam build is
 # always without autoupdater and without update info. For nightlies and RCs use:
 # UPDATE_FLAGS="-DAUTOUPDATE=OFF -DINFORM_UPDATE=OFF" UPDATE_FLAGS_MACOSX=-DINFORM_UPDATE=OFF
-UPDATE_FLAGS="${UPDATE_FLAGS:-\"-DAUTOUPDATE=ON\"}"
+UPDATE_FLAGS="${UPDATE_FLAGS:--DAUTOUPDATE=ON}"
 UPDATE_FLAGS_MACOSX="${UPDATE_FLAGS_MACOSX:-}"
 
 MAIN_REPO_USER="${MAIN_REPO_USER:-ddnet}"
