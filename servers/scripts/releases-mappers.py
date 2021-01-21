@@ -103,15 +103,15 @@ for mapper, servers in mappers.iteritems():
           height = unpacker.unpack()
           tiles = unpacker.unpack()
 
-          formattedMapName = '<span title="%dx%d">%s</span>' % (width, height, escape(originalMapName))
+          formattedMapName = '<span title="Map size: %dx%d">%s</span>' % (width, height, escape(originalMapName))
 
           mbMapInfo = "<br/>"
           for tile in sorted(tiles.keys(), key=lambda i:order(i)):
-            mbMapInfo += '<span title="%s"><img alt="%s" src="/tiles/%s.png" width="32" height="32"/></span> ' % (description(tile), description(tile), tile)
+            mbMapInfo += tileHtml(tile)
       except IOError:
         pass
 
-      mapsString += u'<div class="blockreleases release" id="map-%s"><h3 class="inline">%s</h3><br/><h3 class="inline"><a href="/ranks/%s/#map-%s">%s</a></h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/></p></div>\n' % (escape(mapName), date, server.lower(), escape(normalizeMapname(originalMapName)), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(server, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo)
+      mapsString += u'<div class="blockreleases release" id="map-%s"><h3 class="inline">%s</h3><br/><h3 class="inline"><a href="%s">%s</a></h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/mappreview/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/></p></div>\n' % (escape(mapName), date, mapWebsite(originalMapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(server, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo)
 
     mapsString += '<span class="stretch"></span></div>\n'
     serversString += mapsString
@@ -125,17 +125,19 @@ for mapper, servers in mappers.iteritems():
   os.rename(tmpname, filename)
 
 print header('Mappers - DDraceNetwork', '', '')
-print '<div id="global" class="longblock"><h2>Mappers</h2>'
+print '<div id="global" class="longblock"><h2>Mappers</h2><p>%d mappers total:</p>' % len(mappers)
 
 for name in sorted(mappers.iterkeys(), key=str.lower):
   servers = mappers[name]
   tmp = ''
+  total = 0
   for type in types:
     if type in servers:
       maps = servers[type]
       if len(tmp):
         tmp += ', '
       tmp += type + ': ' + str(len(maps))
-  print '<p><a href="%s">%s</a> (%s)</p>' % (mapperWebsite(name), escape(name), tmp)
+      total += len(maps)
+  print '<p><a href="%s">%s</a>: %d map%s (%s)</p>' % (mapperWebsite(name), escape(name), total, '' if total == 1 else 's', tmp)
 
 print '</div>'

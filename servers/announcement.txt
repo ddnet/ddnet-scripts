@@ -1,11 +1,13 @@
-Check out DDNet's Discord server (run by jao) on ddnet.tw/discord
+Check out the DDNet Wiki by Patiga & Zwelf on wiki.ddnet.tw
+Check out DDNet's Discord server on ddnet.tw/discord
 Check out DDNet's TeamSpeak server hosted by laxa on ts.ddnet.tw
+If a player seems to be afk and blocks a part by it do not start a kickvote but vote him to spectator instead.
+Join our community and register on forum.ddnet.tw
 When you want to change map make sure no one is currently racing!
 Don't block! Often the race progress is being delayed by blocking players. And only some of them do it on purpose.
 When you don't know what to do in a challenge, try to stay away from the action. Find a place from where you can have a look at the other tees without blocking them.
 Watch the behavior of other tees. Most communication in DDRace is not via chat. Observe other tees and try to understand what they want from you or others.
 Teamwork is important! Often a group of racing tees fails because everyone tried to do the challenge alone - one by one fails.
-Add DDraceNetwork servers to your favorites!
 You should always help first when there is a tee that needs help. Leaving stuck tees behind could be a fatal fault, because that tee could be the one who rescues you next time.
 DDraceNetwork supports team ranks! Play in team, get a /rankteam and try to appear in the /top5team
 DDraceNetwork has a points system! For every map you finish you earn points, depending on its difficulty. Check your current /points and compare yourself to the /top5points
@@ -16,4 +18,3 @@ When you get blocked in the noobfilter do not kick the blocker but instead join 
 Keep up to date with new map releases on ddnet.tw/releases
 Everyone can help test and release new maps! Visit the Map Testing section on our Discord server for more info.
 Good luck in your race!
-Join our community and register on forum.ddnet.tw

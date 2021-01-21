@@ -2,6 +2,9 @@
 set -x
 rni 10 3
 
+echo "Not used anymore, see git-update-files-only.sh"
+exit 1
+
 cd ~/servers
 rm -f maps7.log
 for i in maps/*.map; do

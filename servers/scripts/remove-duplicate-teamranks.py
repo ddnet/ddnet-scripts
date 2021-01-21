@@ -19,6 +19,7 @@ with con:
 
   ids = []
   for row in rows:
-      ids.extend(row[0].split('|')[1:])
+    ids.extend(row[0].split('|')[1:])
   print "Deleting:", ids
-  cur.execute("delete from record_teamrace where ID in (%s)" % (','.join(['"%s"' % i for i in ids])))
+  if ids:
+    cur.execute("delete from record_teamrace where ID in (%s)" % (','.join(['"%s"' % con.escape_string(i) for i in ids])))

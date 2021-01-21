@@ -76,9 +76,9 @@ for type in types:
   menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type)
 menuText += '</ul>'
 
-print header("Quick Tournament #48 - DDraceNetwork", menuText, '<script src="/youtube.js" type="text/javascript"></script>')
+print header("7th Birthday Summer Event - Tournament #4 - DDraceNetwork", menuText, '<script src="/youtube.js" type="text/javascript"></script>')
 
-f = open("tournament")
+f = open("tournament2")
 tournamentMaps = []
 for line in f:
   words = line.rstrip('\n').split('|')
@@ -164,7 +164,7 @@ with con:
 
         #if currentPosition > 20:
         #  continue
-        cur.execute("select Server from record_race where Map = '%s' and Name = '%s'" % (con.escape_string(originalMapName), con.escape_string(row[0])))
+        cur.execute("select Server from record_race where Map = '%s' and Name = '%s' and Timestamp = '%s'" % (con.escape_string(originalMapName), con.escape_string(row[0]), row[3]))
         rows2 = cur.fetchall()
         ranks.append((currentRank, row[0], row[1], row[2], row[3], rows2[0][0]))
 
@@ -192,9 +192,9 @@ with con:
       finishTimes = ""
 
       try:
-        cur.execute("select avg(Time), min(Timestamp), max(Timestamp) from record_race where Map = '%s';" % con.escape_string(originalMapName))
+        cur.execute("select (select median(Time) over (partition by Map) from record_race where Map = '%s' limit 1), min(Timestamp), max(Timestamp) from record_race where Map = '%s';" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
         rows = cur.fetchall()
-        avgTime = " (average time: %s)" % formatTime(rows[0][0])
+        avgTime = " (median time: %s)" % formatTime(rows[0][0])
         finishTimes = "first finish: %s, last finish: %s" % (escape(formatDate(rows[0][1])), escape(formatDate(rows[0][2])))
       except:
         pass
@@ -218,15 +218,15 @@ with con:
           height = unpacker.unpack()
           tiles = unpacker.unpack()
 
-          formattedMapName = '<span title="%dx%d">%s</span>' % (width, height, escape(originalMapName))
+          formattedMapName = '<span title="Map size: %dx%d">%s</span>' % (width, height, escape(originalMapName))
 
           mbMapInfo = "<br/>"
           for tile in sorted(tiles.keys(), key=lambda i:order(i)):
-            mbMapInfo += '<span title="%s"><img alt="%s" src="/tiles/%s.png" width="32" height="32"/></span> ' % (description(tile), description(tile), tile)
+            mbMapInfo += tileHtml(tile)
       except IOError:
         pass
 
-      mapsString += u'<div class="block3 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime))
+      mapsString += u'<div class="block3 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/mappreview/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime))
       #mapsString += printTeamRecords("Team Records", "teamrecords", teamRanks)
       mapsString += printSoloRecords2("Records", "records", ranks)
       mapsString += '<br/>\n'
@@ -246,9 +246,8 @@ with con:
 #teamrankRanks = sorted(teamrankLadder.items(), key=lambda r: r[1], reverse=True)
 #rankRanks = sorted(rankLadder.items(), key=lambda r: r[1], reverse=True)
 
-print '<div id="global" class="block div-tournament"><h2>Quick Tournament #48</h2>'
-print '<p>This tournament is played on Sunday, 2019-07-07 at 20:00 CEST.</p>'
-print '<div class="video-container"><div class="ytplayer" data-id="LqJK6HcsN18"></div></div>'
+print '<div id="global" class="block div-tournament"><h2>7th Birthday Summer Event - Tournament #4</h2>'
+print '<p>This tournament is played on Sunday, 2020-08-16 at 20:00 CEST.</p>'
 #print printLadder(teamrankRanks)
 print '</div>'
 print '<div id="serverranks" style="display: ">'

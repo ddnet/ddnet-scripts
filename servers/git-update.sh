@@ -1,9 +1,24 @@
 #!/usr/bin/env zsh
-set -x
 rni 10 3
 
 cd /home/teeworlds/servers
+
 (set +x; ./config_store_d maps/*.map) > /dev/null 2>/dev/null
+
+for i in /home/teeworlds/servers /home/teeworlds/servers/halloween; do
+  cd $i
+  rm -f maps7.log
+  for map in maps/*; do
+    map7="maps7/${map:t}"
+    if [ ! -e "$map7" -o "$map" -nt "$map7" ]; then
+      /home/teeworlds/servers/map_convert_07 "$map" "$map7.tmp" >> maps7.log && /home/teeworlds/servers/map_optimize "$map7.tmp" "../$map7" && rm -- "$map7.tmp" && git add "$map7" && echo "Converted $map to $map7"
+    fi
+  done
+done
+
+cd /home/teeworlds/servers
+
+set -x
 git commit -a -m "upd"
 git push
 
@@ -12,24 +27,25 @@ scripts/update-local.sh
 #scripts/update-servers.sh
 scripts/build-releasedates.sh
 scripts/update-points.py `cat all-types`
-scripts/releases.py > /var/www/releases/index.$$.tmp
-mv /var/www/releases/index.$$.tmp /var/www/releases/index.html
+scripts/releases.py
 scripts/releases-feed.py > /var/www/releases/feed/index.$$.tmp
+scripts/tiles.py
 mv /var/www/releases/feed/index.$$.tmp /var/www/releases/feed/index.atom
-scripts/releases-all.py > /var/www/releases/all/index.$$.tmp
-mv /var/www/releases/all/index.$$.tmp /var/www/releases/all/index.html
 echo -e "\e[1;32mMAIN updated successfully\e[0m") &
 
-servers=0
+set +x
+LOGFILE=git-update.$$.log
+rm -f $LOGFILE
 for i in `cat all-locations`; do
-  ssh $i.ddnet.tw "ni 10 3 servers/scripts/git-remote.sh"
+  (timeout 120 ssh $i.ddnet.tw "ni 10 3 servers/scripts/git-remote.sh"
   if [ $? -eq 0 ]; then
-    echo -e "\e[1;32m$i updated successfully\e[0m"
-    servers=$((servers+1))
+    echo -e "\e[1;32m$i updated successfully\e[0m" >> $LOGFILE
   else
-    echo -e "\e[1;33mUpdating $i failed\e[0m"
-  fi
+    echo -e "\e[1;33mUpdating $i failed\e[0m" >> $LOGFILE
+  fi) &
 done
 
 wait
-echo -e "\e[1;31m$servers/$(wc -w < all-locations) servers updated successfully\e[0m"
+echo -e "\e[1;31m$(grep successfully $LOGFILE | wc -l)/$(wc -w < all-locations) servers updated successfully\e[0m"
+grep failed $LOGFILE || true
+rm $LOGFILE

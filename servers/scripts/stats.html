@@ -1,27 +1,34 @@
     <div class="block">
       <h2>Statistics &amp; Charts</h2>
-      <ul>
-        <li><a href="/releases/">%s</a> maps</li>
-        <li><a href="/players/">%s</a> ranked players</li>
-        <li><a href="/ranks/">%s</a> finishes</li>
-        <li>%s spent on all ranks (%s spent yesterday)</li>
-        <li>Most players at the same time: <a href="730.png">730</a> (Dummy Tournament: <a href="807.png">810</a>)</li>
-        <li>Most players by country: %s</li>
-        <li>Average players by country (last 4 weeks): %s</li>
-        <li>Raw list of all DDNet ranks, team ranks and maps: <a href="ddnet-stats.zip">CSV</a>, <a href="ddnet-sql.zip">SQL</a></li>
-        <li><a href="server/">Server Statistics</a></li>
-      </ul>
-      <script src="js/highcharts.js"></script>
-      <script src="js/modules/exporting.js"></script>
+      <h3>Country Statistics</h3>
+      <div style="overflow-x: auto;">
+        <table style="border-collapse: separate; border-spacing: 1em 0;">
+          <tr style="text-align: center; border-bottom: .5em solid transparent;"><th></th><th style="text-align: right;" colspan="2">Avg Players (1 day)</th><th style="text-align: right;" colspan="2">Avg Players (1 week)</th><th style="text-align: right;">Players Record</th><th style="text-align: right;">Ranked Players</th><th style="text-align: right;">Total Finishes</th></tr>
+  %s
+        </table>
+      </div>
+      <h3>Type Statistics</h3>
+      <div style="overflow-x: auto;">
+        <table style="border-collapse: separate; border-spacing: 1em 0;">
+          <tr style="text-align: center; border-bottom: .5em solid transparent;"><th></th><th style="text-align: right;" colspan="2">Ranks (1 day)</th><th style="text-align: right;" colspan="2">Ranks (1 week)</th><th style="text-align: right;">Maps</th><th style="text-align: right;">Avg Time</th><th style="text-align: right;">Ranked Players</th><th style="text-align: right;">Total Finishes</th></tr>
+  %s
+        </table>
+      </div>
+      <script src="js/highcharts.js?version=2"></script>
+      <script src="js/modules/exporting.js?version=2"></script>
+      <script src="js/modules/stock.js?version=2"></script>
+      <script src="js/modules/data.js?version=2"></script>
 
-      <div id="chart-players-country" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-      <p><a href="/status/csv/bycountry">Raw data of players by country since 2014-12-21</a></p>
-      <div id="chart-players-mod" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-      <p><a href="/status/csv/bymod">Raw data of players by mod since 2014-12-21</a></p>
-      <div id="chart-playerhours-country" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-      <div id="chart-playerhours-mod" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-      <div id="chart-finishes" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-      <div id="chart-points-server" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-      <div id="chart-points-country" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-      <div id="chart-maps" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+      <div id="chart-players-country" style="min-width: 310px; height: 600px; margin: 0 -1.5em"></div>
+      <div id="chart-players-mod" style="min-width: 310px; height: 600px; margin: 0 -1.5em"></div>
+      <div id="chart-playerhours-country" style="min-width: 310px; height: 600px; margin: 0 -1.5em"></div>
+      <div id="chart-playerhours-mod" style="min-width: 310px; height: 600px; margin: 0 -1.5em"></div>
+      <div id="chart-finishes" style="min-width: 310px; height: 600px; margin: 0 -1.5em"></div>
+      <div id="chart-points-server" style="min-width: 310px; height: 600px; margin: 0 -1.5em"></div>
+      <div id="chart-points-country" style="min-width: 310px; height: 600px; margin: 0 -1.5em"></div>
+      <div id="chart-maps" style="min-width: 310px; height: 600px; margin: 0 -1.5em"></div>
+      <ul>
+        <li>Raw list of all DDNet ranks, team ranks and maps: <a href="ddnet-stats.zip">CSV</a>, <a href="ddnet-sql.zip">SQL</a></li>
+        <li>Raw data of players since 2014-12-21: <a href="/status/csv/bycountry">by country</a>, <a href="/status/csv/bymod">by mod</a></li>
+      </ul>
     </div>
