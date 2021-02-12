@@ -212,7 +212,7 @@ rm -r ddnet
 tar xvf ../DDNet-$VERSION-steam-linux_x86_64.tar.xz
 rm -r DDNet-*-linux_x86_64/data
 mv DDNet-*-linux_x86_64 ddnet
-cp $BUILDDIR/ddnet-source/ddnet-libs/sdl/linux/lib64/libSDL2-2.0.so.0 ddnet
+cp $BUILDDIR/ddnet-source/ddnet-libs/sdl/linux/lib64/libSDL2-2.0.so.0 $BUILDDIR/ddnet-source/ddnet-libs/discord/linux/lib64/discord_game_sdk.so ddnet
 cp $BUILDDIR/steamworks/sdk/redistributable_bin/linux64/libsteam_api.so ddnet
 zip -9r DDNet-$VERSION-linux_x86_64.zip ddnet
 rm -r ddnet
