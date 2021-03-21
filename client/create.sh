@@ -15,7 +15,7 @@ echo '</div>'
 
 echo '<div class="block">'
 echo '<h2 id="econ-settings">Econ Settings</h2>'
-cat ./**/{config_variables,variables}.h ./**/econ.cpp | "$DIR/settings.py" CFGFLAG_ECON
+cat ./**/{config_variables,variables}.h | "$DIR/settings.py" CFGFLAG_ECON
 echo '</div>'
 
 echo '<div class="block">'
