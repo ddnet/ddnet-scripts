@@ -14,6 +14,11 @@ cat ./**/{config_variables,variables}.h | "$DIR/settings.py" CFGFLAG_SERVER
 echo '</div>'
 
 echo '<div class="block">'
+echo '<h2 id="econ-settings">Econ Settings</h2>'
+cat ./**/{config_variables,variables}.h ./**/econ.cpp | "$DIR/settings.py" CFGFLAG_ECON
+echo '</div>'
+
+echo '<div class="block">'
 echo '<h2 id="server-commands">Server Commands</h2>'
 (cat src/**/{console,netban,server,gamecontext,engine}.cpp | grep "Register(" | grep CFGFLAG_SERVER | grep -v "\\/\\/"; cat src/**/ddracecommands.h) | "$DIR/commands.py" CFGFLAG_SERVER
 echo '</div>'

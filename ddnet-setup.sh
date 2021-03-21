@@ -32,7 +32,6 @@ iptables -N serverinfo
 iptables -A INPUT -p udp -m u32 --u32 "38=0x67696533" -j serverinfo
 iptables -A INPUT -p udp -m u32 --u32 "38=0x66737464" -j serverinfo
 iptables -A serverinfo -s 37.187.108.123 -j ACCEPT
-iptables -A serverinfo -s 185.107.96.242 -j ACCEPT
 iptables -A serverinfo -m hashlimit --hashlimit-above 1000/s --hashlimit-burst 2500 --hashlimit-mode dstport --hashlimit-name si_dstport -j DROP
 iptables -A serverinfo -m hashlimit --hashlimit-above 20/s --hashlimit-burst 100 --hashlimit-mode srcip --hashlimit-name si_srcip -j DROP
 iptables-save > /etc/iptables.up.rules
