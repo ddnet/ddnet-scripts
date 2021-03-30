@@ -1,7 +1,8 @@
 #!/bin/sh
 
-for t in `cat all-types`; do
-  tl=$(echo "$t" | tr A-Z a-z)
-  /home/django/bin/print_mapfile $t > "/home/teeworlds/servers/types/$tl/maps"
-done
+while IFS= read -r t
+do
+  tl=$(echo "$t" | tr '[:upper:]' '[:lower:]')
+  /home/django/bin/print_mapfile "$t" > "/home/teeworlds/servers/types/$tl/maps"
+done < all-types
 

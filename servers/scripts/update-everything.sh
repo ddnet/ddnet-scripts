@@ -1,8 +1,8 @@
 #!/bin/bash
 
-cd /home/teeworlds/servers
+cd /home/teeworlds/servers || exit 1
 
-if [ $(cat /proc/loadavg|head -c1) -ge 2 ]; then
+if [ "$(head -c1 /proc/loadavg)" -ge 2 ]; then
   #echo -e "Current load is > 2, not running."
   exit 1
 fi
@@ -22,15 +22,15 @@ cleanup()
 
 trap cleanup EXIT HUP INT QUIT TERM # Always call, even on success.
 
-types=`cat all-types`
+types=$(cat all-types)
 
 scripts/update-local.sh
 
 scripts/ranks.py $types
 # Only update the country-specific pages once per day
 #if test `find /var/www/ranks/ger/novice/index.html -mmin +1440`; then
-  grep name serverlist.json | sed -e 's/.*"name": "\(.*\)".*/\1/' | while read country; do
-    scripts/ranks.py --country=$country $types
+  grep name serverlist.json | sed -e 's/.*"name": "\(.*\)".*/\1/' | while read -r country; do
+    scripts/ranks.py --country="$country" $types
   done
 #fi
 
