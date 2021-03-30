@@ -2,7 +2,7 @@
 
 cd ~/servers
 
-nohup ./run-versionsrv.sh &
+#nohup ./run-versionsrv.sh &
 
 #for i in `cat all-servers`; do
 #  nohup ./run64.sh $i > /dev/null &
@@ -16,7 +16,7 @@ nohup ./run-versionsrv.sh &
 
 #cd ~/testing/secret
 #nohup ./run64.sh secret > /dev/null &
-#
+
 #cd ../secret2
 #nohup ./run64.sh secret2 > /dev/null &
 #

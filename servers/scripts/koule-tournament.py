@@ -28,7 +28,7 @@ def printFooter():
         <tr><td>7th place</td><td>6 points</td></tr>
         <tr><td>8th place</td><td>4 points</td></tr>
         <tr><td>9th place</td><td>2 points</td></tr>
-        <tr><td>10th place</td><td>1 points</td></tr>
+        <tr><td>10th place</td><td>1 point</td></tr>
       </table>
     </div>
     <br/>
@@ -266,9 +266,9 @@ with con:
       finishTimes = ""
 
       try:
-        cur.execute("select avg(Time), min(Timestamp), max(Timestamp) from record_race where Map = '%s';" % con.escape_string(originalMapName))
+        cur.execute("select (select median(Time) over (partition by Map) from record_race where Map = '%s' limit 1), min(Timestamp), max(Timestamp) from record_race where Map = '%s';" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
         rows = cur.fetchall()
-        avgTime = " (average time: %s)" % formatTime(rows[0][0])
+        avgTime = " (median time: %s)" % formatTime(rows[0][0])
         finishTimes = "first finish: %s, last finish: %s" % (escape(formatDate(rows[0][1])), escape(formatDate(rows[0][2])))
       except:
         pass
@@ -301,15 +301,15 @@ with con:
           height = unpacker.unpack()
           tiles = unpacker.unpack()
 
-          formattedMapName = '<span title="%dx%d">%s</span>' % (width, height, escape(originalMapName))
+          formattedMapName = '<span title="Map size: %dx%d">%s</span>' % (width, height, escape(originalMapName))
 
           mbMapInfo = "<br/>"
           for tile in sorted(tiles.keys(), key=lambda i:order(i)):
-            mbMapInfo += '<span title="%s"><img alt="%s" src="/tiles/%s.png" width="32" height="32"/></span> ' % (description(tile), description(tile), tile)
+            mbMapInfo += tileHtml(tile)
       except IOError:
         pass
 
-      mapsString += u'<div class="block3 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span><br/>%d team%s finished%s</p></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime), countTeamFinishes, mbS, escape(biggestTeam))
+      mapsString += u'<div class="block3 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/mappreview/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span><br/>%d team%s finished%s</p></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime), countTeamFinishes, mbS, escape(biggestTeam))
       mapsString += printTeamRecords("Team Records", "teamrecords", teamRanks)
       mapsString += '<br/>\n'
 

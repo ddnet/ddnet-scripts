@@ -81,6 +81,7 @@ with con:
     #bestTeamRank = ""
     #bestRank = ""
     pointsText = renderStars(int(words[0]))
+    pointsText2 = '%d/5 ★' % int(words[0])
 
     #try:
     #  cur.execute("select Time from record_teamrace where Map = '%s' ORDER BY Time LIMIT 1;" % con.escape_string(originalMapName))
@@ -111,12 +112,8 @@ with con:
     except:
       pass
 
-    textFinishes = str(countFinishes)
-    if countFinishes < 10:
-      textFinishes = u' ' + textFinishes
-
     if countFinishes == 0:
-      text = (u' %s | %s ⚑' % (pointsText, textFinishes)).encode('utf-8')
+      text = (u'%d ⚑' % countFinishes).encode('utf-8')
     else:
       #try:
       #  cur.execute("select Name from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY TIME LIMIT 1) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID order by Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
@@ -133,7 +130,7 @@ with con:
       #  except:
       #    pass
 
-      text = (u' %s | %s ⚑ | %s ◷' % (pointsText, textFinishes, averageTime)).encode('utf-8')
+      text = (u'%d ⚑ | %s ◷' % (countFinishes, averageTime)).encode('utf-8')
 
         #if len(text) > 63:
         #  d = 63 - len(text) - 3
@@ -160,8 +157,7 @@ with con:
       mbMapperName = " by %s" % mapperName
       mapperText = "\\n│ Mapper: %s" % mapperName
 
-
-    print 'add_vote "%s%s" "sv_reset_file types/%s/flexreset.cfg; change_map \\"%s\\""' % (originalMapName, mbMapperName, server.lower(), originalMapName)
+    print 'add_vote "%s%s | %s" "sv_reset_file types/%s/flexreset.cfg; change_map \\"%s\\""' % (originalMapName, mbMapperName, pointsText2, server.lower(), originalMapName)
     print 'add_vote "%s" "info"' % text
 
     points = globalPoints(server, int(words[0]))
@@ -191,6 +187,8 @@ with con:
 
     motdMap = '│ Map: %s%s\\n│ Difficulty: %s (%d Point%s)%s\\n│ %d finishes by %d tees%s%s%s' % (originalMapName, mapperText, pointsText, points, mbS, releaseDateText, countFinishesTotal, countFinishes, topTimeText, averageTimeText, worstTimeText)
 
-    with open('maps/%s.map.cfg' % originalMapName, 'w') as cfg:
-      #cfg.write(execString + "\n")
-      cfg.write(motdSkeleton % (serverStrings[server], localString, motdMap))
+    if server in serverStrings: # Special handling for PermaNovice, don't do this
+        with open('maps/%s.map.cfg' % originalMapName, 'w') as cfg:
+          cfg.write(motdSkeleton % (serverStrings[server], localString, motdMap))
+          skill_level = 0 if points < 6 else 1 if points < 16 else 2
+          cfg.write("sv_skill_level %d\n" % skill_level)

@@ -61,7 +61,11 @@ with con:
         except:
           pass
 
-      if realDate != None:
-        cur.execute("INSERT INTO record_maps(Map, Server, Mapper, Points, Stars, Timestamp) VALUES ('%s', '%s', '%s', '%d', '%d', '%s') ON duplicate key UPDATE Server=VALUES(Server), Mapper=VALUES(Mapper), Points=VALUES(Points), Stars=VALUES(Stars), Timestamp=VALUES(Timestamp);" % (con.escape_string(mapName), con.escape_string(type), con.escape_string(mapperName), points, stars, realDate))
-      else:
-        cur.execute("INSERT INTO record_maps(Map, Server, Mapper, Points, Stars, Timestamp) VALUES ('%s', '%s', '%s', '%d', '%d', 0) ON duplicate key UPDATE Server=VALUES(Server), Mapper=VALUES(Mapper), Points=VALUES(Points), Stars=VALUES(Stars), Timestamp=VALUES(Timestamp);" % (con.escape_string(mapName), con.escape_string(type), con.escape_string(mapperName), points, stars))
+      cur.execute("INSERT INTO record_maps(Map, Server, Mapper, Points, Stars, Timestamp) VALUES ('%s', '%s', '%s', '%d', '%d', %s) ON duplicate key UPDATE Server=VALUES(Server), Mapper=VALUES(Mapper), Points=VALUES(Points), Stars=VALUES(Stars), Timestamp=VALUES(Timestamp);" % (con.escape_string(mapName), con.escape_string(type), con.escape_string(mapperName), points, stars, "'" + realDate + "'" if realDate else "0"))
+
+      with open('maps/%s.msgpack' % mapName) as inp:
+        unpacker = msgpack.Unpacker(inp)
+        width = unpacker.unpack()
+        height = unpacker.unpack()
+        ts = unpacker.unpack()
+        cur.execute("REPLACE INTO record_mapinfo (Map, Width, Height, %s) VALUES ('%s', %d, %d, %s);" % (", ".join(all_tiles), con.escape_string(mapName), width, height, ", ".join([str(ts.get(tile, False)) for tile in all_tiles])))

@@ -7,6 +7,7 @@ Tournament preparation process on DDNet
 - Announce on DDNet Forum
 - Announce on DDNet.tw
 - Announce in Client: news
+- Announce on Steam
 - Also scripts/print.sh, first days only lower lines, comment out upper ones
   ./git-update-files-only.sh
   Crontab all servers to run print.sh every 2 hours

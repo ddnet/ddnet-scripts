@@ -34,7 +34,7 @@ def printFooter():
 #        <tr><td>7th place</td><td>6 points</td></tr>
 #        <tr><td>8th place</td><td>4 points</td></tr>
 #        <tr><td>9th place</td><td>2 points</td></tr>
-#        <tr><td>10th place</td><td>1 points</td></tr>
+#        <tr><td>10th place</td><td>1 point</td></tr>
 #      </table>
 #    </div>
 #    <br/>
@@ -116,7 +116,7 @@ for type in types:
   menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type)
 #menuText += '<li><a href="#Points">Points Calculation</a></li></ul>'
 
-print header("Teleport Gun Event #1 - DDraceNetwork", menuText, "")
+print header("Quick Tournament #52 - DDraceNetwork", menuText, "")
 #print '<script src="/js.js" type="text/javascript"></script><p class="toggle"><a href="#" onclick="showClass(\'allPoints\'); return false;">All ranks / Top 10 ranks</a></p>'
 
 f = open("tournament")
@@ -202,7 +202,7 @@ with con:
 
           #if currentPosition > 10:
           #  continue
-          cur.execute("select Server from record_race where Map = '%s' and Name = '%s'" % (con.escape_string(originalMapName), con.escape_string(row[0])))
+          cur.execute("select Server from record_race where Map = '%s' and Name = '%s' and Timestamp = '%s'" % (con.escape_string(originalMapName), con.escape_string(row[0]), row[3]))
           rows2 = cur.fetchall()
           ranks.append((currentRank, row[0], row[1], row[2], row[3], rows2[0][0]))
 
@@ -230,9 +230,9 @@ with con:
         finishTimes = ""
 
         try:
-          cur.execute("select avg(Time), min(Timestamp), max(Timestamp) from record_race where Map = '%s';" % con.escape_string(originalMapName))
+          cur.execute("select (select median(Time) over (partition by Map) from record_race where Map = '%s' limit 1), min(Timestamp), max(Timestamp) from record_race where Map = '%s';" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
           rows = cur.fetchall()
-          avgTime = " (average time: %s)" % formatTime(rows[0][0])
+          avgTime = " (median time: %s)" % formatTime(rows[0][0])
           finishTimes = "first finish: %s, last finish: %s" % (escape(formatDate(rows[0][1])), escape(formatDate(rows[0][2])))
         except:
           pass
@@ -256,15 +256,15 @@ with con:
             height = unpacker.unpack()
             tiles = unpacker.unpack()
 
-            formattedMapName = '<span title="%dx%d">%s</span>' % (width, height, escape(originalMapName))
+            formattedMapName = '<span title="Map size: %dx%d">%s</span>' % (width, height, escape(originalMapName))
 
             mbMapInfo = "<br/>"
             for tile in sorted(tiles.keys(), key=lambda i:order(i)):
-              mbMapInfo += '<span title="%s"><img alt="%s" src="/tiles/%s.png" width="32" height="32"/></span> ' % (description(tile), description(tile), tile)
+              mbMapInfo += tileHtml(tile)
         except IOError:
           pass
 
-        mapsString += u'<div class="block3 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime))
+        mapsString += u'<div class="block3 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/mappreview/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime))
         #mapsString += printTeamRecords("Team Records", "teamrecords", teamRanks)
         mapsString += printSoloRecords2("Records", "records", ranks)
         mapsString += '<br/>\n'
@@ -283,7 +283,7 @@ with con:
             fNames = []
             for name in names:
               fNames.append('<a href="%s">%s</a>' % (escape(playerWebsite(u'%s' % name)), escape(name)))
-            cur.execute("select Server from record_race where Map = '%s' and Name = '%s'" % (con.escape_string(originalMapName), con.escape_string(names[0])))
+            cur.execute("select Server from record_race where Map = '%s' and Name = '%s' and Timestamp = '%s'" % (con.escape_string(originalMapName), con.escape_string(names[0]), timestamp))
             rows = cur.fetchall()
             teamRanks.append((currentRank, joinNames(fNames), time, timestamp, rows[0][0]))
             names = []
@@ -330,7 +330,7 @@ with con:
           fNames = []
           for name in names:
             fNames.append('<a href="%s">%s</a>' % (escape(playerWebsite(u'%s' % name)), escape(name)))
-          cur.execute("select Server from record_race where Map = '%s' and Name = '%s'" % (con.escape_string(originalMapName), con.escape_string(names[0])))
+          cur.execute("select Server from record_race where Map = '%s' and Name = '%s' and Timestamp = '%s'" % (con.escape_string(originalMapName), con.escape_string(names[0]), timestamp))
           rows = cur.fetchall()
           teamRanks.append((currentRank, joinNames(fNames), time, timestamp, rows[0][0]))
           countTeamFinishes += 1
@@ -409,9 +409,9 @@ with con:
         finishTimes = ""
 
         try:
-          cur.execute("select avg(Time), min(Timestamp), max(Timestamp) from record_race where Map = '%s';" % con.escape_string(originalMapName))
+          cur.execute("select (select median(Time) over (partition by Map) from record_race where Map = '%s' limit 1), min(Timestamp), max(Timestamp) from record_race where Map = '%s';" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
           rows = cur.fetchall()
-          avgTime = " (average time: %s)" % formatTime(rows[0][0])
+          avgTime = " (median time: %s)" % formatTime(rows[0][0])
           finishTimes = "first finish: %s, last finish: %s" % (escape(formatDate(rows[0][1])), escape(formatDate(rows[0][2])))
         except:
           pass
@@ -444,7 +444,7 @@ with con:
             height = unpacker.unpack()
             tiles = unpacker.unpack()
 
-            formattedMapName = '<span title="%dx%d">%s</span>' % (width, height, escape(originalMapName))
+            formattedMapName = '<span title="Map size: %dx%d">%s</span>' % (width, height, escape(originalMapName))
 
             mbMapInfo = "<br/>"
             for tile in sorted(tiles.keys(), key=lambda i:order(i)):
@@ -452,7 +452,7 @@ with con:
         except IOError:
           pass
 
-        mapsString += u'<div class="block3 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span><br/>%d team%s finished%s</p></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime), countTeamFinishes, mbS, escape(biggestTeam))
+        mapsString += u'<div class="block3 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/mappreview/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span><br/>%d team%s finished%s</p></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime), countTeamFinishes, mbS, escape(biggestTeam))
         mapsString += printTeamRecords2("Team Records", "teamrecords", teamRanks)
         mapsString += '<br/>\n'
 
@@ -470,8 +470,8 @@ with con:
 pointsRanks = sorted(pointsLadder.items(), key=lambda r: r[1], reverse=True)
 rankRanks = sorted(rankLadder.items(), key=lambda r: r[1], reverse=True)
 
-print '<div id="global" class="block div-tournament"><h2>Teleport Gun Event #1</h2>'
-print '<p>This event runs from 2018-07-27 to 2018-08-05.<br/>The players with the best times on these maps win! Read more about it on <a href="https://forum.ddnet.tw/viewtopic.php?t=6581">the forum</a>.</p>'
+print '<div id="global" class="block div-tournament"><h2>Quick Tournament #52</h2>'
+print '<p>This tournament is played on Sunday, 2020-10-11 at 20:00 CEST. The team with the best time after 90 minutes wins!</p>'
 #print printLadder(rankRanks)
 print '</div>'
 print '<div id="serverranks" style="display: ">'

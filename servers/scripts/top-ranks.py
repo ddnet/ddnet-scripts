@@ -33,7 +33,7 @@ def postRecord(row, names):
     oldTimeString = "new tie!"
   else:
     oldTimeString = "next best time: %s" % formatTimeExact(row[6])
-  postDiscordRecords("%s %s on \[[%s](<https://ddnet.tw/ranks/%s/>)\] [%s](<https://ddnet.tw/ranks/%s/#map-%s>): %s %s (%s)" % (countryCodeMapping.get(row[8], ''), row[4], row[5], row[5].lower(), row[1], row[5].lower(), normalizeMapname(row[1]), formatTimeExact(row[2]), names, oldTimeString))
+  postDiscordRecords("%s %s on \[[%s](<https://ddnet.tw/ranks/%s/>)\] [%s](<https://ddnet.tw%s>): %s %s (%s)" % (countryCodeMapping.get(row[8], ''), row[4], row[5], row[5].lower(), row[1], mapWebsite(row[1]), formatTimeExact(row[2]), names, oldTimeString))
 
 os.chdir("/home/teeworlds/servers/")
 

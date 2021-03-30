@@ -4,7 +4,7 @@ setopt sh_word_split
 unsetopt nomatch
 cd /home/teeworlds/servers
 
-for i in `cat all-types`; do
+for i in `cat all-types` PermaNovice Multimap; do
   scripts/create-votes.py $i > types/${i:l}/votes.$$.tmp &&
   mv types/${i:l}/votes.$$.tmp types/${i:l}/votes.cfg &&
   #split -l 40 types/${i:l}/votes.cfg types/${i:l}/votes.cfg
@@ -15,7 +15,9 @@ echo "add_vote \"─── TESTING MAPS ───\" \"info\"" >> types/test/vote
 (for i in test/maps/*.map; do b=$(basename "$i" .map); echo "add_vote \"$b\" \"change_map \\\"$b\\\"\""; done) >> types/test/votes.$$.tmp
 mv types/test/votes.$$.tmp types/test/votes.cfg
 
-for server in secret secret2 secret3 secret4 secret5 secret6 secret7; do
+cp types/moderate/votes.cfg types/secret/votes.cfg
+#for server in secret secret2 secret3 secret4 secret5 secret6 secret7; do
+for server in secret2 secret3 secret4 secret5 secret6 secret7; do
   (for i in ~/testing/$server/maps/*.map; do b=$(basename "$i" .map); echo "add_vote \"$b\" \"change_map \\\"$b\\\"\""; done) > types/$server/votes.$$.tmp
   mv types/$server/votes.$$.tmp types/$server/votes.cfg
 done
