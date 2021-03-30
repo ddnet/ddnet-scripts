@@ -95,15 +95,15 @@ for x in entries:
       height = unpacker.unpack()
       tiles = unpacker.unpack()
 
-      formattedMapName = '<span title="%dx%d">%s</span>' % (width, height, escape(originalMapName))
+      formattedMapName = '<span title="Map size: %dx%d">%s</span>' % (width, height, escape(originalMapName))
 
       mbMapInfo = "<br/>"
       for tile in sorted(tiles.keys(), key=lambda i:order(i)):
-        mbMapInfo += '<span title="%s"><img alt="%s" src="/tiles/%s.png" width="32" height="32"/></span> ' % (description(tile), description(tile), tile)
+        mbMapInfo += tileHtml(tile)
   except IOError:
     pass
 
-  mapsString += u'<div class="blockreleases release" id="map-%s"><h2 class="inline">%s<br/>%s</h2><br/><h3 class="inline">on <a href="/ranks/%s/#map-%s">%s</a> %s</h3><h3 class="inline"><a href="/ranks/%s">%s Server</a></h3><br/><p>Difficulty: %s, Points: %d<br/><a href="http://youtu.be/%s?list=UUehuq_sbMTEATWVgDvnVy7w%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/></div>\n' % (escape(mapName), playerNames, time, server.lower(), escape(normalizeMapname(originalMapName)), formattedMapName, mbMapperName, server.lower(), server, escape(renderStars(stars)), globalPoints(server, stars), video, ytTime, escape(mapName), mbMapInfo)
+  mapsString += u'<div class="blockreleases release" id="map-%s"><h2 class="inline">%s<br/>%s</h2><br/><h3 class="inline">on <a href="%s">%s</a> %s</h3><h3 class="inline"><a href="/ranks/%s/">%s Server</a></h3><br/><p>Difficulty: %s, Points: %d<br/><a href="http://youtu.be/%s?list=UUehuq_sbMTEATWVgDvnVy7w%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/></div>\n' % (escape(mapName), playerNames, time, mapWebsite(originalMapName), formattedMapName, mbMapperName, server.lower(), server, escape(renderStars(stars)), globalPoints(server, stars), video, ytTime, escape(mapName), mbMapInfo)
 
 serversString += mapsString
 serversString += '<span class="stretch"></span></div>\n'

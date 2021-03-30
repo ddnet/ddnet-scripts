@@ -12,6 +12,7 @@ wget https://www.sqlite.org/2020/sqlite-autoconf-3320300.tar.gz
 wget https://code.videolan.org/videolan/x264/-/archive/master/x264-master.tar.bz2
 wget https://ffmpeg.org/releases/ffmpeg-4.3.1.tar.gz
 wget https://github.com/warmcat/libwebsockets/archive/v4.1.1.tar.gz
+wget https://download.sourceforge.net/libpng/libpng-1.6.37.tar.gz
 
 chroot debian6 bash
 cat /etc/apt/sources.list
@@ -28,6 +29,7 @@ tar xvf ../sqlite-autoconf-3320300.zip
 tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-4.3.1.tar.gz
 tar xvf ../v4.1.1.tar.gz
+tar xvf ../libpng-1.6.37.tar.gz
 
 cd libogg-1.3.4
 ./configure CFLAGS=-fPIC
@@ -70,6 +72,11 @@ CFLAGS=-fPIC LDFLAGS=-fPIC cmake -DLWS_UNIX_SOCK=OFF -DLWS_WITH_SSL=OFF -DLWS_WI
 make -j4
 cp lib/libwebsockets.a ..
 
+cd ../libpng-1.6.37
+./configure CFLAGS=-FPIC
+make -j4
+cp .libs/libpng16.a ..
+
 cd ../..
 
 mkdir x86
@@ -82,6 +89,7 @@ tar xvf ../sqlite-autoconf-3320300.zip
 tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-4.3.1.tar.gz
 tar xvf ../v4.1.1.tar.gz
+tar xvf ../libpng-1.6.37.tar.gz
 
 cd libogg-1.3.4
 CFLAGS=-m32 LDFLAGS=-m32 ./configure
@@ -124,6 +132,11 @@ CFLAGS="-m32 -fPIC" LDFLAGS="-m32 -fPIC" cmake -DLWS_UNIX_SOCK=OFF -DLWS_WITH_SS
 make -j4
 cp lib/libwebsockets.a ..
 
+cd ../libpng-1.6.37
+./configure CFLAGS="-m32 -FPIC" --host=i686-linux
+make -j4
+cp .libs/libpng16.a ..
+
 cd ../..
 
 mkdir win64
@@ -138,6 +151,7 @@ tar xvf ../sqlite-autoconf-3320300.zip
 tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-4.3.1.tar.gz
 tar xvf ../v4.1.1.tar.gz
+tar xvf ../libpng-1.6.37.tar.gz
 
 cd SDL2-2.0.8
 ./configure --host=x86_64-w64-mingw32 --enable-ime
@@ -228,6 +242,11 @@ cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-w64.cmake -DLWS_WITH_SSL=OFF -DLWS_UN
 make -j4
 cp lib/libwebsockets.dll.a bin/libwebsockets.dll ..
 
+cd ../libpng-1.6.37
+CFLAGS="-I/usr/x86_64-w64-mingw32/include" LDFLAGS="-L/usr/x86_64-w64-mingw32/lib" ./configure --host=x86_64-w64-mingw32
+make -j4
+cp .libs/libpng16-16.dll ..
+
 cd ..
 for i in *.dll; do x86_64-w64-mingw32-strip -s $i; done
 
@@ -245,6 +264,7 @@ tar xvf ../sqlite-autoconf-3320300.zip
 tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-4.3.1.tar.gz
 tar xvf ../v4.1.1.tar.gz
+tar xvf ../libpng-1.6.37.tar.gz
 
 cd SDL2-2.0.8
 ./configure --host=i686-w64-mingw32 --enable-ime
@@ -334,6 +354,11 @@ cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-w32.cmake -DLWS_WITH_SSL=OFF -DLWS_UN
 make -j4
 cp lib/libwebsockets.dll.a bin/libwebsockets.dll ..
 
+cd ../libpng-1.6.37
+CFLAGS="-I/usr/i686-w64-mingw32/include" LDFLAGS="-L/usr/i686-w64-mingw32/lib" ./configure --host=i686-w64-mingw32
+make -j4
+cp .libs/libpng16-16.dll ..
+
 cd ..
 for i in *.dll; do i686-w64-mingw32-strip -s $i; done
 
@@ -350,6 +375,7 @@ tar xvf ../sqlite-autoconf-3320300.zip
 tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-4.3.1.tar.gz
 tar xvf ../v4.1.1.tar.gz
+tar xvf ../libpng-1.6.37.tar.gz
 
 export PATH=/home/deen/git/osxcross/target/bin/:$PATH
 export CC=o64-clang
@@ -400,3 +426,8 @@ cd ../libwebsockets-4.1.1
 cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-osx.cmake -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
 make -j4 lib/libwebsockets.17.dylib
 cp lib/libwebsockets.17.dylib ..
+
+cd ../libpng-1.6.37
+./configure --host=x86_64-apple-darwin17
+make -j4
+cp .libs/libpng16.16.dylib ..

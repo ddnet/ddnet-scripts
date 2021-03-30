@@ -1,23 +1,26 @@
-|DDNet Persian again|
-Thanks to Sajed we have a DDNet Persian server running in Iran again!
+|Quick Tournament #54 on Knux by Knuski|
+I'm happy to present you this year's first Tournament, the Race (★★★✰✰) map
+"Knux" by Knuski.
 
-|DDNet Saudi Arabia|
-Thanks to Mos we now have an official DDNet server running in Saudi Arabia!
+The Tournament will be played on Sunday, January 24 at 20:00 CET on special
+Tournament servers in every DDNet location. No one has seen the map yet and the
+best time after 90 minutes will win! Since it's a Race map the map is played
+alone.
 
-|DDNet has gone INSANE|
-DDNet has gone INSANE. Try out the most inhuman maps on DDNet Insane servers.
-Thanks to jao for rating the maps.
+Thanks to louis & ReD for testing the map!
 
-|DDNet 10.6 released|
-DDNet 10.6 has been released. Get it on DDNet.tw or update in client!
+|DDNet 15.2 released|
+DDNet 15.2 has been released with the following highlights:
 
-|DDNet Design Contest #2|
-DDNet Design Contest #2 is now open for voting. Check out the video on DDNet.tw
-and vote on DDNet forum.
+• [Client] New chat look [Banana090]
+• [Client] Show friends on spectate tab [ardadem]
+• [Client] Warn new players about name with points
+• [Client] Smooth dynamic camera [TsFreddie]
+• [Client] Optimize UI rendering [Jupeyy]
+• [Client+Server] Fix lots of undefined behaviour, out-of-bounds accesses,
+  memory leaks [Jupeyy, Learath2, Patiga, Zwelf, axblk, ...]
+• [Client+Server] Remove CRC in all possible places [heinrich5991]
+• [Client+Server] Show hours in more places
+• [Server] Show all local maps in votes (add_map_votes)
 
-|DDNet Discord server|
-Welf is running a DDNet Discord server at ddnet.tw/discord where you can chat
-with the community and get in touch with moderators.
-
-Update: The Discord server automatically notifies about new map releases and
-top ranks now.
+See more of the changelog on ddnet.tw/downloads

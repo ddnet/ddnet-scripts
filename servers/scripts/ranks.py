@@ -26,11 +26,11 @@ def printFooter():
       <p>
         You earn points for finishing a map you've never finished before. Every map has a difficulty indicated by its <strong>stars</strong>. The servers have the following <strong>multiplier</strong>s and <strong>offset</strong>s:
       </p>
-      <table>
+      <table style="width: 100%%;">
         <tr>
           <th>Server Type</th>
-          <th>Multiplier</th>
-          <th>Offset</th>
+          <th class="multiplier">Multiplier</th>
+          <th class="multiplier">Offset</th>
         </tr><tr>
           <td>Novice</td>
           <td class="multiplier">1</td>
@@ -94,7 +94,7 @@ def printFooter():
         <tr><td>7th place</td><td>6 points</td></tr>
         <tr><td>8th place</td><td>4 points</td></tr>
         <tr><td>9th place</td><td>2 points</td></tr>
-        <tr><td>10th place</td><td>1 points</td></tr>
+        <tr><td>10th place</td><td>1 point</td></tr>
       </table>
     </div>
     <div class="block2">
@@ -112,7 +112,7 @@ def printFooter():
         <tr><td>7th place</td><td>6 points</td></tr>
         <tr><td>8th place</td><td>4 points</td></tr>
         <tr><td>9th place</td><td>2 points</td></tr>
-        <tr><td>10th place</td><td>1 points</td></tr>
+        <tr><td>10th place</td><td>1 point</td></tr>
       </table>
     </div>
     <br/>
@@ -141,16 +141,23 @@ if sys.argv[1].startswith("--country="):
     mbCountry = "and Server = \"\""
     mbCountry2 = "where Server = \"\""
   else:
-    mbCountry = "and Server = \"%s\"" % country
-    mbCountry2 = "where Server = \"%s\"" % country
+    mbCountry = "and Server like \"%s%%%%\"" % country
+    mbCountry2 = "where Server like \"%s%%%%\"" % country
 else:
   country = None
   types = sys.argv[1:]
   mbCountry = ""
   mbCountry2 = ""
+mbCountryInput = ('<input name="country" type="hidden" value="%s">' % country) if country else ''
 
 menuText = '<ul>'
-menuText += '<li><a href="/ranks/">Global Ranks</a> (<a href="/ranks/ger/">GER</a>, <a href="/ranks/fra/">FRA</a>, <a href="/ranks/rus/">RUS</a>, <a href="/ranks/irn/">IRN</a>, <a href="/ranks/chl/">CHL</a>, <a href="/ranks/bra/">BRA</a>, <a href="/ranks/zaf/">ZAF</a>, <a href="/ranks/usa/">USA</a>, <a href="/ranks/can/">CAN</a>, <a href="/ranks/chn/">CHN</a>, <a href="/ranks/old/">OLD</a>)</li>'
+menuText += '<li><a href="/ranks/">Global Ranks</a> ('
+for i, c in enumerate(countries):
+  if i > 0:
+    menuText += ', '
+  menuText += '<a href="/ranks/%s/">%s</a>' % (c.lower(), c)
+menuText += ')'
+menuText += '</li>'
 for type in types:
   if country == None:
     menuText += '<li><a href="/ranks/%s/">%s Server</a></li>\n' % (type.lower(), type)
@@ -164,18 +171,8 @@ with con:
   cur.execute("set names 'utf8mb4';")
   #cur.execute("set profiling = 1;")
   for type in types:
-    if country == None:
-      filename = "%s/ranks/%s/index.html" % (webDir, type.lower())
-      tmpname = "%s/ranks/%s/index.%d.tmp" % (webDir, type.lower(), os.getpid())
-    else:
-      filename = "%s/ranks/%s/%s/index.html" % (webDir, country.lower(), type.lower())
-      tmpname = "%s/ranks/%s/%s/index.%d.tmp" % (webDir, country.lower(), type.lower(), os.getpid())
-    directory = os.path.dirname(filename)
-    if not os.path.exists(directory):
-      os.makedirs(directory)
-
-    serversString = ""
-    subserversString = ""
+    serversString1 = ""
+    serversString2 = ""
     totalServerPoints = 0
     serverRankLadder = defaultdict(int)
     serverTeamrankLadder = defaultdict(int)
@@ -185,31 +182,39 @@ with con:
 
     f = open("types/%s/maps" % type.lower(), 'r')
 
-    serversString += '<div id="%s" class="longblock div-ranks">\n' % type
-    serversString += '<div id="remote" class="right"><form id="playerform" action="/players/" method="get"><input name="player" class="typeahead" type="text" placeholder="Player search"><input type="submit" value="Player search" style="position: absolute; left: -9999px"></form></div>\n'
-    serversString += '<script src="/jquery.js" type="text/javascript"></script>\n'
-    serversString += '<script src="/typeahead.bundle.js" type="text/javascript"></script>\n'
-    serversString += '<script src="/playersearch.js" type="text/javascript"></script>\n'
+    serversString1 += '<div id="%s" class="longblock div-ranks">\n' % type
+    serversString1 += '<div class="right"><form id="mapform" action="/maps/" method="get">%s<input name="map" class="typeahead" type="text" placeholder="Map search"><input type="submit" value="Map search" style="position: absolute; left: -9999px"></form><br><form id="playerform" action="/players/" method="get"><input name="player" class="typeahead" type="text" placeholder="Player search"><input type="submit" value="Player search" style="position: absolute; left: -9999px"></form></div>' % mbCountryInput
+    serversString1 += '<script src="/jquery.js" type="text/javascript"></script>\n'
+    serversString1 += '<script src="/typeahead.bundle.js" type="text/javascript"></script>\n'
+    serversString1 += '<script src="/mapsearch.js" type="text/javascript"></script>\n'
+    serversString1 += '<script src="/playersearch.js?version=2" type="text/javascript"></script>\n'
     if country == None:
-      serversString += '<div class="block7"><h2>%s Server Ranks</h2></div><br/>\n' % type
+      serversString1 += '<div class="block7"><h2>%s Server Ranks%%s</h2></div><br/>\n' % type
     else:
-      serversString += '<div class="block7"><h2>%s %s Server Ranks</h2></div><br/>\n' % (country, type)
+      serversString1 += '<div class="block7"><h2>%s %s Server Ranks%%s</h2></div><br/>\n' % (country, type)
 
-    mapsString = ""
-
+    mapsStrings = ['']
+    currentMapCount = 0
+    subname = None
     maps[type] = []
 
     for line in f:
       if line.startswith('───') and line.endswith('───\n'):
         subname = line.lstrip('─ ').rstrip('\n─ ')
-        if mapsString != '':
-          mapsString += '<br/></div>\n'
-        mapsString += '<div class="longblock div-ranks"><h2 id="%s">%s</h2><br/>\n' % (subname.lower().replace(' ', '-'), titleSubtype(subname))
+        if mapsStrings[-1] != '':
+          mapsStrings[-1] += '<br/></div>\n'
+        mapsStrings[-1] += '<div class="longblock div-ranks"><h2 id="%s">%s</h2><br/>\n' % (subname.lower().replace(' ', '-'), titleSubtype(subname))
         continue
 
       words = line.rstrip('\n').split('|')
       if len(words) == 0 or not words[0].isdigit():
         continue
+
+      # paginate
+      if currentMapCount > 25:
+        mapsStrings.append('<div class="longblock div-ranks"><h2 id="%s">%s</h2><br/>\n' % (subname.lower().replace(' ', '-'), titleSubtype(subname)))
+        currentMapCount = 0
+      currentMapCount += 1
 
       stars = int(words[0])
 
@@ -236,9 +241,9 @@ with con:
 
       try:
         if country == None:
-          cur.execute("select Name, r.ID, Time, Timestamp from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID order by r.Time, r.ID, Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
+          cur.execute("select distinct r.Name, r.ID, r.Time, r.Timestamp, n.Server from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID inner join ((select distinct Map, Name, Time, SUBSTRING(Server, 1, 3) as Server from record_race) as n) on r.Map = n.Map and r.Name = n.Name and r.Time = n.Time order by r.Time, r.ID, r.Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
         else:
-          cur.execute("select distinct r.Name, r.ID, r.Time, r.Timestamp from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID join record_race on r.Map = record_race.Map and r.Name = record_race.Name and r.Time = record_race.Time %s order by r.Time, r.ID, r.Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName), mbCountry2))
+          cur.execute("select distinct r.Name, r.ID, r.Time, r.Timestamp, n.Server from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID inner join ((select distinct Map, Name, Time, SUBSTRING(Server, 1, 3) as Server from record_race %s) as n) on r.Map = n.Map and r.Name = n.Name and r.Time = n.Time order by r.Time, r.ID, r.Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName), mbCountry2))
         rows = cur.fetchall()
       except:
         traceback.print_exc()
@@ -251,7 +256,7 @@ with con:
             fNames = []
             for name in names:
               fNames.append('<a href="%s">%s</a>' % (escape(playerWebsite(u'%s' % name)), escape(name)))
-            teamRanks.append((currentRank, joinNames(fNames), time, timestamp))
+            teamRanks.append((currentRank, joinNames(fNames), time, timestamp, foundCountry))
             names = []
 
           countTeamFinishes += 1
@@ -274,18 +279,21 @@ with con:
           time = row[2]
           timestamp = row[3]
           names.append(row[0])
+          foundCountry = row[4] if row[4] else 'UNK'
 
         if currentRank <= 10 and row[0] not in namesOnMap:
           namesOnMap[row[0]] = True
 
-          teamrankLadder[row[0]] += points(currentRank)
-          serverTeamrankLadder[row[0]] += points(currentRank)
+          if type != "Fun":
+            teamrankLadder[row[0]] += points(currentRank)
+            serverTeamrankLadder[row[0]] += points(currentRank)
+
 
       if currentPosition <= 10 and time > 0:
         fNames = []
         for name in names:
           fNames.append('<a href="%s">%s</a>' % (escape(playerWebsite(u'%s' % name)), escape(name)))
-        teamRanks.append((currentRank, joinNames(fNames), time, timestamp))
+        teamRanks.append((currentRank, joinNames(fNames), time, timestamp, foundCountry))
 
       if time > 0:
         countTeamFinishes += 1
@@ -343,8 +351,8 @@ with con:
             players[row[0]].servers[row[5]] += 1
 
         if currentPosition <= 10:
-          ranks.append((currentRank, row[0], row[1], row[2], row[3]))
-        if currentRank <= 10:
+          ranks.append((currentRank, row[0], row[1], row[2], row[3], row[5] if row[5] else 'UNK'))
+        if currentRank <= 10 and type != "Fun":
           rankLadder[row[0]] += points(currentRank)
           serverRankLadder[row[0]] += points(currentRank)
 
@@ -363,17 +371,17 @@ with con:
 
       if countFinishes:
         try:
-          cur.execute("select avg(Time), min(Timestamp), max(Timestamp) from record_race where Map = '%s' %s;" % con.escape_string(originalMapName), mbCountry)
+          cur.execute("select (select median(Time) over (partition by Map) from record_race where Map = '%s' %s limit 1), min(Timestamp), max(Timestamp) from record_race where Map = '%s' %s;" % (con.escape_string(originalMapName), mbCountry, con.escape_string(originalMapName), mbCountry))
           rows = cur.fetchall()
-          avgTime = " (average time: %s)" % formatTime(rows[0][0])
+          avgTime = " (median time: %s)" % formatTime(rows[0][0])
           finishTimes = "first finish: %s, last finish: %s" % (escape(formatDate(rows[0][1])), escape(formatDate(rows[0][2])))
         except:
           pass
 
         try:
-            cur.execute("select count(Name) from record_race where Map = '%s' %s;" % con.escape_string(originalMapName), mbCountry)
-            rows = cur.fetchall()
-            finishTimes += ", total finishes: %d" % rows[0][0]
+          cur.execute("select count(Name) from record_race where Map = '%s' %s;" % (con.escape_string(originalMapName), mbCountry))
+          rows = cur.fetchall()
+          finishTimes += ", total finishes: %d" % rows[0][3]
         except:
           pass
 
@@ -408,22 +416,31 @@ with con:
           height = unpacker.unpack()
           tiles = unpacker.unpack()
 
-          formattedMapName = '<span title="%dx%d">%s</span>' % (width, height, escape(originalMapName))
+          formattedMapName = '<span title="Map size: %dx%d">%s</span>' % (width, height, escape(originalMapName))
 
           mbMapInfo = "<br/>"
           for tile in sorted(tiles.keys(), key=lambda i:order(i)):
-            mbMapInfo += '<span title="%s"><img alt="%s" src="/tiles/%s.png" width="32" height="32"/></span> ' % (description(tile), description(tile), tile)
+            mbMapInfo += tileHtml(tile)
       except IOError:
         traceback.print_exc()
 
+      mbReleased = ""
+      try:
+        cur.execute("select DATE_FORMAT(Timestamp, '%%Y-%%m-%%d') from record_maps where Map = '%s';" % con.escape_string(originalMapName))
+        rows = cur.fetchall()
+        if rows[0][0] != "0000-00-00":
+          mbReleased = "Released: %s<br/>" % rows[0][0]
+      except:
+        pass
+
       if type == "Solo" or type == "Race" or type == "Dummy":
-        mapsString += u'<div class="block2 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span></p></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime))
-        mapsString += printExactSoloRecords("Records", "records", ranks)
+        mapsStrings[-1] += u'<div class="block2 info" id="map-%s"><h3 class="inline"><a href="%s">%s</a></h3><p class="inline">%s</p><p>%sDifficulty: %s, Points: %d<br/><a href="/mappreview/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span></p></div>\n' % (escape(mapName), mapWebsite(originalMapName, country), formattedMapName, mbMapperName, mbReleased, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime))
+        mapsStrings[-1] += printExactSoloRecords("Records", "records", ranks, not country)
       else:
-        mapsString += u'<div class="block2 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/maps/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span><br/>%d team%s finished%s</p></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime), countTeamFinishes, mbS, escape(biggestTeam))
-        mapsString += printTeamRecords("Team Records", "teamrecords", teamRanks)
-        mapsString += printSoloRecords("Records", "records", ranks)
-      mapsString += '<br/>\n'
+        mapsStrings[-1] += u'<div class="block2 info" id="map-%s"><h3 class="inline"><a href="%s">%s</a></h3><p class="inline">%s</p><p>%sDifficulty: %s, Points: %d<br/><a href="/mappreview/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span><br/>%d team%s finished%s</p></div>\n' % (escape(mapName), mapWebsite(originalMapName, country), formattedMapName, mbMapperName, mbReleased, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime), countTeamFinishes, mbS, escape(biggestTeam))
+        mapsStrings[-1] += printTeamRecords("Team Records", "teamrecords", teamRanks, not country)
+        mapsStrings[-1] += printSoloRecords("Records", "records", ranks, not country)
+      mapsStrings[-1] += '<br/>\n'
 
     serverPointsRanks = sorted(serverPointsLadder.items(), key=lambda r: r[1], reverse=True)
     weeklyServerPointsRanks = sorted(weeklyServerPointsLadder.items(), key=lambda r: r[1], reverse=True)
@@ -433,63 +450,102 @@ with con:
 
     serverRanks[type] = (totalServerPoints, serverPointsRanks, serverTeamrankRanks, serverRankRanks)
 
-    serversString += printLadder("Points (%d total)" % totalServerPoints, serverPointsRanks, players)
+    serversString2 = printLadder("Points (%d total)" % totalServerPoints, serverPointsRanks, players, not country)
     if type != "Solo" and type != "Race" and type != "Dummy":
-      serversString += printLadder("Team Rank", serverTeamrankRanks, players)
-    serversString += printLadder("Rank", serverRankRanks, players)
-    serversString += '<br/>'
+      serversString2 += printLadder("Team Rank", serverTeamrankRanks, players, not country)
+    serversString2 += printLadder("Rank", serverRankRanks, players, not country)
+    serversString2 += '<br/>'
 
     lastString = ""
-    cur.execute("select l.Timestamp, l.Map, Name, Time from (select Timestamp, Map, Name, Time from record_race %s) as l join record_maps on l.Map = record_maps.Map where Server = '%s' order by l.Timestamp desc limit 10;" % (mbCountry2, type))
+    cur.execute("select * from (select l.Timestamp, l.Map, Name, Time, l.Server, record_maps.Server as Type from (select Timestamp, Map, Name, Time, Server from record_race %s) as l inner join record_maps on l.Map = record_maps.Map) as r where Type = '%s' and Timestamp > '%s' order by Timestamp desc limit 500;" % (mbCountry2, type, formatDate(datetime.now() - timedelta(days=7))))
     rows = cur.fetchall()
 
     lastString = '<div class="block4"><h3>Last Finishes</h3><table class="tight">'
 
-    for row in rows:
-      if country == None:
-        mapLink = "/ranks/%s/#map-%s" % (type.lower(), escape(normalizeMapname(row[1])))
+    for i, row in enumerate(rows):
+      lastString += '<tr>' if i < 10 else '<tr class="allPoints" style="display: none">'
+      if country:
+        lastString += '<td><span title="%s">%s</span>: <a href="%s">%s</a> by <a href="%s">%s</a> (%s)</td></tr>' % (escape(formatDate(row[0])), escape(formatDateShort(row[0])), mapWebsite(row[1], country), escape(row[1]), escape(playerWebsite(row[2])), escape(row[2]), escape(formatTime(row[3])))
       else:
-        mapLink = "/ranks/%s/%s/#map-%s" % (country.lower(), type.lower(), escape(normalizeMapname(row[1])))
-      lastString += '<tr><td><span title="%s">%s</span>: <a href="%s">%s</a> by <a href="%s">%s</a> (%s)</td></tr>' % (escape(formatDate(row[0])), escape(formatDateShort(row[0])), mapLink, escape(row[1]), escape(playerWebsite(row[2])), escape(row[2]), escape(formatTime(row[3])))
+        lastString += '<td><span title="%s">%s</span>: <img src="/countryflags/%s.png" alt="%s" height="15"/> <a href="%s">%s</a> by <a href="%s">%s</a> (%s)</td></tr>' % (escape(formatDate(row[0])), escape(formatDateShort(row[0])), row[4], row[4], mapWebsite(row[1], country), escape(row[1]), escape(playerWebsite(row[2])), escape(row[2]), escape(formatTime(row[3])))
 
     lastString += '</table></div><br/>'
 
-    serversString += printLadder("Points (last month)", monthlyServerPointsRanks, players)
-    serversString += printLadder("Points (last week)", weeklyServerPointsRanks, players)
-    serversString += lastString
-    serversString += '</div>\n'
-    serversString += '<div class="all-%s" style="display: ">\n' % type
-    serversString += mapsString
-    serversString += '</div>\n'
+    serversString2 += printLadder("Points (last month)", monthlyServerPointsRanks, players, not country)
+    serversString2 += printLadder("Points (last week)", weeklyServerPointsRanks, players, not country)
+    serversString2 += lastString
+    serversString2 += '</div>\n'
 
-    tf = open(tmpname, 'w')
+    for i, mapsString in enumerate(mapsStrings):
+      if i == 0:
+        if country == None:
+          filename = "%s/ranks/%s/index.html" % (webDir, type.lower())
+          tmpname = "%s/ranks/%s/index.%d.tmp" % (webDir, type.lower(), os.getpid())
+        else:
+          filename = "%s/ranks/%s/%s/index.html" % (webDir, country.lower(), type.lower())
+          tmpname = "%s/ranks/%s/%s/index.%d.tmp" % (webDir, country.lower(), type.lower(), os.getpid())
+      else:
+        if country == None:
+          filename = "%s/ranks/%s/%d/index.html" % (webDir, type.lower(), i+1)
+          tmpname = "%s/ranks/%s/%d/index.%d.tmp" % (webDir, type.lower(), i+1, os.getpid())
+        else:
+          filename = "%s/ranks/%s/%s/%d/index.html" % (webDir, country.lower(), type.lower(), i+1)
+          tmpname = "%s/ranks/%s/%s/%d/index.%d.tmp" % (webDir, country.lower(), type.lower(), i+1, os.getpid())
 
-    if country == None:
-      print >>tf, header("%s Server Ranks - DDraceNetwork" % type, menuText, "")
-    else:
-      print >>tf, header("%s %s Server Ranks - DDraceNetwork" % (country, type), menuText, "")
-    print >>tf, '<p class="toggle"><a href="#" onclick="showClass(\'allPoints\'); return false;">Top 500 / Top 10</a></p>'
+      directory = os.path.dirname(filename)
+      if not os.path.exists(directory):
+        os.makedirs(directory)
 
-    print >>tf, '<div id="serverranks" style="display: ">'
-    print >>tf, serversString
-    print >>tf, '</div>'
-    print >>tf, printFooter()
+      tf = open(tmpname, 'w')
 
-    tf.close()
-    os.rename(tmpname, filename)
+      mbPage = " (%d/%d)" % (i+1, len(mapsStrings)) if len(mapsStrings) > 1 else ""
+      if country == None:
+        print >>tf, header("%s Server Ranks%s - DDraceNetwork" % (type, mbPage), menuText, "")
+      else:
+        print >>tf, header("%s %s Server Ranks%s - DDraceNetwork" % (country, type, mbPage), menuText, "")
+      print >>tf, '<p class="toggle"><a href="#" onclick="showClass(\'allPoints\'); return false;">Top 500 / Top 10</a></p>'
+
+      print >>tf, '<div id="serverranks" style="display: ">'
+      print >>tf, serversString1 % mbPage
+      print >>tf, serversString2
+      print >>tf, '<div class="all-%s" style="display: ">\n' % type
+      print >>tf, mapsString
+      print >>tf, '</div>\n'
+      print >>tf, '</div>'
+      if len(mapsStrings) > 1:
+        print >>tf, '<div class="longblock div-ranks"><h3 style="text-align: center;">'
+        for i in range(len(mapsStrings)):
+          if i > 0:
+            print >>tf, ' '
+          if i == 0:
+            if country:
+              link = '/ranks/%s/%s/' % (country.lower(), type.lower())
+            else:
+              link = '/ranks/%s/' % type.lower()
+          else:
+            if country:
+              link = '/ranks/%s/%s/%d/' % (country.lower(), type.lower(), i+1)
+            else:
+              link = '/ranks/%s/%d/' % (type.lower(), i+1)
+          print >>tf, '<a href="%s">%d</a>' % (link, i+1)
+        print >>tf, '</h3></div>'
+      print >>tf, printFooter()
+
+      tf.close()
+      os.rename(tmpname, filename)
 
   lastString = ""
-  cur.execute("select l.Timestamp, l.Map, Name, Time, record_maps.Server from ((select * from record_race %s order by Timestamp desc limit 20) as l join record_maps on l.Map = record_maps.Map);" % mbCountry2)
+  cur.execute("select l.Timestamp, l.Map, Name, Time, l.Server, record_maps.Server from ((select * from record_race %s order by Timestamp desc limit 500) as l inner join record_maps on l.Map = record_maps.Map) order by Timestamp desc;" % mbCountry2)
   rows = cur.fetchall()
 
-  lastString = '<div class="block4"><h3>Last Finishes</h3><table>'
+  lastString = '<div class="block4"><h3>Last Finishes</h3><table class="tight">'
 
-  for row in rows:
-    if country == None:
-      mapLink = "/ranks/%s/#map-%s" % (row[4].lower(), escape(normalizeMapname(row[1])))
+  for i, row in enumerate(rows):
+    lastString += '<tr>' if i < 20 else '<tr class="allPoints" style="display: none">'
+    if country:
+      lastString += '<td><span title="%s">%s</span>: <a href="%s/">%s</a>: <a href="%s">%s</a> by <a href="%s">%s</a> (%s)</td></tr>' % (escape(formatDate(row[0])), escape(formatDateShort(row[0])), row[5].lower(), row[5], mapWebsite(row[1], country), escape(row[1]), escape(playerWebsite(row[2])), escape(row[2]), escape(formatTime(row[3])))
     else:
-      mapLink = "/ranks/%s/%s/#map-%s" % (country.lower(), row[4].lower(), escape(normalizeMapname(row[1])))
-    lastString += '<tr><td><span title="%s">%s</span>: <a href="%s">%s</a> by <a href="%s">%s</a> (%s)</td></tr>' % (escape(formatDate(row[0])), escape(formatDateShort(row[0])), mapLink, escape(row[1]), escape(playerWebsite(row[2])), escape(row[2]), escape(formatTime(row[3])))
+      lastString += '<td><span title="%s">%s</span>: <img src="/countryflags/%s.png" alt="%s" height="15"/> <a href="%s/">%s</a>: <a href="%s">%s</a> by <a href="%s">%s</a> (%s)</td></tr>' % (escape(formatDate(row[0])), escape(formatDateShort(row[0])), row[4], row[4], row[5].lower(), row[5], mapWebsite(row[1], country), escape(row[1]), escape(playerWebsite(row[2])), escape(row[2]), escape(formatTime(row[3])))
 
   lastString += '</table></div><br/>'
 
@@ -527,20 +583,21 @@ else:
 print >>tf, '<p class="toggle"><a href="#" onclick="showClass(\'allPoints\'); return false;">Top 500 / Top 20</a></p>'
 
 print >>tf, '<div id="global" class="block">\n'
-print >>tf, '<div id="remote" class="right"><form id="playerform" action="/players/" method="get"><input name="player" class="typeahead" type="text" placeholder="Player search"><input type="submit" value="Player search" style="position: absolute; left: -9999px"></form></div>'
+print >>tf, '<div class="right"><form id="mapform" action="/maps/" method="get">%s<input name="map" class="typeahead" type="text" placeholder="Map search"><input type="submit" value="Map search" style="position: absolute; left: -9999px"></form><br><form id="playerform" action="/players/" method="get"><input name="player" class="typeahead" type="text" placeholder="Player search"><input type="submit" value="Player search" style="position: absolute; left: -9999px"></form></div>' % mbCountryInput
 print >>tf, '<script src="/jquery.js" type="text/javascript"></script>'
 print >>tf, '<script src="/typeahead.bundle.js" type="text/javascript"></script>'
-print >>tf, '<script src="/playersearch.js" type="text/javascript"></script>'
+print >>tf, '<script src="/mapsearch.js" type="text/javascript"></script>'
+print >>tf, '<script src="/playersearch.js?version=2" type="text/javascript"></script>'
 if country == None:
   print >>tf, '<div class="block7"><h2>Global Ranks</h2></div><br/>'
 else:
   print >>tf, '<div class="block7"><h2>%s Ranks</h2></div><br/>' % country
-print >>tf, printLadder("Points (%d total)" % totalPoints, pointsRanks, players, 20)
-print >>tf, printLadder("Team Rank", teamrankRanks, players, 20)
-print >>tf, printLadder("Rank", rankRanks, players, 20)
+print >>tf, printLadder("Points (%d total)" % totalPoints, pointsRanks, players, not country, 20)
+print >>tf, printLadder("Team Rank", teamrankRanks, players, not country, 20)
+print >>tf, printLadder("Rank", rankRanks, players, not country, 20)
 print >>tf, '<br/>'
-print >>tf, printLadder("Points (last month)", monthlyPointsRanks, players, 20)
-print >>tf, printLadder("Points (last week)", weeklyPointsRanks, players, 20)
+print >>tf, printLadder("Points (last month)", monthlyPointsRanks, players, not country, 20)
+print >>tf, printLadder("Points (last week)", weeklyPointsRanks, players, not country, 20)
 print >>tf, lastString
 print >>tf, '</div>'
 print >>tf, printFooter()
@@ -563,6 +620,10 @@ if country == None:
     out.write(msgpack.packb(serverRanks))
   os.rename(msgpackTmpFile, msgpackFile)
 
-  with Cache('/home/teeworlds/servers/players-cache') as cache:
+  with Cache('/home/teeworlds/servers/players-cache', eviction_policy='none', sqlite_auto_vacuum=0, sqlite_journal_mode='off') as cache:
     for player, value in players.items():
         cache[player] = value
+    cachedPlayers = list(cache.iterkeys())
+    for player in cachedPlayers:
+        if player not in players:
+            del cache[player]

@@ -1,16 +1,12 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from ddnet import *
-from urlparse import parse_qs
-import sys
+from urllib.parse import parse_qs
 import json
 import os.path
 
 serversDir = "/home/teeworlds/servers"
-
-reload(sys)
-sys.setdefaultencoding('utf8')
 
 def connect():
   global con, cur
@@ -41,42 +37,49 @@ def application(env, start_response):
 
   if "name" in result:
     try:
-      query("select Map from record_race where Name = '%s' group by Map;" % con.escape_string(result["name"]))
-      result["maps"] = map(lambda row: row[0], cur.fetchall())
+      query(("select Map from record_race where Name = '%s' group by Map;" % con.escape_string(result["name"]).decode('utf-8')).encode('utf-8'))
+      result["maps"] = list(map(lambda row: row[0], cur.fetchall()))
+    except Exception as e:
+      print(e)
+
+    try:
+      query(("select Points from record_points where Name= '%s';" % con.escape_string(result["name"]).decode('utf-8')).encode('utf-8'))
+      rows = cur.fetchall()
+      result["points"] = rows[0][0] if len(rows) > 0 else 0
     except Exception as e:
       print(e)
 
   try:
-    with open(os.path.join(serversDir, 'serverlist.json'), 'rb') as f:
+    with open(os.path.join(serversDir, 'serverlist.json'), 'r', encoding='utf-8') as f:
       result["servers"] = json.load(f)
 
-    with open(os.path.join(serversDir, 'serverlist-kog.json'), 'rb') as f:
+    with open(os.path.join(serversDir, 'serverlist-kog.json'), 'r', encoding='utf-8') as f:
       result["servers-kog"] = json.load(f)
 
-    if "name" in result:
-      query("select Server from record_race where Name = '%s' and Server != '' and Server != 'UNK' group by Server order by count(*) desc;" % con.escape_string(result["name"]))
-      favorites = map(lambda row: row[0], cur.fetchall())
+    #if "name" in result:
+    #  query("select Server from record_race where Name = '%s' and Server != '' and Server != 'UNK' group by Server order by count(*) desc;" % con.escape_string(result["name"]).decode('utf-8'))
+    #  favorites = map(lambda row: row[0], cur.fetchall())
 
-      def favKey(x):
-        try:
-          return favorites.index(x["name"])
-        except:
-          return len(favorites)
+    #  def favKey(x):
+    #    try:
+    #      return favorites.index(x["name"])
+    #    except:
+    #      return len(list(favorites))
 
-      result["servers"].sort(key=favKey)
+    #  result["servers"].sort(key=favKey)
   except Exception as e:
     print(e)
 
   try:
-    with open(os.path.join(serversDir, 'news'), 'rb') as f:
+    with open(os.path.join(serversDir, 'news'), 'r', encoding='utf-8') as f:
       result["news"] = f.read()
   except Exception as e:
     print(e)
 
   try:
-    with open('/var/www-update4/update.json', 'rb') as f:
+    with open('/var/www-update5/update.json', 'rb') as f:
       result["version"] = json.load(f)[0]["version"]
   except Exception as e:
     print(e)
 
-  return json.dumps(result)
+  return [bytes(json.dumps(result, indent=4), 'utf-8')]

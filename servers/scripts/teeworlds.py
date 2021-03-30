@@ -27,12 +27,18 @@ import time
 from random import randint
 from struct import unpack
 import select
-import Queue as queue
 import re
 
-# UTF-8 is required as default encoding
-reload(sys)
-sys.setdefaultencoding('utf8')
+try:
+    from importlib import reload
+    import queue
+except ImportError:
+    import Queue as queue
+
+if sys.version_info.major < 3:
+    # UTF-8 is required as default encoding
+    reload(sys)
+    sys.setdefaultencoding('utf8')
 
 
 def log(level, str):
@@ -267,6 +273,7 @@ class Server(Handler):
     self._parent = parent
     self.master = master
     self.data = None
+    self.packets_received = 0
     self.reset()
   
   def reset(self):
@@ -281,6 +288,7 @@ class Server(Handler):
     self.max_players = -1
     self.clients = -1
     self.max_clients = -1
+    self.packets_received = 0
   
   def request(self):
     #log('debug', "Server-ping to " + self.address)
@@ -295,6 +303,7 @@ class Server(Handler):
   
   def call(self, address, data):
     #log('debug', "Server-callback hit from " + address)
+    self.packets_received += 1
     self.parse(data[len(self.data):])
   
   def parse(self, data):
@@ -363,6 +372,7 @@ class Server64(Handler):
     self.master = master
     self.data = None
     self.reset()
+    self.packets_received = 0
   
   def reset(self):
     self.latency = -1
@@ -376,6 +386,7 @@ class Server64(Handler):
     self.max_players = -1
     self.clients = -1
     self.max_clients = -1
+    self.packets_received = 0
   
   def request(self):
     #log('debug', "Server-ping to " + self.address)
@@ -390,6 +401,7 @@ class Server64(Handler):
   
   def call(self, address, data):
     #log('debug', "Server-callback hit from " + address)
+    self.packets_received += 1
     self.parse(data[len(self.data):])
   
   def parse(self, data):
@@ -511,6 +523,11 @@ class ServerList(object):
   def __repr__(self):
     return str(self.servers)
 
+  def __getitem__(self, i):
+    return self.servers[i]
+
+  def __setitem__(self, i, v):
+    self.servers[i] = v
 
 class PlayerList(object):
   def __init__(self):
@@ -595,7 +612,7 @@ class Teeworlds(object):
         if not r:
           if cur_time > start_time + self.timeout:
             break
-          time.sleep(0.001)
+          time.sleep(0.010)
         else:
           for sock in r:
             try:
