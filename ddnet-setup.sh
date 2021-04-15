@@ -2,7 +2,7 @@
 
 # From root @ other server:
 # cd /
-# tar --exclude='UBSAN*' --exclude='ASAN*' --exclude='teehistorian' --exclude='*.sql' --exclude='*.log*' --exclude='*.fifo' --exclude='nohup.out' -czf ddnet-setup.tar.gz home/teeworlds/servers home/teeworlds/servers home/teeworlds/dnsbl home/teeworlds/run-all.sh home/teeworlds/.config home/teeworlds/.vim* home/teeworlds/.ssh* home/teeworlds/.z* home/teeworlds/.my.cnf home/teeworlds/.gitconfig etc/zsh etc/vim* etc/mysql etc/ssmtp etc/dnsmasq.d etc/dnsmasq.conf etc/resolv.dnsmasq.conf etc/resolv.conf etc/systemd/system/dnsbl-iphub.service etc/security/limits.conf root/weekly root/.config root/.vim* root/.ssh* root/.z* usr/local/bin/ni usr/local/bin/rni etc/init.d/teeworlds-servers etc/network/if-up.d/iptables etc/apt/apt.conf.d/99defaultrelease etc/apt/sources.list.d etc/timezone etc/apt/apt.conf.d/50unattended-upgrades var/spool/cron/crontabs
+# tar --exclude='UBSAN*' --exclude='ASAN*' --exclude='ddnet-server.sqlite' --exclude='ddnet-block.sqlite' --exclude='teehistorian' --exclude='*.sql' --exclude='*.log*' --exclude='*.fifo' --exclude='nohup.out' -czf ddnet-setup.tar.gz home/teeworlds/servers home/teeworlds/servers home/teeworlds/dnsbl home/teeworlds/run-all.sh home/teeworlds/.config home/teeworlds/.vim* home/teeworlds/.ssh* home/teeworlds/.z* home/teeworlds/.my.cnf home/teeworlds/.gitconfig etc/zsh etc/vim* etc/mysql etc/ssmtp etc/dnsmasq.d etc/dnsmasq.conf etc/resolv.dnsmasq.conf etc/resolv.conf etc/systemd/system/dnsbl-iphub.service etc/security/limits.conf root/weekly root/.config root/.vim* root/.ssh* root/.z* usr/local/bin/ni usr/local/bin/rni etc/init.d/teeworlds-servers etc/network/if-up.d/iptables etc/apt/apt.conf.d/99defaultrelease etc/apt/sources.list.d etc/timezone etc/apt/apt.conf.d/50unattended-upgrades var/spool/cron/crontabs
 # scp ddnet-setup.tar.gz kor.ddnet.tw:/
 
 if [ "$#" -ne 2 ]; then
@@ -34,6 +34,7 @@ iptables -A INPUT -p udp -m u32 --u32 "38=0x66737464" -j serverinfo
 iptables -A serverinfo -s 37.187.108.123 -j ACCEPT
 iptables -A serverinfo -m hashlimit --hashlimit-above 1000/s --hashlimit-burst 2500 --hashlimit-mode dstport --hashlimit-name si_dstport -j DROP
 iptables -A serverinfo -m hashlimit --hashlimit-above 20/s --hashlimit-burst 100 --hashlimit-mode srcip --hashlimit-name si_srcip -j DROP
+iptables -I INPUT -s 185.82.223.0/24 -j DROP
 iptables-save > /etc/iptables.up.rules
 
 tar -C / -xvf ddnet-setup.tar.gz
