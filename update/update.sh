@@ -24,6 +24,8 @@ tar xvf /var/www/downloads/DDNet-$VERSION-linux_x86_64.tar.xz
 
 mv data data.old
 mv DDNet-$VERSION-win64/data data
+mv DDNet-$VERSION-win64/license.txt .
+mv DDNet-$VERSION-win64/storage.cfg .
 rm -r data.old
 
 for i in DDNet-$VERSION-win32/*.{exe,dll}; do mcp $i ${i:r:t}-win32.${i:e}; done
