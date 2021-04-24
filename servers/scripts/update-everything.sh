@@ -29,6 +29,10 @@ scripts/update-local.sh
 scripts/ranks.py $types
 # Only update the country-specific pages once per day
 #if test `find /var/www/ranks/ger/novice/index.html -mmin +1440`; then
+  # EUR is split into 3 regions in ranks:
+  scripts/ranks.py --country=NLD $types
+  scripts/ranks.py --country=GER $types
+  scripts/ranks.py --country=POL $types
   grep name serverlist.json | sed -e 's/.*"name": "\(.*\)".*/\1/' | while read country; do
     scripts/ranks.py --country=$country $types
   done

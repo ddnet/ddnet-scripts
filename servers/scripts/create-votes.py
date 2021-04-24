@@ -74,7 +74,7 @@ with con:
     #bestTime = ""
     countFinishes = 0
     countTees = 0
-    averageTime = ""
+    medianTime = ""
     topTime = ""
     worstTime = ""
     releaseDate = ""
@@ -98,9 +98,9 @@ with con:
       pass
 
     try:
-      cur.execute("select avg(Time), min(Time), max(Time) from record_race where Map = '%s';" % con.escape_string(originalMapName))
+      cur.execute("select (select median(Time) over (partition by Map) from record_race where Map = '%s' limit 1), min(Time), max(Time) from record_race where Map = '%s';" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
       line = cur.fetchone()
-      averageTime = formatTime(line[0])
+      medianTime = formatTime(line[0])
       topTime = formatTime(line[1])
       worstTime = formatTime(line[2])
     except:
@@ -130,7 +130,7 @@ with con:
       #  except:
       #    pass
 
-      text = (u'%d ⚑ | %s ◷' % (countFinishes, averageTime)).encode('utf-8')
+      text = (u'%d ⚑ | %s ◷' % (countFinishes, medianTime)).encode('utf-8')
 
         #if len(text) > 63:
         #  d = 63 - len(text) - 3
@@ -175,17 +175,17 @@ with con:
     else:
       topTimeText = ""
 
-    if averageTime:
-      averageTimeText = "\\n│ Average Time: %s" % averageTime
+    if medianTime:
+      medianTimeText = "\\n│ Median Time: %s" % medianTime
     else:
-      averageTimeText = ""
+      medianTimeText = ""
 
     if worstTime:
       worstTimeText = "\\n│ Worst Time: %s" % worstTime
     else:
       worstTimeText = ""
 
-    motdMap = '│ Map: %s%s\\n│ Difficulty: %s (%d Point%s)%s\\n│ %d finishes by %d tees%s%s%s' % (originalMapName, mapperText, pointsText, points, mbS, releaseDateText, countFinishesTotal, countFinishes, topTimeText, averageTimeText, worstTimeText)
+    motdMap = '│ Map: %s%s\\n│ Difficulty: %s (%d Point%s)%s\\n│ %d finishes by %d tees%s%s%s' % (originalMapName, mapperText, pointsText, points, mbS, releaseDateText, countFinishesTotal, countFinishes, topTimeText, medianTimeText, worstTimeText)
 
     if server in serverStrings: # Special handling for PermaNovice, don't do this
         with open('maps/%s.map.cfg' % originalMapName, 'w') as cfg:

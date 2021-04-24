@@ -22,15 +22,15 @@ set -x
 git commit -a -m "upd"
 git push
 
-(ni 12 3 nim-scripts/mapdl &
-scripts/update-local.sh
+(ni 12 3 nim-scripts/mapdl; rsync -avP --exclude compilations/ /var/www-maps chn1.ddnet.tw:/var/) &
+(scripts/update-local.sh
 #scripts/update-servers.sh
 scripts/build-releasedates.sh
 scripts/update-points.py `cat all-types`
 scripts/releases.py
 scripts/releases-feed.py > /var/www/releases/feed/index.$$.tmp
-scripts/tiles.py
 mv /var/www/releases/feed/index.$$.tmp /var/www/releases/feed/index.atom
+scripts/tiles.py
 echo -e "\e[1;32mMAIN updated successfully\e[0m") &
 
 set +x

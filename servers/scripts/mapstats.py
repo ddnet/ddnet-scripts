@@ -63,7 +63,8 @@ with con:
     print >>tf, '<table style="border-collapse: separate; border-spacing: 0; margin: 0;">'
     print >>tf, '<tr style="text-align: center;"><th>Date</th><th>#1</th><th>#2</th><th>#3</th><th>#4</th><th>#5</th></tr>'
 
-    timestamp = datetime(2021, 1, 1)
+    today = datetime.today();
+    timestamp = datetime(today.year, today.month, 1)
     while timestamp >= datetime(2013, 7, 1):
       nextTimestamp = timestamp + relativedelta(months=1)
       print >>tf, "<tr><td>%d-%02d</td>" % (timestamp.year, timestamp.month)

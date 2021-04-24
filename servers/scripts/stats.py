@@ -115,7 +115,8 @@ with con:
   rows = cur.fetchall()
   nrPlayers["Total"] = locale.format("%d", int(rows[0][0]), grouping=True)
 
-  cur.execute("select Server, count(distinct Name) from record_race group by Server;")
+  record_race = "(select Map, Name, Timestamp, Time, case Server when 'NLD' then 'EUR' when 'GER' then 'EUR' when 'POL' then 'EUR' else Server end as Server from record_race) as record_race"
+  cur.execute("select Server, count(distinct Name) from %s group by Server;" % record_race)
   rows = cur.fetchall()
   for row in rows:
       nrPlayers[row[0]] = locale.format("%d", int(row[1]), grouping=True)
@@ -125,7 +126,7 @@ with con:
   rows = cur.fetchall()
   nrRanks["Total"] = locale.format("%d", int(rows[0][0]), grouping=True)
 
-  cur.execute("select Server, count(*) from record_race group by Server;")
+  cur.execute("select Server, count(*) from %s group by Server;" % record_race)
   rows = cur.fetchall()
   for row in rows:
       nrRanks[row[0]] = locale.format("%d", int(row[1]), grouping=True)
@@ -489,7 +490,7 @@ for server, avgDay in sorted(countryAveragesDay.items(), key=lambda x: -x[1]):
     sumPlayersLastDay += playersLastDay
     tableCountries += "<tr><td style=\"text-align: right;\"><strong>%s</strong></td><td style=\"text-align: right;\">%.2f</td><td style=\"text-align: right;\">%s</td><td style=\"text-align: right;\">%.2f</td><td style=\"text-align: right;\">%s</td><td style=\"text-align: right;\">%d&nbsp;at&nbsp;%s</td><td style=\"text-align: right;\">%s</td><td style=\"text-align: right;\"><a href=\"/ranks/%s/\">%s</a></td>\n" % (server, playersDay, changeStr(playersDay, playersLastDay), playersWeek, changeStr(playersWeek, playersLastWeek), countryRecords[server][0], countryRecords[server][1].replace(" ", "&nbsp;"), nrPlayers.get(server, 0), server.lower(), nrRanks.get(server, 0))
 # Total
-tableCountries += "<tr style=\"border-top: .5em solid transparent;\"><td style=\"text-align: right;\"><strong>Total</strong></td><td style=\"text-align: right;\">%.2f</td><td style=\"text-align: right;\">%s</td><td style=\"text-align: right;\">%.2f</td><td style=\"text-align: right;\">%s</td><td style=\"text-align: right;\"><a href=\"1567/\">%d&nbsp;at&nbsp;%s</a></td><td style=\"text-align: right;\"><a href=\"/players/\">%s</a></td><td style=\"text-align: right;\"><a href=\"/ranks/\">%s</a></td>" % (sumPlayersDay, changeStr(sumPlayersDay, sumPlayersLastDay), sumPlayersWeek, changeStr(sumPlayersWeek, sumPlayersLastWeek), countryRecords["Total"][0], countryRecords["Total"][1].replace(" ", "&nbsp;"), nrPlayers["Total"], nrRanks["Total"])
+tableCountries += "<tr style=\"border-top: .5em solid transparent;\"><td style=\"text-align: right;\"><strong>Total</strong></td><td style=\"text-align: right;\">%.2f</td><td style=\"text-align: right;\">%s</td><td style=\"text-align: right;\">%.2f</td><td style=\"text-align: right;\">%s</td><td style=\"text-align: right;\"><a href=\"2548/\">%d&nbsp;at&nbsp;%s</a></td><td style=\"text-align: right;\"><a href=\"/players/\">%s</a></td><td style=\"text-align: right;\"><a href=\"/ranks/\">%s</a></td>" % (sumPlayersDay, changeStr(sumPlayersDay, sumPlayersLastDay), sumPlayersWeek, changeStr(sumPlayersWeek, sumPlayersLastWeek), countryRecords["Total"][0], countryRecords["Total"][1].replace(" ", "&nbsp;"), nrPlayers["Total"], nrRanks["Total"])
 
 print text % (tableCountries, tableTypes)
 

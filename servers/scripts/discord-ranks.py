@@ -12,6 +12,7 @@ reload(sys)
 sys.setdefaultencoding('utf8')
 
 countryCodeMapping = {
+        'NLD': '🇳🇱',
         'GER': '🇩🇪',
         'POL': '🇵🇱',
         'RUS': '🇷🇺',

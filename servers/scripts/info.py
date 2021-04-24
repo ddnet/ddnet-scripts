@@ -3,6 +3,7 @@
 
 from ddnet import *
 from urllib.parse import parse_qs
+import csv
 import json
 import os.path
 
@@ -75,6 +76,21 @@ def application(env, start_response):
       result["news"] = f.read()
   except Exception as e:
     print(e)
+
+  try:
+    country = env['HTTP_CF_IPCOUNTRY']
+    result["map-download-url"] = 'https://ddnet-maps-1251829362.file.myqcloud.com' if country == 'CN' else 'https://maps2.ddnet.tw'
+  except Exception as e:
+    print(e)
+
+  try:
+    country = env['HTTP_CF_IPCOUNTRY'].lower()
+    with open(os.path.join(serversDir, 'country_continent.csv'), newline='') as csvfile:
+      country_continent = {row['country']: row['continent'] for row in csv.DictReader(csvfile)}
+    result["location"] = country_continent[country]
+  except Exception as e:
+    print(e)
+
 
   try:
     with open('/var/www-update5/update.json', 'rb') as f:

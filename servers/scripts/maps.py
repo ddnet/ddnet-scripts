@@ -171,9 +171,9 @@ with con:
     skips = 1
 
     if country == None:
-      query("select distinct r.Name, r.ID, r.Time, r.Timestamp, n.Server from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID inner join ((select distinct Map, Name, Time, SUBSTRING(Server, 1, 3) as Server from record_race) as n) on r.Map = n.Map and r.Name = n.Name and r.Time = n.Time order by r.Time, r.ID, r.Name limit 160;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
+      query("select distinct r.Name, r.ID, r.Time, r.Timestamp, SUBSTRING(n.Server, 1, 3) from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time limit 20) as l) left join record_teamrace as r on l.ID = r.ID inner join record_race as n on r.Map = n.Map and r.Name = n.Name and r.Time = n.Time order by r.Time, r.ID, r.Name;" % (con.escape_string(originalMapName)))
     else:
-      query("select distinct r.Name, r.ID, r.Time, r.Timestamp, n.Server from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID inner join ((select distinct Map, Name, Time, SUBSTRING(Server, 1, 3) as Server from record_race %s) as n) on r.Map = n.Map and r.Name = n.Name and r.Time = n.Time order by r.Time, r.ID, r.Name limit 160;" % (con.escape_string(originalMapName), con.escape_string(originalMapName), mbCountry2))
+      query("select distinct r.Name, r.ID, r.Time, r.Timestamp, SUBSTRING(n.Server, 1, 3) from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join record_teamrace as r on l.ID = r.ID inner join ((select * from record_race %s) as n) on r.Map = n.Map and r.Name = n.Name and r.Time = n.Time order by r.Time, r.ID, r.Name limit 160;" % (con.escape_string(originalMapName), mbCountry2))
     rows = cur.fetchall()
     if len(rows) > 0:
       ID = rows[0][1]
@@ -216,7 +216,7 @@ with con:
     ranks = []
     countFinishes = 0
 
-    query("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, l.Server from (select * from record_race where Map = '%s' %s) as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp from record_race where Map = '%s' %s group by Name order by minTime ASC) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTime limit 20;" % (con.escape_string(originalMapName), mbCountry, con.escape_string(originalMapName), mbCountry))
+    query("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, SUBSTRING(l.Server, 1, 3) from (select * from record_race where Map = '%s' %s) as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp from record_race where Map = '%s' %s group by Name order by minTime ASC limit 20) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTime;" % (con.escape_string(originalMapName), mbCountry, con.escape_string(originalMapName), mbCountry))
     rows = cur.fetchall()
 
     countFinishes = len(rows)

@@ -35,7 +35,7 @@ if sys.version_info.major < 3:
 
 webDir = "/var/www"
 htmlRanksPath = "/home/teeworlds/servers/scripts/discord-ranks.html"
-countries = ["GER", "POL", "RUS", "TUR", "IRN", "CHL", "BRA", "ARG", "USA", "CAN", "CHN", "KOR", "JAP", "SGP", "ZAF", "AUS", "OLD"]
+countries = ["NLD", "GER", "POL", "RUS", "TUR", "IRN", "CHL", "BRA", "ARG", "USA", "CAN", "CHN", "KOR", "JAP", "SGP", "ZAF", "AUS", "OLD"]
 all_tiles = [
   'SOLO_START',
 
@@ -341,6 +341,7 @@ def header(title, menu, header, refresh = False, stupidIncludes = False, otherIn
         <li><a href="/tournament/">Tournaments</a></li>
         <li><a href="/skins/">Skin Database</a></li>
         <li><a href="/stats/">Statistics</a></li>
+        <li><a href="/staff/">Staff &amp; Contact</a></li>
         <li><a href="/switch-theme/">Switch Theme</a></li>
       </ul>
       %s
