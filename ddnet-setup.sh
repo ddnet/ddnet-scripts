@@ -17,7 +17,7 @@ NAME_SQL=`echo $NAME_UPPER | head -c3`
 
 apt-get -y update
 apt-get -y upgrade
-apt-get -y install bsdutils tree zsh vim htop git g++ libboost-dev python-msgpack python-requests python3-requests python-dnspython python-mysqldb sshfs tcpdump gdb pkg-config ntpdate ntp mailutils msmtp msmtp-mta libssl-dev libmariadbclient-dev libmysqlcppconn-dev cmake make unattended-upgrades apt-listchanges iptables-persistent libwebsockets-dev libcurl4-openssl-dev python3 python3-dnslib python3-cachetools dnsmasq strace dnsutils sqlite3 libsqlite3-dev mariadb-client rsync libreadline-dev binutils-dev libpcap-dev libnl-genl-3-dev dh-autoreconf conntrack ncdu iperf3 psmisc ethtool net-tools mtr-tiny adduser cron iptables wget
+apt-get -y install bsdutils tree zsh vim htop git g++ libboost-dev python-msgpack python-requests python3-requests python-dnspython python-mysqldb sshfs tcpdump gdb pkg-config ntpdate ntp mailutils msmtp msmtp-mta libssl-dev libmariadbclient-dev libmysqlcppconn-dev cmake make unattended-upgrades apt-listchanges iptables-persistent libwebsockets-dev libcurl4-openssl-dev python3 python3-dnslib python3-cachetools dnsmasq strace dnsutils sqlite3 libsqlite3-dev mariadb-client rsync libreadline-dev binutils-dev libpcap-dev libnl-genl-3-dev dh-autoreconf conntrack ncdu iperf3 psmisc ethtool net-tools mtr-tiny adduser cron iptables wget screen
 
 hostnamectl set-hostname ddnet$NAME_LOWER
 addgroup teeworlds
