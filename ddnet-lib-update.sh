@@ -70,7 +70,7 @@ cd ../ffmpeg-4.4
 make -j4
 cp */*.a ..
 
-cd ../libwebsockets-4.1.1
+cd ../libwebsockets-4.2-stable
 CFLAGS=-fPIC LDFLAGS=-fPIC cmake -DLWS_UNIX_SOCK=OFF -DLWS_WITH_SSL=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
 make -j4
 cp lib/libwebsockets.a ..
@@ -132,7 +132,7 @@ cd ../ffmpeg-4.4
 make -j4
 cp */*.a ..
 
-cd ../libwebsockets-4.1.1
+cd ../libwebsockets-4.2-stable
 CFLAGS="-m32 -fPIC" LDFLAGS="-m32 -fPIC" cmake -DLWS_UNIX_SOCK=OFF -DLWS_WITH_SSL=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
 make -j4
 cp lib/libwebsockets.a ..
@@ -244,7 +244,7 @@ cd ../ffmpeg-4.4
 make -j4
 cp libavcodec/avcodec-58.dll libavformat/avformat-58.dll libavutil/avutil-56.dll libswresample/swresample-3.dll libswscale/swscale-5.dll libavcodec/avcodec.lib libavformat/avformat.lib libavutil/avutil.lib libswresample/swresample.lib libswscale/swscale.lib ..
 
-cd ../libwebsockets-4.1.1
+cd ../libwebsockets-4.2-stable
 cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-w64.cmake -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
 make -j4
 cp lib/libwebsockets.dll.a bin/libwebsockets.dll ..
@@ -303,7 +303,7 @@ cp build/.libs/SDL2.dll build/.libs/libSDL2.dll.a ..
 i686-w64-mingw32-dlltool -v --export-all-symbols -D SDL2.dll -l ../SDL2.lib build/.libs/*.o
 
 cd ../curl-7.79.0
-./configure --host=i686-w64-mingw32 --with-winssl --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
+./configure --host=i686-w64-mingw32 -winssl --with-winssl --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
 make -j4 V=1
 rm lib/.libs/libcurl-4.dll
 cd lib
@@ -358,7 +358,7 @@ cd ../ffmpeg-4.4
 make -j4
 cp libavcodec/avcodec-58.dll libavformat/avformat-58.dll libavutil/avutil-56.dll libswresample/swresample-3.dll libswscale/swscale-5.dll libavcodec/avcodec.lib libavformat/avformat.lib libavutil/avutil.lib libswresample/swresample.lib libswscale/swscale.lib ..
 
-cd ../libwebsockets-4.1.1
+cd ../libwebsockets-4.2-stable
 cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-w32.cmake -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
 make -j4
 cp lib/libwebsockets.dll.a bin/libwebsockets.dll ..
@@ -429,7 +429,7 @@ cd ../ffmpeg-4.4
 make -j4
 cp libavcodec/libavcodec.58.dylib libavformat/libavformat.58.dylib libavutil/libavutil.56.dylib libswresample/libswresample.3.dylib libswscale/libswscale.5.dylib ..
 
-cd ../libwebsockets-4.1.1
+cd ../libwebsockets-4.2-stable
 # own cross-osx.cmake
 cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-osx.cmake -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
 make -j4 lib/libwebsockets.17.dylib
