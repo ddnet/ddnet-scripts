@@ -247,7 +247,7 @@ cp libavcodec/avcodec-58.dll libavformat/avformat-58.dll libavutil/avutil-56.dll
 cd ../libwebsockets-4.2-stable
 cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-w64.cmake -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
 make -j4
-cp lib/libwebsockets.dll.a bin/libwebsockets.dll ..
+cp bin/libwebsockets.dll ..
 
 cd ../libpng-1.6.37
 CFLAGS="-I/usr/x86_64-w64-mingw32/include" LDFLAGS="-L/usr/x86_64-w64-mingw32/lib" ./configure --host=x86_64-w64-mingw32
@@ -361,12 +361,12 @@ cp libavcodec/avcodec-58.dll libavformat/avformat-58.dll libavutil/avutil-56.dll
 cd ../libwebsockets-4.2-stable
 cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-w32.cmake -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
 make -j4
-cp lib/libwebsockets.dll.a bin/libwebsockets.dll ..
+cp bin/libwebsockets.dll ..
 
 cd ../libpng-1.6.37
 CFLAGS="-I/usr/i686-w64-mingw32/include" LDFLAGS="-L/usr/i686-w64-mingw32/lib" ./configure --host=i686-w64-mingw32
 make -j4
-cp .libs/libpng16-16.dll ..
+cp .libs/libpng16.a ..
 
 cd ..
 for i in *.dll; do i686-w64-mingw32-strip -s $i; done
