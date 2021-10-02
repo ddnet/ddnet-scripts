@@ -5,7 +5,7 @@ wget http://libsdl.org/release/SDL2-2.0.16.tar.gz
 wget https://patch-diff.githubusercontent.com/raw/libsdl-org/SDL/pull/4306.diff
 wget https://patch-diff.githubusercontent.com/raw/libsdl-org/SDL/pull/4683.diff
 wget https://curl.haxx.se/download/curl-7.79.0.tar.gz
-wget http://download.savannah.gnu.org/releases/freetype/11.0.tar.gz
+wget https://download.savannah.gnu.org/releases/freetype/freetype-2.11.0.tar.gz
 wget http://downloads.xiph.org/releases/ogg/libogg-1.3.5.tar.gz
 wget https://archive.mozilla.org/pub/opus/opus-1.3.1.tar.gz
 wget https://downloads.xiph.org/releases/opus/opusfile-0.12.tar.gz
@@ -151,7 +151,7 @@ tar xvf ../curl-7.79.0.tar.gz
 tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
-tar xvf ../11.0.tar.gz
+tar xvf ../freetype-2.11.0.tar.gz
 tar xvf ../sqlite-autoconf-3360000.tar.gz
 tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-4.4.tar.gz
@@ -188,7 +188,7 @@ cp build/.libs/SDL2.dll build/.libs/libSDL2.dll.a ..
 x86_64-w64-mingw32-dlltool -v --export-all-symbols -D SDL2.dll -l ../SDL2.lib build/.libs/*.o
 
 cd ../curl-7.79.0
-./configure --host=x86_64-w64-mingw32 --with-winssl --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
+./configure --host=x86_64-w64-mingw32 --with-schannel --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
 make -j4 V=1
 rm lib/.libs/libcurl-4.dll
 cd lib
@@ -221,7 +221,7 @@ rm .libs/libopusfile-0.dll
 x86_64-w64-mingw32-dlltool -v --export-all-symbols -D libopusfile.dll -l ../opusfile.lib src/*.o
 cp .libs/libopusfile.dll ../libopusfile.dll
 
-cd ../11.0
+cd ../freetype-2.11.0
 ./configure --host=x86_64-w64-mingw32 --prefix=/usr/x86_64-w64-mingw32 CPPFLAGS="-I/usr/x86_64-w64-mingw32/include" LDFLAGS="-L/usr/x86_64-w64-mingw32/lib" PKG_CONFIG_LIBDIR=/usr/x86_64-w64-mingw32/lib/pkgconfig --with-png=no --with-bzip2=no --with-zlib=no --with-harfbuzz=no
 make -j4 V=1
 rm objs/.libs/libfreetype-6.dll
@@ -266,7 +266,7 @@ tar xvf ../curl-7.79.0.tar.gz
 tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
-tar xvf ../11.0.tar.gz
+tar xvf ../freetype-2.11.0.tar.gz
 tar xvf ../sqlite-autoconf-3360000.tar.gz
 tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-4.4.tar.gz
@@ -303,7 +303,7 @@ cp build/.libs/SDL2.dll build/.libs/libSDL2.dll.a ..
 i686-w64-mingw32-dlltool -v --export-all-symbols -D SDL2.dll -l ../SDL2.lib build/.libs/*.o
 
 cd ../curl-7.79.0
-./configure --host=i686-w64-mingw32 -winssl --with-winssl --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
+./configure --host=i686-w64-mingw32 --with-schannel --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
 make -j4 V=1
 rm lib/.libs/libcurl-4.dll
 cd lib
@@ -336,7 +336,7 @@ rm .libs/libopusfile-0.dll
 i686-w64-mingw32-dlltool -v --export-all-symbols -D libopusfile.dll -l ../opusfile.lib src/*.o
 cp .libs/libopusfile.dll ../libopusfile.dll
 
-cd ../11.0
+cd ../freetype-2.11.0
 ./configure --host=i686-w64-mingw32 --prefix=/usr/i686-w64-mingw32 CPPFLAGS="-I/usr/i686-w64-mingw32/include" LDFLAGS="-L/usr/i686-w64-mingw32/lib" PKG_CONFIG_LIBDIR=/usr/i686-w64-mingw32/lib/pkgconfig --with-png=no --with-bzip2=no --with-zlib=no --with-harfbuzz=no
 make -j4 V=1
 # Long command from make with fixed dll name
@@ -389,6 +389,7 @@ tar xvf ../libpng-1.6.37.tar.gz
 export PATH=/home/deen/git/osxcross/target/bin/:$PATH
 export CC=o64-clang
 export CXX=o64-clang++
+eval `osxcross-conf`
 
 cd curl-7.79.0
 CFLAGS="-mmacosx-version-min=10.9" ./configure --host=x86_64-apple-darwin17 --without-ssl --with-secure-transport --enable-static --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
@@ -432,8 +433,8 @@ cp libavcodec/libavcodec.58.dylib libavformat/libavformat.58.dylib libavutil/lib
 cd ../libwebsockets-4.2-stable
 # own cross-osx.cmake
 cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-osx.cmake -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
-make -j4 lib/libwebsockets.17.dylib
-cp lib/libwebsockets.17.dylib ..
+make -j4
+cp lib/libwebsockets.18.dylib ..
 
 cd ../libpng-1.6.37
 ./configure --host=x86_64-apple-darwin17
