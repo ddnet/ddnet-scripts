@@ -252,7 +252,7 @@ cp bin/libwebsockets.dll ..
 cd ../libpng-1.6.37
 CFLAGS="-I/usr/x86_64-w64-mingw32/include" LDFLAGS="-L/usr/x86_64-w64-mingw32/lib" ./configure --host=x86_64-w64-mingw32
 make -j4
-cp .libs/libpng16-16.dll ..
+cp .libs/libpng16.a ..
 
 cd ..
 for i in *.dll; do x86_64-w64-mingw32-strip -s $i; done
