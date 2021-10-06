@@ -252,7 +252,8 @@ cp bin/libwebsockets.dll ..
 cd ../libpng-1.6.37
 CFLAGS="-I/usr/x86_64-w64-mingw32/include" LDFLAGS="-L/usr/x86_64-w64-mingw32/lib" ./configure --host=x86_64-w64-mingw32
 make -j4
-cp .libs/libpng16.a ..
+cp .libs/libpng16-16.dll ..
+x86_64-w64-mingw32-dlltool -v --export-all-symbols -D libpng16-16.dll -l ../libpng16-16.lib **/*.o
 
 cd ..
 for i in *.dll; do x86_64-w64-mingw32-strip -s $i; done
@@ -366,7 +367,8 @@ cp bin/libwebsockets.dll ..
 cd ../libpng-1.6.37
 CFLAGS="-I/usr/i686-w64-mingw32/include" LDFLAGS="-L/usr/i686-w64-mingw32/lib" ./configure --host=i686-w64-mingw32
 make -j4
-cp .libs/libpng16.a ..
+cp .libs/libpng16-16.dll ..
+i686-w64-mingw32-dlltool -v --export-all-symbols -D libpng16-16.dll -l ../libpng16-16.lib **/*.o
 
 cd ..
 for i in *.dll; do i686-w64-mingw32-strip -s $i; done
