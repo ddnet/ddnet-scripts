@@ -381,6 +381,7 @@ tar xvf ../curl-7.79.0.tar.gz
 tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
+tar xvf ../SDL2-2.0.16.tar.gz
 tar xvf ../11.0.tar.gz
 tar xvf ../sqlite-autoconf-3360000.tar.gz
 tar xvf ../x264-master.tar.bz2
@@ -412,6 +413,13 @@ cd ../opusfile-0.12
 PKG_CONFIG=/usr/sbin/pkg-config DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian6/root/mac64/opus-1.3.1/.libs/ -L/home/deen/isos/ddnet/debian6/root/mac64/libogg-1.3.5/src/.libs/" ./configure CFLAGS="-mmacosx-version-min=10.9 -I/home/deen/isos/ddnet/debian6/root/mac64/opus-1.3.1/include -I/home/deen/isos/ddnet/debian6/root/mac64/libogg-1.3.5/include" CPPFLAGS="-I/home/deen/isos/ddnet/debian6/root/mac64/opus-1.3.1/include -I/home/deen/isos/ddnet/debian6/root/mac64/libogg-1.3.5/include" --host=x86_64-apple-darwin17 --disable-http
 make -j4
 cp .libs/libopusfile.a ..
+
+cd ../SDL2-2.0.16
+patch -p1 < ../../4306.diff
+patch -p1 < ../../4683.diff
+./configure --enable-ime CFLAGS="-mmacosx-version-min=10.9" --host=x86_64-apple-darwin17
+CFLAGS="-mmacosx-version-min=10.9" make -j4
+cp build/.libs/libSDL2-2.0.0.dylib ../SDL2
 
 cd ../11.0
 ./configure CFLAGS="-mmacosx-version-min=10.9" --host=x86_64-apple-darwin17 --with-png=no --with-bzip2=no --with-zlib=no --with-harfbuzz=no
