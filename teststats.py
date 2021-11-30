@@ -7,8 +7,10 @@ import collections
 path = "json"
 comments = collections.Counter()
 ready = collections.Counter()
+declined = collections.Counter()
 for filename in os.listdir(path):
     r = None
+    d = None
     mapname = os.path.splitext(filename)[0]
     with open(os.path.join(path, filename), 'r') as json_file:
         j = json.load(json_file)
@@ -26,7 +28,16 @@ for filename in os.listdir(path):
                         r = testername
                     if type(y[z]) == dict and y[z].get("text", "").startswith("$ready"):
                         r = testername
+                    if type(y[z]) == str and y[z].startswith("$decline"):
+                        d = testername
+                    if type(y[z]) == dict and y[z].get("text", "").startswith("$decline"):
+                        d = testername
     if r:
         ready[r] += 1
+    if d:
+        declined[d] += 1
 print(comments.most_common(20))
 print(ready.most_common(20))
+print(declined.most_common(20))
+print(comments["justFlippo"])
+print(ready["justFlippo"])
