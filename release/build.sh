@@ -45,11 +45,11 @@ build_source ()
   rm -rf DDNet-$VERSION
 }
 
-build_macosx ()
+build_macos ()
 {
-  rm -rf macosx$1
-  mkdir macosx$1
-  cd macosx$1
+  rm -rf macos$1
+  mkdir macos$1
+  cd macos$1
   PATH=${PATH:+$PATH:}/home/deen/git/osxcross/target/bin
   eval `osxcross-conf`
   export OSXCROSS_OSX_VERSION_MIN=10.9
@@ -57,20 +57,20 @@ build_macosx ()
   make -j2 package_default
 }
 
-build_macosx_website ()
+build_macos_website ()
 {
-  build_macosx "" $UPDATE_FLAGS_MACOSX
-  mv DDNet-*.dmg $BUILDS/DDNet-$VERSION-osx.dmg
+  build_macos "" $UPDATE_FLAGS_MACOSX
+  mv DDNet-*.dmg $BUILDS/DDNet-$VERSION-macos.dmg
   cd ..
-  rm -rf macosx
+  rm -rf macos
 }
 
-build_macosx_steam ()
+build_macos_steam ()
 {
-  build_macosx -steam "-DSTEAM=ON"
-  mv DDNet-*.dmg ../DDNet-$VERSION-steam-osx.dmg
+  build_macos -steam "-DSTEAM=ON"
+  mv DDNet-*.dmg ../DDNet-$VERSION-steam-macos.dmg
   cd ..
-  rm -rf macosx-steam
+  rm -rf macos-steam
 }
 
 build_linux ()
@@ -164,7 +164,7 @@ unzip -q libs.zip
 rm -rf ddnet-source/ddnet-libs
 mv $LIBS_REPO_NAME-$LIBS_REPO_BRANCH ddnet-source/ddnet-libs
 
-(build_macosx_website; build_macosx_steam) &> builds/mac.log &
+(build_macos_website; build_macos_steam) &> builds/mac.log &
 
 build_linux x86_64 $BUILDDIR/debian6 &> builds/linux_x86_64.log &
 CFLAGS=-m32 LDFLAGS=-m32 build_linux x86 $BUILDDIR/debian6_x86 &> builds/linux_x86.log &
@@ -225,15 +225,15 @@ cp $BUILDDIR/steamworks/sdk/redistributable_bin/linux32/libsteam_api.so ddnet
 zip -9r DDNet-$VERSION-linux_x86.zip ddnet
 rm -r ddnet
 
-7z x ../DDNet-$VERSION-steam-osx.dmg
-rm -r DDNet-*-osx/DDNet.app/Contents/Resources/data DDNet-*-osx/DDNet-Server.app/Contents/Resources/data
+7z x ../DDNet-$VERSION-steam-macos.dmg
+rm -r DDNet-*-macos/DDNet.app/Contents/Resources/data DDNet-*-macos/DDNet-Server.app/Contents/Resources/data
 mkdir ddnet
-mv DDNet-*-osx/DDNet.app/Contents/MacOS/DDNet DDNet-*-osx/DDNet-Server.app/Contents/MacOS/DDNet-Server* ddnet
-mv DDNet-*-osx/DDNet.app/Contents/Frameworks .
-cp -r DDNet-*-osx/DDNet-Server.app/Contents/Frameworks/* Frameworks
+mv DDNet-*-macos/DDNet.app/Contents/MacOS/DDNet DDNet-*-macos/DDNet-Server.app/Contents/MacOS/DDNet-Server* ddnet
+mv DDNet-*-macos/DDNet.app/Contents/Frameworks .
+cp -r DDNet-*-macos/DDNet-Server.app/Contents/Frameworks/* Frameworks
 cp $BUILDDIR/steamworks/sdk/redistributable_bin/osx/libsteam_api.dylib Frameworks
-zip -9r DDNet-$VERSION-osx.zip ddnet Frameworks
-rm -r ddnet Frameworks DDNet-*-osx
+zip -9r DDNet-$VERSION-macos.zip ddnet Frameworks
+rm -r ddnet Frameworks DDNet-*-macos
 
 rm -rf ddnet-source
 
