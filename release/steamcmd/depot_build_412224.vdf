@@ -8,7 +8,7 @@
 	// will be resolved relative to this root.
 	// If you don't define ContentRoot, then it will be assumed to be
 	// the location of this script file, which probably isn't what you want
-	"ContentRoot" "/home/deen/isos/ddnet/steam/osx"
+	"ContentRoot" "/home/deen/isos/ddnet/steam/macos"
 
 	// Include all files recursively
 	"FileMapping"
