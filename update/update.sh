@@ -45,12 +45,12 @@ rm -r DDNet-$OLD_VERSION-*
 rm -r DDNet-$VERSION-*
 
 cd /var/www/downloads
-rm -f DDNet-latest-win32.zip DDNet-latest-win64.zip DDNet-latest-linux_x86_64.tar.xz DDNet-latest-linux_x86.tar.xz DDNet-latest-osx.dmg
+rm -f DDNet-latest-win32.zip DDNet-latest-win64.zip DDNet-latest-linux_x86_64.tar.xz DDNet-latest-linux_x86.tar.xz DDNet-latest-macos.dmg
 ln -s DDNet-$VERSION-win32.zip DDNet-latest-win32.zip
 ln -s DDNet-$VERSION-win64.zip DDNet-latest-win64.zip
 ln -s DDNet-$VERSION-linux_x86_64.tar.xz DDNet-latest-linux_x86_64.tar.xz
 ln -s DDNet-$VERSION-linux_x86.tar.xz DDNet-latest-linux_x86.tar.xz
-ln -s DDNet-$VERSION-osx.dmg DDNet-latest-osx.dmg
+ln -s DDNet-$VERSION-macos.dmg DDNet-latest-macos.dmg
 
 (sha256sum DDNet-*~*latest(.) GraphicsTools-* > sha256sums.$$.tmp
 mv sha256sums.$$.tmp sha256sums.txt) &
