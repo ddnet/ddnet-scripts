@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-SERVER = "ddnet.tw"
+SERVER = "127.0.0.1"
 PORT = 35601
 USER = "ddnet"
 PASSWORD = "SECRET"

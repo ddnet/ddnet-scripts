@@ -139,9 +139,9 @@ with con:
     menuText += '</ul>'
     menuText += '</ul>'
 
-    print >>out, header("%s%s - Map on %s Server - DDraceNetwork" % (escape(originalMapName), mbMapperName, type), menuText, "")
-
     mbCountryString = ' (%s)' % (country) if country else ""
+    print >>out, header("%s%s - %s Server Ranks%s - DDraceNetwork" % (escape(originalMapName), mbMapperName, type, mbCountryString), menuText, "")
+
     ranksLink = '/ranks/%s/%s/' % (country.lower(), type.lower()) if country else '/ranks/%s/' % type.lower()
     print >>out, '<div id="global" class="longblock div-ranks">'
     print >>out, '<div class="right"><form id="mapform" action="/maps/" method="get"><input id="mapsearch" name="map" class="typeahead" type="text" placeholder="Map search"><input type="submit" value="Map search" style="position: absolute; left: -9999px"></form></div>'

@@ -35,7 +35,7 @@ if sys.version_info.major < 3:
 
 webDir = "/var/www"
 htmlRanksPath = "/home/teeworlds/servers/scripts/discord-ranks.html"
-countries = ["NLD", "GER", "POL", "RUS", "TUR", "IRN", "CHL", "BRA", "ARG", "USA", "CAN", "CHN", "KOR", "JAP", "SGP", "ZAF", "AUS", "OLD"]
+countries = ["NLD", "FRA", "GER", "POL", "RUS", "TUR", "IRN", "CHL", "BRA", "ARG", "USA", "CAN", "CHN", "KOR", "JAP", "SGP", "ZAF", "IND", "AUS", "OLD"]
 all_tiles = [
   'SOLO_START',
 
@@ -320,8 +320,8 @@ def header(title, menu, header, refresh = False, stupidIncludes = False, otherIn
     %s
     %s
     %s
-    <link rel="stylesheet" type="text/css" href="/css.css?version=17" />
-    <link rel="stylesheet" type="text/css" href="/css-halloween.css" />
+    <link rel="stylesheet" type="text/css" href="/css.css?version=19" />
+    <link rel="stylesheet" type="text/css" href="/css-halloween.css?version=6" />
     <script type="text/javascript" src="/js.js"></script>
     <title>%s</title>
   </head>

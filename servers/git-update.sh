@@ -8,7 +8,7 @@ cd /home/teeworlds/servers
 for i in /home/teeworlds/servers /home/teeworlds/servers/halloween; do
   cd $i
   rm -f maps7.log
-  for map in maps/*; do
+  find maps -name '*.map' | while read map; do
     map7="maps7/${map:t}"
     if [ ! -e "$map7" -o "$map" -nt "$map7" ]; then
       /home/teeworlds/servers/map_convert_07 "$map" "$map7.tmp" >> maps7.log && /home/teeworlds/servers/map_optimize "$map7.tmp" "../$map7" && rm -- "$map7.tmp" && git add "$map7" && echo "Converted $map to $map7"

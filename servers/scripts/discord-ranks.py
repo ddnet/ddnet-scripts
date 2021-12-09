@@ -15,6 +15,7 @@ countryCodeMapping = {
         'NLD': '🇳🇱',
         'GER': '🇩🇪',
         'POL': '🇵🇱',
+        'FRA': '🇫🇷',
         'RUS': '🇷🇺',
         'TUR': '🇹🇷',
         'IRN': '🇮🇷',
@@ -31,6 +32,7 @@ countryCodeMapping = {
         'SGP': '🇸🇬',
         'ZAF': '🇿🇦',
         'AUS': '🇦🇺',
+        'IND': '🇮🇳',
 }
 
 htmlRanksPathTmp = "%s.%d.tmp" % (htmlRanksPath, os.getpid())

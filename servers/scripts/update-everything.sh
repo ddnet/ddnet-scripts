@@ -29,10 +29,11 @@ scripts/update-local.sh
 scripts/ranks.py $types
 # Only update the country-specific pages once per day
 #if test `find /var/www/ranks/ger/novice/index.html -mmin +1440`; then
-  # EUR is split into 3 regions in ranks:
+  # EUR is split into 4 regions in ranks:
   scripts/ranks.py --country=NLD $types
   scripts/ranks.py --country=GER $types
   scripts/ranks.py --country=POL $types
+  scripts/ranks.py --country=FRA $types
   grep name serverlist.json | sed -e 's/.*"name": "\(.*\)".*/\1/' | while read country; do
     scripts/ranks.py --country=$country $types
   done
@@ -43,5 +44,7 @@ scripts/releases-mappers.py $types > /var/www/mappers/index.$$.tmp && mv /var/ww
 #scripts/halloffame.py > /var/www/halloffame/index.html
 
 zip -q9r /var/www/players-cache.$$.tmp players-cache && mv /var/www/players-cache.$$.tmp /var/www/players-cache.zip
+
+curl -s -o serverlist-kog.json.$$.tmp https://qshar.com/servers.php && mv serverlist-kog.json.$$.tmp serverlist-kog.json && ./git-update-serverlist-only.sh
 
 #scripts/update-stats.sh
