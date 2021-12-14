@@ -452,8 +452,8 @@ make -j4
 cp .libs/libpng16.16.dylib ..
 
 # Requires osxcross with SDK >= 12.0 for oa64-clang
-mkdir macarm
-cd macarm
+mkdir macarm64
+cd macarm64
 tar xvf ../curl-7.79.0.tar.gz
 tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
@@ -487,7 +487,7 @@ make -j4
 cp .libs/libopus.a ..
 
 cd ../opusfile-0.12
-PKG_CONFIG=/usr/sbin/pkg-config DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian6/root/macarm/opus-1.3.1/.libs/ -L/home/deen/isos/ddnet/debian6/root/macarm/libogg-1.3.5/src/.libs/" ./configure CFLAGS="-mmacosx-version-min=10.9 -I/home/deen/isos/ddnet/debian6/root/macarm/opus-1.3.1/include -I/home/deen/isos/ddnet/debian6/root/macarm/libogg-1.3.5/include" CPPFLAGS="-I/home/deen/isos/ddnet/debian6/root/macarm/opus-1.3.1/include -I/home/deen/isos/ddnet/debian6/root/macarm/libogg-1.3.5/include" --host=aarch64-apple-darwin20.1 --disable-http
+PKG_CONFIG=/usr/sbin/pkg-config DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian6/root/macarm64/opus-1.3.1/.libs/ -L/home/deen/isos/ddnet/debian6/root/macarm64/libogg-1.3.5/src/.libs/" ./configure CFLAGS="-mmacosx-version-min=10.9 -I/home/deen/isos/ddnet/debian6/root/macarm64/opus-1.3.1/include -I/home/deen/isos/ddnet/debian6/root/macarm64/libogg-1.3.5/include" CPPFLAGS="-I/home/deen/isos/ddnet/debian6/root/macarm64/opus-1.3.1/include -I/home/deen/isos/ddnet/debian6/root/macarm64/libogg-1.3.5/include" --host=aarch64-apple-darwin20.1 --disable-http
 make -j4
 cp .libs/libopusfile.a ..
 
@@ -518,8 +518,8 @@ make -j4
 cp libavcodec/libavcodec.58.dylib libavformat/libavformat.58.dylib libavutil/libavutil.56.dylib libswresample/libswresample.3.dylib libswscale/libswscale.5.dylib ..
 
 cd ../libwebsockets-4.2-stable
-# own contrib/cross-macos-arm.cmake
-cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-macos-arm.cmake -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
+# own contrib/cross-macos-arm64.cmake
+cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-macos-arm64.cmake -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
 make -j4
 cp lib/libwebsockets.18.dylib ..
 
@@ -527,3 +527,7 @@ cd ../libpng-1.6.37
 ./configure --host=aarch64-apple-darwin20.1
 make -j4
 cp .libs/libpng16.16.dylib ..
+
+# create fat binaries for mac
+mkdir libfat; for i in lib64/*.dylib; do lipo -create $i libarm64/${i:t} -output libfat/${i:t}; done
+mkdir libfat; for i in lib64/*.a; do lipo -create $i libarm64/${i:t} -output libfat/${i:t}; done
