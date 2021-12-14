@@ -382,7 +382,7 @@ tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
 tar xvf ../SDL2-2.0.18.tar.gz
-tar xvf ../11.0.tar.gz
+tar xvf ../freetype-2.11.0.tar.gz
 tar xvf ../sqlite-autoconf-3360000.tar.gz
 tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-4.4.tar.gz
@@ -395,59 +395,59 @@ export CXX=o64-clang++
 eval `osxcross-conf`
 
 cd curl-7.79.0
-CFLAGS="-mmacosx-version-min=10.9" ./configure --host=x86_64-apple-darwin17 --without-ssl --with-secure-transport --enable-static --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
+CFLAGS="-mmacosx-version-min=10.9" ./configure --host=x86_64-apple-darwin20.1 --without-ssl --with-secure-transport --enable-static --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
 make -j4
 cp lib/.libs/libcurl.a ..
 
 cd ../libogg-1.3.5
-./configure CFLAGS="-mmacosx-version-min=10.9" --host=x86_64-apple-darwin17
+./configure CFLAGS="-mmacosx-version-min=10.9" --host=x86_64-apple-darwin20.1
 make -j4
 cp src/.libs/libogg.a ..
 
 cd ../opus-1.3.1
-./configure CFLAGS="-mmacosx-version-min=10.9" --host=x86_64-apple-darwin17
+./configure CFLAGS="-mmacosx-version-min=10.9" --host=x86_64-apple-darwin20.1
 make -j4
 cp .libs/libopus.a ..
 
 cd ../opusfile-0.12
-PKG_CONFIG=/usr/sbin/pkg-config DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian6/root/mac64/opus-1.3.1/.libs/ -L/home/deen/isos/ddnet/debian6/root/mac64/libogg-1.3.5/src/.libs/" ./configure CFLAGS="-mmacosx-version-min=10.9 -I/home/deen/isos/ddnet/debian6/root/mac64/opus-1.3.1/include -I/home/deen/isos/ddnet/debian6/root/mac64/libogg-1.3.5/include" CPPFLAGS="-I/home/deen/isos/ddnet/debian6/root/mac64/opus-1.3.1/include -I/home/deen/isos/ddnet/debian6/root/mac64/libogg-1.3.5/include" --host=x86_64-apple-darwin17 --disable-http
+PKG_CONFIG=/usr/sbin/pkg-config DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian6/root/mac64/opus-1.3.1/.libs/ -L/home/deen/isos/ddnet/debian6/root/mac64/libogg-1.3.5/src/.libs/" ./configure CFLAGS="-mmacosx-version-min=10.9 -I/home/deen/isos/ddnet/debian6/root/mac64/opus-1.3.1/include -I/home/deen/isos/ddnet/debian6/root/mac64/libogg-1.3.5/include" CPPFLAGS="-I/home/deen/isos/ddnet/debian6/root/mac64/opus-1.3.1/include -I/home/deen/isos/ddnet/debian6/root/mac64/libogg-1.3.5/include" --host=x86_64-apple-darwin20.1 --disable-http
 make -j4
 cp .libs/libopusfile.a ..
 
 cd ../SDL2-2.0.18
 patch -p1 < ../../4306.diff
 patch -p1 < ../../4683.diff
-./configure --enable-ime CFLAGS="-mmacosx-version-min=10.9" --host=x86_64-apple-darwin17
+./configure --enable-ime CFLAGS="-mmacosx-version-min=10.9" --host=x86_64-apple-darwin20.1
 CFLAGS="-mmacosx-version-min=10.9" make -j4
 cp build/.libs/libSDL2-2.0.0.dylib ../SDL2
 
-cd ../11.0
-./configure CFLAGS="-mmacosx-version-min=10.9" --host=x86_64-apple-darwin17 --with-png=no --with-bzip2=no --with-zlib=no --with-harfbuzz=no
+cd ../freetype-2.11.0
+./configure CFLAGS="-mmacosx-version-min=10.9" --host=x86_64-apple-darwin20.1 --with-png=no --with-bzip2=no --with-zlib=no --with-harfbuzz=no
 make -j4
 cp objs/.libs/libfreetype.6.dylib ..
 
 cd ../sqlite-autoconf-3360000
-./configure --host=x86_64-apple-darwin17 CFLAGS="-fPIC -DSQLITE_OMIT_LOAD_EXTENSION"
+./configure --host=x86_64-apple-darwin20.1 CFLAGS="-fPIC -DSQLITE_OMIT_LOAD_EXTENSION"
 make -j4
 cp .libs/libsqlite3.0.dylib ..
 
 cd ../x264-master
-AS=nasm CFLAGS="-mmacosx-version-min=10.9 -I/usr/x86_64-apple-darwin17/include" LDFLAGS="-L/usr/x86_64-apple-darwin17/lib" ./configure --enable-static --disable-cli --disable-gpl --disable-avs --disable-swscale --disable-lavf --disable-ffms --disable-gpac --disable-lsmash --disable-interlaced --host=x86_64-apple-darwin17 --prefix=/usr/x86_64-apple-darwin17 --cross-prefix=x86_64-apple-darwin17-
+AS=nasm CFLAGS="-mmacosx-version-min=10.9 -I/usr/x86_64-apple-darwin20.1/include" LDFLAGS="-L/usr/x86_64-apple-darwin20.1/lib" ./configure --enable-static --disable-cli --disable-gpl --disable-avs --disable-swscale --disable-lavf --disable-ffms --disable-gpac --disable-lsmash --disable-interlaced --host=x86_64-apple-darwin20.1 --prefix=/usr/x86_64-apple-darwin20.1 --cross-prefix=x86_64-apple-darwin20.1-
 make -j4
 
 cd ../ffmpeg-4.4
-./configure --disable-all --disable-appkit --disable-bzlib --disable-avfoundation --disable-coreimage --disable-securetransport --disable-audiotoolbox --disable-cuda-llvm --disable-videotoolbox --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-cxxflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-ldflags="-L../x264-master" --arch=x86_64 --target_os=darwin --cross-prefix=x86_64-apple-darwin17- --disable-static --enable-shared --cc=$CC --cxx=$CXX
+./configure --disable-all --disable-appkit --disable-bzlib --disable-avfoundation --disable-coreimage --disable-securetransport --disable-audiotoolbox --disable-cuda-llvm --disable-videotoolbox --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-cxxflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-ldflags="-L../x264-master" --arch=x86_64 --target_os=darwin --cross-prefix=x86_64-apple-darwin20.1- --disable-static --enable-shared --cc=$CC --cxx=$CXX
 make -j4
 cp libavcodec/libavcodec.58.dylib libavformat/libavformat.58.dylib libavutil/libavutil.56.dylib libswresample/libswresample.3.dylib libswscale/libswscale.5.dylib ..
 
 cd ../libwebsockets-4.2-stable
-# own cross-osx.cmake
-cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-osx.cmake -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
+# own contrib/cross-macos-x86_64.cmake
+cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-macos-x86_64.cmake -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
 make -j4
 cp lib/libwebsockets.18.dylib ..
 
 cd ../libpng-1.6.37
-./configure --host=x86_64-apple-darwin17
+./configure --host=x86_64-apple-darwin20.1
 make -j4
 cp .libs/libpng16.16.dylib ..
 
@@ -459,7 +459,7 @@ tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
 tar xvf ../SDL2-2.0.18.tar.gz
-tar xvf ../11.0.tar.gz
+tar xvf ../freetype-2.11.0.tar.gz
 tar xvf ../sqlite-autoconf-3360000.tar.gz
 tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-4.4.tar.gz
@@ -472,58 +472,58 @@ export CXX=oa64-clang++
 eval `osxcross-conf`
 
 cd curl-7.79.0
-CFLAGS="-mmacosx-version-min=10.9" ./configure --host=arm64-apple-darwin17 --without-ssl --with-secure-transport --enable-static --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
+CFLAGS="-mmacosx-version-min=10.9" ./configure --host=aarch64-apple-darwin20.1 --without-ssl --with-secure-transport --enable-static --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
 make -j4
 cp lib/.libs/libcurl.a ..
 
 cd ../libogg-1.3.5
-./configure CFLAGS="-mmacosx-version-min=10.9" --host=arm64-apple-darwin17
+./configure CFLAGS="-mmacosx-version-min=10.9" --host=aarch64-apple-darwin20.1
 make -j4
 cp src/.libs/libogg.a ..
 
 cd ../opus-1.3.1
-./configure CFLAGS="-mmacosx-version-min=10.9" --host=arm64-apple-darwin17
+./configure CFLAGS="-mmacosx-version-min=10.9" --host=aarch64-apple-darwin20.1
 make -j4
 cp .libs/libopus.a ..
 
 cd ../opusfile-0.12
-PKG_CONFIG=/usr/sbin/pkg-config DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian6/root/macarm/opus-1.3.1/.libs/ -L/home/deen/isos/ddnet/debian6/root/macarm/libogg-1.3.5/src/.libs/" ./configure CFLAGS="-mmacosx-version-min=10.9 -I/home/deen/isos/ddnet/debian6/root/macarm/opus-1.3.1/include -I/home/deen/isos/ddnet/debian6/root/macarm/libogg-1.3.5/include" CPPFLAGS="-I/home/deen/isos/ddnet/debian6/root/macarm/opus-1.3.1/include -I/home/deen/isos/ddnet/debian6/root/macarm/libogg-1.3.5/include" --host=arm64-apple-darwin17 --disable-http
+PKG_CONFIG=/usr/sbin/pkg-config DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian6/root/macarm/opus-1.3.1/.libs/ -L/home/deen/isos/ddnet/debian6/root/macarm/libogg-1.3.5/src/.libs/" ./configure CFLAGS="-mmacosx-version-min=10.9 -I/home/deen/isos/ddnet/debian6/root/macarm/opus-1.3.1/include -I/home/deen/isos/ddnet/debian6/root/macarm/libogg-1.3.5/include" CPPFLAGS="-I/home/deen/isos/ddnet/debian6/root/macarm/opus-1.3.1/include -I/home/deen/isos/ddnet/debian6/root/macarm/libogg-1.3.5/include" --host=aarch64-apple-darwin20.1 --disable-http
 make -j4
 cp .libs/libopusfile.a ..
 
 cd ../SDL2-2.0.18
 patch -p1 < ../../4306.diff
 patch -p1 < ../../4683.diff
-./configure --enable-ime CFLAGS="-mmacosx-version-min=10.9" --host=arm64-apple-darwin17
+./configure --enable-ime CFLAGS="-mmacosx-version-min=10.9" --host=aarch64-apple-darwin20.1
 CFLAGS="-mmacosx-version-min=10.9" make -j4
 cp build/.libs/libSDL2-2.0.0.dylib ../SDL2
 
-cd ../11.0
-./configure CFLAGS="-mmacosx-version-min=10.9" --host=arm64-apple-darwin17 --with-png=no --with-bzip2=no --with-zlib=no --with-harfbuzz=no
+cd ../freetype-2.11.0
+./configure CFLAGS="-mmacosx-version-min=10.9" --host=aarch64-apple-darwin20.1 --with-png=no --with-bzip2=no --with-zlib=no --with-harfbuzz=no
 make -j4
 cp objs/.libs/libfreetype.6.dylib ..
 
 cd ../sqlite-autoconf-3360000
-./configure --host=arm64-apple-darwin17 CFLAGS="-fPIC -DSQLITE_OMIT_LOAD_EXTENSION"
+./configure --host=aarch64-apple-darwin20.1 CFLAGS="-fPIC -DSQLITE_OMIT_LOAD_EXTENSION"
 make -j4
 cp .libs/libsqlite3.0.dylib ..
 
 cd ../x264-master
-AS=nasm CFLAGS="-mmacosx-version-min=10.9 -I/usr/arm64-apple-darwin17/include" LDFLAGS="-L/usr/arm64-apple-darwin17/lib" ./configure --enable-static --disable-cli --disable-gpl --disable-avs --disable-swscale --disable-lavf --disable-ffms --disable-gpac --disable-lsmash --disable-interlaced --host=arm64-apple-darwin17 --prefix=/usr/arm64-apple-darwin17 --cross-prefix=arm64-apple-darwin17-
+CFLAGS="-mmacosx-version-min=10.9 -I/usr/aarch64-apple-darwin20.1/include" LDFLAGS="-L/usr/aarch64-apple-darwin20.1/lib" ./configure --enable-static --disable-cli --disable-gpl --disable-avs --disable-swscale --disable-lavf --disable-ffms --disable-gpac --disable-lsmash --disable-interlaced --host=aarch64-apple-darwin20.1 --prefix=/usr/aarch64-apple-darwin20.1 --cross-prefix=aarch64-apple-darwin20.1-
 make -j4
 
 cd ../ffmpeg-4.4
-./configure --disable-all --disable-appkit --disable-bzlib --disable-avfoundation --disable-coreimage --disable-securetransport --disable-audiotoolbox --disable-cuda-llvm --disable-videotoolbox --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-cxxflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-ldflags="-L../x264-master" --arch=x86_64 --target_os=darwin --cross-prefix=arm64-apple-darwin17- --disable-static --enable-shared --cc=$CC --cxx=$CXX
+./configure --disable-all --disable-appkit --disable-bzlib --disable-avfoundation --disable-coreimage --disable-securetransport --disable-audiotoolbox --disable-cuda-llvm --disable-videotoolbox --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-cxxflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-ldflags="-L../x264-master" --arch=aarch64 --target_os=darwin --cross-prefix=aarch64-apple-darwin20.1- --disable-static --enable-shared --cc=$CC --cxx=$CXX
 make -j4
 cp libavcodec/libavcodec.58.dylib libavformat/libavformat.58.dylib libavutil/libavutil.56.dylib libswresample/libswresample.3.dylib libswscale/libswscale.5.dylib ..
 
 cd ../libwebsockets-4.2-stable
-# own cross-osx.cmake
-cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-osx.cmake -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
+# own contrib/cross-macos-arm.cmake
+cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-macos-arm.cmake -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
 make -j4
 cp lib/libwebsockets.18.dylib ..
 
 cd ../libpng-1.6.37
-./configure --host=arm64-apple-darwin17
+./configure --host=aarch64-apple-darwin20.1
 make -j4
 cp .libs/libpng16.16.dylib ..
