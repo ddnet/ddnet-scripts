@@ -47,28 +47,35 @@ build_source ()
 
 build_macos ()
 {
-  rm -rf macos$1
-  mkdir macos$1
-  cd macos$1
+  ARCH=$1
+  SUFFIX=$2
+  FLAGS=$3
+  rm -rf macos$SUFFIX-$ARCH
+  mkdir macos$SUFFIX-$ARCH
+  cd macos$SUFFIX-$ARCH
   PATH=${PATH:+$PATH:}/home/deen/git/osxcross/target/bin
   eval `osxcross-conf`
   export OSXCROSS_OSX_VERSION_MIN=10.9
-  cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DDISCORD=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX10.13.sdk/ $(echo $2) ../ddnet-source
+  cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DDISCORD=OFF -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin-$ARCH.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX11.0.sdk/ $(echo $FLAGS) ../ddnet-source
+  #cmake -DVERSION=$VERSION -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DDISCORD=OFF -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX11.0.sdk/ $(echo $2) ../ddnet-source
+  #cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DDISCORD=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX11.0.sdk/ $(echo $2) ../ddnet-source
   make -j2 package_default
 }
 
 build_macos_website ()
 {
-  build_macos "" $UPDATE_FLAGS_MACOSX
-  mv DDNet-*.dmg $BUILDS/DDNet-$VERSION-macos.dmg
+  ARCH=$1
+  build_macos $ARCH "" $UPDATE_FLAGS_MACOSX
+  mv DDNet-*.dmg $BUILDS/DDNet-$VERSION-macos-$ARCH.dmg
   cd ..
   rm -rf macos
 }
 
 build_macos_steam ()
 {
-  build_macos -steam "-DSTEAM=ON"
-  mv DDNet-*.dmg ../DDNet-$VERSION-steam-macos.dmg
+  ARCH=$1
+  build_macos $ARCH -steam "-DSTEAM=ON"
+  mv DDNet-*.dmg ../DDNet-$VERSION-steam-macos-$ARCH.dmg
   cd ..
   rm -rf macos-steam
 }
@@ -102,10 +109,10 @@ build_linux ()
 
   chroot . sh -c "cd ddnet-source && \
     cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DDISCORD=$DISCORD -DDISCORD_DYNAMIC=$DISCORD -DWEBSOCKETS=OFF $(echo $UPDATE_FLAGS) -DPREFER_BUNDLED_LIBS=ON && \
-    make -j2 package_default"
+    make -j1 package_default"
   chroot . sh -c "cd ddnet-source-steam && \
     cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DDISCORD=$DISCORD -DDISCORD_DYNAMIC=$DISCORD -DWEBSOCKETS=OFF -DSTEAM=ON -DPREFER_BUNDLED_LIBS=ON && \
-    make -j2 package_default"
+    make -j1 package_default"
   mv ddnet-source/DDNet-*.tar.xz $BUILDS/DDNet-$VERSION-linux_$PLATFORM.tar.xz
   mv ddnet-source-steam/DDNet-*.tar.xz ../DDNet-$VERSION-steam-linux_$PLATFORM.tar.xz
 
@@ -126,7 +133,7 @@ build_windows ()
   mkdir $DIR
   cd $DIR
   cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DDISCORD=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain $(echo $BUILDOPTS) ../ddnet-source
-  make -j2 package_default
+  make -j1 package_default
   unset PREFIX \
     TARGET_FAMILY TARGET_PLATFORM TARGET_ARCH
 }
@@ -164,7 +171,8 @@ unzip -q libs.zip
 rm -rf ddnet-source/ddnet-libs
 mv $LIBS_REPO_NAME-$LIBS_REPO_BRANCH ddnet-source/ddnet-libs
 
-(build_macos_website; build_macos_steam) &> builds/mac.log &
+(build_macos_website x86_64; build_macos_steam x86_64) &> builds/mac_x86_64.log &
+(build_macos_website arm64; build_macos_steam arm64) &> builds/mac_arm64.log &
 
 build_linux x86_64 $BUILDDIR/debian6 &> builds/linux_x86_64.log &
 CFLAGS=-m32 LDFLAGS=-m32 build_linux x86 $BUILDDIR/debian6_x86 &> builds/linux_x86.log &
@@ -225,7 +233,7 @@ cp $BUILDDIR/steamworks/sdk/redistributable_bin/linux32/libsteam_api.so ddnet
 zip -9r DDNet-$VERSION-linux_x86.zip ddnet
 rm -r ddnet
 
-7z x ../DDNet-$VERSION-steam-macos.dmg
+7z x ../DDNet-$VERSION-steam-macos-x86_64.dmg
 rm -r DDNet-*-macos/DDNet.app/Contents/Resources/data DDNet-*-macos/DDNet-Server.app/Contents/Resources/data
 mkdir ddnet
 mv DDNet-*-macos/DDNet.app/Contents/MacOS/DDNet DDNet-*-macos/DDNet-Server.app/Contents/MacOS/DDNet-Server* ddnet
