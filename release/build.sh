@@ -56,10 +56,12 @@ build_macos ()
   PATH=${PATH:+$PATH:}/home/deen/git/osxcross/target/bin
   eval `osxcross-conf`
   export OSXCROSS_OSX_VERSION_MIN=10.9
-  cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DDISCORD=OFF -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin-$ARCH.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX11.0.sdk/ $(echo $FLAGS) ../ddnet-source
-  #cmake -DVERSION=$VERSION -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DDISCORD=OFF -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX11.0.sdk/ $(echo $2) ../ddnet-source
-  #cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DDISCORD=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX11.0.sdk/ $(echo $2) ../ddnet-source
-  make -j2 package_default
+  if [ "$ARCH" = "fat" ]; then
+    cmake -DVERSION=$VERSION -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DDISCORD=OFF -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin-arm64.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX11.0.sdk/ $(echo $FLAGS) ../ddnet-source
+  else
+    cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DDISCORD=OFF -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin-$ARCH.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX11.0.sdk/ $(echo $FLAGS) ../ddnet-source
+  fi
+  make -j1 package_default
 }
 
 build_macos_website ()
@@ -173,6 +175,7 @@ mv $LIBS_REPO_NAME-$LIBS_REPO_BRANCH ddnet-source/ddnet-libs
 
 (build_macos_website x86_64; build_macos_steam x86_64) &> builds/mac_x86_64.log &
 (build_macos_website arm64; build_macos_steam arm64) &> builds/mac_arm64.log &
+(build_macos_website fat; build_macos_steam fat) &> builds/mac_fat.log &
 
 build_linux x86_64 $BUILDDIR/debian6 &> builds/linux_x86_64.log &
 CFLAGS=-m32 LDFLAGS=-m32 build_linux x86 $BUILDDIR/debian6_x86 &> builds/linux_x86.log &
