@@ -532,5 +532,11 @@ cp .libs/libpng16.16.dylib ..
 mkdir libfat; for i in lib64/*.dylib; do lipo -create $i libarm64/${i:t} -output libfat/${i:t}; done
 mkdir libfat; for i in lib64/*.a; do lipo -create $i libarm64/${i:t} -output libfat/${i:t}; done
 
+# Fix output paths in shared libs
+otool -L $i
+install_name_tool -id ...
+install_name_tool -change ...
+# TODO: Can this be done automatically by setting --prefix=@rpath?
+
 # sign all arm64 and fat dylibs using codesign on macOS (until https://github.com/thefloweringash/sigtool/issues/8 is fixed, then we can automate it on Linux)
 for i in **/libarm64/*.dylib **/libfat/*.dylib mac/libarm64/SDL2.framework mac/libfat/SDL2.framework; do codesign -s - $i; done
