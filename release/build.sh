@@ -97,7 +97,8 @@ build_remote_macos_website ()
 build_remote_macos_steam ()
 {
   build_remote_macos -steam "-DSTEAM=ON"
-  scp deen@si:macos-steam/DDNet-\*.dmg DDNet-$VERSION-steam-macos.dmg
+  rm -rf DDNet-$VERSION-steam-macos
+  scp -r deen@si:macos-steam/pack_DDNet-\*_dmg DDNet-$VERSION-steam-macos
   ssh deen@si "rm -rf macos-steam"
 }
 
@@ -258,7 +259,8 @@ cp $BUILDDIR/steamworks/sdk/redistributable_bin/linux32/libsteam_api.so ddnet
 zip -9r DDNet-$VERSION-linux_x86.zip ddnet
 rm -r ddnet
 
-7z x ../DDNet-$VERSION-steam-macos.dmg
+#7z x ../DDNet-$VERSION-steam-macos.dmg
+cp -a ../DDNet-$VERSION-steam-macos .
 rm -r DDNet-*-macos/DDNet.app/Contents/Resources/data DDNet-*-macos/DDNet-Server.app/Contents/Resources/data
 mkdir ddnet
 mv DDNet-*-macos/DDNet.app/Contents/MacOS/DDNet DDNet-*-macos/DDNet-Server.app/Contents/MacOS/DDNet-Server* ddnet
