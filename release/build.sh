@@ -22,9 +22,9 @@ set -ex
 
 # Flags to pass to cmake when building a regular website build, Steam build is
 # always without autoupdater and without update info. For nightlies and RCs use:
-# UPDATE_FLAGS="-DAUTOUPDATE=OFF -DINFORM_UPDATE=OFF" UPDATE_FLAGS_MACOSX=-DINFORM_UPDATE=OFF
+# UPDATE_FLAGS="-DAUTOUPDATE=OFF -DINFORM_UPDATE=OFF" UPDATE_FLAGS_MACOS=-DINFORM_UPDATE=OFF
 UPDATE_FLAGS="${UPDATE_FLAGS:--DAUTOUPDATE=ON}"
-UPDATE_FLAGS_MACOSX="${UPDATE_FLAGS_MACOSX:-}"
+UPDATE_FLAGS_MACOS="${UPDATE_FLAGS_MACOS:-}"
 
 MAIN_REPO_USER="${MAIN_REPO_USER:-ddnet}"
 MAIN_REPO_NAME="${MAIN_REPO_NAME:-ddnet}"
@@ -47,39 +47,58 @@ build_source ()
 
 build_macos ()
 {
-  ARCH=$1
-  SUFFIX=$2
-  FLAGS=$3
-  rm -rf macos$SUFFIX-$ARCH
-  mkdir macos$SUFFIX-$ARCH
-  cd macos$SUFFIX-$ARCH
+  SUFFIX=$1
+  FLAGS=$2
+  rm -rf macos$SUFFIX
+  mkdir macos$SUFFIX
+  cd macos$SUFFIX
   PATH=${PATH:+$PATH:}/home/deen/git/osxcross/target/bin
   eval `osxcross-conf`
   export OSXCROSS_OSX_VERSION_MIN=10.9
-  if [ "$ARCH" = "fat" ]; then
-    cmake -DVERSION=$VERSION -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DDISCORD=OFF -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin-arm64.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX11.0.sdk/ $(echo $FLAGS) ../ddnet-source
-  else
-    cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DDISCORD=OFF -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin-$ARCH.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX11.0.sdk/ $(echo $FLAGS) ../ddnet-source
-  fi
+  cmake -DVERSION=$VERSION -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DDISCORD=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin-arm64.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX11.0.sdk/ $(echo $FLAGS) ../ddnet-source
   make -j1 package_default
 }
 
 build_macos_website ()
 {
-  ARCH=$1
-  build_macos $ARCH "" $UPDATE_FLAGS_MACOSX
-  mv DDNet-*.dmg $BUILDS/DDNet-$VERSION-macos-$ARCH.dmg
+  build_macos "" $UPDATE_FLAGS_MACOS
+  mv DDNet-*.dmg $BUILDS/DDNet-$VERSION-macos.dmg
   cd ..
   rm -rf macos
 }
 
 build_macos_steam ()
 {
-  ARCH=$1
-  build_macos $ARCH -steam "-DSTEAM=ON"
-  mv DDNet-*.dmg ../DDNet-$VERSION-steam-macos-$ARCH.dmg
+  build_macos -steam "-DSTEAM=ON"
+  mv DDNet-*.dmg ../DDNet-$VERSION-steam-macos.dmg
   cd ..
   rm -rf macos-steam
+}
+
+build_remote_macos ()
+{
+  SUFFIX=$1
+  FLAGS=$2
+  ssh deen@si "rm -rf macos$SUFFIX && \
+  mkdir macos$SUFFIX && \
+  cd macos$SUFFIX && \
+  /opt/homebrew/bin/cmake -DVERSION=$VERSION -DCMAKE_OSX_ARCHITECTURES=\"arm64;x86_64\" -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DDISCORD=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON $(echo $FLAGS) ../ddnet-source && \
+  make -j10 package_default
+  "
+}
+
+build_remote_macos_website ()
+{
+  build_remote_macos "" $UPDATE_FLAGS_MACOS
+  scp deen@si:macos/DDNet-\*.dmg $BUILDS/DDNet-$VERSION-macos.dmg
+  ssh deen@si "rm -rf macos"
+}
+
+build_remote_macos_steam ()
+{
+  build_remote_macos -steam "-DSTEAM=ON"
+  scp deen@si:macos-steam/DDNet-\*.dmg DDNet-$VERSION-steam-macos.dmg
+  ssh deen@si "rm -rf macos-steam"
 }
 
 build_linux ()
@@ -172,10 +191,13 @@ build_source &
 unzip -q libs.zip
 rm -rf ddnet-source/ddnet-libs
 mv $LIBS_REPO_NAME-$LIBS_REPO_BRANCH ddnet-source/ddnet-libs
+ssh deen@si "rm -rf ddnet-source"
+rsync -avzP ddnet-source deen@si:
 
-(build_macos_website x86_64; build_macos_steam x86_64) &> builds/mac_x86_64.log &
-(build_macos_website arm64; build_macos_steam arm64) &> builds/mac_arm64.log &
-(build_macos_website fat; build_macos_steam fat) &> builds/mac_fat.log &
+# Can't cross-compiler currently since macOS with arm is stricter with unsigned
+# binaries and signing doesn't work. Temporarily use build from macOS:
+(build_remote_macos_website; build_remote_macos_steam) &> builds/mac.log &
+#(build_macos_website; build_macos_steam) &> builds/mac.log &
 
 build_linux x86_64 $BUILDDIR/debian6 &> builds/linux_x86_64.log &
 CFLAGS=-m32 LDFLAGS=-m32 build_linux x86 $BUILDDIR/debian6_x86 &> builds/linux_x86.log &
@@ -236,7 +258,7 @@ cp $BUILDDIR/steamworks/sdk/redistributable_bin/linux32/libsteam_api.so ddnet
 zip -9r DDNet-$VERSION-linux_x86.zip ddnet
 rm -r ddnet
 
-7z x ../DDNet-$VERSION-steam-macos-x86_64.dmg
+7z x ../DDNet-$VERSION-steam-macos.dmg
 rm -r DDNet-*-macos/DDNet.app/Contents/Resources/data DDNet-*-macos/DDNet-Server.app/Contents/Resources/data
 mkdir ddnet
 mv DDNet-*-macos/DDNet.app/Contents/MacOS/DDNet DDNet-*-macos/DDNet-Server.app/Contents/MacOS/DDNet-Server* ddnet
@@ -247,6 +269,7 @@ zip -9r DDNet-$VERSION-macos.zip ddnet Frameworks
 rm -r ddnet Frameworks DDNet-*-macos
 
 rm -rf ddnet-source
+ssh deen@si "rm -rf ddnet-source"
 
 NOW=$(date +'%F %R')
 echo "Finished build of $VERSION at $NOW"
