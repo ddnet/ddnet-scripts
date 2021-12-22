@@ -7,7 +7,6 @@ import re
 import os
 import gc
 import os.path
-import math
 from cgi import escape
 from datetime import date, datetime, timedelta
 from collections import namedtuple, defaultdict
@@ -78,28 +77,6 @@ pointsDict = {
   'Race':      (2, 0),
   'Fun':       (0, 0),
 }
-
-def getRankPointsFn(topFinishes, median):
-  if len(topFinishes) == 0:
-    return None
-  top = topFinishes[0][2]
-  if len(topFinishes) == 1 or median == top:
-    def rankPoints(time):
-      return 100
-    return rankPoints
-  second = topFinishes[1][2]
-  tenth = topFinishes[9 if len(topFinishes) > 9 else (len(topFinishes) - 1)][2]
-  def ratio(x):
-    return (x - top) / (median - top)
-  l = math.log(10) / ratio(tenth) if ratio(tenth) != 0 else 100
-  def rankPoints(time):
-    try:
-      points = math.floor(100 * math.exp(-l * ratio(time)))
-    except OverflowError:
-      points = 100
-    bonusPoints = math.floor(100 * (second / time - 1)) if time == top else 0
-    return points + bonusPoints
-  return rankPoints
 
 def lookupIp(ip):
   try:
@@ -374,10 +351,9 @@ def header(title, menu, header, refresh = False, stupidIncludes = False, otherIn
     <section>
     %s""" % (mbRefresh, mbIncludes, otherIncludes, title, menu, header)
 
-def printExactSoloRecords(recordName, className, topFinishes, medianTime, type, showServer = False):
+def printExactSoloRecords(recordName, className, topFinishes, showServer = False):
   string = u'<div class="block2 %s"><h4>%s:</h4>\n' % (className, recordName)
   if len(topFinishes) > 0:
-    rankPoints = getRankPointsFn(topFinishes, medianTime)
     string += '<table class="tight">\n'
     for f in topFinishes:
       if f[4] > 1:
@@ -385,17 +361,15 @@ def printExactSoloRecords(recordName, className, topFinishes, medianTime, type, 
       else:
         mbS = ""
       mbServer = '<td class="flag"><img src="/countryflags/%s.png" alt="%s" height="15"/></td>' % (f[5], f[5]) if showServer else ''
-      mbPts = "" if type == "Fun" else '<td class="rank">%d&nbsp;pts</td>' % rankPoints(f[2])
-      string += u'  <tr title="%s, %s, %d finish%s total"><td class="rank">%d.</td>%s<td class="time">%s</td>%s<td><a href="%s">%s</a></td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[4], mbS, f[0], mbPts, escape(formatTimeExact(f[2])), mbServer, escape(playerWebsite(u'%s' % f[1])), escape(f[1]))
+      string += u'  <tr title="%s, %s, %d finish%s total"><td class="rank">%d.</td><td class="time">%s</td>%s<td><a href="%s">%s</a></td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[4], mbS, f[0], escape(formatTimeExact(f[2])), mbServer, escape(playerWebsite(u'%s' % f[1])), escape(f[1]))
     string += '</table>\n'
   string += '</div>\n'
 
   return string
 
-def printSoloRecords(recordName, className, topFinishes, medianTime, type, showServer = False):
+def printSoloRecords(recordName, className, topFinishes, showServer = False):
   string = u'<div class="block2 %s"><h4>%s:</h4>\n' % (className, recordName)
   if len(topFinishes) > 0:
-    rankPoints = getRankPointsFn(topFinishes, medianTime)
     string += '<table class="tight">\n'
     for f in topFinishes:
       if f[4] > 1:
@@ -403,22 +377,19 @@ def printSoloRecords(recordName, className, topFinishes, medianTime, type, showS
       else:
         mbS = ""
       mbServer = '<td class="flag"><img src="/countryflags/%s.png" alt="%s" height="15"/></td>' % (f[5], f[5]) if showServer else ''
-      mbPts = "" if type == "Fun" else '<td class="rank">%d&nbsp;pts</td>' % rankPoints(f[2])
-      string += u'  <tr title="%s, %s, %d finish%s total"><td class="rank">%d.</td>%s<td class="time">%s</td>%s<td><a href="%s">%s</a></td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[4], mbS, f[0], mbPts, escape(formatTime(f[2])), mbServer, escape(playerWebsite(u'%s' % f[1])), escape(f[1]))
+      string += u'  <tr title="%s, %s, %d finish%s total"><td class="rank">%d.</td><td class="time">%s</td>%s<td><a href="%s">%s</a></td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[4], mbS, f[0], escape(formatTime(f[2])), mbServer, escape(playerWebsite(u'%s' % f[1])), escape(f[1]))
     string += '</table>\n'
   string += '</div>\n'
 
   return string
 
-def printTeamRecords(recordName, className, topFinishes, medianTime, type, showServer = False):
+def printTeamRecords(recordName, className, topFinishes, showServer = False):
   string = u'<div class="block2 %s"><h4>%s:</h4>\n' % (className, recordName)
   if len(topFinishes) > 0:
-    rankPoints = getRankPointsFn(topFinishes, medianTime)
     string += '<table class="tight">\n'
     for f in topFinishes:
       mbServer = '<td class="flag"><img src="/countryflags/%s.png" alt="%s" height="15"/></td>' % (f[4], f[4]) if showServer else ''
-      mbPts = "" if type == "Fun" else '<td class="rank">%d&nbsp;pts</td>' % rankPoints(f[2])
-      string += u'  <tr title="%s, %s"><td class="rank">%d.</td>%s<td class="time">%s</td>%s<td>%s</td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[0], mbPts, escape(formatTime(f[2])), mbServer, f[1])
+      string += u'  <tr title="%s, %s"><td class="rank">%d.</td><td class="time">%s</td>%s<td>%s</td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[0], escape(formatTime(f[2])), mbServer, f[1])
     string += '</table>\n'
   string += '</div>\n'
 
@@ -455,9 +426,9 @@ def printLadder(name, ranks, players, showFavServer, number = 10):
         except:
           favServer = 'UNK'
 
-        string += u'  <td class="rankglobal">%d.</td><td class="points">%d&nbsp;pts</td><td class="flag"><img src="/countryflags/%s.png" alt="%s" height="15"/></td><td><a href="%s">%s</a></td></tr>' % (currentRank, r[1], favServer, favServer, escape(playerWebsite(u'%s' % r[0])), escape(r[0]))
+        string += u'  <td class="rankglobal">%d.</td><td class="points">%d pts</td><td class="flag"><img src="/countryflags/%s.png" alt="%s" height="15"/></td><td><a href="%s">%s</a></td></tr>' % (currentRank, r[1], favServer, favServer, escape(playerWebsite(u'%s' % r[0])), escape(r[0]))
       else:
-        string += u'  <td class="rankglobal">%d.</td><td class="points">%d&nbsp;pts</td><td><a href="%s">%s</a></td></tr>' % (currentRank, r[1], escape(playerWebsite(u'%s' % r[0])), escape(r[0]))
+        string += u'  <td class="rankglobal">%d.</td><td class="points">%d pts</td><td><a href="%s">%s</a></td></tr>' % (currentRank, r[1], escape(playerWebsite(u'%s' % r[0])), escape(r[0]))
     string += '</table>\n'
   string += '</div>\n'
 

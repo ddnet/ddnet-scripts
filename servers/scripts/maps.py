@@ -253,14 +253,11 @@ with con:
 
     avgTime = ""
     finishTimes = ""
-    medianTime = None
-    teamMedianTime = None
 
     if countFinishes:
       query("select (select median(Time) over (partition by Map) from record_race where Map = '%s' %s limit 1), min(Timestamp), max(Timestamp), count(*), count(distinct Name) from record_race where Map = '%s' %s;" % (con.escape_string(originalMapName), mbCountry, con.escape_string(originalMapName), mbCountry))
       rows = cur.fetchall()
-      medianTime = rows[0][0]
-      avgTime = " (median time: %s)" % formatTime(medianTime)
+      avgTime = " (median time: %s)" % formatTime(rows[0][0])
       finishTimes = "first finish: %s, last finish: %s" % (escape(formatDate(rows[0][1])), escape(formatDate(rows[0][2])))
       finishTimes += ", total finishes: %d" % rows[0][3]
       countFinishes = rows[0][4]
@@ -274,11 +271,6 @@ with con:
         query("select count(record_teamrace.Name) from (record_teamrace join record_race on record_teamrace.Map = record_race.Map and record_teamrace.Name = record_race.Name and record_teamrace.Time = record_race.Time) where record_teamrace.Map = '%s' %s group by ID order by count(record_teamrace.Name) desc limit 1;" % (con.escape_string(originalMapName), mbCountry))
       rows = cur.fetchall()
       biggestTeam = "" if len(rows) == 0 else " (biggest team: %d)" % rows[0][0]
-
-      if biggestTeam:
-        query("select (select median(record_race.Time) over (partition by record_race.Map) from (record_teamrace join record_race on record_teamrace.Map = record_race.Map and record_teamrace.Name = record_race.Name and record_teamrace.Time = record_race.Time) where record_race.Map = '%s' %s limit 1), min(record_race.Timestamp), max(record_race.Timestamp), count(*), count(distinct record_race.Name) from (record_teamrace join record_race on record_teamrace.Map = record_race.Map and record_teamrace.Name = record_race.Name and record_teamrace.Time = record_race.Time) where record_race.Map = '%s' %s;" % (con.escape_string(originalMapName), mbCountry, con.escape_string(originalMapName), mbCountry))
-        rows = cur.fetchall()
-        teamMedianTime = rows[0][0]
 
     formattedMapName = escape(originalMapName)
     mbMapInfo = ""
@@ -305,7 +297,7 @@ with con:
 
     if type == "Solo" or type == "Race" or type == "Dummy":
       print >>out, u'<div class="block2 info"><p>%sDifficulty: %s, Points: %d<br/><a href="/mappreview/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span></p></div>' % (mbReleased, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(normalizedMapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime))
-      print >>out, printExactSoloRecords("Records", "records", ranks, medianTime, type, not country)
+      print >>out, printExactSoloRecords("Records", "records", ranks, not country)
     else:
       query("select count(distinct ID) from record_teamrace left join record_race on record_teamrace.Map = record_race.Map and record_teamrace.Name = record_race.Name and record_teamrace.Time = record_race.Time where record_teamrace.Map = '%s' %s" % (con.escape_string(originalMapName), mbCountry))
       rows = cur.fetchall()
@@ -316,8 +308,8 @@ with con:
         mbS = "s"
 
       print >>out, u'<div class="block2 info"><p>%sDifficulty: %s, Points: %d<br/><a href="/mappreview/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span><br/>%d team%s finished%s</p></div>' % (mbReleased, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(normalizedMapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime), countTeamFinishes, mbS, escape(biggestTeam))
-      print >>out, printTeamRecords("Team Records", "teamrecords", teamRanks, teamMedianTime, type, not country)
-      print >>out, printSoloRecords("Records", "records", ranks, medianTime, type, not country)
+      print >>out, printTeamRecords("Team Records", "teamrecords", teamRanks, not country)
+      print >>out, printSoloRecords("Records", "records", ranks, not country)
 
     print >>out, '<br>'
     print >>out, '</div>'
