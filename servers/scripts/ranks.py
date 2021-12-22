@@ -84,36 +84,30 @@ def printFooter():
       <p>
         Join team <strong>x</strong> using <strong>/team x</strong> and finish in it to earn a team record. The global and server wide team ranks are calculated from your team ranks:
       </p>
-      <table class="points">
-        <tr><td>1st place</td><td>25 points</td></tr>
-        <tr><td>2nd place</td><td>18 points</td></tr>
-        <tr><td>3rd place</td><td>15 points</td></tr>
-        <tr><td>4th place</td><td>12 points</td></tr>
-        <tr><td>5th place</td><td>10 points</td></tr>
-        <tr><td>6th place</td><td>8 points</td></tr>
-        <tr><td>7th place</td><td>6 points</td></tr>
-        <tr><td>8th place</td><td>4 points</td></tr>
-        <tr><td>9th place</td><td>2 points</td></tr>
-        <tr><td>10th place</td><td>1 point</td></tr>
-      </table>
+      <pre><code>Top time (x=0): 100 points
+Tenth best time: 10 points
+Median time (x=1): 0 points
+Inbetween (x between 0 and 1): Exponential decay: points(x) = floor(100 * e ^ (-λ * x))
+  x = (ten - top) / (median - top)
+  Calculate lambda based on tenth best time: λ = ln(10) / x
+  points(time) = floor(100 * e ^ (-λ * (time - top) / (median - top)))
+First rank bonus: X points for being X%% faster than next best time
+  floor(100 * (second / top - 1))</code></pre>
     </div>
     <div class="block2">
       <h3>Rank</h3>
       <p>
         Finish a map, no matter in which team, to earn a record. The global and server wide ranks are calculated from your ranks:
       </p>
-      <table class="points">
-        <tr><td>1st place</td><td>25 points</td></tr>
-        <tr><td>2nd place</td><td>18 points</td></tr>
-        <tr><td>3rd place</td><td>15 points</td></tr>
-        <tr><td>4th place</td><td>12 points</td></tr>
-        <tr><td>5th place</td><td>10 points</td></tr>
-        <tr><td>6th place</td><td>8 points</td></tr>
-        <tr><td>7th place</td><td>6 points</td></tr>
-        <tr><td>8th place</td><td>4 points</td></tr>
-        <tr><td>9th place</td><td>2 points</td></tr>
-        <tr><td>10th place</td><td>1 point</td></tr>
-      </table>
+      <pre><code>Top time (x=0): 100 points
+Tenth best time: 10 points
+Median time (x=1): 0 points
+Inbetween (x between 0 and 1): Exponential decay: points(x) = floor(100 * e ^ (-λ * x))
+  x = (ten - top) / (median - top)
+  Calculate lambda based on tenth best time: λ = ln(10) / x
+  points(time) = floor(100 * e ^ (-λ * (time - top) / (median - top)))
+First rank bonus: X points for being X%% faster than next best time
+  floor(100 * (second / top - 1))</code></pre>
     </div>
     <br/>
   </div>
@@ -252,11 +246,11 @@ with con:
 
       for row in rows:
         if row[1] != ID:
-          if currentPosition <= 10:
+          if currentPosition <= 100:
             fNames = []
             for name in names:
               fNames.append('<a href="%s">%s</a>' % (escape(playerWebsite(u'%s' % name)), escape(name)))
-            teamRanks.append((currentRank, joinNames(fNames), time, timestamp, foundCountry))
+            teamRanks.append((currentRank, joinNames(fNames), time, timestamp, foundCountry, names))
             names = []
 
           countTeamFinishes += 1
@@ -275,25 +269,20 @@ with con:
         if originalMapName not in players[row[0]].maps:
           players[row[0]].maps[originalMapName] = PlayerMap(currentRank, 0, 0, "2030-10-10 00:00:00", 0.0)
 
-        if currentPosition <= 10:
+        if currentPosition <= 100:
           time = row[2]
           timestamp = row[3]
           names.append(row[0])
           foundCountry = row[4] if row[4] else 'UNK'
 
-        if currentRank <= 10 and row[0] not in namesOnMap:
+        if currentRank <= 100 and row[0] not in namesOnMap:
           namesOnMap[row[0]] = True
 
-          if type != "Fun":
-            teamrankLadder[row[0]] += points(currentRank)
-            serverTeamrankLadder[row[0]] += points(currentRank)
-
-
-      if currentPosition <= 10 and time > 0:
+      if currentPosition <= 100 and time > 0:
         fNames = []
         for name in names:
           fNames.append('<a href="%s">%s</a>' % (escape(playerWebsite(u'%s' % name)), escape(name)))
-        teamRanks.append((currentRank, joinNames(fNames), time, timestamp, foundCountry))
+        teamRanks.append((currentRank, joinNames(fNames), time, timestamp, foundCountry, names))
 
       if time > 0:
         countTeamFinishes += 1
@@ -303,7 +292,7 @@ with con:
       countFinishes = 0
 
       try:
-        cur.execute("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, l.Server from (select * from record_race where Map = '%s' %s) as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp from record_race where Map = '%s' %s group by Name order by minTime ASC) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTime;" % (con.escape_string(originalMapName), mbCountry, con.escape_string(originalMapName), mbCountry))
+        cur.execute("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, l.Server from (select * from record_race where Map = '%s' %s) as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp from record_race where Map = '%s' %s group by Name order by minTime ASC) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTime, l.Name;" % (con.escape_string(originalMapName), mbCountry, con.escape_string(originalMapName), mbCountry))
         rows = cur.fetchall()
       except:
         traceback.print_exc()
@@ -350,11 +339,8 @@ with con:
           else:
             players[row[0]].servers[row[5]] += 1
 
-        if currentPosition <= 10:
+        if currentPosition <= 100:
           ranks.append((currentRank, row[0], row[1], row[2], row[3], row[5] if row[5] else 'UNK'))
-        if currentRank <= 10 and type != "Fun":
-          rankLadder[row[0]] += points(currentRank)
-          serverRankLadder[row[0]] += points(currentRank)
 
       if countTeamFinishes == 1:
         mbS = ""
@@ -368,12 +354,15 @@ with con:
 
       avgTime = ""
       finishTimes = ""
+      medianTime = None
+      teamMedianTime = None
 
       if countFinishes:
         try:
           cur.execute("select (select median(Time) over (partition by Map) from record_race where Map = '%s' %s limit 1), min(Timestamp), max(Timestamp) from record_race where Map = '%s' %s;" % (con.escape_string(originalMapName), mbCountry, con.escape_string(originalMapName), mbCountry))
           rows = cur.fetchall()
-          avgTime = " (median time: %s)" % formatTime(rows[0][0])
+          medianTime = rows[0][0]
+          avgTime = " (median time: %s)" % formatTime(medianTime)
           finishTimes = "first finish: %s, last finish: %s" % (escape(formatDate(rows[0][1])), escape(formatDate(rows[0][2])))
         except:
           pass
@@ -394,6 +383,9 @@ with con:
           cur.execute("select count(record_teamrace.Name) from (record_teamrace join record_race on record_teamrace.Map = record_race.Map and record_teamrace.Name = record_race.Name and record_teamrace.Time = record_race.Time) where record_teamrace.Map = '%s' %s group by ID order by count(record_teamrace.Name) desc limit 1;" % (con.escape_string(originalMapName), mbCountry))
         rows = cur.fetchall()
         biggestTeam = " (biggest team: %d)" % rows[0][0]
+        cur.execute("select median(record_race.Time) over (partition by record_race.Map) from (record_teamrace join record_race on record_teamrace.Map = record_race.Map and record_teamrace.Name = record_race.Name and record_teamrace.Time = record_race.Time) where record_race.Map = '%s' %s limit 1;" % (con.escape_string(originalMapName), mbCountry))
+        rows = cur.fetchall()
+        teamMedianTime = rows[0][0]
       except:
         pass
 
@@ -435,12 +427,31 @@ with con:
 
       if type == "Solo" or type == "Race" or type == "Dummy":
         mapsStrings[-1] += u'<div class="block2 info" id="map-%s"><h3 class="inline"><a href="%s">%s</a></h3><p class="inline">%s</p><p>%sDifficulty: %s, Points: %d<br/><a href="/mappreview/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span></p></div>\n' % (escape(mapName), mapWebsite(originalMapName, country), formattedMapName, mbMapperName, mbReleased, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime))
-        mapsStrings[-1] += printExactSoloRecords("Records", "records", ranks, not country)
+        mapsStrings[-1] += printExactSoloRecords("Records", "records", ranks[:10], medianTime, type, not country)
       else:
         mapsStrings[-1] += u'<div class="block2 info" id="map-%s"><h3 class="inline"><a href="%s">%s</a></h3><p class="inline">%s</p><p>%sDifficulty: %s, Points: %d<br/><a href="/mappreview/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span><br/>%d team%s finished%s</p></div>\n' % (escape(mapName), mapWebsite(originalMapName, country), formattedMapName, mbMapperName, mbReleased, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime), countTeamFinishes, mbS, escape(biggestTeam))
-        mapsStrings[-1] += printTeamRecords("Team Records", "teamrecords", teamRanks, not country)
-        mapsStrings[-1] += printSoloRecords("Records", "records", ranks, not country)
+        mapsStrings[-1] += printTeamRecords("Team Records", "teamrecords", teamRanks[:10], teamMedianTime, type, not country)
+        mapsStrings[-1] += printSoloRecords("Records", "records", ranks[:10], medianTime, type, not country)
+        if type != "Fun" and teamMedianTime:
+          getPoints = getRankPointsFn(ranks, teamMedianTime)
+          seenPlayers = set()
+          for rank in teamRanks:
+            points = getPoints(rank[2])
+            for player in rank[5]:
+              if player in seenPlayers:
+                continue
+              teamrankLadder[player] += points
+              serverTeamrankLadder[player] += points
+              seenPlayers.add(player)
+
       mapsStrings[-1] += '<br/>\n'
+
+      if type != "Fun" and medianTime:
+        getPoints = getRankPointsFn(ranks, medianTime)
+        for rank in ranks:
+          points = getPoints(rank[2])
+          rankLadder[rank[1]] += points
+          serverRankLadder[rank[1]] += points
 
     serverPointsRanks = sorted(serverPointsLadder.items(), key=lambda r: r[1], reverse=True)
     weeklyServerPointsRanks = sorted(weeklyServerPointsLadder.items(), key=lambda r: r[1], reverse=True)
