@@ -426,11 +426,6 @@ cd ../freetype-2.11.0
 make -j4
 cp objs/.libs/libfreetype.6.dylib ..
 
-cd ../sqlite-autoconf-3360000
-./configure --host=x86_64-apple-darwin20.1 CFLAGS="-fPIC -DSQLITE_OMIT_LOAD_EXTENSION"
-make -j4
-cp .libs/libsqlite3.0.dylib ..
-
 cd ../x264-master
 AS=nasm CFLAGS="-mmacosx-version-min=10.9 -I/usr/x86_64-apple-darwin20.1/include" LDFLAGS="-L/usr/x86_64-apple-darwin20.1/lib" ./configure --enable-static --disable-cli --disable-gpl --disable-avs --disable-swscale --disable-lavf --disable-ffms --disable-gpac --disable-lsmash --disable-interlaced --host=x86_64-apple-darwin20.1 --prefix=/usr/x86_64-apple-darwin20.1 --cross-prefix=x86_64-apple-darwin20.1-
 make -j4
@@ -502,11 +497,6 @@ cd ../freetype-2.11.0
 ./configure CFLAGS="-mmacosx-version-min=10.9" --host=aarch64-apple-darwin20.1 --with-png=no --with-bzip2=no --with-zlib=no --with-harfbuzz=no
 make -j4
 cp objs/.libs/libfreetype.6.dylib ..
-
-cd ../sqlite-autoconf-3360000
-./configure --host=aarch64-apple-darwin20.1 CFLAGS="-fPIC -DSQLITE_OMIT_LOAD_EXTENSION"
-make -j4
-cp .libs/libsqlite3.0.dylib ..
 
 cd ../x264-master
 CFLAGS="-mmacosx-version-min=10.9 -I/usr/aarch64-apple-darwin20.1/include" LDFLAGS="-L/usr/aarch64-apple-darwin20.1/lib" ./configure --enable-static --disable-cli --disable-gpl --disable-avs --disable-swscale --disable-lavf --disable-ffms --disable-gpac --disable-lsmash --disable-interlaced --host=aarch64-apple-darwin20.1 --prefix=/usr/aarch64-apple-darwin20.1 --cross-prefix=aarch64-apple-darwin20.1-
