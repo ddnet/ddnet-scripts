@@ -265,7 +265,6 @@ rm -r DDNet-*-macos/DDNet.app/Contents/Resources/data DDNet-*-macos/DDNet-Server
 mkdir ddnet
 mv DDNet-*-macos/DDNet.app/Contents/MacOS/DDNet DDNet-*-macos/DDNet-Server.app/Contents/MacOS/DDNet-Server* ddnet
 mv DDNet-*-macos/DDNet.app/Contents/Frameworks .
-cp -r DDNet-*-macos/DDNet-Server.app/Contents/Frameworks/* Frameworks
 cp $BUILDDIR/steamworks/sdk/redistributable_bin/osx/libsteam_api.dylib Frameworks
 zip -9r DDNet-$VERSION-macos.zip ddnet Frameworks
 rm -r ddnet Frameworks DDNet-*-macos
