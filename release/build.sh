@@ -79,7 +79,7 @@ build_remote_macos ()
 {
   SUFFIX=$1
   FLAGS=$2
-  ssh deen@si "export PATH=/opt/home/brew/bin:$PATH && rm -rf macos$SUFFIX && \
+  ssh deen@si "export PATH=/opt/homebrew/bin:$PATH && rm -rf macos$SUFFIX && \
   mkdir macos$SUFFIX && \
   cd macos$SUFFIX && \
   cmake -DVERSION=$VERSION -DCMAKE_OSX_ARCHITECTURES=\"arm64;x86_64\" -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DDISCORD=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON $(echo $FLAGS) ../ddnet-source && \
