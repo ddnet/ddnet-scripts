@@ -120,6 +120,28 @@ def printFooter():
   <p class="toggle">Refreshed: %s</p>
   </section>
   </article>
+  <script>
+  // Script to show dates using local timezone and locale.
+  $(document).ready(function () {
+    $("*[data-type='date']").each(function (i) {
+      const dateFormat = $(this).data("datefmt");
+      const date = new Date($(this).data("date"));
+
+      if (dateFormat === "time") {
+        $(this).text(
+          date.toLocaleTimeString(navigator.language, {
+            hour: "2-digit",
+            minute: "2-digit",
+          })
+        );
+      } else if (dateFormat === "date") {
+        $(this).text(date.toLocaleDateString());
+      } else if (dateFormat === "datetime") {
+        $(this).text(date.toLocaleString());
+      }
+    });
+  });
+  </script>
   </body>
 </html>""" % strftime("%Y-%m-%d %H:%M")
 
@@ -464,10 +486,11 @@ with con:
 
     for i, row in enumerate(rows):
       lastString += '<tr>' if i < 10 else '<tr class="allPoints" style="display: none">'
+      dateWithTz = escape(formatDateTimeTz(row[0]))
       if country:
-        lastString += '<td><span title="%s">%s</span>: <a href="%s">%s</a> by <a href="%s">%s</a> (%s)</td></tr>' % (escape(formatDate(row[0])), escape(formatDateShort(row[0])), mapWebsite(row[1], country), escape(row[1]), escape(playerWebsite(row[2])), escape(row[2]), escape(formatTime(row[3])))
+        lastString += '<td><span data-type="date" data-date="%s" data-datefmt="time" title="%s">%s</span>: <a href="%s">%s</a> by <a href="%s">%s</a> (%s)</td></tr>' % (dateWithTz, escape(formatDate(row[0])), escape(formatDateShort(row[0])), mapWebsite(row[1], country), escape(row[1]), escape(playerWebsite(row[2])), escape(row[2]), escape(formatTime(row[3])))
       else:
-        lastString += '<td><span title="%s">%s</span>: <img src="/countryflags/%s.png" alt="%s" height="15"/> <a href="%s">%s</a> by <a href="%s">%s</a> (%s)</td></tr>' % (escape(formatDate(row[0])), escape(formatDateShort(row[0])), row[4], row[4], mapWebsite(row[1], country), escape(row[1]), escape(playerWebsite(row[2])), escape(row[2]), escape(formatTime(row[3])))
+        lastString += '<td><span data-type="date" data-date="%s" data-datefmt="time" title="%s">%s</span>: <img src="/countryflags/%s.png" alt="%s" height="15"/> <a href="%s">%s</a> by <a href="%s">%s</a> (%s)</td></tr>' % (dateWithTz, escape(formatDate(row[0])), escape(formatDateShort(row[0])), row[4], row[4], mapWebsite(row[1], country), escape(row[1]), escape(playerWebsite(row[2])), escape(row[2]), escape(formatTime(row[3])))
 
     lastString += '</table></div><br/>'
 
@@ -542,10 +565,11 @@ with con:
 
   for i, row in enumerate(rows):
     lastString += '<tr>' if i < 20 else '<tr class="allPoints" style="display: none">'
+    dateWithTz = escape(formatDateTimeTz(row[0]))
     if country:
-      lastString += '<td><span title="%s">%s</span>: <a href="%s/">%s</a>: <a href="%s">%s</a> by <a href="%s">%s</a> (%s)</td></tr>' % (escape(formatDate(row[0])), escape(formatDateShort(row[0])), row[5].lower(), row[5], mapWebsite(row[1], country), escape(row[1]), escape(playerWebsite(row[2])), escape(row[2]), escape(formatTime(row[3])))
+      lastString += '<td><span data-type="date" data-date="%s" data-datefmt="time" title="%s">%s</span>: <a href="%s/">%s</a>: <a href="%s">%s</a> by <a href="%s">%s</a> (%s)</td></tr>' % (dateWithTz, escape(formatDate(row[0])), escape(formatDateShort(row[0])), row[5].lower(), row[5], mapWebsite(row[1], country), escape(row[1]), escape(playerWebsite(row[2])), escape(row[2]), escape(formatTime(row[3])))
     else:
-      lastString += '<td><span title="%s">%s</span>: <img src="/countryflags/%s.png" alt="%s" height="15"/> <a href="%s/">%s</a>: <a href="%s">%s</a> by <a href="%s">%s</a> (%s)</td></tr>' % (escape(formatDate(row[0])), escape(formatDateShort(row[0])), row[4], row[4], row[5].lower(), row[5], mapWebsite(row[1], country), escape(row[1]), escape(playerWebsite(row[2])), escape(row[2]), escape(formatTime(row[3])))
+      lastString += '<td><span data-type="date" data-date="%s" data-datefmt="time" title="%s">%s</span>: <img src="/countryflags/%s.png" alt="%s" height="15"/> <a href="%s/">%s</a>: <a href="%s">%s</a> by <a href="%s">%s</a> (%s)</td></tr>' % (dateWithTz, escape(formatDate(row[0])), escape(formatDateShort(row[0])), row[4], row[4], row[5].lower(), row[5], mapWebsite(row[1], country), escape(row[1]), escape(playerWebsite(row[2])), escape(row[2]), escape(formatTime(row[3])))
 
   lastString += '</table></div><br/>'
 
