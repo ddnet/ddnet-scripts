@@ -257,8 +257,8 @@ def formatDateShort(date):
 def formatDateFeedStr(str):
   return timezone("Europe/Berlin").localize(datetime.strptime(str, "%Y-%m-%d %H:%M")).isoformat("T")
 
-def formatDateTimeTz(str):
-  return timezone("Europe/Berlin").localize(datetime.strptime(str, "%Y-%m-%d %H:%M:%S")).isoformat("T")
+def formatDateTimeTz(dt):
+  return timezone("Europe/Berlin").localize(dt).isoformat("T")
 
 def formatTimeMin(totalSeconds):
   return '%02d:%02d' % divmod(totalSeconds, 60)

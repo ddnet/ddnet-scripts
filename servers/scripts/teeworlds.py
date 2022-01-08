@@ -6,11 +6,11 @@
 #  This software is provided 'as-is', without any express or implied
 #  warranty.  In no event will the authors be held liable for any damages
 #  arising from the use of this software.
-#  
+#
 #  Permission is granted to anyone to use this software for any purpose,
 #  including commercial applications, and to alter it and redistribute it
 #  freely, subject to the following restrictions:
-#  
+#
 #  1. The origin of this software must not be misrepresented; you must not
 #     claim that you wrote the original software. If you use this software
 #     in a product, an acknowledgment in the product documentation would be
@@ -86,7 +86,7 @@ class MultiSocket(object):
   READ = 1
   WRITE = 2
   EXCEPTION = 4
-  
+
   def __init__(self, timeout=None, interval=0, port=None):
     self.sockets = {}
     self.queue_out = queue.Queue()
@@ -122,17 +122,17 @@ class MultiSocket(object):
       raise socket.timeout('select timed out')
     else:
       return ret
-  
+
   def sendto(self, data, address):
     if is_ipv6(address):
       if not self.has_ipv6: return 0
       return self.sockets[socket.AF_INET6].sendto(data, address)
     else:
       return self.sockets[socket.AF_INET].sendto(data, address)
-  
+
   def sendto_q(self, data, address, callback=None):
     self.queue_out.put((data, address, callback))
-  
+
   def recvfrom(self, len):
     try:
       s = self.sockets.values()
@@ -148,7 +148,7 @@ class MultiSocket(object):
     # in case if error 10054 just retry
     # TODO: might reach maximum recursion
     return self.recvfrom(len)
-  
+
   def process_queue(self, amount):
     for _ in range(amount):
       if not self.queue_out.empty():
@@ -166,7 +166,7 @@ class Handler(object):
       if hasattr(self, name) and getattr(self, name) != value:
         return False
     return True
-  
+
   def call(self, address, data):
     pass
 
@@ -174,23 +174,23 @@ class Handler(object):
 class HandlerStorage(object):
   def __init__(self):
     self.handlers = []
-  
+
   def add(self, handler):
     if isinstance(handler, list):
       self.handlers += handler
     else:
       self.handlers.append(handler)
-  
+
   def remove(self, handler):
     if isinstance(handler, list):
       for item in handler:
         self.handlers.remove(item)
     else:
       self.handlers.remove(handler)
-  
+
   def find(self, **kwargs):
     return [handler for handler in self.handlers if handler.match(**kwargs)]
-  
+
   def __repr__(self):
     return str(self.handlers)
 
@@ -201,7 +201,7 @@ class MasterServer(Handler):
   _packet_list_request = 10*b'\xff' + b'req2'
   _packet_list_response = 10*b'\xff' + b'lis2'
   _serveraddr_size = 18
-  
+
   def __init__(self, parent, address, name='none given'):
     self._parent = parent
     self._address = address
@@ -212,15 +212,15 @@ class MasterServer(Handler):
     self.latency = -1
     self.serverlist = ServerList()
     self.server_count = -1
-  
+
   def request(self):
     self.request_time = time.time()
     self._parent.socket.sendto_q(10 * b'\xff' + b'req2', self._address, self.request_callback)
     self.server_count = 0
-  
+
   def request_callback(self, request_time):
     self.request_time = request_time
-  
+
   def add_from_serverlist(self, data):
     if len(data) % self._serveraddr_size != 0:
       raise Exception("Address packet's size not multiple of the server " + \
@@ -241,21 +241,21 @@ class MasterServer(Handler):
       server.request()
       self._parent.serverlist.add(server)
       self.serverlist.add(server)
-  
+
   def call(self, address, data):
     count_header_len = len(self._packet_count_response)
     if data[0:count_header_len] == self._packet_count_response:
       self.latency = time.time() - self.request_time
       self.server_count += unpack('!H', data[count_header_len:count_header_len+2])[0]
     self.add_from_serverlist(data[len(self._packet_list_response):])
-  
+
   def match(self, **kwargs):
     if not kwargs.has_key("address") or kwargs["address"] != self._address:
       return False
     if not kwargs.has_key("data") or kwargs["data"][0:len(self._packet_list_response)] != self._packet_list_response:
       return False
     return True
-  
+
   def __repr__(self):
     return "<MasterServer name='{name}' address='{address}' servers='{servers}'>" \
       .format(name=self.name, address=self.address, servers=self.server_count)
@@ -265,7 +265,7 @@ class Server(Handler):
   _packet_request = 10*b'\xff' + b'gie3'
   _packet_response = 10*b'\xff' + b'inf3'
 
-  
+
   def __init__(self, parent, address, master=None):
     self._address = address
     self.address = ("[{host}]:{port}" if is_ipv6(address) else "{host}:{port}") \
@@ -275,7 +275,7 @@ class Server(Handler):
     self.data = None
     self.packets_received = 0
     self.reset()
-  
+
   def reset(self):
     self.latency = -1
     self.playerlist = PlayerList()
@@ -289,7 +289,7 @@ class Server(Handler):
     self.clients = -1
     self.max_clients = -1
     self.packets_received = 0
-  
+
   def request(self):
     #log('debug', "Server-ping to " + self.address)
     self.token = chr(randint(1,255))
@@ -297,15 +297,15 @@ class Server(Handler):
     self.request_time = time.time()
     self._parent.socket.sendto_q(self._packet_request + self.token, self._address, self.request_callback)
     self._parent.add_handler(self)
-  
+
   def request_callback(self, request_time):
     self.request_time = request_time
-  
+
   def call(self, address, data):
     #log('debug', "Server-callback hit from " + address)
     self.packets_received += 1
     self.parse(data[len(self.data):])
-  
+
   def parse(self, data):
     self.latency = time.time() - self.request_time
     data = iter(data.split(b'\x00'))
@@ -339,21 +339,24 @@ class Server(Handler):
           player.country = 0
         player.playing = (data.next()=='1')
         player.server = self
-        self.playerlist.add(player)
+        # Only one player with same name possible, ignore all others. There is
+        # currently a bug on Chile where each packet is received 5 times.
+        if not self.playerlist.contains(player.name):
+          self.playerlist.add(player)
     except StopIteration:
       self.reset()
       # Ignore this as it is caused by rate limit of info packets
       #log('warning', 'unexpected end of data for server ' + str(self))
     for player in self.playerlist:
       self._parent.playerlist.add(player)
-  
+
   def match(self, **kwargs):
     if not kwargs.has_key("address") or kwargs["address"] != self._address:
       return False
     if not kwargs.has_key("data") or kwargs["data"][0:len(self.data)] != self.data:
       return False
     return True
-  
+
   def __repr__(self):
     return "<Server name='{name}' address='{address}'>" \
       .format(name=self.name, address=self.address)
@@ -363,7 +366,7 @@ class Server64(Handler):
   _packet_request = 10*b'\xff' + b'fstd'
   _packet_response = 10*b'\xff' + b'dtsf'
 
-  
+
   def __init__(self, parent, address, master=None):
     self._address = address
     self.address = ("[{host}]:{port}" if is_ipv6(address) else "{host}:{port}") \
@@ -373,7 +376,7 @@ class Server64(Handler):
     self.data = None
     self.reset()
     self.packets_received = 0
-  
+
   def reset(self):
     self.latency = -1
     self.playerlist = PlayerList()
@@ -387,7 +390,7 @@ class Server64(Handler):
     self.clients = -1
     self.max_clients = -1
     self.packets_received = 0
-  
+
   def request(self):
     #log('debug', "Server-ping to " + self.address)
     self.token = chr(randint(1,255))
@@ -395,15 +398,15 @@ class Server64(Handler):
     self.request_time = time.time()
     self._parent.socket.sendto_q(self._packet_request + self.token, self._address, self.request_callback)
     self._parent.add_handler(self)
-  
+
   def request_callback(self, request_time):
     self.request_time = request_time
-  
+
   def call(self, address, data):
     #log('debug', "Server-callback hit from " + address)
     self.packets_received += 1
     self.parse(data[len(self.data):])
-  
+
   def parse(self, data):
     self.latency = time.time() - self.request_time
     data = iter(data.split(b'\x00'))
@@ -455,7 +458,10 @@ class Server64(Handler):
               player.score = 0
             player.playing = (data.next()=='1')
             player.server = self
-            self.playerlist.add(player)
+            # Only one player with same name possible, ignore all others. There is
+            # currently a bug on Chile where each packet is received 5 times.
+            if not self.playerlist.contains(player.name):
+              self.playerlist.add(player)
         except StopIteration:
           pass
     except StopIteration:
@@ -464,14 +470,14 @@ class Server64(Handler):
       #log('warning', 'unexpected end of data for server ' + str(self))
     for player in self.playerlist:
       self._parent.playerlist.add(player)
-  
+
   def match(self, **kwargs):
     if not kwargs.has_key("address") or kwargs["address"] != self._address:
       return False
     if not kwargs.has_key("data") or kwargs["data"][0:len(self.data)] != self.data:
       return False
     return True
-  
+
   def __repr__(self):
     return "<Server name='{name}' address='{address}'>" \
       .format(name=self.name, address=self.address)
@@ -485,7 +491,7 @@ class Player(object):
     self.score = None
     self.server = None
     self.playing = False
-  
+
   def __repr__(self):
     return "<Player name='{name}'>".format(name=self.name)
 
@@ -493,12 +499,12 @@ class Player(object):
 class ServerList(object):
   def __init__(self):
     self.servers = []
-  
+
   def add(self, server):
     if not isinstance(server, Server) and not isinstance(server, Server64):
       raise Exception('Trying to add non-Server object')
     self.servers.append(server)
-  
+
   def find(self, name=None, gametype=None, maxping=None):
     output = ServerList()
     if name: name = re.compile(name, re.IGNORECASE)
@@ -510,16 +516,16 @@ class ServerList(object):
         (gametype == None or gametype.search(server.gametype)):
         output.add(server)
     return output
-  
+
   def sort(self, cmp=None, key=None, reverse=False):
     self.servers = sorted(self.servers, cmp, key, reverse)
-  
+
   def reverse(self):
     self.players.reverse()
-  
+
   def __iter__(self):
     return iter(self.servers)
-  
+
   def __repr__(self):
     return str(self.servers)
 
@@ -532,12 +538,18 @@ class ServerList(object):
 class PlayerList(object):
   def __init__(self):
     self.players = []
-  
+
   def add(self, player):
     if not isinstance(player, Player):
       raise Exception('Trying to add non-Player-object')
     self.players.append(player)
-  
+
+  def contains(self, name=None):
+    for player in self.players:
+      if name == player.name:
+        return True
+    return False
+
   def find(self, name=None, clan=None, country=None, playing=None, server=None):
     output = PlayerList()
     if name: name = re.compile(name, re.IGNORECASE)
@@ -550,16 +562,16 @@ class PlayerList(object):
         (playing == None or player.playing == playing):
         output.add(player)
     return output
-  
+
   def sort(self, cmp=None, key=None, reverse=False):
     self.players = sorted(self.players, cmp, key, reverse)
-  
+
   def reverse(self):
     self.players.reverse()
-  
+
   def __iter__(self):
     return iter(self.players)
-  
+
   def __repr__(self):
     return str(self.players)
 
@@ -575,7 +587,7 @@ class Teeworlds(object):
     self.playerlist = PlayerList()
     self.masterlist = []
     self.socket = MultiSocket(timeout=0.001, port=6990)
-  
+
   def query_masters(self):
     masters = ["master{0}.teeworlds.com".format(i) for i in range(2, 4+1)]
     for mastername in masters:
@@ -592,7 +604,7 @@ class Teeworlds(object):
         master.request()
         self.add_handler(master)
         self.masterlist.append(master)
-  
+
   def run_loop(self):
     start_time = time.time()
     last_send = 0
@@ -627,7 +639,7 @@ class Teeworlds(object):
                 raise
       except socket.timeout:
         break
-  
+
   def add_handler(self, handler):
     # improve this
     if not isinstance(handler, Handler):

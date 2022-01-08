@@ -53,6 +53,7 @@ with con:
         data['pointsRanks'] = unpacker.unpack()
         data['weeklyPointsRanks'] = unpacker.unpack()
         data['monthlyPointsRanks'] = unpacker.unpack()
+        data['yearlyPointsRanks'] = unpacker.unpack()
         data['teamrankRanks'] = unpacker.unpack()
         data['rankRanks'] = unpacker.unpack()
         data['serverRanks'] = unpacker.unpack()
@@ -114,8 +115,10 @@ with con:
     print >>out, printPersonalResult("Team Rank", data['teamrankRanks'], name)
     print >>out, printPersonalResult("Rank", data['rankRanks'], name)
     print >>out, '<br/>'
+    print >>out, printPersonalResult("Points (last year)", data['yearlyPointsRanks'], name)
     print >>out, printPersonalResult("Points (last month)", data['monthlyPointsRanks'], name)
     print >>out, printPersonalResult("Points (last week)", data['weeklyPointsRanks'], name)
+    print >>out, '<br/>'
 
     try:
       favServer = max(player[1].iteritems(), key=itemgetter(1))[0]
@@ -127,7 +130,6 @@ with con:
     print >>out, '<div class="block2 ladder"><h3>Favorite Server</h3>\n<p class="pers-result"><img src="/countryflags/%s.png" alt="%s" height="20" /></p></div>' % (favServer, favServer)
 
     try:
-      print >>out, '<br/>'
       query("select Timestamp, Map, Time from record_race where Name = '%s' order by Timestamp limit 1;" % con.escape_string(name))
       rows = cur.fetchall()
       row = rows[0]

@@ -23,6 +23,7 @@ totalPoints = None
 pointsRanks = None
 weeklyPointsRanks = None
 monthlyPointsRanks = None
+yearlyPointsRanks = None
 teamrankRanks = None
 rankRanks = None
 serverRanks = None
@@ -35,6 +36,7 @@ with open('%s/players.msgpack' % webDir, 'rb') as inp:
   pointsRanks = unpacker.unpack()
   weeklyPointsRanks = unpacker.unpack()
   monthlyPointsRanks = unpacker.unpack()
+  yearlyPointsRanks = unpacker.unpack()
   teamrankRanks = unpacker.unpack()
   rankRanks = unpacker.unpack()
   serverRanks = unpacker.unpack()

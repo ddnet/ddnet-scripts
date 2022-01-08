@@ -129,7 +129,7 @@ def printFooter():
 
       if (dateFormat === "time") {
         $(this).text(
-          date.toLocaleTimeString(navigator.language, {
+          date.toLocaleTimeString(undefined, {
             hour: "2-digit",
             minute: "2-digit",
           })
@@ -152,6 +152,7 @@ teamrankLadder = defaultdict(int)
 pointsLadder = defaultdict(int)
 weeklyPointsLadder = defaultdict(int)
 monthlyPointsLadder = defaultdict(int)
+yearlyPointsLadder = defaultdict(int)
 players = {}
 maps = {}
 totalPoints = 0
@@ -201,6 +202,7 @@ with con:
     serverPointsLadder = defaultdict(int)
     weeklyServerPointsLadder = defaultdict(int)
     monthlyServerPointsLadder = defaultdict(int)
+    yearlyServerPointsLadder = defaultdict(int)
 
     f = open("types/%s/maps" % type.lower(), 'r')
 
@@ -359,6 +361,10 @@ with con:
           monthlyPointsLadder[row[0]] += globalPoints(type, stars)
           monthlyServerPointsLadder[row[0]] += globalPoints(type, stars)
 
+        if datetime.now() - timedelta(days=365) <= row[4]:
+          yearlyPointsLadder[row[0]] += globalPoints(type, stars)
+          yearlyServerPointsLadder[row[0]] += globalPoints(type, stars)
+
         if row[0] not in players:
           players[row[0]] = Player({}, {})
         if originalMapName not in players[row[0]].maps:
@@ -467,6 +473,7 @@ with con:
     serverPointsRanks = sorted(serverPointsLadder.items(), key=lambda r: r[1], reverse=True)
     weeklyServerPointsRanks = sorted(weeklyServerPointsLadder.items(), key=lambda r: r[1], reverse=True)
     monthlyServerPointsRanks = sorted(monthlyServerPointsLadder.items(), key=lambda r: r[1], reverse=True)
+    yearlyServerPointsRanks = sorted(yearlyServerPointsLadder.items(), key=lambda r: r[1], reverse=True)
     serverTeamrankRanks = sorted(serverTeamrankLadder.items(), key=lambda r: r[1], reverse=True)
     serverRankRanks = sorted(serverRankLadder.items(), key=lambda r: r[1], reverse=True)
 
@@ -494,6 +501,7 @@ with con:
 
     lastString += '</table></div><br/>'
 
+    serversString2 += printLadder("Points (last year)", yearlyServerPointsRanks, players, not country)
     serversString2 += printLadder("Points (last month)", monthlyServerPointsRanks, players, not country)
     serversString2 += printLadder("Points (last week)", weeklyServerPointsRanks, players, not country)
     serversString2 += lastString
@@ -583,6 +591,8 @@ weeklyPointsRanks = sorted(weeklyPointsLadder.items(), key=lambda r: r[1], rever
 del weeklyPointsLadder
 monthlyPointsRanks = sorted(monthlyPointsLadder.items(), key=lambda r: r[1], reverse=True)
 del monthlyPointsLadder
+yearlyPointsRanks = sorted(yearlyPointsLadder.items(), key=lambda r: r[1], reverse=True)
+del yearlyPointsLadder
 teamrankRanks = sorted(teamrankLadder.items(), key=lambda r: r[1], reverse=True)
 del teamrankLadder
 rankRanks = sorted(rankLadder.items(), key=lambda r: r[1], reverse=True)
@@ -620,6 +630,7 @@ print >>tf, printLadder("Points (%d total)" % totalPoints, pointsRanks, players,
 print >>tf, printLadder("Team Rank", teamrankRanks, players, not country, 20)
 print >>tf, printLadder("Rank", rankRanks, players, not country, 20)
 print >>tf, '<br/>'
+print >>tf, printLadder("Points (last year)", yearlyPointsRanks, players, not country, 20)
 print >>tf, printLadder("Points (last month)", monthlyPointsRanks, players, not country, 20)
 print >>tf, printLadder("Points (last week)", weeklyPointsRanks, players, not country, 20)
 print >>tf, lastString
@@ -639,6 +650,7 @@ if country == None:
     out.write(msgpack.packb(pointsRanks))
     out.write(msgpack.packb(weeklyPointsRanks))
     out.write(msgpack.packb(monthlyPointsRanks))
+    out.write(msgpack.packb(yearlyPointsRanks))
     out.write(msgpack.packb(teamrankRanks))
     out.write(msgpack.packb(rankRanks))
     out.write(msgpack.packb(serverRanks))
