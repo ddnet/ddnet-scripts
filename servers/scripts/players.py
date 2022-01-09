@@ -143,8 +143,8 @@ with con:
               break
           if type != '':
             break
-
-      print >>out, '<div class="block2 ladder"><h3>First Finish</h3>\n<p class="personal-result">%s: <a href="%s">%s</a> (%s)</p></div>' % (escape(formatDate(row[0])), mapWebsite(row[1]), escape(row[1]), escape(formatTime(row[2])))
+      dateWithTz = escape(formatDateTimeTz(row[0]))
+      print >>out, '<div class="block2 ladder"><h3>First Finish</h3>\n<p class="personal-result"><span data-type="date" data-date="%s" data-datefmt="datetime">%s</span>: <a href="%s">%s</a> (%s)</p></div>' % (dateWithTz, escape(formatDate(row[0])), mapWebsite(row[1]), escape(row[1]), escape(formatTime(row[2])))
     except:
       pass
 
@@ -203,8 +203,8 @@ with con:
             break
         if type != '':
           break
-
-      print >>out, '<tr><td>%s: <img src="/countryflags/%s.png" alt="%s" height="15"/> <a href="/ranks/%s/">%s</a>: <a href="%s">%s</a> (%s)</td></tr>' % (escape(formatDate(row[0])), row[3], row[3], row[4].lower(), row[4], mapWebsite(row[1]), escape(row[1]), escape(formatTime(row[2])))
+      dateWithTz = escape(formatDateTimeTz(row[0]))
+      print >>out, '<tr><td><span data-type="date" data-date="%s" data-datefmt="datetime">%s</span>: <img src="/countryflags/%s.png" alt="%s" height="15"/> <a href="/ranks/%s/">%s</a>: <a href="%s">%s</a> (%s)</td></tr>' % (dateWithTz, escape(formatDate(row[0])), row[3], row[3], row[4].lower(), row[4], mapWebsite(row[1]), escape(row[1]), escape(formatTime(row[2])))
 
     print >>out, '</table></div>'
 
@@ -332,8 +332,9 @@ with con:
 
     print >>out, """  </section>
   </article>
+  %s
   </body>
-  </html>"""
+  </html>""" % printDateTimeScript()
 
     #h = hpy()
     #print h.heap()
@@ -588,7 +589,8 @@ with con:
           timestamp = player[0][map][3]
           if isinstance(timestamp, str):
               timestamp = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
-          tblString += '<tr><td><a href="%s">%s</a></td><td class="smallpoints">%d</td><td class="rank">%s</td><td class="rank">%s</td><td class="rank">%s</td><td class="rank">%d</td><td class="rank">%s</td></tr>\n' % (mapWebsite(map), escape(map), points, formatRank(player[0][map][0]), formatRank(player[0][map][1]), escape(formatTimeMin(player[0][map][4])), player[0][map][2], escape(formatDate(timestamp)))
+          dateWithTz = escape(formatDateTimeTz(timestamp))
+          tblString += '<tr><td><a href="%s">%s</a></td><td class="smallpoints">%d</td><td class="rank">%s</td><td class="rank">%s</td><td class="rank">%s</td><td class="rank">%d</td><td class="rank"><span data-type="date" data-date="%s" data-datefmt="datetime">%s</span></td></tr>\n' % (mapWebsite(map), escape(map), points, formatRank(player[0][map][0]), formatRank(player[0][map][1]), escape(formatTimeMin(player[0][map][4])), player[0][map][2], dateWithTz, escape(formatDate(timestamp)))
         else:
           allFinished = False
           unfinishedString += '<tr><td><a href="%s">%s</a></td><td class="rank">%d</td><td class="rank">%d</td></tr>' % (mapWebsite(map), escape(map), points, finishes)
@@ -609,11 +611,12 @@ with con:
         print >>out, '</div>'
       print >>out, '</div>'
 
-    print >>out, """    <p class="toggle">Refreshed: %s</p>
+    generatedTime = datetime.fromtimestamp(last).strftime("%Y-%m-%d %H:%M:%S")
+    print >>out, """    <p class="toggle">Refreshed: <span data-type="date" data-date="%s" data-datefmt="datetime">%s</span></p>
     </section>
   </article>
   </body>
-  </html>""" % datetime.fromtimestamp(last).strftime("%Y-%m-%d %H:%M")
+  </html>""" % (generatedTime, generatedTime)
 
     #h = hpy()
     #print h.heap()

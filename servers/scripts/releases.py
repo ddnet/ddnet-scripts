@@ -14,8 +14,9 @@ def printFooter():
   return """
   </section>
   </article>
+  %s
   </body>
-</html>"""
+</html>""" % printDateTimeScript()
 
 rankLadder = {}
 teamrankLadder = {}
@@ -83,7 +84,8 @@ for x in releases:
     currentMapCount = 0
   currentMapCount += 1
 
-  mapsStrings[-1] += u'<div class="blockreleases release" id="map-%s"><h2 class="inline"><a href="/ranks/%s/">%s Server</a></h2><br/><h3 class="inline">%s</h3><br/><h3 class="inline"><a href="%s">%s</a></h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/mappreview/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/></p></div>\n' % (escape(mapName), server.lower(), server, date, mapWebsite(originalMapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(server, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo)
+  dateWithTz = escape(formatDateTimeTz(timestamp))
+  mapsStrings[-1] += u'<div class="blockreleases release" id="map-%s"><h2 class="inline"><a href="/ranks/%s/">%s Server</a></h2><br/><h3 class="inline" data-type="date" data-date="%s" data-datefmt="datetime">%s</h3><br/><h3 class="inline"><a href="%s">%s</a></h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/mappreview/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/></p></div>\n' % (escape(mapName), server.lower(), server, dateWithTz, date, mapWebsite(originalMapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(server, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo)
 
 for i, mapsString in enumerate(mapsStrings):
   if i == 0:

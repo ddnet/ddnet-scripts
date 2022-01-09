@@ -17,6 +17,7 @@ reload(sys)
 sys.setdefaultencoding('utf8')
 
 def printFooter():
+  generatedTime = strftime("%Y-%m-%d %H:%M:%S")
   return """
   <div id="points" class="block div-ranks">
     <div class="back-up"><a href="#top">&#8593;</a></div>
@@ -117,33 +118,12 @@ def printFooter():
     </div>
     <br/>
   </div>
-  <p class="toggle">Refreshed: %s</p>
+  <p class="toggle">Refreshed: <span data-type="date" data-date="%s" data-datefmt="datetime">%s</span></p>
   </section>
   </article>
-  <script>
-  // Script to show dates using local timezone and locale.
-  $(document).ready(function () {
-    $("*[data-type='date']").each(function (i) {
-      const dateFormat = $(this).data("datefmt");
-      const date = new Date($(this).data("date"));
-
-      if (dateFormat === "time") {
-        $(this).text(
-          date.toLocaleTimeString(undefined, {
-            hour: "2-digit",
-            minute: "2-digit",
-          })
-        );
-      } else if (dateFormat === "date") {
-        $(this).text(date.toLocaleDateString());
-      } else if (dateFormat === "datetime") {
-        $(this).text(date.toLocaleString());
-      }
-    });
-  });
-  </script>
+  %s
   </body>
-</html>""" % strftime("%Y-%m-%d %H:%M")
+</html>""" % (generatedTime, generatedTime, printDateTimeScript())
 
 con = mysqlConnect()
 
