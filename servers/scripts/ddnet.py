@@ -260,6 +260,11 @@ def formatDateFeedStr(str):
 def formatDateTimeTz(dt):
   return timezone("Europe/Berlin").localize(dt).isoformat("T")
 
+def formatDateTimeStrTz(str):
+  if str:
+    return formatDateTimeTz(datetime.strptime(str, "%Y-%m-%d %H:%M"))
+  return ""
+
 def formatTimeMin(totalSeconds):
   return '%02d:%02d' % divmod(totalSeconds, 60)
 
@@ -1016,32 +1021,4 @@ where lll.Map != "Nyan Cat" and record_maps.Server != "Fun" group by Name, Map, 
 
 def printDateTimeScript():
   """Requires jquery"""
-  print("""
-  <script>
-  // Script to show dates using local timezone and locale.
-  $(document).ready(function () {
-    $("*[data-type='date']").each(function (i) {
-      const dateFormat = $(this).data("datefmt");
-      const date = new Date($(this).data("date"));
-      const hasTitle = typeof $(this).attr('title') !== undefined && $(this).attr('title') !== false;
-
-      if (dateFormat === "time") {
-        const text = date.toLocaleTimeString(undefined, {
-            hour: "2-digit",
-            minute: "2-digit",
-          });
-        $(this).text(text);
-        if(hasTitle) $(this).attr('title', text);
-      } else if (dateFormat === "date") {
-        const text = date.toLocaleDateString();
-        $(this).text(text);
-        if(hasTitle) $(this).attr('title', text);
-      } else if (dateFormat === "datetime") {
-        const text = date.toLocaleString();
-        $(this).text(text);
-        if(hasTitle) $(this).attr('title', text);
-      }
-    });
-  });
-  </script>
-  """)
+  return '<script type="text/javascript" src="/localtime.js"></script>'

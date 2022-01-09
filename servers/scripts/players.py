@@ -615,8 +615,9 @@ with con:
     print >>out, """    <p class="toggle">Refreshed: <span data-type="date" data-date="%s" data-datefmt="datetime">%s</span></p>
     </section>
   </article>
+  %s
   </body>
-  </html>""" % (generatedTime, generatedTime)
+  </html>""" % (generatedTime, generatedTime, printDateTimeScript())
 
     #h = hpy()
     #print h.heap()
