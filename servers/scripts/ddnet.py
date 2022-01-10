@@ -37,17 +37,25 @@ webDir = "/var/www"
 htmlRanksPath = "/home/teeworlds/servers/scripts/discord-ranks.html"
 countries = ["NLD", "FRA", "GER", "POL", "RUS", "TUR", "IRN", "CHL", "BRA", "ARG", "USA", "CAN", "CHN", "KOR", "JAP", "SGP", "ZAF", "IND", "AUS", "OLD"]
 all_tiles = [
+  'THROUGH',
   'SOLO_START',
 
   'WEAPON_SHOTGUN',
   'WEAPON_GRENADE',
   'WEAPON_RIFLE',
   'POWERUP_NINJA',
+  'LASER_STOP',
+  'CRAZY_SHOTGUN',
+  'DRAGGER',
+  'DOOR',
 
   'DFREEZE',
   'EHOOK_START',
-  'HIT_START',
+  'HIT_END',
 
+  'TELE_GUN',
+  'TELE_GRENADE',
+  'TELE_LASER',
   'NPC_START',
   'NPH_START',
   'SUPER_START',
@@ -55,14 +63,9 @@ all_tiles = [
   'WALLJUMP',
   'JUMP',
 
-  'SWITCHTIMEDOPEN',
-  'SWITCHOPEN',
-
-  'TELEIN',
-  'TELEINEVIL',
-  'TELECHECKIN',
-  'TELEINWEAPON',
-  'TELEINHOOK'
+  'SWITCH_TIMED',
+  'SWITCH',
+  'STOP',
 ]
 
 pointsDict = {
@@ -113,22 +116,31 @@ def titleSubtype(type):
 
 def description(tile):
   return {
+    'THROUGH': 'Old Hookthrough',
     'DFREEZE' : 'Deep Freeze',
     'EHOOK_START': 'Endless Hook',
-    'HIT_START': 'No Hit',
+    'HIT_END': 'No Hit',
     'SOLO_START': 'Solo',
+    'TELE_GUN': 'Tele Gun',
+    'TELE_GRENADE': 'Tele Grenade',
+    'TELE_LASER': 'Tele Laser',
     'NPC_START': 'No Player Collision',
     'SUPER_START': 'Super Jumps',
     'JETPACK_START': 'Jetpack',
-    'WALLJUMP': 'WallJump',
+    'WALLJUMP': 'Walljump',
     'NPH_START': 'No Player Hook',
     'WEAPON_SHOTGUN': 'Shotgun',
     'WEAPON_GRENADE': 'Grenade',
     'POWERUP_NINJA': 'Ninja',
     'WEAPON_RIFLE': 'Rifle',
+    'LASER_STOP': 'Laser Stop',
+    'CRAZY_SHOTGUN': 'Crazy Shotgun',
+    'DRAGGER': 'Dragger',
+    'DOOR': 'Door',
     'JUMP': 'Customized Jumps',
-    'SWITCHTIMEDOPEN': 'Timed Switch',
-    'SWITCHOPEN': 'Switch',
+    'SWITCH_TIMED': 'Timed Switch',
+    'SWITCH': 'Switch',
+    'STOP': 'Stop',
     'TELEINEVIL': 'Evil Teleport',
     'TELEIN': 'Teleport',
     'TELECHECKIN': 'Checkpointed Teleport',
