@@ -1,7 +1,7 @@
 # Using a Debian 6 chroot, mingw and osxcross (with compiler-rt built)
 # DO NOT COPY libogg, extract directly... Changing timestamps breaks the build and requires autotools (or cp -a)
 
-wget http://libsdl.org/release/SDL2-2.0.18.tar.gz
+wget http://libsdl.org/release/SDL2-2.0.20.tar.gz
 wget https://patch-diff.githubusercontent.com/raw/libsdl-org/SDL/pull/4306.diff
 wget https://patch-diff.githubusercontent.com/raw/libsdl-org/SDL/pull/4683.diff
 wget https://curl.haxx.se/download/curl-7.79.0.tar.gz
@@ -25,7 +25,7 @@ cd x86-64
 tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
-tar xvf ../SDL2-2.0.18.tar.gz
+tar xvf ../SDL2-2.0.20.tar.gz
 tar xvf ../sqlite-autoconf-3360000.tar.gz
 tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-4.4.tar.gz
@@ -47,12 +47,12 @@ DEPS_LIBS="-lopus -logg -L/root/x86-64/opus-1.3.1/.libs/ -L/root/x86-64/libogg-1
 make -j4
 cp .libs/libopusfile.a ..
 
-cd ../SDL2-2.0.18
+cd ../SDL2-2.0.20
 patch -p1 < ../../4306.diff
 patch -p1 < ../../4683.diff
 ./configure --enable-ime CFLAGS=-fPIC --disable-video-wayland
 CFLAGS=-fPIC make -j4
-cp build/.libs/libSDL2-2.0.so.0.*.0 ../libSDL2-2.0.so.0
+cp build/.libs/libSDL2-2.0.so.0.*.* ../libSDL2-2.0.so.0
 strip -s ../libSDL2-2.0.so.0
 
 cd ../sqlite-autoconf-3360000
@@ -87,7 +87,7 @@ cd x86
 tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
-tar xvf ../SDL2-2.0.18.tar.gz
+tar xvf ../SDL2-2.0.20.tar.gz
 tar xvf ../sqlite-autoconf-3360000.tar.gz
 tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-4.4.tar.gz
@@ -109,7 +109,7 @@ CFLAGS=-m32 LDFLAGS=-m32 DEPS_LIBS="-lopus -logg -L/root/x86/opus-1.3.1/.libs/ -
 CFLAGS=-m32 LDFLAGS=-m32 make -j4
 cp .libs/libopusfile.a ..
 
-cd ../SDL2-2.0.18
+cd ../SDL2-2.0.20
 patch -p1 < ../../4306.diff
 patch -p1 < ../../4683.diff
 ./configure --enable-ime CFLAGS="-fPIC -m32" LDFLAGS=-m32 --disable-video-wayland
@@ -146,7 +146,7 @@ cd ../..
 
 mkdir win64
 cd win64
-tar xvf ../SDL2-2.0.18.tar.gz
+tar xvf ../SDL2-2.0.20.tar.gz
 tar xvf ../curl-7.79.0.tar.gz
 tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
@@ -158,7 +158,7 @@ tar xvf ../ffmpeg-4.4.tar.gz
 tar xvf ../v4.2-stable.tar.gz
 tar xvf ../libpng-1.6.37.tar.gz
 
-cd SDL2-2.0.18
+cd SDL2-2.0.20
 patch -p1 < ../../4306.diff
 patch -p1 < ../../4683.diff
 ./configure --host=x86_64-w64-mingw32 --enable-ime
@@ -262,7 +262,7 @@ cd ../..
 
 mkdir win32
 cd win32
-tar xvf ../SDL2-2.0.18.tar.gz
+tar xvf ../SDL2-2.0.20.tar.gz
 tar xvf ../curl-7.79.0.tar.gz
 tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
@@ -274,7 +274,7 @@ tar xvf ../ffmpeg-4.4.tar.gz
 tar xvf ../v4.2-stable.tar.gz
 tar xvf ../libpng-1.6.37.tar.gz
 
-cd SDL2-2.0.18
+cd SDL2-2.0.20
 patch -p1 < ../../4306.diff
 patch -p1 < ../../4683.diff
 ./configure --host=i686-w64-mingw32 --enable-ime
@@ -381,7 +381,7 @@ tar xvf ../curl-7.79.0.tar.gz
 tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
-tar xvf ../SDL2-2.0.18.tar.gz
+tar xvf ../SDL2-2.0.20.tar.gz
 tar xvf ../freetype-2.11.0.tar.gz
 tar xvf ../sqlite-autoconf-3360000.tar.gz
 tar xvf ../x264-master.tar.bz2
@@ -414,7 +414,7 @@ PKG_CONFIG=/usr/sbin/pkg-config DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/
 make -j4
 cp .libs/libopusfile.a ..
 
-cd ../SDL2-2.0.18
+cd ../SDL2-2.0.20
 patch -p1 < ../../4306.diff
 patch -p1 < ../../4683.diff
 ./configure --enable-ime CFLAGS="-mmacosx-version-min=10.9" --host=x86_64-apple-darwin20.1
@@ -453,7 +453,7 @@ tar xvf ../curl-7.79.0.tar.gz
 tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
-tar xvf ../SDL2-2.0.18.tar.gz
+tar xvf ../SDL2-2.0.20.tar.gz
 tar xvf ../freetype-2.11.0.tar.gz
 tar xvf ../sqlite-autoconf-3360000.tar.gz
 tar xvf ../x264-master.tar.bz2
@@ -486,7 +486,7 @@ PKG_CONFIG=/usr/sbin/pkg-config DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/
 make -j4
 cp .libs/libopusfile.a ..
 
-cd ../SDL2-2.0.18
+cd ../SDL2-2.0.20
 patch -p1 < ../../4306.diff
 patch -p1 < ../../4683.diff
 ./configure --enable-ime CFLAGS="-mmacosx-version-min=10.9" --host=aarch64-apple-darwin20.1
@@ -518,15 +518,16 @@ cd ../libpng-1.6.37
 make -j4
 cp .libs/libpng16.16.dylib ..
 
+# fix output paths in shared libs
+otool -L $i
+install_name_tool -id ...
+install_name_tool -id @rpath/SDL2.framework/Versions/A/SDL2 lib64/SDL2.framework/Versions/A/SDL2
+install_name_tool -change ...
+# TODO: Can this be done automatically by setting --prefix=@rpath?
+
 # create fat binaries for mac
 mkdir libfat; for i in lib64/*.dylib; do lipo -create $i libarm64/${i:t} -output libfat/${i:t}; done
 mkdir libfat; for i in lib64/*.a; do lipo -create $i libarm64/${i:t} -output libfat/${i:t}; done
-
-# Fix output paths in shared libs
-otool -L $i
-install_name_tool -id ...
-install_name_tool -change ...
-# TODO: Can this be done automatically by setting --prefix=@rpath?
 
 # sign all arm64 and fat dylibs using codesign on macOS (until https://github.com/thefloweringash/sigtool/issues/8 is fixed, then we can automate it on Linux)
 for i in **/libarm64/*.dylib **/libfat/*.dylib mac/libarm64/SDL2.framework mac/libfat/SDL2.framework; do codesign -s - $i; done
