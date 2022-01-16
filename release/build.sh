@@ -197,7 +197,7 @@ rsync -avzP ddnet-source deen@si:
 
 # Can't cross-compiler currently since macOS with arm is stricter with unsigned
 # binaries and signing doesn't work. Temporarily use build from macOS:
-(build_remote_macos_website; build_remote_macos_steam) &> builds/mac.log &
+(build_remote_macos_website; build_remote_macos_steam; ssh deen@si "rm -rf ddnet-source") &> builds/mac.log &
 #(build_macos_website; build_macos_steam) &> builds/mac.log &
 
 build_linux x86_64 $BUILDDIR/debian6 &> builds/linux_x86_64.log &
@@ -270,7 +270,6 @@ zip -9r DDNet-$VERSION-macos.zip ddnet Frameworks
 rm -r ddnet Frameworks DDNet-*-macos
 
 rm -rf ddnet-source
-ssh deen@si "rm -rf ddnet-source"
 
 NOW=$(date +'%F %R')
 echo "Finished build of $VERSION at $NOW"
