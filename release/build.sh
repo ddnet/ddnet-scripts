@@ -14,6 +14,8 @@ ionice -n 3 -p $$
 
 unset CC
 unset CXX
+CXXFLAGS_STEAM="-DDDNET_CHECKSUM_SALT=$(cat steam_salt)"
+CXXFLAGS_WEB="-DDDNET_CHECKSUM_SALT=$(cat web_salt)"
 PATH=$PATH:/usr/local/bin:/opt/android-sdk/build-tools/23.0.3:/opt/android-sdk/tools:/opt/android-ndk:/opt/android-sdk/platform-tools
 BUILDDIR=/home/deen/isos/ddnet
 BUILDS=$BUILDDIR/builds
@@ -61,7 +63,7 @@ build_macos ()
 
 build_macos_website ()
 {
-  build_macos "" $UPDATE_FLAGS_MACOS
+  CXXFLAGS=$CXXFLAGS_WEB build_macos "" $UPDATE_FLAGS_MACOS
   mv DDNet-*.dmg $BUILDS/DDNet-$VERSION-macos.dmg
   cd ..
   rm -rf macos
@@ -69,7 +71,7 @@ build_macos_website ()
 
 build_macos_steam ()
 {
-  build_macos -steam "-DSTEAM=ON"
+  CXXFLAGS=$CXXFLAGS_STEAM build_macos -steam "-DSTEAM=ON"
   mv DDNet-*.dmg ../DDNet-$VERSION-steam-macos.dmg
   cd ..
   rm -rf macos-steam
@@ -78,10 +80,12 @@ build_macos_steam ()
 build_remote_macos ()
 {
   SUFFIX=$1
-  FLAGS=$2
+  OUR_CXXFLAGS=$2
+  FLAGS=$3
   ssh deen@si "export PATH=/opt/homebrew/bin:$PATH && rm -rf macos$SUFFIX && \
   mkdir macos$SUFFIX && \
   cd macos$SUFFIX && \
+  export CXXFLAGS='$OUR_CXXFLAGS' && \
   cmake -DVERSION=$VERSION -DCMAKE_OSX_ARCHITECTURES=\"arm64;x86_64\" -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DDISCORD=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON $(echo $FLAGS) ../ddnet-source && \
   make -j10 package_default
   "
@@ -89,14 +93,14 @@ build_remote_macos ()
 
 build_remote_macos_website ()
 {
-  build_remote_macos "" $UPDATE_FLAGS_MACOS
+  build_remote_macos "" $CXXFLAGS_WEB $UPDATE_FLAGS_MACOS
   scp deen@si:macos/DDNet-\*.dmg $BUILDS/DDNet-$VERSION-macos.dmg
   ssh deen@si "rm -rf macos"
 }
 
 build_remote_macos_steam ()
 {
-  build_remote_macos -steam "-DSTEAM=ON"
+  build_remote_macos -steam $CXXFLAGS_STEAM "-DSTEAM=ON"
   rm -rf DDNet-$VERSION-steam-macos
   scp -r deen@si:macos-steam/pack_DDNet-\*_dmg DDNet-$VERSION-steam-macos
   ssh deen@si "rm -rf macos-steam"
@@ -130,9 +134,11 @@ build_linux ()
   fi
 
   chroot . sh -c "cd ddnet-source && \
+    export CXXFLAGS='$CXXFLAGS_WEB' && \
     cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DDISCORD=$DISCORD -DDISCORD_DYNAMIC=$DISCORD -DWEBSOCKETS=OFF $(echo $UPDATE_FLAGS) -DPREFER_BUNDLED_LIBS=ON && \
     make -j1 package_default"
   chroot . sh -c "cd ddnet-source-steam && \
+    export CXXFLAGS='$CXXFLAGS_STEAM' && \
     cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DDISCORD=$DISCORD -DDISCORD_DYNAMIC=$DISCORD -DWEBSOCKETS=OFF -DSTEAM=ON -DPREFER_BUNDLED_LIBS=ON && \
     make -j1 package_default"
   mv ddnet-source/DDNet-*.tar.xz $BUILDS/DDNet-$VERSION-linux_$PLATFORM.tar.xz
@@ -163,7 +169,7 @@ build_windows ()
 build_windows_website ()
 {
   PLATFORM=$1
-  build_windows $PLATFORM $UPDATE_FLAGS
+  CXXFLAGS="'$CXXFLAGS_WEB'" build_windows $PLATFORM $UPDATE_FLAGS
   mv DDNet-*.zip $BUILDS/DDNet-$VERSION-win$PLATFORM.zip
   cd ..
   rm -rf win$PLATFORM
@@ -172,7 +178,7 @@ build_windows_website ()
 build_windows_steam ()
 {
   PLATFORM=$1
-  build_windows $PLATFORM "-DSTEAM=ON" "-steam"
+  CXXFLAGS="'$CXXFLAGS_STEAM'" build_windows $PLATFORM "-DSTEAM=ON" "-steam"
   mv DDNet-*.zip ../DDNet-$VERSION-steam-win$PLATFORM.zip
   cd ..
   rm -rf win$PLATFORM-steam
