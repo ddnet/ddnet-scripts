@@ -162,7 +162,7 @@ build_windows ()
   cd $DIR
   cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=RelWithDebInfo -DVIDEORECORDER=ON -DDISCORD=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain -DCMAKE_DISABLE_FIND_PACKAGE_GTest=ON -DEXCEPTION_HANDLING=ON $(echo $BUILDOPTS) ../ddnet-source
   make -j1
-  XZ_OPT=-9 tar cfJ DDNet-$VERSION-win$PLATFORM$SUFFIX-symbols.tar.xz DDNet DDNet-Server
+  XZ_OPT=-9 tar cfJ DDNet-$VERSION-win$PLATFORM$SUFFIX-symbols.tar.xz DDNet.exe DDNet-Server.exe
   make -j1 package_default
   unset PREFIX \
     TARGET_FAMILY TARGET_PLATFORM TARGET_ARCH
