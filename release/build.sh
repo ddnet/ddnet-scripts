@@ -160,7 +160,9 @@ build_windows ()
   rm -rf $DIR
   mkdir $DIR
   cd $DIR
-  cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DDISCORD=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain -DCMAKE_DISABLE_FIND_PACKAGE_GTest=ON $(echo $BUILDOPTS) ../ddnet-source
+  cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=RelWithDebInfo -DVIDEORECORDER=ON -DDISCORD=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain -DCMAKE_DISABLE_FIND_PACKAGE_GTest=ON $(echo $BUILDOPTS) ../ddnet-source
+  make -j1
+  XZ_OPT=-9 tar cfJ DDNet-$VERSION-win$PLATFORM$SUFFIX-symbols.tar.xz DDNet DDNet-Server
   make -j1 package_default
   unset PREFIX \
     TARGET_FAMILY TARGET_PLATFORM TARGET_ARCH
@@ -171,6 +173,7 @@ build_windows_website ()
   PLATFORM=$1
   CXXFLAGS="'$CXXFLAGS_WEB'" build_windows $PLATFORM $UPDATE_FLAGS
   mv DDNet-*.zip $BUILDS/DDNet-$VERSION-win$PLATFORM.zip
+  mv DDNet-*-symbols.tar.xz $BUILDS/
   cd ..
   rm -rf win$PLATFORM
 }
@@ -180,6 +183,7 @@ build_windows_steam ()
   PLATFORM=$1
   CXXFLAGS="'$CXXFLAGS_STEAM'" build_windows $PLATFORM "-DSTEAM=ON" "-steam"
   mv DDNet-*.zip ../DDNet-$VERSION-steam-win$PLATFORM.zip
+  mv DDNet-*-symbols.tar.xz $BUILDS/
   cd ..
   rm -rf win$PLATFORM-steam
 }
