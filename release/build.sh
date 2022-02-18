@@ -210,8 +210,8 @@ rsync -avzP ddnet-source deen@si:
 (build_remote_macos_website; build_remote_macos_steam; ssh deen@si "rm -rf ddnet-source") &> builds/mac.log &
 #(build_macos_website; build_macos_steam) &> builds/mac.log &
 
-build_linux x86_64 $BUILDDIR/debian6 &> builds/linux_x86_64.log &
-CFLAGS=-m32 LDFLAGS=-m32 build_linux x86 $BUILDDIR/debian6_x86 &> builds/linux_x86.log &
+build_linux x86_64 $BUILDDIR/debian9 &> builds/linux_x86_64.log &
+CFLAGS=-m32 LDFLAGS=-m32 build_linux x86 $BUILDDIR/debian9_x86 &> builds/linux_x86.log &
 
 (TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
   PREFIX=x86_64-w64-mingw32- PATH=/usr/x86_64-w64-mingw32/bin:$PATH \
