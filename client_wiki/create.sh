@@ -9,6 +9,9 @@ cat src/**/{console,netban,server,gamecontext,engine}.cpp | grep "Register(" | g
 echo '== Server Settings =='
 cat ./**/{config_variables,variables}.h | "$DIR/settings.py" CFGFLAG_SERVER
 
+echo '== Econ Settings =='
+cat ./**/{config_variables,variables}.h | "$DIR/settings.py" CFGFLAG_ECON
+
 echo '== Server Commands =='
 (cat src/**/{console,netban,server,gamecontext,engine}.cpp | grep "Register(" | grep CFGFLAG_SERVER | grep -v "\\/\\/"; cat src/**/ddracecommands.h) | "$DIR/commands.py" CFGFLAG_SERVER
 
