@@ -38,12 +38,14 @@ else
 fi
 
 if [ "$1" = "nightly" ]; then
+  scp -q builds/DDNet-$VERSION*-symbols.tar.xz ddnet:/var/www/downloads/tmp
+  rm builds/DDNet-$VERSION*-symbols.tar.xz
   zmv -W "builds/DDNet-$VERSION*" "builds/DDNet-nightly*"
   scp -q builds/DDNet-nightly* ddnet:/var/www/downloads/tmp
-  ssh ddnet "mv /var/www/downloads/tmp/DDNet-nightly\*-symbols.tar.xz /var/www/downloads/symbols; mv /var/www/downloads/tmp/DDNet-nightly\* /var/www/downloads"
+  ssh ddnet "mv /var/www/downloads/tmp/DDNet-$VERSION*-symbols.tar.xz /var/www/downloads/symbols; mv /var/www/downloads/tmp/DDNet-nightly* /var/www/downloads"
 else
   scp -q builds/DDNet-$VERSION* ddnet:/var/www/downloads/tmp
-  ssh ddnet "mv /var/www/downloads/tmp/DDNet-$VERSION\*-symbols.tar.xz /var/www/downloads/symbols; mv /var/www/downloads/tmp/DDNet-$VERSION\* /var/www/downloads"
+  ssh ddnet "mv /var/www/downloads/tmp/DDNet-$VERSION*-symbols.tar.xz /var/www/downloads/symbols; mv /var/www/downloads/tmp/DDNet-$VERSION* /var/www/downloads"
 fi
 
 cd steam
