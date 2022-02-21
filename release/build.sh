@@ -135,10 +135,12 @@ build_linux ()
 
   chroot . sh -c "cd ddnet-source && \
     export CXXFLAGS=\"'$CXXFLAGS_WEB' -no-pie\" && \
+    export LDFLAGS=\"-no-pie\" && \
     cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DDISCORD=$DISCORD -DDISCORD_DYNAMIC=$DISCORD -DWEBSOCKETS=OFF $(echo $UPDATE_FLAGS) -DPREFER_BUNDLED_LIBS=ON && \
     make -j1 package_default"
   chroot . sh -c "cd ddnet-source-steam && \
     export CXXFLAGS=\"'$CXXFLAGS_STEAM' -no-pie\" && \
+    export LDFLAGS=\"-no-pie\" && \
     cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DVIDEORECORDER=ON -DDISCORD=$DISCORD -DDISCORD_DYNAMIC=$DISCORD -DWEBSOCKETS=OFF -DSTEAM=ON -DPREFER_BUNDLED_LIBS=ON && \
     make -j1 package_default"
   mv ddnet-source/DDNet-*.tar.xz $BUILDS/DDNet-$VERSION-linux_$PLATFORM.tar.xz
