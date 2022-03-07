@@ -17,7 +17,7 @@ NAME_SQL=`echo $NAME_UPPER | head -c3`
 
 apt-get -y update
 apt-get -y upgrade
-apt-get -y install bsdutils tree zsh vim htop git g++ libboost-dev python3-requests sshfs tcpdump gdb pkg-config ntpdate ntp mailutils msmtp msmtp-mta libssl-dev libmariadb-dev-compat libmariadb-dev libmysqlcppconn-dev cmake make unattended-upgrades apt-listchanges iptables-persistent libwebsockets-dev libcurl4-openssl-dev python3 python3-dnslib python3-cachetools dnsmasq strace dnsutils sqlite3 libsqlite3-dev mariadb-client rsync libreadline-dev binutils-dev libpcap-dev libnl-genl-3-dev dh-autoreconf conntrack ncdu iperf3 psmisc ethtool net-tools mtr-tiny adduser cron iptables wget screen libmaxminddb-dev unzip curl python2.7 python2
+apt-get -y install bsdutils tree zsh vim htop git g++ libboost-dev python3-requests sshfs tcpdump gdb pkg-config ntpdate ntp mailutils msmtp msmtp-mta libssl-dev libmariadb-dev-compat libmariadb-dev libmysqlcppconn-dev cmake make unattended-upgrades apt-listchanges iptables-persistent libwebsockets-dev libcurl4-openssl-dev python3 python3-dnslib python3-cachetools dnsmasq strace dnsutils sqlite3 libsqlite3-dev mariadb-client rsync libreadline-dev binutils-dev libpcap-dev libnl-genl-3-dev dh-autoreconf conntrack ncdu iperf3 psmisc ethtool net-tools mtr-tiny adduser cron iptables wget screen libmaxminddb-dev unzip curl python2.7 python2 curl screen
 
 hostnamectl set-hostname ddnet$NAME_LOWER
 addgroup teeworlds
@@ -31,12 +31,13 @@ iptables -t raw -A OUTPUT -p udp -j NOTRACK
 iptables -N serverinfo
 iptables -A INPUT -p udp -m u32 --u32 "38=0x67696533" -j serverinfo
 iptables -A INPUT -p udp -m u32 --u32 "38=0x66737464" -j serverinfo
+iptables -A INPUT -p udp -m u32 --u32 "32=0x544b454e" -j serverinfo
 iptables -A serverinfo -s 37.187.108.123 -j ACCEPT
 iptables -A serverinfo -m hashlimit --hashlimit-above 1000/s --hashlimit-burst 2500 --hashlimit-mode dstport --hashlimit-name si_dstport -j DROP
 iptables -A serverinfo -m hashlimit --hashlimit-above 20/s --hashlimit-burst 100 --hashlimit-mode srcip --hashlimit-name si_srcip -j DROP
 iptables -I INPUT -s 185.82.223.0/24 -j DROP
 iptables -A INPUT -p tcp -m tcp --sport 35601 -j ACCEPT
-iptables -A INPUT -s 127.0.0.1 -j ACCEPT # otherwise gpg in user sessions will fail to start, delaying ssh logins
+iptables -A INPUT -s 127.0.0.1 -j ACCEPT
 iptables -A INPUT -p tcp -m tcp -m conntrack -m multiport --ctstate NEW ! --dports 6546,22 -j DROP
 iptables-save > /etc/iptables.up.rules
 
