@@ -65,3 +65,5 @@ steamcmd +login deen_ddnet "$(cat pass)" +run_app_build /home/deen/isos/ddnet/st
 
 cd ..
 rm -rf builds/* DDNet-$VERSION* steam/*
+# steamcmd started overwriting/destroying my depot_build_*.vdf files
+cp steamcmd_orig/* steamcmd
