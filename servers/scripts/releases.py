@@ -110,7 +110,9 @@ for i, mapsString in enumerate(mapsStrings):
   print >>tf, '<script src="/mapsearch.js" type="text/javascript"></script>'
   print >>tf, '<a href="feed/"><img width="36" src="/feed.svg"/></a> You can subscribe to the feed to get updated about new map releases'
   print >>tf, '<p>Planned Map Releases are listed on <a href="https://discordapp.com/invite/85Vavs">Discord</a>. All DDNet maps can be download from <a href="https://github.com/ddnet/ddnet-maps">GitHub</a>, <a href="https://maps.ddnet.tw/compilations/">our compilations</a> or <a href="https://maps.ddnet.tw/">as single files</a>.</p>'
+  print >>tf, '<div class="flex-container">\n'
   print >>tf, mapsString
+  print >>tf, '</div>\n'
   print >>tf, '<span class="stretch"></span></div>'
 
   if len(mapsStrings) > 1:

@@ -78,6 +78,8 @@ for mapper, servers in mappers.iteritems():
     if type not in servers:
       continue
 
+    mapsString += '<div class="flex-container">\n'
+
     for (date, server, stars, originalMapName, mapperName) in servers[type]:
       if date == "2013-10-14 19:40":
         date = ""
@@ -113,6 +115,7 @@ for mapper, servers in mappers.iteritems():
 
       mapsString += u'<div class="blockreleases release" id="map-%s"><h3 class="inline">%s</h3><br/><h3 class="inline"><a href="%s">%s</a></h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/mappreview/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/></p></div>\n' % (escape(mapName), date, mapWebsite(originalMapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(server, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo)
 
+    mapsString += '</div>\n'
     mapsString += '<span class="stretch"></span></div>\n'
     serversString += mapsString
     serversString += '</div>\n'
