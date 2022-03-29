@@ -1,5 +1,4 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
 from ddnet import *
 import sys
@@ -11,21 +10,21 @@ reload(sys)
 sys.setdefaultencoding('utf8')
 
 def printFooter():
-  print """
+  print("""
   </section>
   </article>
   </body>
-</html>"""
+</html>""")
 
 def printTeamRecords2(recordName, className, topFinishes):
-  string = u'<div class="block4"><h4>%s:</h4>\n' % recordName
+  string = '<div class="block4"><h4>%s:</h4>\n' % recordName
   if len(topFinishes) > 0:
     string += '<table class="tight">\n'
     for f in topFinishes:
       # Best time wins
       #string += u'  <tr title="%s, %s"><td class="rank">%d.</td><td>%s</td><td><img src="/countryflags/%s.png" alt="%s" height="15" /></td><td>%s</td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[0], escape(formatTimeExact(f[2])), f[4], f[4], f[1])
       # First finish wins
-      string += u'  <tr title="%s, %s"><td class="rank">%d.</td><td>%s</td><td><img src="/countryflags/%s.png" alt="%s" height="15" /></td><td>%s</td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[0], escape(formatDate(f[3])), f[4], f[4], f[1])
+      string += '  <tr title="%s, %s"><td class="rank">%d.</td><td>%s</td><td><img src="/countryflags/%s.png" alt="%s" height="15" /></td><td>%s</td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[0], escape(formatDate(f[3])), f[4], f[4], f[1])
     string += '</table>\n'
   string += '</div>\n'
 
@@ -49,13 +48,14 @@ menuText = '<ul>\n'
 for type in types:
   menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type)
 menuText += '</ul>'
-print header("Quick Tournament #56 - DDraceNetwork", menuText, '<script src="/youtube.js" type="text/javascript"></script>')
+print(header("Quick Tournament #56 - DDraceNetwork", menuText, '<script src="/youtube.js" type="text/javascript"></script>'))
 
-f = open("tournament")
 tournamentMaps = []
-for line in f:
-  words = line.rstrip('\n').split('|')
-  tournamentMaps.append(tuple(words))
+
+with open("tournament") as f:
+  for line in f:
+    words = line.rstrip('\n').split('|')
+    tournamentMaps.append(tuple(words))
 
 with con:
   cur = con.cursor()
@@ -65,8 +65,6 @@ with con:
     serverRankLadder = {}
     serverTeamrankLadder = {}
     serverPointsLadder = {}
-
-    f = open("types/%s/maps" % type.lower(), 'r')
 
     serversString += '<div id="%s" class="block div-tournament"><div class="back-up"><a href="#top">&#8593;</a></div><h2>%s Server</h2>\n' % (type, type)
     mapsString = ""
@@ -293,10 +291,10 @@ with con:
     serversString += '</div>\n'
     serversString += '</div>\n'
 
-print '<div id="global" class="block div-tournament"><h2>Quick Tournament #56</h2>'
-print '<p>This tournament is played on Sunday, 2021-04-25 at 20:00 CEST. The team with the first finish wins! The map is for 3-player teams only!</p>'
-print '</div>'
-print '<div id="serverranks" style="display: ">'
-print serversString
-print '</div>'
+print('<div id="global" class="block div-tournament"><h2>Quick Tournament #56</h2>')
+print('<p>This tournament is played on Sunday, 2021-04-25 at 20:00 CEST. The team with the first finish wins! The map is for 3-player teams only!</p>')
+print('</div>')
+print('<div id="serverranks" style="display: ">')
+print(serversString)
+print('</div>')
 printFooter()

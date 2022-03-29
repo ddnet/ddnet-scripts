@@ -1,5 +1,4 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
 from ddnet import *
 import sys
@@ -99,34 +98,31 @@ for i, mapsString in enumerate(mapsStrings):
   if not os.path.exists(directory):
     os.makedirs(directory)
 
-  tf = open(tmpname, 'w')
+  with open(tmpname, 'w') as tf:
+    print(header("Map Releases (%d/%d) - DDraceNetwork" % (i+1, len(mapsStrings)), "", ""), file=tf)
+    print('<div id="global" class="block">', file=tf)
+    print('<div class="right"><form id="mapform" action="/maps/" method="get"><input name="map" class="typeahead" type="text" placeholder="Map search"><input type="submit" value="Map search" style="position: absolute; left: -9999px"></form></div>', file=tf)
+    print('<h2>Map Releases (%d/%d)</h2><br/>' % (i+1, len(mapsStrings)), file=tf)
+    print('<script src="/jquery.js" type="text/javascript"></script>', file=tf)
+    print('<script src="/typeahead.bundle.js" type="text/javascript"></script>', file=tf)
+    print('<script src="/mapsearch.js" type="text/javascript"></script>', file=tf)
+    print('<a href="feed/"><img width="36" src="/feed.svg"/></a> You can subscribe to the feed to get updated about new map releases', file=tf)
+    print('<p>Planned Map Releases are listed on <a href="https://discordapp.com/invite/85Vavs">Discord</a>. All DDNet maps can be download from <a href="https://github.com/ddnet/ddnet-maps">GitHub</a>, <a href="https://maps.ddnet.tw/compilations/">our compilations</a> or <a href="https://maps.ddnet.tw/">as single files</a>.</p>', file=tf)
+    print('<div class="flex-container">\n', file=tf)
+    print(mapsString, file=tf)
+    print('</div>\n', file=tf)
+    print('<span class="stretch"></span></div>', file=tf)
 
-  print >>tf, header("Map Releases (%d/%d) - DDraceNetwork" % (i+1, len(mapsStrings)), "", "")
-  print >>tf, '<div id="global" class="block">'
-  print >>tf, '<div class="right"><form id="mapform" action="/maps/" method="get"><input name="map" class="typeahead" type="text" placeholder="Map search"><input type="submit" value="Map search" style="position: absolute; left: -9999px"></form></div>'
-  print >>tf, '<h2>Map Releases (%d/%d)</h2><br/>' % (i+1, len(mapsStrings))
-  print >>tf, '<script src="/jquery.js" type="text/javascript"></script>'
-  print >>tf, '<script src="/typeahead.bundle.js" type="text/javascript"></script>'
-  print >>tf, '<script src="/mapsearch.js" type="text/javascript"></script>'
-  print >>tf, '<a href="feed/"><img width="36" src="/feed.svg"/></a> You can subscribe to the feed to get updated about new map releases'
-  print >>tf, '<p>Planned Map Releases are listed on <a href="https://discordapp.com/invite/85Vavs">Discord</a>. All DDNet maps can be download from <a href="https://github.com/ddnet/ddnet-maps">GitHub</a>, <a href="https://maps.ddnet.tw/compilations/">our compilations</a> or <a href="https://maps.ddnet.tw/">as single files</a>.</p>'
-  print >>tf, '<div class="flex-container">\n'
-  print >>tf, mapsString
-  print >>tf, '</div>\n'
-  print >>tf, '<span class="stretch"></span></div>'
+    if len(mapsStrings) > 1:
+      print('<div class="longblock div-ranks"><h3 style="text-align: center;">', file=tf)
+      for i in range(len(mapsStrings)):
+        if i == 0:
+          link = '/releases/'
+        else:
+          link = '/releases/%d/' % (i+1)
+          print(' ', file=tf)
+        print('<a href="%s">%d</a>' % (link, i+1), file=tf)
+      print('</h3></div>', file=tf)
 
-  if len(mapsStrings) > 1:
-    print >>tf, '<div class="longblock div-ranks"><h3 style="text-align: center;">'
-    for i in range(len(mapsStrings)):
-      if i == 0:
-        link = '/releases/'
-      else:
-        link = '/releases/%d/' % (i+1)
-        print >>tf, ' '
-      print >>tf, '<a href="%s">%d</a>' % (link, i+1)
-    print >>tf, '</h3></div>'
-
-  print >>tf, printFooter()
-
-  tf.close()
+    print(printFooter(), file=tf)
   os.rename(tmpname, filename)

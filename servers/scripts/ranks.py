@@ -1,5 +1,4 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
 from ddnet import *
 import sys
@@ -12,9 +11,6 @@ import msgpack
 from diskcache import Cache
 import traceback
 from time import strftime
-
-reload(sys)
-sys.setdefaultencoding('utf8')
 
 def printFooter():
   generatedTime = strftime("%Y-%m-%d %H:%M:%S")
@@ -511,23 +507,23 @@ with con:
 
       mbPage = " (%d/%d)" % (i+1, len(mapsStrings)) if len(mapsStrings) > 1 else ""
       if country == None:
-        print >>tf, header("%s Server Ranks%s - DDraceNetwork" % (type, mbPage), menuText, "")
+        print(header("%s Server Ranks%s - DDraceNetwork" % (type, mbPage), menuText, ""), file=tf)
       else:
-        print >>tf, header("%s %s Server Ranks%s - DDraceNetwork" % (country, type, mbPage), menuText, "")
-      print >>tf, '<p class="toggle"><a href="#" onclick="showClass(\'allPoints\'); return false;">Top 500 / Top 10</a></p>'
+        print(header("%s %s Server Ranks%s - DDraceNetwork" % (country, type, mbPage), menuText, ""), file=tf)
+      print('<p class="toggle"><a href="#" onclick="showClass(\'allPoints\'); return false;">Top 500 / Top 10</a></p>', file=tf)
 
-      print >>tf, '<div id="serverranks" style="display: ">'
-      print >>tf, serversString1 % mbPage
-      print >>tf, serversString2
-      print >>tf, '<div class="all-%s" style="display: ">\n' % type
-      print >>tf, mapsString
-      print >>tf, '</div>\n'
-      print >>tf, '</div>'
+      print('<div id="serverranks" style="display: ">', file=tf)
+      print(serversString1 % mbPage, file=tf)
+      print(serversString2, file=tf)
+      print('<div class="all-%s" style="display: ">\n' % type, file=tf)
+      print(mapsString, file=tf)
+      print('</div>\n', file=tf)
+      print('</div>', file=tf)
       if len(mapsStrings) > 1:
-        print >>tf, '<div class="longblock div-ranks"><h3 style="text-align: center;">'
+        print('<div class="longblock div-ranks"><h3 style="text-align: center;">', file=tf)
         for i in range(len(mapsStrings)):
           if i > 0:
-            print >>tf, ' '
+            print(' ', file=tf)
           if i == 0:
             if country:
               link = '/ranks/%s/%s/' % (country.lower(), type.lower())
@@ -538,9 +534,9 @@ with con:
               link = '/ranks/%s/%s/%d/' % (country.lower(), type.lower(), i+1)
             else:
               link = '/ranks/%s/%d/' % (type.lower(), i+1)
-          print >>tf, '<a href="%s">%d</a>' % (link, i+1)
-        print >>tf, '</h3></div>'
-      print >>tf, printFooter()
+          print('<a href="%s">%d</a>' % (link, i+1), file=tf)
+        print('</h3></div>', file=tf)
+      print(printFooter(), file=tf)
 
       tf.close()
       os.rename(tmpname, filename)
@@ -591,31 +587,31 @@ if not os.path.exists(directory):
 tf = open(tmpname, 'w')
 
 if country == None:
-  print >>tf, header("Ranks - DDraceNetwork", menuText, "")
+  print(header("Ranks - DDraceNetwork", menuText, ""), file=tf)
 else:
-  print >>tf, header("%s Ranks - DDraceNetwork" % country, menuText, "")
-print >>tf, '<p class="toggle"><a href="#" onclick="showClass(\'allPoints\'); return false;">Top 500 / Top 20</a></p>'
+  print(header("%s Ranks - DDraceNetwork" % country, menuText, ""), file=tf)
+print('<p class="toggle"><a href="#" onclick="showClass(\'allPoints\'); return false;">Top 500 / Top 20</a></p>', file=tf)
 
-print >>tf, '<div id="global" class="block">\n'
-print >>tf, '<div class="right"><form id="mapform" action="/maps/" method="get">%s<input name="map" class="typeahead" type="text" placeholder="Map search"><input type="submit" value="Map search" style="position: absolute; left: -9999px"></form><br><form id="playerform" action="/players/" method="get"><input name="player" class="typeahead" type="text" placeholder="Player search"><input type="submit" value="Player search" style="position: absolute; left: -9999px"></form></div>' % mbCountryInput
-print >>tf, '<script src="/jquery.js" type="text/javascript"></script>'
-print >>tf, '<script src="/typeahead.bundle.js" type="text/javascript"></script>'
-print >>tf, '<script src="/mapsearch.js" type="text/javascript"></script>'
-print >>tf, '<script src="/playersearch.js?version=2" type="text/javascript"></script>'
+print('<div id="global" class="block">\n', file=tf)
+print('<div class="right"><form id="mapform" action="/maps/" method="get">%s<input name="map" class="typeahead" type="text" placeholder="Map search"><input type="submit" value="Map search" style="position: absolute; left: -9999px"></form><br><form id="playerform" action="/players/" method="get"><input name="player" class="typeahead" type="text" placeholder="Player search"><input type="submit" value="Player search" style="position: absolute; left: -9999px"></form></div>' % mbCountryInput, file=tf)
+print('<script src="/jquery.js" type="text/javascript"></script>', file=tf)
+print('<script src="/typeahead.bundle.js" type="text/javascript"></script>', file=tf)
+print('<script src="/mapsearch.js" type="text/javascript"></script>', file=tf)
+print('<script src="/playersearch.js?version=2" type="text/javascript"></script>', file=tf)
 if country == None:
-  print >>tf, '<div class="block7"><h2>Global Ranks</h2></div><br/>'
+  print('<div class="block7"><h2>Global Ranks</h2></div><br/>', file=tf)
 else:
-  print >>tf, '<div class="block7"><h2>%s Ranks</h2></div><br/>' % country
-print >>tf, printLadder("Points (%d total)" % totalPoints, pointsRanks, players, not country, 20)
-print >>tf, printLadder("Team Rank", teamrankRanks, players, not country, 20)
-print >>tf, printLadder("Rank", rankRanks, players, not country, 20)
-print >>tf, '<br/>'
-print >>tf, printLadder("Points (last year)", yearlyPointsRanks, players, not country, 20)
-print >>tf, printLadder("Points (last month)", monthlyPointsRanks, players, not country, 20)
-print >>tf, printLadder("Points (last week)", weeklyPointsRanks, players, not country, 20)
-print >>tf, lastString
-print >>tf, '</div>'
-print >>tf, printFooter()
+  print('<div class="block7"><h2>%s Ranks</h2></div><br/>' % country, file=tf)
+print(printLadder("Points (%d total)" % totalPoints, pointsRanks, players, not country, 20), file=tf)
+print(printLadder("Team Rank", teamrankRanks, players, not country, 20), file=tf)
+print(printLadder("Rank", rankRanks, players, not country, 20), file=tf)
+print('<br/>', file=tf)
+print(printLadder("Points (last year)", yearlyPointsRanks, players, not country, 20), file=tf)
+print(printLadder("Points (last month)", monthlyPointsRanks, players, not country, 20), file=tf)
+print(printLadder("Points (last week)", weeklyPointsRanks, players, not country, 20), file=tf)
+print(lastString, file=tf)
+print('</div>', file=tf)
+print(printFooter(), file=tf)
 
 tf.close()
 os.rename(tmpname, filename)

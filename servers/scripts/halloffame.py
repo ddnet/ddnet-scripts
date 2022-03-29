@@ -1,5 +1,4 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
 from ddnet import *
 import sys
@@ -10,11 +9,11 @@ reload(sys)
 sys.setdefaultencoding('utf8')
 
 def printFooter():
-  print """
+  print("""
   </section>
   </article>
   </body>
-</html>"""
+</html>""")
 
 rankLadder = {}
 teamrankLadder = {}
@@ -29,7 +28,7 @@ menuText = '<ul>'
 menuText += '<li><a href="upload/">Demo Upload</a></li>'
 menuText += '</ul>'
 
-print header("Hall of Fame - DDraceNetwork", menuText, "")
+print(header("Hall of Fame - DDraceNetwork", menuText, ""))
 
 f = open("halloffame")
 entries = []
@@ -103,17 +102,17 @@ for x in entries:
   except IOError:
     pass
 
-  mapsString += u'<div class="blockreleases release" id="map-%s"><h2 class="inline">%s<br/>%s</h2><br/><h3 class="inline">on <a href="%s">%s</a> %s</h3><h3 class="inline"><a href="/ranks/%s/">%s Server</a></h3><br/><p>Difficulty: %s, Points: %d<br/><a href="http://youtu.be/%s?list=UUehuq_sbMTEATWVgDvnVy7w%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/></div>\n' % (escape(mapName), playerNames, time, mapWebsite(originalMapName), formattedMapName, mbMapperName, server.lower(), server, escape(renderStars(stars)), globalPoints(server, stars), video, ytTime, escape(mapName), mbMapInfo)
+  mapsString += '<div class="blockreleases release" id="map-%s"><h2 class="inline">%s<br/>%s</h2><br/><h3 class="inline">on <a href="%s">%s</a> %s</h3><h3 class="inline"><a href="/ranks/%s/">%s Server</a></h3><br/><p>Difficulty: %s, Points: %d<br/><a href="http://youtu.be/%s?list=UUehuq_sbMTEATWVgDvnVy7w%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/></div>\n' % (escape(mapName), playerNames, time, mapWebsite(originalMapName), formattedMapName, mbMapperName, server.lower(), server, escape(renderStars(stars)), globalPoints(server, stars), video, ytTime, escape(mapName), mbMapInfo)
 
 serversString += mapsString
 serversString += '<span class="stretch"></span></div>\n'
 
-print '<div id="global" class="block"><h2>Hall of Fame</h2>'
-print '<p>The Hall of Fame features the best runs of DDraceNetwork, which means:</p>'
-print '<ul>'
-print '<li>You have the first rank in /top5 or in /top5teams</li>'
-print '<li>The map has been released for at least 2 weeks</li>'
-print '<li>There are more than a few finishes</li>'
-print '</ul>'
-print serversString.encode('utf-8')
+print('<div id="global" class="block"><h2>Hall of Fame</h2>')
+print('<p>The Hall of Fame features the best runs of DDraceNetwork, which means:</p>')
+print('<ul>')
+print('<li>You have the first rank in /top5 or in /top5teams</li>')
+print('<li>The map has been released for at least 2 weeks</li>')
+print('<li>There are more than a few finishes</li>')
+print('</ul>')
+print(serversString)
 printFooter()
