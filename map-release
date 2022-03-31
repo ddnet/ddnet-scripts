@@ -7,7 +7,7 @@ Planned map releases: http://forum.ddnet.tw/viewtopic.php?f=9&t=1474
 Pre-requirements:
   - SSH to all DDNet servers via public key, mod account in forum
   - You need imagemagick, pngnq, optipng, clusterssh installed locally
-  - My tml fork in git/tml: https://github.com/def-/tml.git
+  - libtw2 for ddnet_properties
   - SSH config (~/.ssh/config):
 
     Host chn.ddnet.tw
@@ -20,8 +20,8 @@ Pre-requirements:
       Port 6546
 
 1. map properties
-  $ cd git/tml
-  $ ./properties Kobra\ 4.map Kobra\ 4.msgpack
+  $ cd git/libtw2
+  $ target/release/ddnet_properties Kobra\ 4.map Kobra\ 4.msgpack
   $ scp Kobra\ 4.msgpack ddnet.tw:servers/maps
 
 2. screenshot
