@@ -227,11 +227,11 @@ TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
 
 (TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
   PREFIX=i686-w64-mingw32- PATH=/usr/i686-w64-mingw32/bin:$PATH \
-  build_windows_website 32 "-DVIDEORECORDER=OFF"
+  build_windows_website 32
 
 TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
   PREFIX=i686-w64-mingw32- PATH=/usr/i686-w64-mingw32/bin:$PATH \
-  build_windows_steam 32 "-DVIDEORECORDER=OFF") &> builds/win32.log &
+  build_windows_steam 32) &> builds/win32.log &
 
 wait
 
