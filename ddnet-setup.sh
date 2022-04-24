@@ -65,6 +65,7 @@ echo "8298 8300 8303 8304 8305 8306 8308 8309" > /home/teeworlds/servers/all-ser
 sed -i "s/^sv_sql_servername .*/sv_sql_servername \"$NAME_SQL\"/" /home/teeworlds/servers/mysql.cfg
 sed -i "s/^USER = .*/USER = \"ddnet$NAME_LOWER\"/" /home/teeworlds/servers/serverstatus-client.py
 sed -i "s/^sv_name \"DDNet [A-Za-z0-9]* /sv_name \"DDNet $NAME_INGAME /" /home/teeworlds/servers/types/*/flexname.cfg /home/teeworlds/servers/servers/*.cfg
+su - teeworlds "git config --global pull.rebase false"
 
 echo "#!/bin/sh
 
