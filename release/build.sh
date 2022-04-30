@@ -134,17 +134,13 @@ build_linux ()
   fi
 
   chroot . sh -c "cd ddnet-source && \
-    export CXXFLAGS=\"'$CXXFLAGS_WEB' -stdlib=libc++\" && \
-    export LDFLAGS=\"-stdlib=libc++ -lc++abi\" && \
-    export CC=clang-7 && \
-    export CXX=clang++-7 && \
+    export CXXFLAGS=\"'$CXXFLAGS_WEB' -no-pie\" && \
+    export LDFLAGS=\"-no-pie\" && \
     cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DDISCORD=$DISCORD -DDISCORD_DYNAMIC=$DISCORD -DWEBSOCKETS=OFF $(echo $UPDATE_FLAGS) -DPREFER_BUNDLED_LIBS=ON && \
     make -j1 package_default"
   chroot . sh -c "cd ddnet-source-steam && \
-    export CXXFLAGS=\"'$CXXFLAGS_STEAM' -stdlib=libc++\" && \
-    export LDFLAGS=\"-stdlib=libc++ -lc++abi\" && \
-    export CC=clang-7 && \
-    export CXX=clang++-7 && \
+    export CXXFLAGS=\"'$CXXFLAGS_STEAM' -no-pie\" && \
+    export LDFLAGS=\"-no-pie\" && \
     cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DDISCORD=$DISCORD -DDISCORD_DYNAMIC=$DISCORD -DWEBSOCKETS=OFF -DSTEAM=ON -DPREFER_BUNDLED_LIBS=ON && \
     make -j1 package_default"
   mv ddnet-source/DDNet-*.tar.xz $BUILDS/DDNet-$VERSION-linux_$PLATFORM.tar.xz
@@ -218,8 +214,8 @@ rsync -avzP ddnet-source deen@si:
 (build_remote_macos_website; build_remote_macos_steam; ssh deen@si "rm -rf ddnet-source") &> builds/mac.log &
 #(build_macos_website; build_macos_steam) &> builds/mac.log &
 
-build_linux x86_64 $BUILDDIR/debian9 &> builds/linux_x86_64.log &
-CFLAGS=-m32 LDFLAGS=-m32 build_linux x86 $BUILDDIR/debian9_x86 &> builds/linux_x86.log &
+build_linux x86_64 $BUILDDIR/debian10 &> builds/linux_x86_64.log &
+CFLAGS=-m32 LDFLAGS=-m32 build_linux x86 $BUILDDIR/debian10_x86 &> builds/linux_x86.log &
 
 (TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
   PREFIX=x86_64-w64-mingw32- PATH=/usr/x86_64-w64-mingw32/bin:$PATH \
