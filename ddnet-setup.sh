@@ -65,24 +65,30 @@ sed -i "s/^USER = .*/USER = \"ddnet$NAME_LOWER\"/" /home/teeworlds/servers/serve
 sed -i "s/^sv_name \"DDNet [A-Za-z0-9]* /sv_name \"DDNet $NAME_INGAME /" /home/teeworlds/servers/types/*/flexname.cfg /home/teeworlds/servers/servers/*.cfg
 su - teeworlds -c "git config --global pull.rebase false"
 
-echo "#!/bin/sh
+cat <<EOF > /home/teeworlds/servers/run-all.sh
+#!/bin/sh
 
 cd /home/teeworlds/servers
 
-for i in `cat all-servers`; do
+for i in \$(cat all-servers); do
   nohup ./run64.sh $i > /dev/null &
 done
 
-nohup ./serverstatus-client.py &" > /home/teeworlds/servers/run-all.sh
+nohup ./serverstatus-client.py &
+EOF
+cat <<EOF > /home/teeworlds/run-all.sh
+#!/usr/bin/env zsh
+cd servers
+./run-all.sh
+EOF
+
 chmod +x /home/teeworlds/servers/run-all.sh
 chmod +x /home/teeworlds/run-all.sh
 
 su - teeworlds "./run-all.sh"
-
-# With mysql: mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -p mysql
-
-# Hack for getting approximate time for hosters that totally block NTP:
-# date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
+#
+# Add the IP on Cloudflare and other firewall we use for db server
+# Make sure teehistorian backups work and inform other teehistorian consumers
 #
 # On ddnet.tw:
 # vim ServerStatus/server/config.json
@@ -91,10 +97,7 @@ su - teeworlds "./run-all.sh"
 # vim scripts/status.py
 # vim serverlist.json
 # vim all-locations
-# ./git-update-files-only.sh
+# ./git-update-serverlist-only.sh
 #
-# On mysql servers:
-# iptables -I INPUT -p tcp --dport 3306 -s $IP -j ACCEPT
-# iptables-save > /etc/iptables.up.rules
-#
-# Make sure teehistorian backups work and inform other teehistorian consumers
+# Hack for getting approximate time for hosters that totally block NTP:
+# date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
