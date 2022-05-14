@@ -26,6 +26,13 @@ sed -E -i "s/^#?Port .*/Port 6546/" /etc/ssh/sshd_config
 sed -E -i "s/^#?PermitRootLogin .*/PermitRootLogin yes/" /etc/ssh/sshd_config
 systemctl restart ssh
 
+iptables -P INPUT ACCEPT
+iptables -P FORWARD ACCEPT
+iptables -P OUTPUT ACCEPT
+iptables -t nat -F
+iptables -t mangle -F
+iptables -F
+iptables -X
 iptables -t raw -A PREROUTING -p udp -j NOTRACK
 iptables -t raw -A OUTPUT -p udp -j NOTRACK
 iptables -N serverinfo
