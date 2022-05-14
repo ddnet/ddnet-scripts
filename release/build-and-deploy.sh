@@ -56,14 +56,19 @@ for i in *.zip; do
   cd ..
 done
 zmv -W "DDNet-$VERSION-*" '*'
+
+# steamcmd started overwriting/destroying my depot_build_*.vdf files
+cd /home/deen/isos/ddnet/
+cp steamcmd_orig/* steamcmd
 cd /home/deen/isos/ddnet/steamcmd/
 sed -e "s/Nightly Build/$1: $VERSION/" app_build_412220.vdf > tmp.vdf
 if [ "$1" != "nightly" ]; then
   sed -i "s/\"beta\"/\"releasecandidates\"/" tmp.vdf
 fi
+if [ ! -f "steam/DDNet-$VERSION-macos.zip" ]; then
+  sed -i "/412224/d" tmp.vdf
+fi
 steamcmd +login deen_ddnet "$(cat pass)" +run_app_build /home/deen/isos/ddnet/steamcmd/tmp.vdf +quit
 
 cd ..
 rm -rf builds/* DDNet-$VERSION* steam/*
-# steamcmd started overwriting/destroying my depot_build_*.vdf files
-cp steamcmd_orig/* steamcmd

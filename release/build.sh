@@ -206,12 +206,14 @@ build_source &
 unzip -q libs.zip
 rm -rf ddnet-source/ddnet-libs
 mv $LIBS_REPO_NAME-$LIBS_REPO_BRANCH ddnet-source/ddnet-libs
-ssh deen@si "rm -rf ddnet-source"
-rsync -avzP ddnet-source deen@si:
-
 # Can't cross-compiler currently since macOS with arm is stricter with unsigned
 # binaries and signing doesn't work. Temporarily use build from macOS:
-(build_remote_macos_website; build_remote_macos_steam; ssh deen@si "rm -rf ddnet-source") &> builds/mac.log &
+MAC_AVAILABLE=true
+ssh deen@si "rm -rf ddnet-source" || MAC_AVAILABLE=false
+if [ "$MAC_AVAILABLE" = true ]; then
+  rsync -avzP ddnet-source deen@si:
+  (build_remote_macos_website; build_remote_macos_steam; ssh deen@si "rm -rf ddnet-source") &> builds/mac.log &
+fi
 #(build_macos_website; build_macos_steam) &> builds/mac.log &
 
 build_linux x86_64 $BUILDDIR/debian10 &> builds/linux_x86_64.log &
@@ -274,14 +276,16 @@ zip -9r DDNet-$VERSION-linux_x86.zip ddnet
 rm -r ddnet
 
 #7z x ../DDNet-$VERSION-steam-macos.dmg
-cp -a ../DDNet-$VERSION-steam-macos .
-rm -r DDNet-*-macos/DDNet.app/Contents/Resources/data DDNet-*-macos/DDNet-Server.app/Contents/Resources/data
-mkdir ddnet
-mv DDNet-*-macos/DDNet.app/Contents/MacOS/DDNet DDNet-*-macos/DDNet-Server.app/Contents/MacOS/DDNet-Server* ddnet
-mv DDNet-*-macos/DDNet.app/Contents/Frameworks .
-cp $BUILDDIR/steamworks/sdk/redistributable_bin/osx/libsteam_api.dylib Frameworks
-zip -9r DDNet-$VERSION-macos.zip ddnet Frameworks
-rm -r ddnet Frameworks DDNet-*-macos
+if [ "$MAC_AVAILABLE" = true ]; then
+  cp -a ../DDNet-$VERSION-steam-macos .
+  rm -r DDNet-*-macos/DDNet.app/Contents/Resources/data DDNet-*-macos/DDNet-Server.app/Contents/Resources/data
+  mkdir ddnet
+  mv DDNet-*-macos/DDNet.app/Contents/MacOS/DDNet DDNet-*-macos/DDNet-Server.app/Contents/MacOS/DDNet-Server* ddnet
+  mv DDNet-*-macos/DDNet.app/Contents/Frameworks .
+  cp $BUILDDIR/steamworks/sdk/redistributable_bin/osx/libsteam_api.dylib Frameworks
+  zip -9r DDNet-$VERSION-macos.zip ddnet Frameworks
+  rm -r ddnet Frameworks DDNet-*-macos
+fi
 
 rm -rf ddnet-source
 
