@@ -65,7 +65,7 @@ sed -e "s/Nightly Build/$1: $VERSION/" app_build_412220.vdf > tmp.vdf
 if [ "$1" != "nightly" ]; then
   sed -i "s/\"beta\"/\"releasecandidates\"/" tmp.vdf
 fi
-if [ ! -f "steam/DDNet-$VERSION-macos.zip" ]; then
+if [ ! -d "steam/macos" ]; then
   sed -i "/412224/d" tmp.vdf
 fi
 steamcmd +login deen_ddnet "$(cat pass)" +run_app_build /home/deen/isos/ddnet/steamcmd/tmp.vdf +quit
