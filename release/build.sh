@@ -57,7 +57,7 @@ build_macos ()
   PATH=${PATH:+$PATH:}/home/deen/git/osxcross/target/bin
   eval `osxcross-conf`
   export OSXCROSS_OSX_VERSION_MIN=10.9
-  cmake -DVERSION=$VERSION -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_BUILD_TYPE=Release -DDISCORD=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin-arm64.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX11.0.sdk/ $(echo $FLAGS) ../ddnet-source
+  cmake -DVERSION=$VERSION -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_BUILD_TYPE=Release -DDISCORD=ON -DWEBSOCKETS=OFF -DIPO=ON -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin-arm64.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX11.0.sdk/ $(echo $FLAGS) ../ddnet-source
   make -j1 package_default
 }
 
@@ -86,7 +86,7 @@ build_remote_macos ()
   mkdir macos$SUFFIX && \
   cd macos$SUFFIX && \
   export CXXFLAGS=\"'$OUR_CXXFLAGS'\" && \
-  cmake -DVERSION=$VERSION -DCMAKE_OSX_ARCHITECTURES=\"arm64;x86_64\" -DCMAKE_BUILD_TYPE=Release -DDISCORD=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON $(echo $FLAGS) ../ddnet-source && \
+  cmake -DVERSION=$VERSION -DCMAKE_OSX_ARCHITECTURES=\"arm64;x86_64\" -DCMAKE_BUILD_TYPE=Release -DDISCORD=ON -DWEBSOCKETS=OFF -DIPO=ON -DPREFER_BUNDLED_LIBS=ON $(echo $FLAGS) ../ddnet-source && \
   make -j10 package_default
   "
 }
@@ -136,12 +136,12 @@ build_linux ()
   chroot . sh -c "cd ddnet-source && \
     export CXXFLAGS=\"'$CXXFLAGS_WEB' -no-pie\" && \
     export LDFLAGS=\"-no-pie\" && \
-    cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DDISCORD=$DISCORD -DDISCORD_DYNAMIC=$DISCORD -DWEBSOCKETS=OFF $(echo $UPDATE_FLAGS) -DPREFER_BUNDLED_LIBS=ON && \
+    cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DDISCORD=$DISCORD -DDISCORD_DYNAMIC=$DISCORD -DWEBSOCKETS=OFF -DIPO=ON $(echo $UPDATE_FLAGS) -DPREFER_BUNDLED_LIBS=ON && \
     make -j1 package_default"
   chroot . sh -c "cd ddnet-source-steam && \
     export CXXFLAGS=\"'$CXXFLAGS_STEAM' -no-pie\" && \
     export LDFLAGS=\"-no-pie\" && \
-    cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DDISCORD=$DISCORD -DDISCORD_DYNAMIC=$DISCORD -DWEBSOCKETS=OFF -DSTEAM=ON -DPREFER_BUNDLED_LIBS=ON && \
+    cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DDISCORD=$DISCORD -DDISCORD_DYNAMIC=$DISCORD -DWEBSOCKETS=OFF -DIPO=ON -DSTEAM=ON -DPREFER_BUNDLED_LIBS=ON && \
     make -j1 package_default"
   mv ddnet-source/DDNet-*.tar.xz $BUILDS/DDNet-$VERSION-linux_$PLATFORM.tar.xz
   mv ddnet-source-steam/DDNet-*.tar.xz ../DDNet-$VERSION-steam-linux_$PLATFORM.tar.xz
@@ -162,7 +162,7 @@ build_windows ()
   rm -rf $DIR
   mkdir $DIR
   cd $DIR
-  cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=RelWithDebInfo -DDISCORD=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain -DCMAKE_DISABLE_FIND_PACKAGE_GTest=ON -DEXCEPTION_HANDLING=ON $(echo $BUILDOPTS) ../ddnet-source
+  cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=RelWithDebInfo -DDISCORD=ON -DWEBSOCKETS=OFF -DIPO=ON -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain -DCMAKE_DISABLE_FIND_PACKAGE_GTest=ON -DEXCEPTION_HANDLING=ON $(echo $BUILDOPTS) ../ddnet-source
   make -j1
   XZ_OPT=-9 tar cfJ DDNet-$VERSION-win$PLATFORM$SUFFIX-symbols.tar.xz DDNet.exe DDNet-Server.exe
   make -j1 package_default
