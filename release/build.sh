@@ -162,7 +162,7 @@ build_windows ()
   rm -rf $DIR
   mkdir $DIR
   cd $DIR
-  cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=RelWithDebInfo -DDISCORD=ON -DWEBSOCKETS=OFF -DIPO=ON -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain -DCMAKE_DISABLE_FIND_PACKAGE_GTest=ON -DEXCEPTION_HANDLING=ON $(echo $BUILDOPTS) ../ddnet-source
+  cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=RelWithDebInfo -DDISCORD=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain -DCMAKE_DISABLE_FIND_PACKAGE_GTest=ON -DEXCEPTION_HANDLING=ON $(echo $BUILDOPTS) ../ddnet-source
   make -j1
   XZ_OPT=-9 tar cfJ DDNet-$VERSION-win$PLATFORM$SUFFIX-symbols.tar.xz DDNet.exe DDNet-Server.exe
   make -j1 package_default
@@ -221,19 +221,19 @@ CFLAGS=-m32 LDFLAGS=-m32 build_linux x86 $BUILDDIR/debian10_x86 &> builds/linux_
 
 (TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
   PREFIX=x86_64-w64-mingw32- PATH=/usr/x86_64-w64-mingw32/bin:$PATH \
-  build_windows_website 64
+  build_windows_website 64 "-DIPO=ON"
 
 TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
   PREFIX=x86_64-w64-mingw32- PATH=/usr/x86_64-w64-mingw32/bin:$PATH \
-  build_windows_steam 64) &> builds/win64.log &
+  build_windows_steam 64 "-DIPO=ON") &> builds/win64.log &
 
 (TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
   PREFIX=i686-w64-mingw32- PATH=/usr/i686-w64-mingw32/bin:$PATH \
-  build_windows_website 32
+  build_windows_website 32 "-DIPO=OFF"
 
 TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
   PREFIX=i686-w64-mingw32- PATH=/usr/i686-w64-mingw32/bin:$PATH \
-  build_windows_steam 32) &> builds/win32.log &
+  build_windows_steam 32 "-DIPO=OFF") &> builds/win32.log &
 
 wait
 
