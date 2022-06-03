@@ -15,6 +15,18 @@ wget https://ffmpeg.org/releases/ffmpeg-5.0.tar.gz
 wget https://github.com/warmcat/libwebsockets/archive/v4.3-stable.tar.gz
 wget https://download.sourceforge.net/libpng/libpng-1.6.37.tar.gz
 
+git clone --recurse-submodules https://github.com/jrfonseca/drmingw
+cd drmingw
+git checkout 0.9.5
+wget https://github.com/Jupeyy/drmingw/commit/08ab91c4897c04b5919d14fc2d7c21.diff
+wget https://github.com/Jupeyy/drmingw/commit/c04387280fa3c33e70cc083ff664ed.diff
+# Disable wine stuff in ci/build.sh, set -DPOSIX_THREADS=ON
+patch -p1 < 08ab91c4897c04b5919d14fc2d7c21.diff
+patch -p1 < c04387280fa3c33e70cc083ff664ed.diff
+ci/build.sh
+for i in build/mingw64/bin/*.dll; do x86_64-w64-mingw32-strip -s $i; done
+for i in build/mingw32/bin/*.dll; do i686-w64-mingw32-strip -s $i; done
+
 chroot debian6 bash
 cat /etc/apt/sources.list
 deb http://archive.debian.org/debian squeeze main contrib non-free
