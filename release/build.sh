@@ -219,13 +219,15 @@ fi
 build_linux x86_64 $BUILDDIR/debian10 &> builds/linux_x86_64.log &
 CFLAGS=-m32 LDFLAGS=-m32 build_linux x86 $BUILDDIR/debian10_x86 &> builds/linux_x86.log &
 
+# IPO causes issues with DrMinGW stack traces, so disable for now
+# https://github.com/ddnet/ddnet/issues/5371
 (TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
   PREFIX=x86_64-w64-mingw32- PATH=/usr/x86_64-w64-mingw32/bin:$PATH \
-  build_windows_website 64 "-DIPO=ON"
+  build_windows_website 64 "-DIPO=OFF"
 
 TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
   PREFIX=x86_64-w64-mingw32- PATH=/usr/x86_64-w64-mingw32/bin:$PATH \
-  build_windows_steam 64 "-DIPO=ON") &> builds/win64.log &
+  build_windows_steam 64 "-DIPO=OFF") &> builds/win64.log &
 
 (TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
   PREFIX=i686-w64-mingw32- PATH=/usr/i686-w64-mingw32/bin:$PATH \
