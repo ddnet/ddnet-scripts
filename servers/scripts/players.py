@@ -1,11 +1,10 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
 from ddnet import *
 import sys
 from cgi import escape
 from datetime import datetime, timedelta
-import cStringIO
+from io import StringIO
 import msgpack
 from diskcache import Cache
 from operator import itemgetter
@@ -14,9 +13,6 @@ import json
 from gc import collect
 from os.path import getmtime
 #from guppy import hpy
-
-reload(sys)
-sys.setdefaultencoding('utf8')
 
 data = {}
 last = None
@@ -108,17 +104,17 @@ with con:
     return None
 
   def globalRanks(name, player):
-    out = cStringIO.StringIO()
+    out = StringIO()
 
-    print >>out, '<div class="block7">'
-    print >>out, printPersonalResult("Points (%d total)" % data['totalPoints'], data['pointsRanks'], name)
-    print >>out, printPersonalResult("Team Rank", data['teamrankRanks'], name)
-    print >>out, printPersonalResult("Rank", data['rankRanks'], name)
-    print >>out, '<br/>'
-    print >>out, printPersonalResult("Points (last year)", data['yearlyPointsRanks'], name)
-    print >>out, printPersonalResult("Points (last month)", data['monthlyPointsRanks'], name)
-    print >>out, printPersonalResult("Points (last week)", data['weeklyPointsRanks'], name)
-    print >>out, '<br/>'
+    print('<div class="block7">', file=out)
+    print(printPersonalResult("Points (%d total)" % data['totalPoints'], data['pointsRanks'], name), file=out)
+    print(printPersonalResult("Team Rank", data['teamrankRanks'], name), file=out)
+    print(printPersonalResult("Rank", data['rankRanks'], name), file=out)
+    print('<br/>', file=out)
+    print(printPersonalResult("Points (last year)", data['yearlyPointsRanks'], name), file=out)
+    print(printPersonalResult("Points (last month)", data['monthlyPointsRanks'], name), file=out)
+    print(printPersonalResult("Points (last week)", data['weeklyPointsRanks'], name), file=out)
+    print('<br/>', file=out)
 
     try:
       favServer = max(player[1].iteritems(), key=itemgetter(1))[0]
@@ -127,7 +123,7 @@ with con:
     except:
       favServer = 'UNK'
 
-    print >>out, '<div class="block2 ladder"><h3>Favorite Server</h3>\n<p class="pers-result"><img src="/countryflags/%s.png" alt="%s" height="20" /></p></div>' % (favServer, favServer)
+    print('<div class="block2 ladder"><h3>Favorite Server</h3>\n<p class="pers-result"><img src="/countryflags/%s.png" alt="%s" height="20" /></p></div>' % (favServer, favServer), file=out)
 
     try:
       query("select Timestamp, Map, Time from record_race where Name = '%s' order by Timestamp limit 1;" % con.escape_string(name))
@@ -144,16 +140,16 @@ with con:
           if type != '':
             break
       dateWithTz = escape(formatDateTimeTz(row[0]))
-      print >>out, '<div class="block2 ladder"><h3>First Finish</h3>\n<p class="personal-result"><span data-type="date" data-date="%s" data-datefmt="datetime">%s</span>: <a href="%s">%s</a> (%s)</p></div>' % (dateWithTz, escape(formatDate(row[0])), mapWebsite(row[1]), escape(row[1]), escape(formatTime(row[2])))
+      print('<div class="block2 ladder"><h3>First Finish</h3>\n<p class="personal-result"><span data-type="date" data-date="%s" data-datefmt="datetime">%s</span>: <a href="%s">%s</a> (%s)</p></div>' % (dateWithTz, escape(formatDate(row[0])), mapWebsite(row[1]), escape(row[1]), escape(formatTime(row[2]))), file=out)
     except:
       pass
 
-    print >>out, '</div>'
+    print('</div>', file=out)
 
     return out.getvalue()
 
   def favoritePartners(name):
-    out = cStringIO.StringIO()
+    out = StringIO()
 
     try:
       query("select r.Name, count(r.Name) from (select Name, ID from record_teamrace where Name = '%s') as l inner join (select ID, Name from record_teamrace) as r on l.ID = r.ID and l.Name != r.Name group by r.Name order by count(r.Name) desc limit 10;" % con.escape_string(name))
@@ -164,7 +160,7 @@ with con:
       skips = 0
 
       if len(rows) > 0:
-        print >>out, '<div class="block6 ladder" style="margin-left: 1em;"><h3>Favorite Partners</h3>\n<table class="tight">'
+        print('<div class="block6 ladder" style="margin-left: 1em;"><h3>Favorite Partners</h3>\n<table class="tight">', file=out)
 
         for row in rows:
           name = row[0]
@@ -178,18 +174,18 @@ with con:
             skips += 1
 
           encodedName = slugify2(u'%s' % name.encode('utf-8'))
-          print >>out, '<tr><td>%d. <a href="/players/%s/">%s</a>: %d ranks</td></tr>' % (pos, encodedName, escape(name), finishes)
+          print('<tr><td>%d. <a href="/players/%s/">%s</a>: %d ranks</td></tr>' % (pos, encodedName, escape(name), finishes), file=out)
 
-        print >>out, '</table></div>'
+        print('</table></div>', file=out)
     except:
       pass
 
     return out.getvalue()
 
   def lastFinishes(name):
-    out = cStringIO.StringIO()
+    out = StringIO()
 
-    print >>out, '<div class="block6 ladder"><h3>Last Finishes</h3><table class="tight">'
+    print('<div class="block6 ladder"><h3>Last Finishes</h3><table class="tight">', file=out)
 
     query("select record_race.Timestamp, record_race.Map, Time, record_race.Server, record_maps.Server from record_race left join record_maps on record_race.Map = record_maps.Map where Name = '%s' order by record_race.Timestamp desc limit 10;" % con.escape_string(name))
     rows = cur.fetchall()
@@ -204,14 +200,14 @@ with con:
         if type != '':
           break
       dateWithTz = escape(formatDateTimeTz(row[0]))
-      print >>out, '<tr><td><span data-type="date" data-date="%s" data-datefmt="datetime">%s</span>: <img src="/countryflags/%s.png" alt="%s" height="15"/> <a href="/ranks/%s/">%s</a>: <a href="%s">%s</a> (%s)</td></tr>' % (dateWithTz, escape(formatDate(row[0])), row[3], row[3], row[4].lower(), row[4], mapWebsite(row[1]), escape(row[1]), escape(formatTime(row[2])))
+      print('<tr><td><span data-type="date" data-date="%s" data-datefmt="datetime">%s</span>: <img src="/countryflags/%s.png" alt="%s" height="15"/> <a href="/ranks/%s/">%s</a>: <a href="%s">%s</a> (%s)</td></tr>' % (dateWithTz, escape(formatDate(row[0])), row[3], row[3], row[4].lower(), row[4], mapWebsite(row[1]), escape(row[1]), escape(formatTime(row[2]))), file=out)
 
-    print >>out, '</table></div>'
+    print('</table></div>', file=out)
 
     return out.getvalue()
 
   def comparison(namePlayers):
-    out = cStringIO.StringIO()
+    out = StringIO()
 
     orText = ''
     for (name, player) in namePlayers[:-1]:
@@ -237,43 +233,43 @@ with con:
       menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type)
     menuText += '</ul>'
 
-    print >>out, header("Comparison of %s - DDraceNetwork" % andText, menuText, "")
+    print(header("Comparison of %s - DDraceNetwork" % andText, menuText, ""), file=out)
 
     hiddenFields = ''
     for (name, player) in namePlayers:
       hiddenFields += '<input type="hidden" name="player" value="%s">' % escape(name)
 
-    print >>out, '<div id="global" class="block div-ranks">'
-    print >>out, '<div id="remote" class="right"><form id="playerform" action="/players/" method="get"><input id="playersearch" name="player" class="typeahead" type="text" placeholder="Player search"><input type="submit" value="Player search" style="position: absolute; left: -9999px"></form><br>'
-    print >>out, '<form id="playerform2" action="/compare/" method="get">%s<input name="player" class="typeahead" type="text" placeholder="Add to comparison"><input type="submit" value="Add to comparison" style="position: absolute; left: -9999px"></form></div>' % hiddenFields
-    print >>out, '<script src="/players-data/jquery-2.2.4.min.js" type="text/javascript"></script>'
-    print >>out, '<script src="/typeahead.bundle.js" type="text/javascript"></script>'
-    print >>out, '<script src="/playersearch.js?version=2" type="text/javascript"></script>'
-    print >>out, '<script type="text/javascript" src="/players-data/jquery.tablesorter.js"></script>'
-    print >>out, '<script type="text/javascript" src="/players-data/sorter.js"></script>'
-    print >>out, '<script>'
-    print >>out, '  var input = document.getElementById("playersearch");'
-    print >>out, '  input.focus();'
-    print >>out, '  input.select();'
-    print >>out, '</script>'
-    print >>out, '<link rel="stylesheet" type="text/css" href="/players-data/css-sorter.css">'
+    print('<div id="global" class="block div-ranks">', file=out)
+    print('<div id="remote" class="right"><form id="playerform" action="/players/" method="get"><input id="playersearch" name="player" class="typeahead" type="text" placeholder="Player search"><input type="submit" value="Player search" style="position: absolute; left: -9999px"></form><br>', file=out)
+    print('<form id="playerform2" action="/compare/" method="get">%s<input name="player" class="typeahead" type="text" placeholder="Add to comparison"><input type="submit" value="Add to comparison" style="position: absolute; left: -9999px"></form></div>' % hiddenFields, file=out)
+    print('<script src="/players-data/jquery-2.2.4.min.js" type="text/javascript"></script>', file=out)
+    print('<script src="/typeahead.bundle.js" type="text/javascript"></script>', file=out)
+    print('<script src="/playersearch.js?version=2" type="text/javascript"></script>', file=out)
+    print('<script type="text/javascript" src="/players-data/jquery.tablesorter.js"></script>', file=out)
+    print('<script type="text/javascript" src="/players-data/sorter.js"></script>', file=out)
+    print('<script>', file=out)
+    print('  var input = document.getElementById("playersearch");', file=out)
+    print('  input.focus();', file=out)
+    print('  input.select();', file=out)
+    print('</script>', file=out)
+    print('<link rel="stylesheet" type="text/css" href="/players-data/css-sorter.css">', file=out)
 
     for (name, player) in namePlayers:
-      print >>out, '<div class="block7"><h2>Global Ranks for <a href="%s">%s</a></h2></div><br/>' % (playerWebsite(name), escape(name))
-      print >>out, globalRanks(name, player)
-      print >>out, '<br/>'
-    print >>out, '</div>'
+      print('<div class="block7"><h2>Global Ranks for <a href="%s">%s</a></h2></div><br/>' % (playerWebsite(name), escape(name)), file=out)
+      print(globalRanks(name, player), file=out)
+      print('<br/>', file=out)
+    print('</div>', file=out)
 
     for type in data['types']:
       maps2 = data['maps'][type]
-      print >>out, '<div id="%s" class="block div-ranks"><h2>%s Server</h2>' % (type, type)
+      print('<div id="%s" class="block div-ranks"><h2>%s Server</h2>' % (type, type), file=out)
 
       for (name, player) in namePlayers:
-        print >>out, '<div class="block2 ladder"><h2>%s</h2></div>' % name
-        print >>out, printPersonalResult("Points (%d total)" % data['serverRanks'][type][0], data['serverRanks'][type][1], name)
-        print >>out, printPersonalResult("Team Rank", data['serverRanks'][type][2], name)
-        print >>out, printPersonalResult("Rank", data['serverRanks'][type][3], name)
-        print >>out, '<br/>'
+        print('<div class="block2 ladder"><h2>%s</h2></div>' % name, file=out)
+        print(printPersonalResult("Points (%d total)" % data['serverRanks'][type][0], data['serverRanks'][type][1], name), file=out)
+        print(printPersonalResult("Team Rank", data['serverRanks'][type][2], name), file=out)
+        print(printPersonalResult("Rank", data['serverRanks'][type][3], name), file=out)
+        print('<br/>', file=out)
 
       unfinishedString = tableHeader("unfinTable1", "unfinTable1-" + type)
 
@@ -319,22 +315,22 @@ with con:
       unfinishedString += tableHeader("unfinTable3", "unfinTable3-" + type) + '</tbody></table>'
       tblString += '</tbody></table></div>'
       if found:
-        print >>out, tblString
+        print(tblString, file=out)
 
       if allFinished:
-        print >>out, '<p><strong>All maps on %s finished by %s!</strong></p>' % (type, orText)
+        print('<p><strong>All maps on %s finished by %s!</strong></p>' % (type, orText), file=out)
       else:
-        print >>out, '<input type="checkbox" id="checkbox_%s" checked="checked" /><label for="checkbox_%s"><p><a><strong>Unfinished maps (show/hide)</strong></a></p></label>' % (type, type)
-        print >>out, '<div class="unfinishedmaps">'
-        print >>out, unfinishedString
-        print >>out, '</div>'
-      print >>out, '</div>'
+        print('<input type="checkbox" id="checkbox_%s" checked="checked" /><label for="checkbox_%s"><p><a><strong>Unfinished maps (show/hide)</strong></a></p></label>' % (type, type), file=out)
+        print('<div class="unfinishedmaps">', file=out)
+        print(unfinishedString, file=out)
+        print('</div>', file=out)
+      print('</div>', file=out)
 
-    print >>out, """  </section>
+    print("""  </section>
   </article>
   %s
   </body>
-  </html>""" % printDateTimeScript()
+  </html>""" % printDateTimeScript(), file=out)
 
     #h = hpy()
     #print h.heap()
@@ -526,7 +522,7 @@ with con:
 
     start_response('200 OK', [('Content-Type', 'text/html')])
 
-    out = cStringIO.StringIO()
+    out = StringIO()
 
     menuText = '<ul>'
     menuText += '<li><a href="#global">Global Ranks for %s</a></li>' % escape(name)
@@ -534,33 +530,33 @@ with con:
       menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type)
     menuText += '</ul>'
 
-    print >>out, header("%s - Player Profile - DDraceNetwork" % escape(name), menuText, "")
+    print(header("%s - Player Profile - DDraceNetwork" % escape(name), menuText, ""), file=out)
 
-    print >>out, '<div id="global" class="block div-ranks">'
+    print('<div id="global" class="block div-ranks">', file=out)
 
     hiddenFields = '<input type="hidden" name="player" value="%s">' % escape(name)
 
-    print >>out, '<div id="remote" class="right"><form id="playerform" action="/players/" method="get"><input id="playersearch" name="player" class="typeahead" type="text" placeholder="Player search"><input type="submit" value="Player search" style="position: absolute; left: -9999px"></form><br>'
-    print >>out, '<form id="playerform2" action="/compare/" method="get">%s<input name="player" class="typeahead" type="text" placeholder="Compare"><input type="submit" value="Compare" style="position: absolute; left: -9999px"></form></div>' % hiddenFields
-    print >>out, '<script src="/jquery.js" type="text/javascript"></script>'
-    print >>out, '<script src="/typeahead.bundle.js" type="text/javascript"></script>'
-    print >>out, '<script src="/playersearch.js?version=2" type="text/javascript"></script>'
-    print >>out, '<script type="text/javascript" src="/players-data/jquery.tablesorter.js"></script>'
-    print >>out, '<script type="text/javascript" src="/players-data/sorter.js"></script>'
-    print >>out, '<script>'
-    print >>out, '  var input = document.getElementById("playersearch");'
-    print >>out, '  input.focus();'
-    print >>out, '  input.select();'
-    print >>out, '</script>'
-    print >>out, '<link rel="stylesheet" type="text/css" href="/players-data/css-sorter.css">'
+    print('<div id="remote" class="right"><form id="playerform" action="/players/" method="get"><input id="playersearch" name="player" class="typeahead" type="text" placeholder="Player search"><input type="submit" value="Player search" style="position: absolute; left: -9999px"></form><br>', file=out)
+    print('<form id="playerform2" action="/compare/" method="get">%s<input name="player" class="typeahead" type="text" placeholder="Compare"><input type="submit" value="Compare" style="position: absolute; left: -9999px"></form></div>' % hiddenFields, file=out)
+    print('<script src="/jquery.js" type="text/javascript"></script>', file=out)
+    print('<script src="/typeahead.bundle.js" type="text/javascript"></script>', file=out)
+    print('<script src="/playersearch.js?version=2" type="text/javascript"></script>', file=out)
+    print('<script type="text/javascript" src="/players-data/jquery.tablesorter.js"></script>', file=out)
+    print('<script type="text/javascript" src="/players-data/sorter.js"></script>', file=out)
+    print('<script>', file=out)
+    print('  var input = document.getElementById("playersearch");', file=out)
+    print('  input.focus();', file=out)
+    print('  input.select();', file=out)
+    print('</script>', file=out)
+    print('<link rel="stylesheet" type="text/css" href="/players-data/css-sorter.css">', file=out)
 
-    print >>out, '<div class="block7"><h2>Global Ranks for %s</h2></div><br/>' % escape(name)
+    print('<div class="block7"><h2>Global Ranks for %s</h2></div><br/>' % escape(name), file=out)
 
-    print >>out, globalRanks(name, player)
-    print >>out, lastFinishes(name)
-    print >>out, favoritePartners(name)
-    print >>out, '<br/>'
-    print >>out, '</div>'
+    print(globalRanks(name, player), file=out)
+    print(lastFinishes(name), file=out)
+    print(favoritePartners(name), file=out)
+    print('<br/>', file=out)
+    print('</div>', file=out)
 
     for type in data['types']:
       maps2 = data['maps'][type]
@@ -570,12 +566,12 @@ with con:
         if map in player[0]:
           count += 1
 
-      print >>out, '<div id="%s" class="block div-ranks"><h2></h2><h2 class="inline">%s Server</h2> <h3 class="inline">(%d/%d maps finished)</h3><br/>' % (type, type, count, len(maps2))
+      print('<div id="%s" class="block div-ranks"><h2></h2><h2 class="inline">%s Server</h2> <h3 class="inline">(%d/%d maps finished)</h3><br/>' % (type, type, count, len(maps2)), file=out)
 
-      print >>out, printPersonalResult("Points (%d total)" % data['serverRanks'][type][0], data['serverRanks'][type][1], name)
-      print >>out, printPersonalResult("Team Rank", data['serverRanks'][type][2], name)
-      print >>out, printPersonalResult("Rank", data['serverRanks'][type][3], name)
-      print >>out, '<br/>'
+      print(printPersonalResult("Points (%d total)" % data['serverRanks'][type][0], data['serverRanks'][type][1], name), file=out)
+      print(printPersonalResult("Team Rank", data['serverRanks'][type][2], name), file=out)
+      print(printPersonalResult("Rank", data['serverRanks'][type][3], name), file=out)
+      print('<br/>', file=out)
 
       unfinishedString = tableHeader("unfinTable1", "unfinTable1-" + type)
 
@@ -600,24 +596,24 @@ with con:
       unfinishedString += tableHeader("unfinTable3", "unfinTable3-" + type) + '</tbody></table>'
       tblString += '</tbody></table></div>'
       if found:
-        print >>out, tblString
+        print(tblString, file=out)
 
       if allFinished:
-        print >>out, '<p><strong>All maps on %s finished!</strong></p>' % type
+        print('<p><strong>All maps on %s finished!</strong></p>' % type, file=out)
       else:
-        print >>out, '<input type="checkbox" id="checkbox_%s" checked="checked" /><label for="checkbox_%s"><p><a><strong>Unfinished maps (show/hide)</strong></a></p></label>' % (type, type)
-        print >>out, '<div class="unfinishedmaps">'
-        print >>out, unfinishedString
-        print >>out, '</div>'
-      print >>out, '</div>'
+        print('<input type="checkbox" id="checkbox_%s" checked="checked" /><label for="checkbox_%s"><p><a><strong>Unfinished maps (show/hide)</strong></a></p></label>' % (type, type), file=out)
+        print('<div class="unfinishedmaps">', file=out)
+        print(unfinishedString, file=out)
+        print('</div>', file=out)
+      print('</div>', file=out)
 
     generatedTime = datetime.fromtimestamp(last).strftime("%Y-%m-%d %H:%M:%S")
-    print >>out, """    <p class="toggle">Refreshed: <span data-type="date" data-date="%s" data-datefmt="datetime">%s</span></p>
+    print("""    <p class="toggle">Refreshed: <span data-type="date" data-date="%s" data-datefmt="datetime">%s</span></p>
     </section>
   </article>
   %s
   </body>
-  </html>""" % (generatedTime, generatedTime, printDateTimeScript())
+  </html>""" % (generatedTime, generatedTime, printDateTimeScript()), file=out)
 
     #h = hpy()
     #print h.heap()

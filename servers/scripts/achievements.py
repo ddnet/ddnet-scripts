@@ -1,12 +1,8 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
 from ddnet import *
 import sys
 import os
-
-reload(sys)
-sys.setdefaultencoding('utf8')
 
 con = mysqlConnect()
 

@@ -33,8 +33,8 @@ if sys.version_info.major < 3:
     reload(sys)
     sys.setdefaultencoding('utf8')
 
-webDir = "/var/www"
-htmlRanksPath = "/home/teeworlds/servers/scripts/discord-ranks.html"
+webDir = os.environ.get("DDNET_WEB_DIR", "/var/www")
+htmlRanksPath = os.environ.get("DDNET_WEB_RANKS_HTML_PATH", "/home/teeworlds/servers/scripts/discord-ranks.html")
 countries = ["NLD", "FRA", "GER", "POL", "RUS", "TUR", "IRN", "CHL", "BRA", "ARG", "USA", "CAN", "CHN", "KOR", "JAP", "SGP", "ZAF", "IND", "AUS", "OLD"]
 all_tiles = [
   'THROUGH',

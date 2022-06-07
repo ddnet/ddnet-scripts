@@ -1,20 +1,16 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
 from ddnet import *
 import sys
 import msgpack
 from cgi import escape
 
-reload(sys)
-sys.setdefaultencoding('utf8')
-
 def printFooter():
-  print """
+  print("""
   </section>
   </article>
   </body>
-</html>"""
+</html>""")
 
 rankLadder = {}
 teamrankLadder = {}
@@ -29,13 +25,14 @@ menuText = '<ul>\n'
 menuText += '<li><a href="/releases/">Recent Releases</a></li>\n'
 menuText += '<li><a href="/releases/all/">All Releases</a></li>\n'
 menuText += '</ul>'
-print header("All Map Releases - DDraceNetwork", menuText, "")
+print(header("All Map Releases - DDraceNetwork", menuText, ""))
 
-f = open("releases")
 releases = []
-for line in f:
-  words = line.rstrip('\n').split('\t')
-  releases.append(tuple(words))
+
+with open("releases") as f:
+  for line in f:
+    words = line.rstrip('\n').split('\t')
+    releases.append(tuple(words))
 
 serversString = ""
 mapsString = ""
@@ -87,8 +84,8 @@ for x in releases:
 serversString += mapsString
 serversString += '<span class="stretch"></span></div>\n'
 
-print '<div id="global" class="block"><h2>All Map Releases</h2><br/>'
-print '<a href="feed/"><img width="36" src="/feed.svg"/></a> You can subscribe to the feed to get updated about new map releases'
-print '<p>Planned Map Releases are listed on <a href="https://discordapp.com/invite/85Vavs">Discord</a>. All DDNet maps can be download from <a href="https://github.com/ddnet/ddnet-maps">GitHub</a>, <a href="https://maps.ddnet.tw/compilations/">our compilations</a> or <a href="https://maps.ddnet.tw/">as single files</a>.</p>'
-print serversString
+print('<div id="global" class="block"><h2>All Map Releases</h2><br/>')
+print('<a href="feed/"><img width="36" src="/feed.svg"/></a> You can subscribe to the feed to get updated about new map releases')
+print('<p>Planned Map Releases are listed on <a href="https://discordapp.com/invite/85Vavs">Discord</a>. All DDNet maps can be download from <a href="https://github.com/ddnet/ddnet-maps">GitHub</a>, <a href="https://maps.ddnet.tw/compilations/">our compilations</a> or <a href="https://maps.ddnet.tw/">as single files</a>.</p>')
+print(serversString)
 printFooter()

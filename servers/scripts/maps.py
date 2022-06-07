@@ -1,11 +1,10 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
 from ddnet import *
 import sys
 from cgi import escape
 from datetime import datetime, timedelta
-import cStringIO
+from io import StringIO
 import msgpack
 from operator import itemgetter
 import urllib
@@ -101,12 +100,12 @@ with con:
       mbCountry = ""
       mbCountry2 = ""
 
-    originalMapName = deslugify2(u'%s' % mapName.encode('utf-8'))
+    originalMapName = deslugify2('%s' % mapName.encode('utf-8'))
     if originalMapName.rstrip() != originalMapName:
       if country:
-        newPath = '/maps/%s/%s' % (country.lower(), slugify2(u'%s' % originalMapName.rstrip()).encode('utf-8'))
+        newPath = '/maps/%s/%s' % (country.lower(), slugify2('%s' % originalMapName.rstrip()).encode('utf-8'))
       else:
-        newPath = '/maps/%s' % slugify2(u'%s' % originalMapName.rstrip()).encode('utf-8')
+        newPath = '/maps/%s' % slugify2('%s' % originalMapName.rstrip()).encode('utf-8')
       start_response('301 Moved Permanently', [('Location', newPath)])
       return ''
 
@@ -119,7 +118,7 @@ with con:
 
     start_response('200 OK', [('Content-Type', 'text/html')])
 
-    out = cStringIO.StringIO()
+    out = StringIO()
 
     (type, points, stars, mapperName, mapTimestamp) = rows[0]
     normalizedMapName = normalizeMapname(originalMapName)
@@ -147,26 +146,26 @@ with con:
     menuText += '</ul>'
 
     mbCountryString = ' (%s)' % (country) if country else ""
-    print >>out, header("%s%s - %s Server Ranks%s - DDraceNetwork" % (escape(originalMapName), mbMapperName, type, mbCountryString), menuText, "")
+    print(header("%s%s - %s Server Ranks%s - DDraceNetwork" % (escape(originalMapName), mbMapperName, type, mbCountryString), menuText, ""), file=out)
 
     ranksLink = '/ranks/%s/%s/' % (country.lower(), type.lower()) if country else '/ranks/%s/' % type.lower()
-    print >>out, '<div id="global" class="longblock div-ranks">'
-    print >>out, '<div class="right"><form id="mapform" action="/maps/" method="get"><input id="mapsearch" name="map" class="typeahead" type="text" placeholder="Map search"><input type="submit" value="Map search" style="position: absolute; left: -9999px"></form></div>'
-    print >>out, '<h2><a href="%s">%s Server Ranks%s</a></h2>' % (ranksLink, type, mbCountryString)
-    print >>out, '<script src="/jquery.js" type="text/javascript"></script>'
-    print >>out, '<script src="/typeahead.bundle.js" type="text/javascript"></script>'
-    print >>out, '<script src="/mapsearch.js" type="text/javascript"></script>'
-    print >>out, '<script>'
-    print >>out, '  var input = document.getElementById("mapsearch");'
-    print >>out, '  input.focus();'
-    print >>out, '  input.select();'
-    print >>out, '</script>'
+    print('<div id="global" class="longblock div-ranks">', file=out)
+    print('<div class="right"><form id="mapform" action="/maps/" method="get"><input id="mapsearch" name="map" class="typeahead" type="text" placeholder="Map search"><input type="submit" value="Map search" style="position: absolute; left: -9999px"></form></div>', file=out)
+    print('<h2><a href="%s">%s Server Ranks%s</a></h2>' % (ranksLink, type, mbCountryString), file=out)
+    print('<script src="/jquery.js" type="text/javascript"></script>', file=out)
+    print('<script src="/typeahead.bundle.js" type="text/javascript"></script>', file=out)
+    print('<script src="/mapsearch.js" type="text/javascript"></script>', file=out)
+    print('<script>', file=out)
+    print('  var input = document.getElementById("mapsearch");', file=out)
+    print('  input.focus();', file=out)
+    print('  input.select();', file=out)
+    print('</script>', file=out)
 
-    print >>out, '<br></div>'
-    print >>out, '<div id="global" class="longblock div-ranks">'
+    print('<br></div>', file=out)
+    print('<div id="global" class="longblock div-ranks">', file=out)
 
-    print >>out, '<h2>%s%s</h2>' % (escape(originalMapName), mbMapperNameHtml)
-    print >>out, '<br>'
+    print('<h2>%s%s</h2>' % (escape(originalMapName), mbMapperNameHtml), file=out)
+    print('<br>', file=out)
 
     rows = []
     teamRanks = []
@@ -296,8 +295,8 @@ with con:
       pass
 
     if type == "Solo" or type == "Race" or type == "Dummy":
-      print >>out, u'<div class="block2 info"><p>%sDifficulty: %s, Points: %d<br/><a href="/mappreview/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span></p></div>' % (mbReleased, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(normalizedMapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime))
-      print >>out, printExactSoloRecords("Records", "records", ranks, not country)
+      print('<div class="block2 info"><p>%sDifficulty: %s, Points: %d<br/><a href="/mappreview/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span></p></div>' % (mbReleased, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(normalizedMapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime)), file=out)
+      print(printExactSoloRecords("Records", "records", ranks, not country), file=out)
     else:
       query("select count(distinct ID) from record_teamrace left join record_race on record_teamrace.Map = record_race.Map and record_teamrace.Name = record_race.Name and record_teamrace.Time = record_race.Time where record_teamrace.Map = '%s' %s" % (con.escape_string(originalMapName), mbCountry))
       rows = cur.fetchall()
@@ -307,15 +306,15 @@ with con:
       else:
         mbS = "s"
 
-      print >>out, u'<div class="block2 info"><p>%sDifficulty: %s, Points: %d<br/><a href="/mappreview/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span><br/>%d team%s finished%s</p></div>' % (mbReleased, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(normalizedMapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime), countTeamFinishes, mbS, escape(biggestTeam))
-      print >>out, printTeamRecords("Team Records", "teamrecords", teamRanks, not country)
-      print >>out, printSoloRecords("Records", "records", ranks, not country)
+      print('<div class="block2 info"><p>%sDifficulty: %s, Points: %d<br/><a href="/mappreview/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span><br/>%d team%s finished%s</p></div>' % (mbReleased, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(normalizedMapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime), countTeamFinishes, mbS, escape(biggestTeam)), file=out)
+      print(printTeamRecords("Team Records", "teamrecords", teamRanks, not country), file=out)
+      print(printSoloRecords("Records", "records", ranks, not country), file=out)
 
-    print >>out, '<br>'
-    print >>out, '</div>'
-    print >>out, """  </section>
+    print('<br>', file=out)
+    print('</div>', file=out)
+    print("""  </section>
   </article>
   </body>
-  </html>"""
+  </html>""", file=out)
 
     return out.getvalue()

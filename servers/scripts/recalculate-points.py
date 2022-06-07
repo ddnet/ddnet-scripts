@@ -1,18 +1,8 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
-from ddnet import *
-import sys
 import os
-from cgi import escape
-from urllib import quote_plus
-from time import sleep
-from datetime import datetime, timedelta
+from datetime import datetime
 import msgpack
-import cStringIO
-
-reload(sys)
-sys.setdefaultencoding('utf8')
 
 lastModified = datetime.fromtimestamp(os.path.getmtime('%s/players.msgpack' % webDir))
 #print('Points last updated: %s' % lastModified.strftime('%m-%d-%Y %H:%M:%S'))

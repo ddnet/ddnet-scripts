@@ -1,5 +1,4 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
 from ddnet import *
 import sys
@@ -7,15 +6,12 @@ import msgpack
 from cgi import escape
 from datetime import datetime
 
-reload(sys)
-sys.setdefaultencoding('utf8')
-
 def printFooter():
-  print """
+  print("""
   </section>
   </article>
   </body>
-</html>"""
+</html>""")
 
 rankLadder = {}
 teamrankLadder = {}
@@ -34,14 +30,14 @@ for line in f:
   if len(releases) >= 24:
     break
 
-print """<?xml version="1.0" encoding="utf-8"?>
+print("""<?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>DDraceNetwork Map Releases</title>
   <link href="http://ddnet.tw/releases/feed/" rel="self" />
   <link href="http://ddnet.tw/releases/" />
   <id>http://ddnet.tw/releases/</id>
   <updated>%s</updated>
-""" % formatDateFeedStr(releases[0][0])
+""" % formatDateFeedStr(releases[0][0]))
 
 for x in releases:
   date, server, y = x
@@ -88,7 +84,7 @@ for x in releases:
     pass
 
   mapsString = u'<p>New map <a href="%s">%s</a> %s released on the <a href="/ranks/%s/">%s Server</a></p><p>Difficulty: %s, Points: %d</p><p><a href="/mappreview/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a></p><p>%s</p>' % (mapWebsite(originalMapName), formattedMapName, mbMapperName, server.lower(), server, escape(renderStars(stars)), globalPoints(server, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo)
-  print """  <entry>
+  print("""  <entry>
     <title>[%s] %s%s</title>
     <link href="%s" />
     <id>urn:map:%s</id>
@@ -103,5 +99,6 @@ for x in releases:
     </content>
   </entry>
 """ % (server, escape(originalMapName), mbRawMapperName, mapWebsite(originalMapName), escape(mapName), formatDateFeedStr(date), rawMapperName, mapsString)
+  )
 
-print "</feed>"
+print("</feed>")
