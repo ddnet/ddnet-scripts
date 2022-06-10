@@ -174,7 +174,7 @@ build_windows_website ()
 {
   PLATFORM=$1
   BUILDOPTS=$2
-  CXXFLAGS="'$CXXFLAGS_WEB'" build_windows $PLATFORM "$UPDATE_FLAGS $(echo $BUILDOPTS)"
+  CXXFLAGS="'$CXXFLAGS_WEB' -pie" build_windows $PLATFORM "$UPDATE_FLAGS $(echo $BUILDOPTS)"
   mv DDNet-*.zip $BUILDS/DDNet-$VERSION-win$PLATFORM.zip
   mv DDNet-*-symbols.tar.xz $BUILDS/
   cd ..
@@ -185,7 +185,7 @@ build_windows_steam ()
 {
   PLATFORM=$1
   BUILDOPTS=$2
-  CXXFLAGS="'$CXXFLAGS_STEAM'" build_windows $PLATFORM "-DSTEAM=ON $(echo $BUILDOPTS)" "-steam"
+  CXXFLAGS="'$CXXFLAGS_STEAM' -pie" build_windows $PLATFORM "-DSTEAM=ON $(echo $BUILDOPTS)" "-steam"
   mv DDNet-*.zip ../DDNet-$VERSION-steam-win$PLATFORM.zip
   mv DDNet-*-symbols.tar.xz $BUILDS/
   cd ..
