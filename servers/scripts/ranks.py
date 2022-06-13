@@ -245,7 +245,7 @@ with con:
 
       try:
         if country == None:
-          cur.execute("select distinct r.Name, r.ID, r.Time, r.Timestamp, n.Server from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID inner join ((select distinct Map, Name, Time, SUBSTRING(Server, 1, 3) as Server from record_race) as n) on r.Map = n.Map and r.Name = n.Name and r.Time = n.Time order by r.Time, r.ID, r.Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
+          cur.execute("select distinct r.Name, r.ID, r.Time, r.Timestamp, (select substring(Server, 1, 3) from record_race where Map = r.Map and Name = r.Name and Time = r.Time limit 1) as Server from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID order by r.Time, r.ID, r.Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
         else:
           cur.execute("select distinct r.Name, r.ID, r.Time, r.Timestamp, n.Server from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID inner join ((select distinct Map, Name, Time, SUBSTRING(Server, 1, 3) as Server from record_race %s) as n) on r.Map = n.Map and r.Name = n.Name and r.Time = n.Time order by r.Time, r.ID, r.Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName), mbCountry2))
         rows = cur.fetchall()
@@ -481,9 +481,9 @@ with con:
 
     lastString += '</table></div><br/>'
 
-    serversString2 += printLadder("Points (last year)", yearlyServerPointsRanks, players, not country)
-    serversString2 += printLadder("Points (last month)", monthlyServerPointsRanks, players, not country)
-    serversString2 += printLadder("Points (last week)", weeklyServerPointsRanks, players, not country)
+    serversString2 += printLadder("Points (past 365 days)", yearlyServerPointsRanks, players, not country)
+    serversString2 += printLadder("Points (past 30 days)", monthlyServerPointsRanks, players, not country)
+    serversString2 += printLadder("Points (past 7 days)", weeklyServerPointsRanks, players, not country)
     serversString2 += lastString
     serversString2 += '</div>\n'
 
@@ -610,9 +610,9 @@ print >>tf, printLadder("Points (%d total)" % totalPoints, pointsRanks, players,
 print >>tf, printLadder("Team Rank", teamrankRanks, players, not country, 20)
 print >>tf, printLadder("Rank", rankRanks, players, not country, 20)
 print >>tf, '<br/>'
-print >>tf, printLadder("Points (last year)", yearlyPointsRanks, players, not country, 20)
-print >>tf, printLadder("Points (last month)", monthlyPointsRanks, players, not country, 20)
-print >>tf, printLadder("Points (last week)", weeklyPointsRanks, players, not country, 20)
+print >>tf, printLadder("Points (past 365 days)", yearlyPointsRanks, players, not country, 20)
+print >>tf, printLadder("Points (past 30 days)", monthlyPointsRanks, players, not country, 20)
+print >>tf, printLadder("Points (past 7 days)", weeklyPointsRanks, players, not country, 20)
 print >>tf, lastString
 print >>tf, '</div>'
 print >>tf, printFooter()

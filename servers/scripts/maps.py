@@ -13,12 +13,119 @@ import json
 from gc import collect
 from os.path import getmtime
 from urlparse import parse_qs
+from time import mktime
 
 reload(sys)
 sys.setdefaultencoding('utf8')
 
 con = mysqlConnect()
 con.autocommit(True)
+
+def getTeamRanks(originalMapName, country, mbCountry2, html):
+  rows = []
+  teamRanks = []
+  namesOnMap = {}
+  names = []
+  time = 0
+  currentRank = 1
+  currentPosition = 1
+  skips = 1
+
+  if country == None:
+    query("select distinct r.Name, r.ID, r.Time, r.Timestamp, (select substring(Server, 1, 3) from record_race where Map = r.Map and Name = r.Name and Time = r.Time limit 1) as Server from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time limit 20) as l) left join record_teamrace as r on l.ID = r.ID order by r.Time, r.ID, r.Name;" % (con.escape_string(originalMapName)))
+  else:
+    query("select distinct r.Name, r.ID, r.Time, r.Timestamp, SUBSTRING(n.Server, 1, 3) from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join record_teamrace as r on l.ID = r.ID inner join ((select * from record_race %s) as n) on r.Map = n.Map and r.Name = n.Name and r.Time = n.Time order by r.Time, r.ID, r.Name limit 160;" % (con.escape_string(originalMapName), mbCountry2))
+  rows = cur.fetchall()
+  if len(rows) > 0:
+    ID = rows[0][1]
+
+  for row in rows:
+    if row[1] != ID:
+      if currentPosition <= 20:
+        fNames = []
+        for name in names:
+          fNames.append('<a href="%s">%s</a>' % (escape(playerWebsite(u'%s' % name)), escape(name)))
+        teamRanks.append((currentRank, joinNames(fNames) if html else names, time, timestamp, foundCountry))
+        names = []
+
+      if row[2] != time:
+        time = row[2]
+        timestamp = row[3]
+        currentRank += skips
+        skips = 1
+      else:
+        skips += 1
+      currentPosition += 1
+      ID = row[1]
+
+    if currentPosition <= 20:
+      time = row[2]
+      timestamp = row[3]
+      names.append(row[0])
+      foundCountry = row[4] if row[4] else 'UNK'
+
+    if currentRank <= 20 and row[0] not in namesOnMap:
+      namesOnMap[row[0]] = True
+
+  if currentPosition <= 20 and time > 0:
+    fNames = []
+    for name in names:
+      fNames.append('<a href="%s">%s</a>' % (escape(playerWebsite(u'%s' % name)), escape(name)))
+    teamRanks.append((currentRank, joinNames(fNames) if html else names, time, timestamp, foundCountry))
+  return teamRanks
+
+def getFinishes(originalMapName, country, mbCountry):
+  query("select Name, count(*), sum(Time), min(Timestamp), max(Timestamp) from record_race where Map = '%s' %s group by Name order by count(*) desc limit 20;" % (con.escape_string(originalMapName), mbCountry))
+  rows = cur.fetchall()
+  ranks = []
+
+  currentRank = 0
+  currentPosition = 0
+  lastTime = 0
+  skips = 1
+
+  for row in rows:
+    if row[1] != lastTime:
+      lastTime = row[1]
+      currentRank += skips
+      skips = 1
+    else:
+      skips += 1
+
+    currentPosition += 1
+    ranks.append((currentRank, row[0], row[1], row[2], row[3], row[4]))
+
+  return ranks
+
+def getRanks(originalMapName, country, mbCountry):
+  rows = []
+  ranks = []
+  countFinishes = 0
+
+  query("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, SUBSTRING(l.Server, 1, 3) from (select * from record_race where Map = '%s' %s) as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp from record_race where Map = '%s' %s group by Name order by minTime ASC limit 20) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTime, l.Name;" % (con.escape_string(originalMapName), mbCountry, con.escape_string(originalMapName), mbCountry))
+  rows = cur.fetchall()
+
+  countFinishes = len(rows)
+
+  currentRank = 0
+  currentPosition = 0
+  lastTime = 0
+  skips = 1
+
+  for row in rows:
+    if row[1] != lastTime:
+      lastTime = row[1]
+      currentRank += skips
+      skips = 1
+    else:
+      skips += 1
+
+    currentPosition += 1
+
+    if currentPosition <= 20:
+      ranks.append((currentRank, row[0], row[1], row[2], row[3], row[5] if row[5] else 'UNK'))
+
+  return (ranks, countFinishes)
 
 with con:
   cur = con.cursor()
@@ -40,9 +147,109 @@ with con:
     parts = path.split('/')
 
     country = None
-    if path == '/maps/':
+    if path in ['/maps/', '/maps2/']:
       qs = parse_qs(env['QUERY_STRING'])
 
+      if 'json' in qs:
+        originalMapName = qs['json'][0]
+
+        start_response('200 OK', [('Content-Type', 'application/json')])
+
+        jsonT = OrderedDict()
+
+        query("select Server, Points, Stars, Mapper, Timestamp from record_maps where Map = '%s';" % con.escape_string(originalMapName))
+        rows = cur.fetchall()
+        if len(rows) > 0:
+          jsonT['name'] = originalMapName
+          slugifiedMapName = slugify2(originalMapName)
+          jsonT['website'] = 'https://ddnet.tw/maps/%s' % slugifiedMapName
+          normalizedMapName = normalizeMapname(originalMapName)
+          jsonT['thumbnail'] = 'https://ddnet.tw/ranks/maps/%s.png' % normalizedMapName
+          jsonT['web_preview'] = 'https://ddnet.tw/mappreview/?map=%s' % quote_plus(originalMapName)
+
+          (type, points, stars, mapperName, mapTimestamp) = rows[0]
+          jsonT['type'] = type
+          jsonT['points'] = points
+          jsonT['difficulty'] = stars
+          jsonT['mapper'] = mapperName
+          if mapTimestamp:
+              jsonT['release'] = mktime(mapTimestamp.timetuple())
+
+          country = qs['country'][0] if 'country' in qs else None
+          if country == "OLD": # Old ranks had no country
+            mbCountry = "and Server = \"\""
+            mbCountry2 = "where Server = \"\""
+          elif country:
+            mbCountry = "and Server like \"%s%%%%\"" % con.escape_string(country)
+            mbCountry2 = "where Server like \"%s%%%%\"" % con.escape_string(country)
+          else:
+            mbCountry = ""
+            mbCountry2 = ""
+
+          finishes = getFinishes(originalMapName, country, mbCountry)
+          (ranks, countFinishes) = getRanks(originalMapName, country, mbCountry)
+          teamRanks = getTeamRanks(originalMapName, country, mbCountry2, html=False)
+          if countFinishes:
+            query("select (select median(Time) over (partition by Map) from record_race where Map = '%s' %s limit 1), min(Timestamp), max(Timestamp), count(*), count(distinct Name) from record_race where Map = '%s' %s;" % (con.escape_string(originalMapName), mbCountry, con.escape_string(originalMapName), mbCountry))
+            rows = cur.fetchall()
+            jsonT['median_time'] = rows[0][0]
+            jsonT['first_finish'] = mktime(rows[0][1].timetuple())
+            jsonT['last_finish'] = mktime(rows[0][2].timetuple())
+            jsonT['finishes'] = rows[0][3]
+            jsonT['finishers'] = rows[0][4]
+
+          if type == "Solo" or type == "Race" or type == "Dummy":
+            jsonT['biggest_team'] = 0
+          else:
+            if country == None:
+              query("select count(Name) from record_teamrace where Map = '%s' group by ID order by count(Name) desc limit 1;" % con.escape_string(originalMapName))
+            else:
+              query("select count(record_teamrace.Name) from (record_teamrace join record_race on record_teamrace.Map = record_race.Map and record_teamrace.Name = record_race.Name and record_teamrace.Time = record_race.Time) where record_teamrace.Map = '%s' %s group by ID order by count(record_teamrace.Name) desc limit 1;" % (con.escape_string(originalMapName), mbCountry))
+            rows = cur.fetchall()
+            jsonT['biggest_team'] = 0 if len(rows) == 0 else rows[0][0]
+
+          with open('/home/teeworlds/servers/maps/%s.msgpack' % originalMapName, 'rb') as inp:
+            unpacker = msgpack.Unpacker(inp)
+            jsonT['width'] = unpacker.unpack()
+            jsonT['height'] = unpacker.unpack()
+            tiles = unpacker.unpack()
+            jsonT['tiles'] = sorted(tiles.keys(), key=lambda i:order(i))
+
+          jsonT['team_ranks'] = []
+          for teamRank in teamRanks:
+            (currentRank, names, time, timestamp, foundCountry) = teamRank
+            teamRankT = OrderedDict()
+            teamRankT['rank'] = currentRank
+            teamRankT['players'] = names
+            teamRankT['time'] = time
+            teamRankT['timestamp'] = mktime(timestamp.timetuple())
+            teamRankT['country'] = foundCountry
+            jsonT['team_ranks'].append(teamRankT)
+
+          jsonT['ranks'] = []
+          for rank in ranks:
+            (rank, name, time, timestamp, playCount, foundCountry) = rank
+            rankT = OrderedDict()
+            rankT['rank'] = rank
+            rankT['player'] = name
+            rankT['time'] = time
+            rankT['timestamp'] = mktime(timestamp.timetuple())
+            rankT['country'] = foundCountry
+            jsonT['ranks'].append(rankT)
+
+          jsonT['max_finishes'] = []
+          for rank in finishes:
+            (rank, name, num, time, minTime, maxTime) = rank
+            rankT = OrderedDict()
+            rankT['rank'] = rank
+            rankT['player'] = name
+            rankT['num'] = num
+            rankT['time'] = time
+            rankT['min_timestamp'] = mktime(minTime.timetuple())
+            rankT['max_timestamp'] = mktime(minTime.timetuple())
+            jsonT['max_finishes'].append(rankT)
+
+        return json.dumps(jsonT)
       if 'map' in qs:
         q = qs['map'][0]
         if 'country' in qs:
@@ -59,14 +266,14 @@ with con:
         SELECT l.Map, l.Server, Mapper
         FROM (
           SELECT * FROM record_maps
-          WHERE Map LIKE '%s' COLLATE utf8mb4_general_ci
+          WHERE Map LIKE '%%%s%%' COLLATE utf8mb4_general_ci
           ORDER BY
             CASE WHEN Map = '%s' THEN 0 ELSE 1 END,
             CASE WHEN Map LIKE '%s%%' THEN 0 ELSE 1 END,
             LENGTH(Map),
             Map
           LIMIT 10
-        ) as l;""" % ('%' + '%'.join(con.escape_string(q)) + '%', con.escape_string(q), con.escape_string(q)))
+        ) as l;""" % (con.escape_string('%'.join(q)), con.escape_string(q), con.escape_string(q)))
         rows = cur.fetchall()
         if len(rows) > 0:
           for row in rows:
@@ -168,83 +375,9 @@ with con:
     print >>out, '<h2>%s%s</h2>' % (escape(originalMapName), mbMapperNameHtml)
     print >>out, '<br>'
 
-    rows = []
-    teamRanks = []
-    namesOnMap = {}
-    names = []
-    time = 0
-    currentRank = 1
-    currentPosition = 1
-    skips = 1
-
-    if country == None:
-      query("select distinct r.Name, r.ID, r.Time, r.Timestamp, SUBSTRING(n.Server, 1, 3) from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time limit 20) as l) left join record_teamrace as r on l.ID = r.ID inner join record_race as n on r.Map = n.Map and r.Name = n.Name and r.Time = n.Time order by r.Time, r.ID, r.Name;" % (con.escape_string(originalMapName)))
-    else:
-      query("select distinct r.Name, r.ID, r.Time, r.Timestamp, SUBSTRING(n.Server, 1, 3) from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join record_teamrace as r on l.ID = r.ID inner join ((select * from record_race %s) as n) on r.Map = n.Map and r.Name = n.Name and r.Time = n.Time order by r.Time, r.ID, r.Name limit 160;" % (con.escape_string(originalMapName), mbCountry2))
-    rows = cur.fetchall()
-    if len(rows) > 0:
-      ID = rows[0][1]
-
-    for row in rows:
-      if row[1] != ID:
-        if currentPosition <= 20:
-          fNames = []
-          for name in names:
-            fNames.append('<a href="%s">%s</a>' % (escape(playerWebsite(u'%s' % name)), escape(name)))
-          teamRanks.append((currentRank, joinNames(fNames), time, timestamp, foundCountry))
-          names = []
-
-        if row[2] != time:
-          time = row[2]
-          timestamp = row[3]
-          currentRank += skips
-          skips = 1
-        else:
-          skips += 1
-        currentPosition += 1
-        ID = row[1]
-
-      if currentPosition <= 20:
-        time = row[2]
-        timestamp = row[3]
-        names.append(row[0])
-        foundCountry = row[4] if row[4] else 'UNK'
-
-      if currentRank <= 20 and row[0] not in namesOnMap:
-        namesOnMap[row[0]] = True
-
-    if currentPosition <= 20 and time > 0:
-      fNames = []
-      for name in names:
-        fNames.append('<a href="%s">%s</a>' % (escape(playerWebsite(u'%s' % name)), escape(name)))
-      teamRanks.append((currentRank, joinNames(fNames), time, timestamp, foundCountry))
-
-    rows = []
-    ranks = []
-    countFinishes = 0
-
-    query("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, SUBSTRING(l.Server, 1, 3) from (select * from record_race where Map = '%s' %s) as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp from record_race where Map = '%s' %s group by Name order by minTime ASC limit 20) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTime, l.Name;" % (con.escape_string(originalMapName), mbCountry, con.escape_string(originalMapName), mbCountry))
-    rows = cur.fetchall()
-
-    countFinishes = len(rows)
-
-    currentRank = 0
-    currentPosition = 0
-    lastTime = 0
-    skips = 1
-
-    for row in rows:
-      if row[1] != lastTime:
-        lastTime = row[1]
-        currentRank += skips
-        skips = 1
-      else:
-        skips += 1
-
-      currentPosition += 1
-
-      if currentPosition <= 20:
-        ranks.append((currentRank, row[0], row[1], row[2], row[3], row[5] if row[5] else 'UNK'))
+    finishes = getFinishes(originalMapName, country, mbCountry)
+    teamRanks = getTeamRanks(originalMapName, country, mbCountry2, html=True)
+    (ranks, countFinishes) = getRanks(originalMapName, country, mbCountry)
 
     if countFinishes == 1:
       mbS2 = ""
@@ -311,6 +444,13 @@ with con:
       print >>out, printTeamRecords("Team Records", "teamrecords", teamRanks, not country)
       print >>out, printSoloRecords("Records", "records", ranks, not country)
 
+    print >>out, printFinishes("Most Finishes", "finishes", finishes)
+
+    print >>out, '<br>'
+    if country:
+        print >>out, '<a href="/maps/?json=%s&country=%s"><img width="36" src="/json.svg"/></a> Ranks and information for this map on %s server are also available in JSON format.' % (quote_plus(originalMapName), quote_plus(country), country)
+    else:
+        print >>out, '<a href="/maps/?json=%s"><img width="36" src="/json.svg"/></a> Ranks and information for this map are also available in JSON format.' % quote_plus(originalMapName)
     print >>out, '<br>'
     print >>out, '</div>'
     print >>out, """  </section>

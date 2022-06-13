@@ -4,7 +4,7 @@ setopt sh_word_split
 unsetopt nomatch
 cd /home/teeworlds/servers
 
-for i in `cat all-types` PermaNovice Multimap; do
+for i in `cat all-types` PermaNovice Multimap SunnyLand; do
   scripts/create-votes.py $i > types/${i:l}/votes.$$.tmp &&
   mv types/${i:l}/votes.$$.tmp types/${i:l}/votes.cfg &&
   #split -l 40 types/${i:l}/votes.cfg types/${i:l}/votes.cfg

@@ -14,6 +14,6 @@ for i in `cat ~/servers/chn-locations`; do
 done
 wait
 
-echo -e "\e[1;31m$(grep successfully $LOGFILE | wc -l)/$(wc -w < all-locations) servers executed successfully\e[0m"
+echo -e "\e[1;31m$(grep successfully $LOGFILE | wc -l)/$(wc -w < chn-locations) servers executed successfully\e[0m"
 grep failed $LOGFILE || true
 rm $LOGFILE

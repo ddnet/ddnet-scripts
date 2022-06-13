@@ -7,7 +7,10 @@ import re
 import os
 import gc
 import os.path
-from cgi import escape
+if sys.version_info[0] == 2:
+    from cgi import escape
+else:
+    from html import escape
 from datetime import date, datetime, timedelta
 from collections import namedtuple, defaultdict
 from pytz import timezone
@@ -35,38 +38,7 @@ if sys.version_info.major < 3:
 
 webDir = "/var/www"
 htmlRanksPath = "/home/teeworlds/servers/scripts/discord-ranks.html"
-countries = ["NLD", "FRA", "GER", "POL", "RUS", "TUR", "IRN", "CHL", "BRA", "ARG", "USA", "CAN", "CHN", "KOR", "JAP", "SGP", "ZAF", "IND", "AUS", "OLD"]
-all_tiles = [
-  'THROUGH',
-  'SOLO_START',
-
-  'WEAPON_SHOTGUN',
-  'WEAPON_GRENADE',
-  'WEAPON_RIFLE',
-  'POWERUP_NINJA',
-  'LASER_STOP',
-  'CRAZY_SHOTGUN',
-  'DRAGGER',
-  'DOOR',
-
-  'DFREEZE',
-  'EHOOK_START',
-  'HIT_END',
-
-  'TELE_GUN',
-  'TELE_GRENADE',
-  'TELE_LASER',
-  'NPC_START',
-  'NPH_START',
-  'SUPER_START',
-  'JETPACK_START',
-  'WALLJUMP',
-  'JUMP',
-
-  'SWITCH_TIMED',
-  'SWITCH',
-  'STOP',
-]
+countries = ["NLD", "FRA", "GER", "POL", "RUS", "TUR", "IRN", "CHL", "BRA", "ARG", "MEX", "USA", "CAN", "CHN", "KOR", "JAP", "SGP", "ZAF", "IND", "AUS", "OLD"]
 
 pointsDict = {
   'Novice':    (1, 0),
@@ -80,6 +52,52 @@ pointsDict = {
   'Race':      (2, 0),
   'Fun':       (0, 0),
 }
+
+tiles_with_descs = [
+    ('DEATH', 'Death'),
+    ('THROUGH', 'Old Hookthrough'),
+    ('JUMP', 'Customized Jumps'),
+    ('DFREEZE' , 'Deep Freeze'),
+    ('EHOOK_START', 'Endless Hook'),
+    ('HIT_END', 'No Hit'),
+    ('SOLO_START', 'Solo'),
+    ('TELE_GUN', 'Tele Gun'),
+    ('TELE_GRENADE', 'Tele Grenade'),
+    ('TELE_LASER', 'Tele Laser'),
+    ('NPC_START', 'No Player Collision'),
+    ('SUPER_START', 'Super Jumps'),
+    ('JETPACK_START', 'Jetpack'),
+    ('WALLJUMP', 'Walljump'),
+    ('NPH_START', 'No Player Hook'),
+    ('WEAPON_SHOTGUN', 'Shotgun'),
+    ('WEAPON_GRENADE', 'Grenade'),
+    ('POWERUP_NINJA', 'Ninja'),
+    ('WEAPON_RIFLE', 'Rifle'),
+    ('LASER_STOP', 'Laser Stop'),
+    ('CRAZY_SHOTGUN', 'Crazy Shotgun'),
+    ('DRAGGER', 'Dragger'),
+    ('DOOR', 'Door'),
+    ('SWITCH_TIMED', 'Timed Switch'),
+    ('SWITCH', 'Switch'),
+    ('STOP', 'Stopper'),
+    ('THROUGH_ALL', 'New Hookthrough'),
+    ('TUNE', 'Tune Zone'),
+    ('OLDLASER', 'Old Laser'),
+    ('TELEINEVIL', 'Red Teleport'),
+    ('TELEIN', 'Teleport'),
+    ('TELECHECK', 'Checkpointed Teleport'),
+    ('TELEINWEAPON', 'Weapon Teleport'),
+    ('TELEINHOOK', 'Hook Teleport'),
+    ('CHECKPOINT_FIRST', 'Time Checkpoint'),
+    ('BONUS', 'Time Bonus'),
+    ('BOOST', 'Boost'),
+    ('PLASMAF', 'Freezing/exploding plasma turret'),
+    ('PLASMAE', 'Exploding plasma turret'),
+    ('PLASMAU', 'Unfreezing plasma turret'),
+]
+
+all_tiles = [x[0] for x in tiles_with_descs]
+tiles_dict = dict(tiles_with_descs)
 
 def lookupIp(ip):
   try:
@@ -115,38 +133,7 @@ def titleSubtype(type):
     return capwords(type)
 
 def description(tile):
-  return {
-    'THROUGH': 'Old Hookthrough',
-    'DFREEZE' : 'Deep Freeze',
-    'EHOOK_START': 'Endless Hook',
-    'HIT_END': 'No Hit',
-    'SOLO_START': 'Solo',
-    'TELE_GUN': 'Tele Gun',
-    'TELE_GRENADE': 'Tele Grenade',
-    'TELE_LASER': 'Tele Laser',
-    'NPC_START': 'No Player Collision',
-    'SUPER_START': 'Super Jumps',
-    'JETPACK_START': 'Jetpack',
-    'WALLJUMP': 'Walljump',
-    'NPH_START': 'No Player Hook',
-    'WEAPON_SHOTGUN': 'Shotgun',
-    'WEAPON_GRENADE': 'Grenade',
-    'POWERUP_NINJA': 'Ninja',
-    'WEAPON_RIFLE': 'Rifle',
-    'LASER_STOP': 'Laser Stop',
-    'CRAZY_SHOTGUN': 'Crazy Shotgun',
-    'DRAGGER': 'Dragger',
-    'DOOR': 'Door',
-    'JUMP': 'Customized Jumps',
-    'SWITCH_TIMED': 'Timed Switch',
-    'SWITCH': 'Switch',
-    'STOP': 'Stop',
-    'TELEINEVIL': 'Evil Teleport',
-    'TELEIN': 'Teleport',
-    'TELECHECKIN': 'Checkpointed Teleport',
-    'TELEINWEAPON': 'Weapon Teleport',
-    'TELEINHOOK': 'Hook Teleport'
-  }[tile]
+  return tiles_dict[tile]
 
 def order(tile):
   return all_tiles.index(tile)
@@ -340,8 +327,8 @@ def header(title, menu, header, refresh = False, stupidIncludes = False, otherIn
     %s
     %s
     %s
-    <link rel="stylesheet" type="text/css" href="/css.css?version=19" />
-    <link rel="stylesheet" type="text/css" href="/css-halloween.css?version=6" />
+    <link rel="stylesheet" type="text/css" href="/css.css?version=23" />
+    <link rel="stylesheet" type="text/css" href="/css-halloween.css?version=7" />
     <script type="text/javascript" src="/js.js"></script>
     <title>%s</title>
   </head>
@@ -370,6 +357,17 @@ def header(title, menu, header, refresh = False, stupidIncludes = False, otherIn
     </header>
     <section>
     %s""" % (mbRefresh, mbIncludes, otherIncludes, title, menu, header)
+
+def printFinishes(recordName, className, topFinishes):
+  string = u'<div class="block2 %s"><h4>%s:</h4>\n' % (className, recordName)
+  if len(topFinishes) > 0:
+    string += '<table class="tight">\n'
+    for f in topFinishes:
+      string += u'  <tr title="First finish: %s, last finish: %s, total time: %s"><td class="rank">%d.</td><td class="time">%s</td><td><a href="%s">%s</a></td></tr>\n' % (formatDate(f[4]), formatDate(f[5]), formatTime(f[3]), f[0], f[2], escape(playerWebsite(u'%s' % f[1])), escape(f[1]))
+    string += '</table>\n'
+  string += '</div>\n'
+
+  return string
 
 def printExactSoloRecords(recordName, className, topFinishes, showServer = False):
   string = u'<div class="block2 %s"><h4>%s:</h4>\n' % (className, recordName)
@@ -565,7 +563,7 @@ def getDiscordStatus():
 
 def getDiscordRanks():
   result = '<div class="block">\n'
-  result += '<p class="toggle" style="float: right;"><a href="#" onclick="showClass(\'allRecords\'); return false;">Last Week / Today</a></p>\n'
+  result += '<p class="toggle" style="float: right;"><a href="#" onclick="showClass(\'allRecords\'); return false;">Past 7 Days / Today</a></p>\n'
   result += '<h2>Recent Top Records <a href="records/feed/"><img width="24" src="/feed.svg"/></a></h2>\n'
   with open(htmlRanksPath, 'r+') as f:
     endTime = datetime.now() - timedelta(days=1)
@@ -794,7 +792,7 @@ def printStatus(name, servers, doc, external = False):
         for s in svs:
           serverAddress = address(s)
           for i, t in enumerate(tw):
-            if typ in ["DDNet", "Block", "Infection"]:
+            if typ in ["DDNet", "Tutorial", "Block", "Infection"]:
               server = Server64(t, serverAddress)
             else:
               server = Server(t, serverAddress)
@@ -910,7 +908,7 @@ def printStatus(name, servers, doc, external = False):
                 serverName = escape(name)
                 mapUrl = None
                 mapName = escape(server.map)
-              elif typ not in ("DDNet", "Block"):
+              elif typ not in ("Tutorial", "DDNet"):
                 serverName = escape(name)
                 mapUrl = '/mappreview/?map=%s' % quote_plus(server.map)
                 mapName = '<a href="%s">%s</a>' % (mapUrl, escape(server.map))

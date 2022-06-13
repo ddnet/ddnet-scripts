@@ -22,7 +22,7 @@ set -x
 git commit -a -m "upd"
 git push
 
-(ni 12 3 nim-scripts/mapdl; rsync -avP --exclude compilations/ /var/www-maps chn1.ddnet.tw:/var/) &
+(ni 12 3 nim-scripts/mapdl; rsync -avP --exclude compilations/ /var/www-maps chn11.ddnet.tw:/var/) &
 (scripts/update-local.sh
 #scripts/update-servers.sh
 scripts/build-releasedates.sh

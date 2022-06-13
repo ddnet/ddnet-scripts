@@ -25,9 +25,10 @@ maps = {}
 totalPoints = 0
 serverRanks = {}
 
-menuText = '<ul>'
-menuText += '<li><a href="upload/">Demo Upload</a></li>'
-menuText += '</ul>'
+menuText = ''
+#menuText = '<ul>'
+#menuText += '<li><a href="upload/">Demo Upload</a></li>'
+#menuText += '</ul>'
 
 print header("Hall of Fame - DDraceNetwork", menuText, "")
 

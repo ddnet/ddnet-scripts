@@ -23,7 +23,7 @@ git commit -a -m "upd"
 git push
 echo -e "\e[1;32mMAIN updated successfully\e[0m"
 
-(ni 12 3 nim-scripts/mapdl; rsync -avP --exclude compilations/ /var/www-maps chn1.ddnet.tw:/var/) &
+(ni 12 3 nim-scripts/mapdl; rsync -avP --exclude compilations/ /var/www-maps chn11.ddnet.tw:/var/) &
 
 set +x
 LOGFILE=git-update-files-only.$$.log

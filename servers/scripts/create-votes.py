@@ -20,7 +20,8 @@ serverStrings = {
   'DDmaX'    : '                DDmaX Server',
   'Oldschool': '            Oldschool Server',
   'Solo'     : '                 Solo Server',
-  'Race'     : '                 Race Server'
+  'Race'     : '                 Race Server',
+  'Fun'      : '                  Fun Server',
 }
 
 server = sys.argv[1]

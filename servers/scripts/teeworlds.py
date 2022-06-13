@@ -42,7 +42,7 @@ if sys.version_info.major < 3:
 
 
 def log(level, str):
-  if level is 'debug': return
+  if level == 'debug': return
   print("[{0: <5}] {1}".format(level, str), file=sys.stderr)
 
 

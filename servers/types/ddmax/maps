@@ -1,7 +1,3 @@
-$add_vote "Make sure no one is racing before voting!" "info"
-$add_vote "Random DDmaX Map" "random_map"
-$add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
-
 ─── DDRACEMAX.EASY MAPS ───
 1|Back to the Roots 1|Bixes
 1|Back to the Roots 2|Bixes
@@ -82,13 +78,13 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 2|DaMap|19michael95
 2|DaMap 2|19michael95
 2|Dark Rainbow|Creepster
-3|DARKness 1|KBeeeR
+2|DARKness 1|KBeeeR
 3|DARKness 2|KBeeeR
 4|DeadEnd|Bixes
 2|Deeve1|snife 2.0
 2|Derpy 1|Evgesha
 2|Desert Pain|JeanneDark
-4|Desolation
+4|Desolation|BooNi
 3|Diamond|Baghira™
 4|Divinum V2|DiViNe
 2|double up|RosenVerkäufer
@@ -190,7 +186,7 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 3|S-Race 2|Scratchy <3
 2|secreT|Pfandpirat
 2|Shaxx|ussi
-2|SilentNight|Habergnite
+2|SilentNight|Haberginte
 2|Sky line|M@TR!X
 1|skynet1|szyker
 2|skynet10|Tsin & szyker
@@ -241,7 +237,7 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 4|21|645654 & maggi323
 5|Adrenaline 3|Silex
 3|Alpaga|Scratchy <3
-4|Ambrosia
+4|Ambrosia|BooNi
 3|Arcade|RosenVerkäufer
 3|Arcade 2|RosenVerkäufer
 4|AreaOfEffect|Aoe
@@ -269,7 +265,7 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 4|DawnOfDust|estern
 5|Day|DiViNe
 4|DayWalker|SBL
-4|Dead Island|Draq & [*MC*]-DuBai-.?
+3|Dead Island|Draq & [*MC*]-DuBai-.?
 4|Deadline 1|Unreal
 4|Deadline 2|Unreal
 5|DeathClaw|estern
@@ -325,6 +321,7 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 4|Ntumba|maggi323
 5|Outlet|YeahxX
 4|Paik|Destoros
+2|Paranoia|Líme.ftw!
 5|Picklock|Nomlow
 4|Poke|Destoros
 4|Rampage|Captain
@@ -366,6 +363,7 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 2|NUT_race2|Bad-Hoernchen
 2|NUT_race3|Zeta-Hoernchen
 2|NUT_race4|Zeta-Hoernchen
+2|NUT_race5|Zeta-Hoernchen
 3|NUT_race6|Zeta-Hoernchen
 2|NUT_race7|Bad-Hoernchen
 2|NUT_race8|Zeta-Hoernchen
@@ -377,7 +375,3 @@ $add_vote "Random DDmaX Map Unfinished by Vote Caller" "random_unfinished_map"
 1|NUT_short_race5|Zeta-Hoernchen
 0|NUT_short_race6|Zeta-Hoernchen
 0|NUT_short_race7|Zeta-Hoernchen
-
-─── OTHER MAPS ───
-2|NUT_race5|Zeta-Hoernchen
-2|Paranoia|Líme.ftw!

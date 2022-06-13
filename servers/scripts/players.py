@@ -4,7 +4,7 @@
 from ddnet import *
 import sys
 from cgi import escape
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import cStringIO
 import msgpack
 from diskcache import Cache
@@ -107,6 +107,20 @@ with con:
         return (currentRank, r[1])
     return None
 
+  def getPlayerTimes(name):
+    startDate = date.today() - timedelta(days=366)
+    query("""select Date, least(24, sum(SecondsPlayed) div 3600) from (
+        select Date, SecondsPlayed from record_playertimes where Name = '{}' union
+        select Date, SecondsPlayed from record_playertimes inner join record_rename on record_playertimes.Name = record_rename.OldName and record_rename.Name = '{}' and record_rename.Timestamp >= '{}') as l
+        where Date >= '{}' group by Date order by Date asc;
+        """.format(con.escape_string(name), con.escape_string(name), startDate.isoformat(), startDate.isoformat()))
+
+    rows = cur.fetchall()
+    sumHours = 0
+    for row in rows:
+        sumHours += row[1]
+    return (sumHours, rows)
+
   def globalRanks(name, player):
     out = cStringIO.StringIO()
 
@@ -115,9 +129,9 @@ with con:
     print >>out, printPersonalResult("Team Rank", data['teamrankRanks'], name)
     print >>out, printPersonalResult("Rank", data['rankRanks'], name)
     print >>out, '<br/>'
-    print >>out, printPersonalResult("Points (last year)", data['yearlyPointsRanks'], name)
-    print >>out, printPersonalResult("Points (last month)", data['monthlyPointsRanks'], name)
-    print >>out, printPersonalResult("Points (last week)", data['weeklyPointsRanks'], name)
+    print >>out, printPersonalResult("Points (past 365 days)", data['yearlyPointsRanks'], name)
+    print >>out, printPersonalResult("Points (past 30 days)", data['monthlyPointsRanks'], name)
+    print >>out, printPersonalResult("Points (past 7 days)", data['weeklyPointsRanks'], name)
     print >>out, '<br/>'
 
     try:
@@ -148,6 +162,23 @@ with con:
     except:
       pass
 
+    (sumHours, rows) = getPlayerTimes(name)
+    activity_list = [{'timestamp': int(row[0].strftime("%s")) * 1000, 'count': row[1]} for row in rows]
+    print >>out, '<div id="activity_graph"></div>'
+    print >>out, '''<script>
+        var date = new Date();
+        date.setDate(date.getDate() - 365);
+        $('#activity_graph').github_graph( {
+          data: JSON.parse('%s'),
+          start_date: date,
+          // Used https://gka.github.io/palettes/#/24|s|f3fb67,ffa300,4a9dee,ff0000|ffffe0,ff005e,93003a|0|0
+          colors: ['#eeeeee', '#f3fb67', '#f5f05a', '#f6e44c', '#f8d93f', '#f9cd31', '#fbc224', '#fcb616', '#feab09', '#f7a30a', '#e0a229', '#c8a148', '#b0a067', '#99a087', '#819fa6', '#699ec5', '#529de4', '#5a8fd9', '#717bba', '#89669b', '#a1527c', '#b83d5d', '#d0293e', '#e7141f'],
+          texts: ['hour played','hours played']
+        });
+        </script>''' % json.dumps(activity_list)
+    print >>out, '%s hours played in the past 365 days (on any server)' % sumHours
+
+    print >>out, '<br><a href="/players/?json2=%s"><img width="36" src="/json.svg"/></a> Player information is also available in JSON format.' % quote_plus(name)
     print >>out, '</div>'
 
     return out.getvalue()
@@ -385,7 +416,7 @@ with con:
       start_response('200 OK', [('Content-Type', 'text/html')])
       return comparison(namePlayers)
 
-    if path == '/players/':
+    if path in ('/players/', '/players2/'):
       qs = env['QUERY_STRING']
 
       if len(qs) > 0 and qs.startswith('player='):
@@ -464,9 +495,9 @@ with con:
 
           query("select r.Name, count(r.Name) from (select Name, ID from record_teamrace where Name = '%s') as l inner join (select ID, Name from record_teamrace) as r on l.ID = r.ID and l.Name != r.Name group by r.Name order by count(r.Name) desc limit 10;" % con.escape_string(name))
           rows = cur.fetchall()
-          jsonT['favoritePartners'] = []
+          jsonT['favorite_partners'] = []
           for row in rows:
-            jsonT['favoritePartners'].append(OrderedDict([('name', row[0]), ('finishes', row[1])]))
+            jsonT['favorite_partners'].append(OrderedDict([('name', row[0]), ('finishes', row[1])]))
 
           jsonT['types'] = OrderedDict()
           for typ in data['types']:
@@ -489,6 +520,10 @@ with con:
                 jsonT['types'][typ]['maps'][map]['time'] = player[0][map][4]
                 jsonT['types'][typ]['maps'][map]['finishes'] = player[0][map][2]
                 jsonT['types'][typ]['maps'][map]['first_finish'] = time.mktime(timestamp.timetuple())
+
+          (sumHours, rows) = getPlayerTimes(name)
+          jsonT['activity'] = [{'date': row[0].isoformat(), 'hours_played': row[1]} for row in rows]
+          jsonT['hours_played_past_365_days'] = sumHours
 
         return json.dumps(jsonT)
 
@@ -547,6 +582,8 @@ with con:
     print >>out, '<script src="/playersearch.js?version=2" type="text/javascript"></script>'
     print >>out, '<script type="text/javascript" src="/players-data/jquery.tablesorter.js"></script>'
     print >>out, '<script type="text/javascript" src="/players-data/sorter.js"></script>'
+    print >>out, '<script type="text/javascript" src="/players-data/github_contribution.js"></script>'
+    print >>out, '<link href="/players-data/github_contribution_graph.css" media="all" rel="stylesheet" />'
     print >>out, '<script>'
     print >>out, '  var input = document.getElementById("playersearch");'
     print >>out, '  input.focus();'
