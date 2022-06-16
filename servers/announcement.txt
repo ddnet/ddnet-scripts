@@ -1,10 +1,10 @@
 Check out the DDNet Wiki by Patiga & Zwelf on wiki.ddnet.tw
 Check out DDNet's Discord server on ddnet.tw/discord
 Check out DDNet's TeamSpeak server hosted by laxa on ts.ddnet.tw
-If a player seems to be afk and blocks a part by it do not start a kickvote but vote him to spectator instead.
+If a player seems to be afk and blocks a part by it do not start a kickvote but vote them to spectator instead.
 Join our community and register on forum.ddnet.tw
-When you want to change map make sure no one is currently racing!
-Don't block! Often the race progress is being delayed by blocking players. And only some of them do it on purpose.
+When you want to change map, make sure no one is currently racing!
+Don't block! Often the race progress is being delayed by blocking players, and only some of them do it on purpose.
 When you don't know what to do in a challenge, try to stay away from the action. Find a place from where you can have a look at the other tees without blocking them.
 Watch the behavior of other tees. Most communication in DDRace is not via chat. Observe other tees and try to understand what they want from you or others.
 Teamwork is important! Often a group of racing tees fails because everyone tried to do the challenge alone - one by one fails.
@@ -14,7 +14,7 @@ DDraceNetwork has a points system! For every map you finish you earn points, dep
 DDraceNetwork always welcomes creative maps you made and ideas for new DDRace features you have.
 You can compare your points, global rank and team rank on DDraceNetwork's website: ddnet.tw
 Mappers looking to map using our new features can get our server and client on our website: ddnet.tw
-When you get blocked in the noobfilter do not kick the blocker but instead join a /team.
+When you get blocked in the noobfilter, do not kick the blocker but instead join a /team.
 You can practice maps freely by using /practice while in a team, giving you access to /r and /tp to easily traverse the map.
 Keep up to date with new map releases on ddnet.tw/releases
 Everyone can help test and release new maps! Visit the Map Testing section on our Discord server for more info.
