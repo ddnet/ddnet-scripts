@@ -289,6 +289,15 @@ if [ "$MAC_AVAILABLE" = true ]; then
   rm -r ddnet Frameworks DDNet-*-macos
 fi
 
+rm -rf codebrowser
+cd ddnet-source
+rm -rf ddnet-libs
+CC=clang CXX=clang++ cmake . -DCMAKE_BUILD_TYPE=Debug -GNinja -DDEV=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DUPNP=ON -DTEST_MYSQL=ON -DMYSQL=ON -DWEBSOCKETS=ON .
+#make -j4
+ninja
+/home/deen/git/codebrowser/generator/codebrowser_generator -b . -a -o ../codebrowser -p DDNet:/home/deen/isos/ddnet/ddnet-source:$VERSION -d https://ddnet.tw/codebrowser-data
+/home/deen/git/codebrowser/indexgenerator/codebrowser_indexgenerator ../codebrowser -d https://ddnet.tw/codebrowser-data -p DDNet:/home/deen/isos/ddnet/ddnet-source:$VERSION
+
 rm -rf ddnet-source
 
 NOW=$(date +'%F %R')
