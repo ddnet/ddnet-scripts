@@ -14,8 +14,7 @@ if [ "$1" = "nightly" ]; then
   V="$(curl -s https://raw.githubusercontent.com/$MAIN_REPO_USER/$MAIN_REPO_NAME/$MAIN_REPO_BRANCH/src/game/version.h | grep "^#define GAME_RELEASE_VERSION" | cut -d'"' -f2)"
   export VERSION="$V-$(date +%Y%m%d)"
   ./build.sh $VERSION &> builds/DDNet-nightly.log
-  rsync -avP codebrowser ddnet:/var/www/downloads/tmp/
-  ssh ddnet "mv /var/www/codebrowser /var/www/codebrowser.old && mv /var/www/downloads/tmp/codebrowser /var/www/codebrowser && rm -rf /var/www/codebrowser.old"
+  rsync -avP --delay-updates --delete-delay codebrowser ddnet:/var/www/
 elif [ "$1" = "rc" ]; then
   export UPDATE_FLAGS="-DAUTOUPDATE=OFF -DINFORM_UPDATE=OFF"
   export UPDATE_FLAGS_MACOS="-DINFORM_UPDATE=OFF"
