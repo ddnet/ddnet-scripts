@@ -289,6 +289,7 @@ if [ "$MAC_AVAILABLE" = true ]; then
   rm -r ddnet Frameworks DDNet-*-macos
 fi
 
+cd $BUILDDIR
 rm -rf codebrowser
 cd ddnet-source
 rm -rf ddnet-libs
