@@ -14,6 +14,14 @@ if [ "$1" = "nightly" ]; then
   V="$(curl -s https://raw.githubusercontent.com/$MAIN_REPO_USER/$MAIN_REPO_NAME/$MAIN_REPO_BRANCH/src/game/version.h | grep "^#define GAME_RELEASE_VERSION" | cut -d'"' -f2)"
   export VERSION="$V-$(date +%Y%m%d)"
   ./build.sh $VERSION &> builds/DDNet-nightly.log
+
+  rm -rf codebrowser
+  cd ddnet-source
+  rm -rf ddnet-libs
+  CC=clang CXX=clang++ cmake . -DCMAKE_BUILD_TYPE=Debug -GNinja -DDEV=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DUPNP=ON -DTEST_MYSQL=ON -DMYSQL=ON -DWEBSOCKETS=ON .
+  ninja
+  /home/deen/git/codebrowser/generator/codebrowser_generator -b . -a -o ../codebrowser -p DDNet:/home/deen/isos/ddnet/ddnet-source/src:$VERSION -d https://ddnet.tw/codebrowser-data
+  /home/deen/git/codebrowser/indexgenerator/codebrowser_indexgenerator ../codebrowser -d https://ddnet.tw/codebrowser-data -p DDNet:/home/deen/isos/ddnet/ddnet-source/src:$VERSION
   rsync -avP --delay-updates --delete-delay codebrowser ddnet:/var/www/
 elif [ "$1" = "rc" ]; then
   export UPDATE_FLAGS="-DAUTOUPDATE=OFF -DINFORM_UPDATE=OFF"
@@ -72,4 +80,4 @@ fi
 steamcmd +login deen_ddnet "$(cat pass)" +run_app_build /home/deen/isos/ddnet/steamcmd/tmp.vdf +quit
 
 cd ..
-rm -rf builds/* DDNet-$VERSION* steam/*
+rm -rf builds/* DDNet-$VERSION* steam/* ddnet-source
