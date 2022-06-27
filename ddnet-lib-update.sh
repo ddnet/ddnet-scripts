@@ -1,17 +1,19 @@
-# Using a Debian 6 chroot, mingw and osxcross (with compiler-rt built)
+# Using a Debian 10 chroot, mingw and osxcross (with compiler-rt built)
 # DO NOT COPY libogg, extract directly... Changing timestamps breaks the build and requires autotools (or cp -a)
 
+cd debian10/root
+rm -rf *
 wget http://libsdl.org/release/SDL2-2.0.20.tar.gz
 wget https://patch-diff.githubusercontent.com/raw/libsdl-org/SDL/pull/4306.diff
 wget https://patch-diff.githubusercontent.com/raw/libsdl-org/SDL/pull/4683.diff
-wget https://curl.haxx.se/download/curl-7.81.0.tar.gz
-wget https://download.savannah.gnu.org/releases/freetype/freetype-2.11.1.tar.gz
+wget https://curl.haxx.se/download/curl-7.84.0.tar.gz
+wget https://download.savannah.gnu.org/releases/freetype/freetype-2.12.1.tar.gz
 wget http://downloads.xiph.org/releases/ogg/libogg-1.3.5.tar.gz
 wget https://archive.mozilla.org/pub/opus/opus-1.3.1.tar.gz
 wget https://downloads.xiph.org/releases/opus/opusfile-0.12.tar.gz
-wget https://www.sqlite.org/2022/sqlite-autoconf-3370200.tar.gz
+wget https://www.sqlite.org/2022/sqlite-autoconf-3390000.tar.gz
 wget https://code.videolan.org/videolan/x264/-/archive/master/x264-master.tar.bz2
-wget https://ffmpeg.org/releases/ffmpeg-5.0.tar.gz
+wget https://ffmpeg.org/releases/ffmpeg-5.0.1.tar.gz
 wget https://github.com/warmcat/libwebsockets/archive/v4.3-stable.tar.gz
 wget https://download.sourceforge.net/libpng/libpng-1.6.37.tar.gz
 
@@ -28,10 +30,9 @@ wget https://download.sourceforge.net/libpng/libpng-1.6.37.tar.gz
 #for i in build/mingw64/bin/*.dll; do x86_64-w64-mingw32-strip -s $i; done
 #for i in build/mingw32/bin/*.dll; do i686-w64-mingw32-strip -s $i; done
 
-chroot debian6 bash
-cat /etc/apt/sources.list
-deb http://archive.debian.org/debian squeeze main contrib non-free
-/root/x86-64/libogg-1.3.5/missingcd
+cd ../..
+chroot debian10 bash
+cd
 
 mkdir x86-64
 cd x86-64
@@ -39,9 +40,9 @@ tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
 tar xvf ../SDL2-2.0.20.tar.gz
-tar xvf ../sqlite-autoconf-3370200.tar.gz
+tar xvf ../sqlite-autoconf-3390000.tar.gz
 tar xvf ../x264-master.tar.bz2
-tar xvf ../ffmpeg-5.0.tar.gz
+tar xvf ../ffmpeg-5.0.1.tar.gz
 tar xvf ../v4.3-stable.tar.gz
 tar xvf ../libpng-1.6.37.tar.gz
 
@@ -68,7 +69,7 @@ CFLAGS=-fPIC make -j4
 cp build/.libs/libSDL2-2.0.so.0.*.* ../libSDL2-2.0.so.0
 strip -s ../libSDL2-2.0.so.0
 
-cd ../sqlite-autoconf-3370200
+cd ../sqlite-autoconf-3390000
 ./configure CFLAGS="-fPIC -DSQLITE_OMIT_LOAD_EXTENSION"
 make -j4
 cp .libs/libsqlite3.a ..
@@ -78,7 +79,7 @@ CFLAGS="-O2 -fno-fast-math" ./configure --enable-static --disable-cli --disable-
 CFLAGS="-O2 -fno-fast-math" make -j4
 cp libx264.a ..
 
-cd ../ffmpeg-5.0
+cd ../ffmpeg-5.0.1
 ./configure --disable-all --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-fPIC -I../x264-master" --extra-cxxflags="-fPIC -I../x264-master" --extra-ldflags="-L../x264-master -ldl"
 make -j4
 cp */*.a ..
@@ -101,9 +102,9 @@ tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
 tar xvf ../SDL2-2.0.20.tar.gz
-tar xvf ../sqlite-autoconf-3370200.tar.gz
+tar xvf ../sqlite-autoconf-3390000.tar.gz
 tar xvf ../x264-master.tar.bz2
-tar xvf ../ffmpeg-5.0.tar.gz
+tar xvf ../ffmpeg-5.0.1.tar.gz
 tar xvf ../v4.3-stable.tar.gz
 tar xvf ../libpng-1.6.37.tar.gz
 
@@ -130,7 +131,7 @@ LDFLAGS=-m32 CFLAGS="-fPIC -m32" make -j4
 cp build/.libs/libSDL2-2.0.so.0.*.0 ../libSDL2-2.0.so.0
 strip -s ../libSDL2-2.0.so.0
 
-cd ../sqlite-autoconf-3370200
+cd ../sqlite-autoconf-3390000
 ./configure CFLAGS="-fPIC -m32 -DSQLITE_OMIT_LOAD_EXTENSION"
 make -j4
 cp .libs/libsqlite3.a ..
@@ -140,7 +141,7 @@ AS=nasm CFLAGS="-m32 -O2 -fno-fast-math" LDFLAGS=-m32 ./configure --enable-stati
 CFLAGS="-m32 -O2 -fno-fast-math" LDFLAGS=-m32 make -j4
 cp libx264.a ..
 
-cd ../ffmpeg-5.0
+cd ../ffmpeg-5.0.1
 ./configure --disable-all --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-m32 -fPIC -I../x264-master" --extra-cxxflags="-m32 -fPIC -I../x264-master" --extra-ldflags="-m32 -L../x264-master -ldl" --cpu=i686
 make -j4
 cp */*.a ..
@@ -160,14 +161,14 @@ cd ../..
 mkdir win64
 cd win64
 tar xvf ../SDL2-2.0.20.tar.gz
-tar xvf ../curl-7.81.0.tar.gz
+tar xvf ../curl-7.84.0.tar.gz
 tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
-tar xvf ../freetype-2.11.1.tar.gz
-tar xvf ../sqlite-autoconf-3370200.tar.gz
+tar xvf ../freetype-2.12.1.tar.gz
+tar xvf ../sqlite-autoconf-3390000.tar.gz
 tar xvf ../x264-master.tar.bz2
-tar xvf ../ffmpeg-5.0.tar.gz
+tar xvf ../ffmpeg-5.0.1.tar.gz
 tar xvf ../v4.3-stable.tar.gz
 tar xvf ../libpng-1.6.37.tar.gz
 
@@ -200,7 +201,7 @@ make -j4
 cp build/.libs/SDL2.dll build/.libs/libSDL2.dll.a ..
 x86_64-w64-mingw32-dlltool -v --export-all-symbols -D SDL2.dll -l ../SDL2.lib build/.libs/*.o
 
-cd ../curl-7.81.0
+cd ../curl-7.84.0
 ./configure --host=x86_64-w64-mingw32 --with-schannel --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
 make -j4 V=1
 rm lib/.libs/libcurl-4.dll
@@ -227,14 +228,14 @@ x86_64-w64-mingw32-dlltool -v --export-all-symbols -D libopus.dll -l ../opus.lib
 cp .libs/libopus.dll ../libopus.dll
 
 cd ../opusfile-0.12
-DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian6/root/win64/opus-1.3.1/.libs/ -L/home/deen/isos/ddnet/debian6/root/win64/libogg-1.3.5/src/.libs/" DEPS_CFLAGS="-I/home/deen/isos/ddnet/debian6/root/win64/opus-1.3.1/include -I/home/deen/isos/ddnet/debian6/root/win64/libogg-1.3.5/include" ./configure --host=x86_64-w64-mingw32 --disable-http
+DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian10/root/win64/opus-1.3.1/.libs/ -L/home/deen/isos/ddnet/debian10/root/win64/libogg-1.3.5/src/.libs/" DEPS_CFLAGS="-I/home/deen/isos/ddnet/debian10/root/win64/opus-1.3.1/include -I/home/deen/isos/ddnet/debian10/root/win64/libogg-1.3.5/include" ./configure --host=x86_64-w64-mingw32 --disable-http
 make -j4 V=1
 rm .libs/libopusfile-0.dll
 # Long command from make with fixed dll name
 x86_64-w64-mingw32-dlltool -v --export-all-symbols -D libopusfile.dll -l ../opusfile.lib src/*.o
 cp .libs/libopusfile.dll ../libopusfile.dll
 
-cd ../freetype-2.11.1
+cd ../freetype-2.12.1
 ./configure --host=x86_64-w64-mingw32 --prefix=/usr/x86_64-w64-mingw32 CPPFLAGS="-I/usr/x86_64-w64-mingw32/include" LDFLAGS="-L/usr/x86_64-w64-mingw32/lib" PKG_CONFIG_LIBDIR=/usr/x86_64-w64-mingw32/lib/pkgconfig --with-png=no --with-bzip2=no --with-zlib=no --with-harfbuzz=no
 make -j4 V=1
 rm objs/.libs/libfreetype-6.dll
@@ -242,7 +243,7 @@ rm objs/.libs/libfreetype-6.dll
 x86_64-w64-mingw32-dlltool -v --export-all-symbols -D libfreetype.dll -l ../freetype.lib -d objs/.libs/libfreetype-6.dll.def
 cp objs/.libs/libfreetype.dll ../libfreetype.dll
 
-cd ../sqlite-autoconf-3370200
+cd ../sqlite-autoconf-3390000
 ./configure --host=x86_64-w64-mingw32 CFLAGS=-DSQLITE_OMIT_LOAD_EXTENSION
 make -j4
 cp .libs/libsqlite3-0.dll ..
@@ -252,10 +253,10 @@ cd ../x264-master
 AS=nasm CFLAGS="-I/usr/x86_64-w64-mingw32/include" LDFLAGS="-L/usr/x86_64-w64-mingw32/lib" ./configure --enable-static --disable-cli --disable-gpl --disable-avs --disable-swscale --disable-lavf --disable-ffms --disable-gpac --disable-lsmash --disable-interlaced --host=x86_64-mingw32 --prefix=/usr/x86_64-w64-mingw32 --cross-prefix=x86_64-w64-mingw32-
 make -j4
 
-cd ../ffmpeg-5.0
+cd ../ffmpeg-5.0.1
 ./configure --disable-all --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-I../x264-master" --extra-cxxflags="-I../x264-master" --extra-ldflags="-L../x264-master" --arch=x86_64 --target_os=mingw32 --cross-prefix=x86_64-w64-mingw32- --disable-static --enable-shared
 make -j4
-cp libavcodec/avcodec-58.dll libavformat/avformat-58.dll libavutil/avutil-56.dll libswresample/swresample-3.dll libswscale/swscale-5.dll libavcodec/avcodec.lib libavformat/avformat.lib libavutil/avutil.lib libswresample/swresample.lib libswscale/swscale.lib ..
+cp libavcodec/avcodec-59.dll libavformat/avformat-59.dll libavutil/avutil-57.dll libswresample/swresample-4.dll libswscale/swscale-6.dll libavcodec/avcodec.lib libavformat/avformat.lib libavutil/avutil.lib libswresample/swresample.lib libswscale/swscale.lib ..
 
 cd ../libwebsockets-4.3-stable
 cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-w64.cmake -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
@@ -276,14 +277,14 @@ cd ../..
 mkdir win32
 cd win32
 tar xvf ../SDL2-2.0.20.tar.gz
-tar xvf ../curl-7.81.0.tar.gz
+tar xvf ../curl-7.84.0.tar.gz
 tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
-tar xvf ../freetype-2.11.1.tar.gz
-tar xvf ../sqlite-autoconf-3370200.tar.gz
+tar xvf ../freetype-2.12.1.tar.gz
+tar xvf ../sqlite-autoconf-3390000.tar.gz
 tar xvf ../x264-master.tar.bz2
-tar xvf ../ffmpeg-5.0.tar.gz
+tar xvf ../ffmpeg-5.0.1.tar.gz
 tar xvf ../v4.3-stable.tar.gz
 tar xvf ../libpng-1.6.37.tar.gz
 
@@ -316,7 +317,7 @@ make -j4
 cp build/.libs/SDL2.dll build/.libs/libSDL2.dll.a ..
 i686-w64-mingw32-dlltool -v --export-all-symbols -D SDL2.dll -l ../SDL2.lib build/.libs/*.o
 
-cd ../curl-7.81.0
+cd ../curl-7.84.0
 ./configure --host=i686-w64-mingw32 --with-schannel --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
 make -j4 V=1
 rm lib/.libs/libcurl-4.dll
@@ -343,21 +344,21 @@ i686-w64-mingw32-dlltool -v --export-all-symbols -D libopus.dll -l ../opus.lib s
 cp .libs/libopus.dll ../libopus.dll
 
 cd ../opusfile-0.12
-DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian6/root/win32/opus-1.3.1/.libs/ -L/home/deen/isos/ddnet/debian6/root/win32/libogg-1.3.5/src/.libs/" DEPS_CFLAGS="-I/home/deen/isos/ddnet/debian6/root/win32/opus-1.3.1/include -I/home/deen/isos/ddnet/debian6/root/win32/libogg-1.3.5/include" ./configure --host=i686-w64-mingw32 --disable-http
+DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian10/root/win32/opus-1.3.1/.libs/ -L/home/deen/isos/ddnet/debian10/root/win32/libogg-1.3.5/src/.libs/" DEPS_CFLAGS="-I/home/deen/isos/ddnet/debian10/root/win32/opus-1.3.1/include -I/home/deen/isos/ddnet/debian10/root/win32/libogg-1.3.5/include" ./configure --host=i686-w64-mingw32 --disable-http
 make -j4 V=1
 rm .libs/libopusfile-0.dll
 # Long command from make with fixed dll name
 i686-w64-mingw32-dlltool -v --export-all-symbols -D libopusfile.dll -l ../opusfile.lib src/*.o
 cp .libs/libopusfile.dll ../libopusfile.dll
 
-cd ../freetype-2.11.1
+cd ../freetype-2.12.1
 ./configure --host=i686-w64-mingw32 --prefix=/usr/i686-w64-mingw32 CPPFLAGS="-I/usr/i686-w64-mingw32/include" LDFLAGS="-L/usr/i686-w64-mingw32/lib" PKG_CONFIG_LIBDIR=/usr/i686-w64-mingw32/lib/pkgconfig --with-png=no --with-bzip2=no --with-zlib=no --with-harfbuzz=no
 make -j4 V=1
 # Long command from make with fixed dll name
 i686-w64-mingw32-dlltool -v --export-all-symbols -D libfreetype.dll -l ../freetype.lib -d objs/.libs/libfreetype-6.dll.def
 cp objs/.libs/libfreetype.dll ../libfreetype.dll
 
-cd ../sqlite-autoconf-3370200
+cd ../sqlite-autoconf-3390000
 ./configure --host=i686-w64-mingw32 CFLAGS=-DSQLITE_OMIT_LOAD_EXTENSION
 make -j4
 cp .libs/libsqlite3-0.dll ..
@@ -367,10 +368,10 @@ cd ../x264-master
 AS=nasm CFLAGS="-I/usr/i686-w64-mingw32/include" LDFLAGS="-L/usr/i686-w64-mingw32/lib" ./configure --enable-static --disable-cli --disable-gpl --disable-avs --disable-swscale --disable-lavf --disable-ffms --disable-gpac --disable-lsmash --disable-interlaced --host=i686-mingw32 --prefix=/usr/i686-w64-mingw32 --cross-prefix=i686-w64-mingw32-
 make -j4
 
-cd ../ffmpeg-5.0
+cd ../ffmpeg-5.0.1
 ./configure --disable-all --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-I../x264-master" --extra-cxxflags="-I../x264-master" --extra-ldflags="-L../x264-master" --arch=i686 --target_os=mingw32 --cross-prefix=i686-w64-mingw32- --disable-static --enable-shared
 make -j4
-cp libavcodec/avcodec-58.dll libavformat/avformat-58.dll libavutil/avutil-56.dll libswresample/swresample-3.dll libswscale/swscale-5.dll libavcodec/avcodec.lib libavformat/avformat.lib libavutil/avutil.lib libswresample/swresample.lib libswscale/swscale.lib ..
+cp libavcodec/avcodec-59.dll libavformat/avformat-59.dll libavutil/avutil-57.dll libswresample/swresample-4.dll libswscale/swscale-6.dll libavcodec/avcodec.lib libavformat/avformat.lib libavutil/avutil.lib libswresample/swresample.lib libswscale/swscale.lib ..
 
 cd ../libwebsockets-4.3-stable
 cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-w32.cmake -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
@@ -390,14 +391,14 @@ cd ../..
 
 mkdir mac64
 cd mac64
-tar xvf ../curl-7.81.0.tar.gz
+tar xvf ../curl-7.84.0.tar.gz
 tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
 tar xvf ../SDL2-2.0.20.tar.gz
-tar xvf ../freetype-2.11.1.tar.gz
+tar xvf ../freetype-2.12.1.tar.gz
 tar xvf ../x264-master.tar.bz2
-tar xvf ../ffmpeg-5.0.tar.gz
+tar xvf ../ffmpeg-5.0.1.tar.gz
 tar xvf ../v4.3-stable.tar.gz
 tar xvf ../libpng-1.6.37.tar.gz
 
@@ -405,8 +406,13 @@ export PATH=/home/deen/git/osxcross/target/bin/:$PATH
 export CC=o64-clang
 export CXX=o64-clang++
 eval `osxcross-conf`
+# If build fails, it's probably due to LLVM upgrade, rebuild osxcross:
+# cd ~/git/osxcross
+# rm -rf build
+# ./build.sh
+# ./build_compiler_rt.sh
 
-cd curl-7.81.0
+cd curl-7.84.0
 CFLAGS="-mmacosx-version-min=10.9" ./configure --host=x86_64-apple-darwin20.1 --without-ssl --with-secure-transport --enable-static --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
 make -j4
 cp lib/.libs/libcurl.a ..
@@ -422,7 +428,7 @@ make -j4
 cp .libs/libopus.a ..
 
 cd ../opusfile-0.12
-PKG_CONFIG=/usr/sbin/pkg-config DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian6/root/mac64/opus-1.3.1/.libs/ -L/home/deen/isos/ddnet/debian6/root/mac64/libogg-1.3.5/src/.libs/" ./configure CFLAGS="-mmacosx-version-min=10.9 -I/home/deen/isos/ddnet/debian6/root/mac64/opus-1.3.1/include -I/home/deen/isos/ddnet/debian6/root/mac64/libogg-1.3.5/include" CPPFLAGS="-I/home/deen/isos/ddnet/debian6/root/mac64/opus-1.3.1/include -I/home/deen/isos/ddnet/debian6/root/mac64/libogg-1.3.5/include" --host=x86_64-apple-darwin20.1 --disable-http
+PKG_CONFIG=/usr/sbin/pkg-config DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian10/root/mac64/opus-1.3.1/.libs/ -L/home/deen/isos/ddnet/debian10/root/mac64/libogg-1.3.5/src/.libs/" ./configure CFLAGS="-mmacosx-version-min=10.9 -I/home/deen/isos/ddnet/debian10/root/mac64/opus-1.3.1/include -I/home/deen/isos/ddnet/debian10/root/mac64/libogg-1.3.5/include" CPPFLAGS="-I/home/deen/isos/ddnet/debian10/root/mac64/opus-1.3.1/include -I/home/deen/isos/ddnet/debian10/root/mac64/libogg-1.3.5/include" --host=x86_64-apple-darwin20.1 --disable-http
 make -j4
 cp .libs/libopusfile.a ..
 
@@ -433,7 +439,7 @@ patch -p1 < ../../4683.diff
 CFLAGS="-mmacosx-version-min=10.9" make -j4
 cp build/.libs/libSDL2-2.0.0.dylib ../SDL2
 
-cd ../freetype-2.11.1
+cd ../freetype-2.12.1
 ./configure CFLAGS="-mmacosx-version-min=10.9" --host=x86_64-apple-darwin20.1 --with-png=no --with-bzip2=no --with-zlib=no --with-harfbuzz=no
 make -j4
 cp objs/.libs/libfreetype.6.dylib ..
@@ -442,7 +448,7 @@ cd ../x264-master
 AS=nasm CFLAGS="-mmacosx-version-min=10.9 -I/usr/x86_64-apple-darwin20.1/include" LDFLAGS="-L/usr/x86_64-apple-darwin20.1/lib" ./configure --enable-static --disable-cli --disable-gpl --disable-avs --disable-swscale --disable-lavf --disable-ffms --disable-gpac --disable-lsmash --disable-interlaced --host=x86_64-apple-darwin20.1 --prefix=/usr/x86_64-apple-darwin20.1 --cross-prefix=x86_64-apple-darwin20.1-
 make -j4
 
-cd ../ffmpeg-5.0
+cd ../ffmpeg-5.0.1
 ./configure --disable-all --disable-appkit --disable-bzlib --disable-avfoundation --disable-coreimage --disable-securetransport --disable-audiotoolbox --disable-cuda-llvm --disable-videotoolbox --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-cxxflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-ldflags="-L../x264-master" --arch=x86_64 --target_os=darwin --cross-prefix=x86_64-apple-darwin20.1- --disable-static --enable-shared --cc=$CC --cxx=$CXX
 make -j4
 cp libavcodec/libavcodec.59.dylib libavformat/libavformat.59.dylib libavutil/libavutil.57.dylib libswresample/libswresample.4.dylib libswscale/libswscale.6.dylib ..
@@ -461,14 +467,14 @@ cp .libs/libpng16.16.dylib ..
 # Requires osxcross with SDK >= 12.0 for oa64-clang
 mkdir macarm64
 cd macarm64
-tar xvf ../curl-7.81.0.tar.gz
+tar xvf ../curl-7.84.0.tar.gz
 tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
 tar xvf ../SDL2-2.0.20.tar.gz
-tar xvf ../freetype-2.11.1.tar.gz
+tar xvf ../freetype-2.12.1.tar.gz
 tar xvf ../x264-master.tar.bz2
-tar xvf ../ffmpeg-5.0.tar.gz
+tar xvf ../ffmpeg-5.0.1.tar.gz
 tar xvf ../v4.3-stable.tar.gz
 tar xvf ../libpng-1.6.37.tar.gz
 
@@ -477,7 +483,7 @@ export CC=oa64-clang
 export CXX=oa64-clang++
 eval `osxcross-conf`
 
-cd curl-7.81.0
+cd curl-7.84.0
 CFLAGS="-mmacosx-version-min=10.9" ./configure --host=aarch64-apple-darwin20.1 --without-ssl --with-secure-transport --enable-static --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
 make -j4
 cp lib/.libs/libcurl.a ..
@@ -493,7 +499,7 @@ make -j4
 cp .libs/libopus.a ..
 
 cd ../opusfile-0.12
-PKG_CONFIG=/usr/sbin/pkg-config DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian6/root/macarm64/opus-1.3.1/.libs/ -L/home/deen/isos/ddnet/debian6/root/macarm64/libogg-1.3.5/src/.libs/" ./configure CFLAGS="-mmacosx-version-min=10.9 -I/home/deen/isos/ddnet/debian6/root/macarm64/opus-1.3.1/include -I/home/deen/isos/ddnet/debian6/root/macarm64/libogg-1.3.5/include" CPPFLAGS="-I/home/deen/isos/ddnet/debian6/root/macarm64/opus-1.3.1/include -I/home/deen/isos/ddnet/debian6/root/macarm64/libogg-1.3.5/include" --host=aarch64-apple-darwin20.1 --disable-http
+PKG_CONFIG=/usr/sbin/pkg-config DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian10/root/macarm64/opus-1.3.1/.libs/ -L/home/deen/isos/ddnet/debian10/root/macarm64/libogg-1.3.5/src/.libs/" ./configure CFLAGS="-mmacosx-version-min=10.9 -I/home/deen/isos/ddnet/debian10/root/macarm64/opus-1.3.1/include -I/home/deen/isos/ddnet/debian10/root/macarm64/libogg-1.3.5/include" CPPFLAGS="-I/home/deen/isos/ddnet/debian10/root/macarm64/opus-1.3.1/include -I/home/deen/isos/ddnet/debian10/root/macarm64/libogg-1.3.5/include" --host=aarch64-apple-darwin20.1 --disable-http
 make -j4
 cp .libs/libopusfile.a ..
 
@@ -504,7 +510,7 @@ patch -p1 < ../../4683.diff
 CFLAGS="-mmacosx-version-min=10.9" make -j4
 cp build/.libs/libSDL2-2.0.0.dylib ../SDL2
 
-cd ../freetype-2.11.1
+cd ../freetype-2.12.1
 ./configure CFLAGS="-mmacosx-version-min=10.9" --host=aarch64-apple-darwin20.1 --with-png=no --with-bzip2=no --with-zlib=no --with-harfbuzz=no
 make -j4
 cp objs/.libs/libfreetype.6.dylib ..
@@ -513,7 +519,7 @@ cd ../x264-master
 CFLAGS="-mmacosx-version-min=10.9 -I/usr/aarch64-apple-darwin20.1/include" LDFLAGS="-L/usr/aarch64-apple-darwin20.1/lib" ./configure --enable-static --disable-cli --disable-gpl --disable-avs --disable-swscale --disable-lavf --disable-ffms --disable-gpac --disable-lsmash --disable-interlaced --host=aarch64-apple-darwin20.1 --prefix=/usr/aarch64-apple-darwin20.1 --cross-prefix=aarch64-apple-darwin20.1-
 make -j4
 
-cd ../ffmpeg-5.0
+cd ../ffmpeg-5.0.1
 ./configure --disable-all --disable-appkit --disable-bzlib --disable-avfoundation --disable-coreimage --disable-securetransport --disable-audiotoolbox --disable-cuda-llvm --disable-videotoolbox --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-cxxflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-ldflags="-L../x264-master" --arch=aarch64 --target_os=darwin --cross-prefix=aarch64-apple-darwin20.1- --disable-static --enable-shared --cc=$CC --cxx=$CXX
 make -j4
 cp libavcodec/libavcodec.59.dylib libavformat/libavformat.59.dylib libavutil/libavutil.57.dylib libswresample/libswresample.4.dylib libswscale/libswscale.6.dylib ..
@@ -537,7 +543,7 @@ install_name_tool -change ...
 # TODO: Can this be done automatically by setting --prefix=@rpath?
 
 # create fat binaries for mac
-mkdir libfat; for i in lib64/*.dylib; do lipo -create $i libarm64/${i:t} -output libfat/${i:t}; done
+rm -rf libfat; mkdir libfat; for i in lib64/*.dylib; do lipo -create $i libarm64/${i:t} -output libfat/${i:t}; done
 mkdir libfat; for i in lib64/*.a; do lipo -create $i libarm64/${i:t} -output libfat/${i:t}; done
 
 # sign all arm64 and fat dylibs using codesign on macOS (until https://github.com/thefloweringash/sigtool/issues/8 is fixed, then we can automate it on Linux)
