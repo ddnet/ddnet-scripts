@@ -25,6 +25,7 @@ if [ "$1" = "nightly" ]; then
   /home/deen/git/codebrowser/indexgenerator/codebrowser_indexgenerator ../codebrowser -d https://ddnet.tw/codebrowser-data -p DDNet:/home/deen/isos/ddnet/ddnet-source/src:$VERSION
   cd ..
   rsync -avP --delay-updates --delete-delay codebrowser ddnet:/var/www/
+  rm -rf codebrowser
 elif [ "$1" = "rc" ]; then
   export UPDATE_FLAGS="-DAUTOUPDATE=OFF -DINFORM_UPDATE=OFF"
   export UPDATE_FLAGS_MACOS="-DINFORM_UPDATE=OFF"
