@@ -7,7 +7,8 @@ MAIN_REPO_NAME="${MAIN_REPO_NAME:-ddnet}"
 MAIN_REPO_BRANCH="${MAIN_REPO_BRANCH:-master}"
 
 cd /home/deen/isos/ddnet
-rm -rf builds/*
+rm -rf builds
+mkdir builds
 
 if [ "$1" = "nightly" ]; then
   export UPDATE_FLAGS="-DAUTOUPDATE=OFF -DINFORM_UPDATE=OFF"
