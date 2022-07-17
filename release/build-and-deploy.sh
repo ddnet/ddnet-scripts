@@ -17,8 +17,7 @@ $ ./build_compiler_rt.sh
 EOF
 
 cd /home/deen/isos/ddnet
-rm -rf builds
-mkdir builds
+find builds -mindepth 1 -delete
 
 if [ "$1" = "nightly" ]; then
   export UPDATE_FLAGS="-DAUTOUPDATE=OFF -DINFORM_UPDATE=OFF"
