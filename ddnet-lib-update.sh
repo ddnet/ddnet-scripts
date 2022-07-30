@@ -11,9 +11,9 @@ wget https://download.savannah.gnu.org/releases/freetype/freetype-2.12.1.tar.gz
 wget http://downloads.xiph.org/releases/ogg/libogg-1.3.5.tar.gz
 wget https://archive.mozilla.org/pub/opus/opus-1.3.1.tar.gz
 wget https://downloads.xiph.org/releases/opus/opusfile-0.12.tar.gz
-wget https://www.sqlite.org/2022/sqlite-autoconf-3390000.tar.gz
+wget https://www.sqlite.org/2022/sqlite-autoconf-3390200.tar.gz
 wget https://code.videolan.org/videolan/x264/-/archive/master/x264-master.tar.bz2
-wget https://ffmpeg.org/releases/ffmpeg-5.0.1.tar.gz
+wget https://ffmpeg.org/releases/ffmpeg-5.1.tar.gz
 wget https://github.com/warmcat/libwebsockets/archive/v4.3-stable.tar.gz
 wget https://download.sourceforge.net/libpng/libpng-1.6.37.tar.gz
 
@@ -40,9 +40,9 @@ tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
 tar xvf ../SDL2-2.0.20.tar.gz
-tar xvf ../sqlite-autoconf-3390000.tar.gz
+tar xvf ../sqlite-autoconf-3390200.tar.gz
 tar xvf ../x264-master.tar.bz2
-tar xvf ../ffmpeg-5.0.1.tar.gz
+tar xvf ../ffmpeg-5.1.tar.gz
 tar xvf ../v4.3-stable.tar.gz
 tar xvf ../libpng-1.6.37.tar.gz
 
@@ -69,7 +69,7 @@ CFLAGS=-fPIC make -j4
 cp build/.libs/libSDL2-2.0.so.0.*.* ../libSDL2-2.0.so.0
 strip -s ../libSDL2-2.0.so.0
 
-cd ../sqlite-autoconf-3390000
+cd ../sqlite-autoconf-3390200
 ./configure CFLAGS="-fPIC -DSQLITE_OMIT_LOAD_EXTENSION"
 make -j4
 cp .libs/libsqlite3.a ..
@@ -79,7 +79,7 @@ CFLAGS="-O2 -fno-fast-math" ./configure --enable-static --disable-cli --disable-
 CFLAGS="-O2 -fno-fast-math" make -j4
 cp libx264.a ..
 
-cd ../ffmpeg-5.0.1
+cd ../ffmpeg-5.1
 ./configure --disable-all --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-fPIC -I../x264-master" --extra-cxxflags="-fPIC -I../x264-master" --extra-ldflags="-L../x264-master -ldl"
 make -j4
 cp */*.a ..
@@ -102,9 +102,9 @@ tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
 tar xvf ../SDL2-2.0.20.tar.gz
-tar xvf ../sqlite-autoconf-3390000.tar.gz
+tar xvf ../sqlite-autoconf-3390200.tar.gz
 tar xvf ../x264-master.tar.bz2
-tar xvf ../ffmpeg-5.0.1.tar.gz
+tar xvf ../ffmpeg-5.1.tar.gz
 tar xvf ../v4.3-stable.tar.gz
 tar xvf ../libpng-1.6.37.tar.gz
 
@@ -131,7 +131,7 @@ LDFLAGS=-m32 CFLAGS="-fPIC -m32" make -j4
 cp build/.libs/libSDL2-2.0.so.0.*.0 ../libSDL2-2.0.so.0
 strip -s ../libSDL2-2.0.so.0
 
-cd ../sqlite-autoconf-3390000
+cd ../sqlite-autoconf-3390200
 ./configure CFLAGS="-fPIC -m32 -DSQLITE_OMIT_LOAD_EXTENSION"
 make -j4
 cp .libs/libsqlite3.a ..
@@ -141,7 +141,7 @@ AS=nasm CFLAGS="-m32 -O2 -fno-fast-math" LDFLAGS=-m32 ./configure --enable-stati
 CFLAGS="-m32 -O2 -fno-fast-math" LDFLAGS=-m32 make -j4
 cp libx264.a ..
 
-cd ../ffmpeg-5.0.1
+cd ../ffmpeg-5.1
 ./configure --disable-all --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-m32 -fPIC -I../x264-master" --extra-cxxflags="-m32 -fPIC -I../x264-master" --extra-ldflags="-m32 -L../x264-master -ldl" --cpu=i686
 make -j4
 cp */*.a ..
@@ -166,9 +166,9 @@ tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
 tar xvf ../freetype-2.12.1.tar.gz
-tar xvf ../sqlite-autoconf-3390000.tar.gz
+tar xvf ../sqlite-autoconf-3390200.tar.gz
 tar xvf ../x264-master.tar.bz2
-tar xvf ../ffmpeg-5.0.1.tar.gz
+tar xvf ../ffmpeg-5.1.tar.gz
 tar xvf ../v4.3-stable.tar.gz
 tar xvf ../libpng-1.6.37.tar.gz
 
@@ -243,7 +243,7 @@ rm objs/.libs/libfreetype-6.dll
 x86_64-w64-mingw32-dlltool -v --export-all-symbols -D libfreetype.dll -l ../freetype.lib -d objs/.libs/libfreetype-6.dll.def
 cp objs/.libs/libfreetype.dll ../libfreetype.dll
 
-cd ../sqlite-autoconf-3390000
+cd ../sqlite-autoconf-3390200
 ./configure --host=x86_64-w64-mingw32 CFLAGS=-DSQLITE_OMIT_LOAD_EXTENSION
 make -j4
 cp .libs/libsqlite3-0.dll ..
@@ -253,7 +253,7 @@ cd ../x264-master
 AS=nasm CFLAGS="-I/usr/x86_64-w64-mingw32/include" LDFLAGS="-L/usr/x86_64-w64-mingw32/lib" ./configure --enable-static --disable-cli --disable-gpl --disable-avs --disable-swscale --disable-lavf --disable-ffms --disable-gpac --disable-lsmash --disable-interlaced --host=x86_64-mingw32 --prefix=/usr/x86_64-w64-mingw32 --cross-prefix=x86_64-w64-mingw32-
 make -j4
 
-cd ../ffmpeg-5.0.1
+cd ../ffmpeg-5.1
 ./configure --disable-all --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-I../x264-master" --extra-cxxflags="-I../x264-master" --extra-ldflags="-L../x264-master" --arch=x86_64 --target_os=mingw32 --cross-prefix=x86_64-w64-mingw32- --disable-static --enable-shared
 make -j4
 cp libavcodec/avcodec-59.dll libavformat/avformat-59.dll libavutil/avutil-57.dll libswresample/swresample-4.dll libswscale/swscale-6.dll libavcodec/avcodec.lib libavformat/avformat.lib libavutil/avutil.lib libswresample/swresample.lib libswscale/swscale.lib ..
@@ -282,9 +282,9 @@ tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
 tar xvf ../freetype-2.12.1.tar.gz
-tar xvf ../sqlite-autoconf-3390000.tar.gz
+tar xvf ../sqlite-autoconf-3390200.tar.gz
 tar xvf ../x264-master.tar.bz2
-tar xvf ../ffmpeg-5.0.1.tar.gz
+tar xvf ../ffmpeg-5.1.tar.gz
 tar xvf ../v4.3-stable.tar.gz
 tar xvf ../libpng-1.6.37.tar.gz
 
@@ -358,7 +358,7 @@ make -j4 V=1
 i686-w64-mingw32-dlltool -v --export-all-symbols -D libfreetype.dll -l ../freetype.lib -d objs/.libs/libfreetype-6.dll.def
 cp objs/.libs/libfreetype.dll ../libfreetype.dll
 
-cd ../sqlite-autoconf-3390000
+cd ../sqlite-autoconf-3390200
 ./configure --host=i686-w64-mingw32 CFLAGS=-DSQLITE_OMIT_LOAD_EXTENSION
 make -j4
 cp .libs/libsqlite3-0.dll ..
@@ -368,7 +368,7 @@ cd ../x264-master
 AS=nasm CFLAGS="-I/usr/i686-w64-mingw32/include" LDFLAGS="-L/usr/i686-w64-mingw32/lib" ./configure --enable-static --disable-cli --disable-gpl --disable-avs --disable-swscale --disable-lavf --disable-ffms --disable-gpac --disable-lsmash --disable-interlaced --host=i686-mingw32 --prefix=/usr/i686-w64-mingw32 --cross-prefix=i686-w64-mingw32-
 make -j4
 
-cd ../ffmpeg-5.0.1
+cd ../ffmpeg-5.1
 ./configure --disable-all --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-I../x264-master" --extra-cxxflags="-I../x264-master" --extra-ldflags="-L../x264-master" --arch=i686 --target_os=mingw32 --cross-prefix=i686-w64-mingw32- --disable-static --enable-shared
 make -j4
 cp libavcodec/avcodec-59.dll libavformat/avformat-59.dll libavutil/avutil-57.dll libswresample/swresample-4.dll libswscale/swscale-6.dll libavcodec/avcodec.lib libavformat/avformat.lib libavutil/avutil.lib libswresample/swresample.lib libswscale/swscale.lib ..
@@ -398,7 +398,7 @@ tar xvf ../opusfile-0.12.tar.gz
 tar xvf ../SDL2-2.0.20.tar.gz
 tar xvf ../freetype-2.12.1.tar.gz
 tar xvf ../x264-master.tar.bz2
-tar xvf ../ffmpeg-5.0.1.tar.gz
+tar xvf ../ffmpeg-5.1.tar.gz
 tar xvf ../v4.3-stable.tar.gz
 tar xvf ../libpng-1.6.37.tar.gz
 
@@ -448,7 +448,7 @@ cd ../x264-master
 AS=nasm CFLAGS="-mmacosx-version-min=10.9 -I/usr/x86_64-apple-darwin20.1/include" LDFLAGS="-L/usr/x86_64-apple-darwin20.1/lib" ./configure --enable-static --disable-cli --disable-gpl --disable-avs --disable-swscale --disable-lavf --disable-ffms --disable-gpac --disable-lsmash --disable-interlaced --host=x86_64-apple-darwin20.1 --prefix=/usr/x86_64-apple-darwin20.1 --cross-prefix=x86_64-apple-darwin20.1-
 make -j4
 
-cd ../ffmpeg-5.0.1
+cd ../ffmpeg-5.1
 ./configure --disable-all --disable-appkit --disable-bzlib --disable-avfoundation --disable-coreimage --disable-securetransport --disable-audiotoolbox --disable-cuda-llvm --disable-videotoolbox --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-cxxflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-ldflags="-L../x264-master" --arch=x86_64 --target_os=darwin --cross-prefix=x86_64-apple-darwin20.1- --disable-static --enable-shared --cc=$CC --cxx=$CXX
 make -j4
 cp libavcodec/libavcodec.59.dylib libavformat/libavformat.59.dylib libavutil/libavutil.57.dylib libswresample/libswresample.4.dylib libswscale/libswscale.6.dylib ..
@@ -474,7 +474,7 @@ tar xvf ../opusfile-0.12.tar.gz
 tar xvf ../SDL2-2.0.20.tar.gz
 tar xvf ../freetype-2.12.1.tar.gz
 tar xvf ../x264-master.tar.bz2
-tar xvf ../ffmpeg-5.0.1.tar.gz
+tar xvf ../ffmpeg-5.1.tar.gz
 tar xvf ../v4.3-stable.tar.gz
 tar xvf ../libpng-1.6.37.tar.gz
 
@@ -519,7 +519,7 @@ cd ../x264-master
 CFLAGS="-mmacosx-version-min=10.9 -I/usr/aarch64-apple-darwin20.1/include" LDFLAGS="-L/usr/aarch64-apple-darwin20.1/lib" ./configure --enable-static --disable-cli --disable-gpl --disable-avs --disable-swscale --disable-lavf --disable-ffms --disable-gpac --disable-lsmash --disable-interlaced --host=aarch64-apple-darwin20.1 --prefix=/usr/aarch64-apple-darwin20.1 --cross-prefix=aarch64-apple-darwin20.1-
 make -j4
 
-cd ../ffmpeg-5.0.1
+cd ../ffmpeg-5.1
 ./configure --disable-all --disable-appkit --disable-bzlib --disable-avfoundation --disable-coreimage --disable-securetransport --disable-audiotoolbox --disable-cuda-llvm --disable-videotoolbox --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-cxxflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-ldflags="-L../x264-master" --arch=aarch64 --target_os=darwin --cross-prefix=aarch64-apple-darwin20.1- --disable-static --enable-shared --cc=$CC --cxx=$CXX
 make -j4
 cp libavcodec/libavcodec.59.dylib libavformat/libavformat.59.dylib libavutil/libavutil.57.dylib libswresample/libswresample.4.dylib libswscale/libswscale.6.dylib ..
