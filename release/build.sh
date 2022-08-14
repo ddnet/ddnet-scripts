@@ -102,7 +102,7 @@ build_remote_macos_steam ()
 {
   build_remote_macos -steam $CXXFLAGS_STEAM "-DSTEAM=ON"
   rm -rf DDNet-$VERSION-steam-macos
-  scp -r deen@si:macos-steam/pack_DDNet-\*_dmg DDNet-$VERSION-steam-macos
+  rsync -avP deen@si:macos-steam/pack_DDNet-\*_dmg DDNet-$VERSION-steam-macos
   ssh deen@si "rm -rf macos-steam"
 }
 
