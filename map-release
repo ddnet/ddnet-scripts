@@ -21,6 +21,7 @@ Pre-requirements:
 
 1. map properties
   $ cd git/libtw2
+  $ cargo build --release
   $ target/release/ddnet_properties Kobra\ 4.map Kobra\ 4.msgpack
   $ scp Kobra\ 4.msgpack ddnet.tw:servers/maps
 
