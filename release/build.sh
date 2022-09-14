@@ -58,6 +58,8 @@ build_macos ()
   eval `osxcross-conf`
   export OSXCROSS_OSX_VERSION_MIN=10.9
   cmake -DVERSION=$VERSION -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_BUILD_TYPE=Release -DDISCORD=ON -DWEBSOCKETS=OFF -DIPO=ON -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin-arm64.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX11.0.sdk/ $(echo $FLAGS) ../ddnet-source
+  unset CXXFLAGS
+  unset LDFLAGS
   make -j1 package_default
 }
 
@@ -87,7 +89,9 @@ build_remote_macos ()
   cd macos$SUFFIX && \
   export CXXFLAGS=\"'$OUR_CXXFLAGS'\" && \
   cmake -DVERSION=$VERSION -DCMAKE_OSX_ARCHITECTURES=\"arm64;x86_64\" -DCMAKE_BUILD_TYPE=Release -DDISCORD=ON -DWEBSOCKETS=OFF -DIPO=ON -DPREFER_BUNDLED_LIBS=ON $(echo $FLAGS) ../ddnet-source && \
-  make -j10 package_default
+  unset CXXFLAGS && \
+  unset LDFLAGS && \
+  make -j10 package_default VERBOSE=1
   "
 }
 
@@ -113,7 +117,7 @@ build_linux ()
 
   cd $DIR
   mkdir -p proc sys dev
-  umount proc sys dev 2> /dev/null || true
+  umount $DIR/proc $DIR/sys $DIR/dev 2> /dev/null || true
   mount -t proc proc proc/
   mount -t sysfs sys sys/
   mount -o bind /dev dev/
@@ -136,18 +140,24 @@ build_linux ()
   chroot . sh -c "cd ddnet-source && \
     export CXXFLAGS=\"'$CXXFLAGS_WEB' -no-pie\" && \
     export LDFLAGS=\"-no-pie\" && \
+    . /root/.cargo/env && \
     cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DDISCORD=$DISCORD -DDISCORD_DYNAMIC=$DISCORD -DWEBSOCKETS=OFF -DIPO=ON $(echo $UPDATE_FLAGS) -DPREFER_BUNDLED_LIBS=ON && \
-    make -j1 package_default"
+    unset CXXFLAGS && \
+    unset LDFLAGS && \
+    make -j1 package_default VERBOSE=1"
   chroot . sh -c "cd ddnet-source-steam && \
     export CXXFLAGS=\"'$CXXFLAGS_STEAM' -no-pie\" && \
     export LDFLAGS=\"-no-pie\" && \
+    . /root/.cargo/env && \
     cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DDISCORD=$DISCORD -DDISCORD_DYNAMIC=$DISCORD -DWEBSOCKETS=OFF -DIPO=ON -DSTEAM=ON -DPREFER_BUNDLED_LIBS=ON && \
-    make -j1 package_default"
+    unset CXXFLAGS && \
+    unset LDFLAGS && \
+    make -j1 package_default VERBOSE=1"
   mv ddnet-source/DDNet-*.tar.xz $BUILDS/DDNet-$VERSION-linux_$PLATFORM.tar.xz
   mv ddnet-source-steam/DDNet-*.tar.xz ../DDNet-$VERSION-steam-linux_$PLATFORM.tar.xz
 
   rm -rf ddnet-source ddnet-source-steam
-  umount proc sys dev
+  umount $DIR/proc $DIR/sys $DIR/dev
   unset CFLAGS LDFLAGS PKG_CONFIG_PATH
 }
 
@@ -163,7 +173,9 @@ build_windows ()
   mkdir $DIR
   cd $DIR
   cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=RelWithDebInfo -DDISCORD=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain -DCMAKE_DISABLE_FIND_PACKAGE_GTest=ON -DEXCEPTION_HANDLING=ON $(echo $BUILDOPTS) ../ddnet-source
-  make -j1
+  unset CXXFLAGS
+  unset LDFLAGS
+  make -j1 VERBOSE=1
   XZ_OPT=-9 tar cfJ DDNet-$VERSION-win$PLATFORM$SUFFIX-symbols.tar.xz DDNet.exe DDNet-Server.exe
   make -j1 package_default
   unset PREFIX \
@@ -222,19 +234,15 @@ CFLAGS=-m32 LDFLAGS=-m32 build_linux x86 $BUILDDIR/debian10_x86 &> builds/linux_
 # IPO causes issues with DrMinGW stack traces, so disable for now
 # https://github.com/ddnet/ddnet/issues/5371
 (TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
-  PREFIX=x86_64-w64-mingw32- PATH=/usr/x86_64-w64-mingw32/bin:$PATH \
   build_windows_website 64 "-DIPO=OFF"
 
 TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
-  PREFIX=x86_64-w64-mingw32- PATH=/usr/x86_64-w64-mingw32/bin:$PATH \
   build_windows_steam 64 "-DIPO=OFF") &> builds/win64.log &
 
 (TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
-  PREFIX=i686-w64-mingw32- PATH=/usr/i686-w64-mingw32/bin:$PATH \
   build_windows_website 32 "-DIPO=OFF"
 
 TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
-  PREFIX=i686-w64-mingw32- PATH=/usr/i686-w64-mingw32/bin:$PATH \
   build_windows_steam 32 "-DIPO=OFF") &> builds/win32.log &
 
 wait
