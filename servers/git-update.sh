@@ -3,6 +3,7 @@ rni 10 3
 
 cd /home/teeworlds/servers
 
+jq . serverlist.json > /dev/null || (echo "Invalid serverlist.json" && exit 1)
 (set +x; ./config_store_d maps/*.map) > /dev/null 2>/dev/null
 
 for i in /home/teeworlds/servers /home/teeworlds/servers/halloween; do

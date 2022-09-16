@@ -2,8 +2,8 @@
 
 cd /home/teeworlds/servers
 
-if [ $(cat /proc/loadavg|head -c1) -ge 6 ]; then
-  #echo -e "Current load is > 6, not running."
+if [ $(cat /proc/loadavg|head -c1) -ge 4 ]; then
+  #echo -e "Current load is > 4, not running."
   exit 1
 fi
 
@@ -31,7 +31,7 @@ i=0
 # EUR is split into 4 regions in ranks:
 (echo NLD; echo GER; echo POL; echo FRA; grep name serverlist.json | sed -e 's/.*"name": "\(.*\)".*/\1/') | while read country; do
   scripts/ranks.py --country=$country $types &
-  if (( $i % 6 == 0 )); then
+  if (( $i % 4 == 0 )); then
     wait
   fi
   let i=i+1

@@ -36,7 +36,7 @@ cd ~/servers
 #nohup ./run64.sh secret7 > /dev/null &
 
 cd ~/servers
-nohup ./serverstatus-client.py &
+#nohup ./serverstatus-client.py &
 nohup scripts/masterstats.sh &
 
 #sshfs -o reconnect testmaps@ddnet.tw:/home/teeworlds/servers/test/maps/ test/data/maps &

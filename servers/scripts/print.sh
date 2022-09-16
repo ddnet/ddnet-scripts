@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 # Set execution every minute in crontab
 date1=$(date +"%s")
-date2=$(date -d "2022-03-13 18:01 CET" +"%s")
+date2=$(date -d "2022-09-04 20:01 CEST" +"%s")
 diff=$(($date2-$date1))
 
 if [ $diff -lt 0 ]; then
@@ -31,11 +31,11 @@ elif [ $(($diff / 3600)) -lt 3 ]; then
     #echo "broadcast \"Tournament servers running already - DDNet.tw\"" > /home/teeworlds/servers/servers/*fifo
   fi
 elif [ $(( ($diff / 60) % 60)) -eq 0 ]; then
-  echo "broadcast \"Brutal Tournament in $(($diff / 3600)) hours (18:00 CET)\"" > /home/teeworlds/servers/servers/*fifo
+  echo "broadcast \"Brutal Tournament in $(($diff / 3600)) hours (20:00 CEST)\"" > /home/teeworlds/servers/servers/*fifo
   #sleep 7
   #echo "broadcast \"\"" > /home/teeworlds/servers/servers/*fifo
 fi
 
-#echo "broadcast \"DDNet Brutal Tournament on Sunday, 18:00 CET!\"" > /home/teeworlds/servers/servers/*fifo
+#echo "broadcast \"DDNet Brutal Tournament on Sunday, 20:00 CEST!\"" > /home/teeworlds/servers/servers/*fifo
 #sleep 7
-#echo "broadcast \"Map Simple Down by Zweitleben, first finish wins!\"" > /home/teeworlds/servers/servers/*fifo
+#echo "broadcast \"2-player map by Soapy Sandwich & Jimmy Jazz, first finish wins!\"" > /home/teeworlds/servers/servers/*fifo

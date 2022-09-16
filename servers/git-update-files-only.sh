@@ -3,6 +3,7 @@ rni 10 3
 
 cd /home/teeworlds/servers
 
+jq . serverlist.json > /dev/null || (echo "Invalid serverlist.json" && exit 1)
 (set +x; ./config_store_d maps/*.map) > /dev/null 2>/dev/null
 
 for i in /home/teeworlds/servers /home/teeworlds/servers/halloween; do
@@ -29,7 +30,7 @@ set +x
 LOGFILE=git-update-files-only.$$.log
 rm -f $LOGFILE
 for i in `cat all-locations`; do
-  (timeout 120 ssh $i.ddnet.tw "cd servers;ni 10 3 git pull || git pull"
+  (timeout 120 ssh $i.ddnet.tw "cd servers;ni 10 3 git pull || ni 10 3 git pull || ni 10 3 git pull"
   if [ $? -eq 0 ]; then
     echo -e "\e[1;32m$i updated successfully\e[0m" >> $LOGFILE
   else
