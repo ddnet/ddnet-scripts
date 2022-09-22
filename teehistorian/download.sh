@@ -7,10 +7,10 @@ rsync -a --no-o --no-g --append-verify --rsync-path='nice -n19 ionice -c3 rsync'
 
 mkdir -p data
 
-#ssh ger1.ddnet.tw exit || true # Annoying DoS protection needs 2 connection attempts
+#ssh ger1.ddnet.org exit || true # Annoying DoS protection needs 2 connection attempts
 for loc in $(cat all-locations); do
   # rsync's -z compression is better than ssh's -C
-  rsync -z -a --bwlimit=256K --no-o --no-g -H --append-verify --rsync-path='nice -n19 ionice -c3 rsync' -e 'ssh -o Compression=no' -v "${loc}.ddnet.tw:servers/teehistorian/." "data/${loc}/" &
+  rsync -z -a --bwlimit=256K --no-o --no-g -H --append-verify --rsync-path='nice -n19 ionice -c3 rsync' -e 'ssh -o Compression=no' -v "${loc}.ddnet.org:servers/teehistorian/." "data/${loc}/" &
 done
 
 for dir in data/*; do
