@@ -23,7 +23,7 @@ for line in sys.stdin:
 
   if "MACRO_CONFIG_STR" in line:
     result = (html.escape(name), html.escape(y[-2]), getValue(x[3]), "", "")
-  elif "MACRO_CONFIG_INT" in line:
+  elif "MACRO_CONFIG_INT" in line or "MACRO_CONFIG_FLOAT" in line:
     result = (html.escape(name), html.escape(y[-2]), getValue(x[2]), getValue(x[3]), getValue(x[4]))
   elif "MACRO_CONFIG_COL" in line:
     result = (html.escape(name), html.escape(y[-2]), getValue(x[2]), "", "")
