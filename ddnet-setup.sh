@@ -97,7 +97,7 @@ chmod +x /home/teeworlds/servers/run-all.sh
 chmod +x /home/teeworlds/run-all.sh
 
 # On CHN servers:
-# From another CHN server: tar cfz chn.tar.gz types/*/flexvotes.cfg types/*/flexname.cfg announcement.txt ddrace_local_auths.cfg censorlist
+# From another CHN server: tar cfz chn.tar.gz types/*/flexvotes.cfg types/*/flexname.cfg announcement.txt ddrace_local_auths.cfg censorlist.txt
 # tar xvf chn.tar.gz
 # sed -i "s/CHN4 北京/CHN13 北京/" types/*/flexname.cfg
 su - teeworlds "./run-all.sh"
