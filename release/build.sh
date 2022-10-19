@@ -84,7 +84,7 @@ build_remote_macos ()
   SUFFIX=$1
   OUR_CXXFLAGS=$2
   FLAGS=$3
-  ssh deen@si "export PATH=/opt/homebrew/bin:$PATH && rm -rf macos$SUFFIX && \
+  ssh deen@si "export PATH=/opt/homebrew/bin:\$PATH:\$HOME/.cargo/bin && rm -rf macos$SUFFIX && \
   mkdir macos$SUFFIX && \
   cd macos$SUFFIX && \
   export CXXFLAGS=\"'$OUR_CXXFLAGS'\" && \
