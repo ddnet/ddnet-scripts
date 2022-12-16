@@ -36,6 +36,14 @@ if [ "$1" = "nightly" ]; then
   cd ..
   rsync -avP --delay-updates --delete-delay codebrowser ddnet:/var/www/
   rm -rf codebrowser
+elif [ "$1" = "playground" ]; then
+  export UPDATE_FLAGS="-DAUTOUPDATE=OFF -DINFORM_UPDATE=OFF"
+  export UPDATE_FLAGS_MACOS="-DINFORM_UPDATE=OFF"
+  export MAIN_REPO_USER=Jupeyy
+  export MAIN_REPO_BRANCH=playgrouund
+  V="$(curl -s https://raw.githubusercontent.com/$MAIN_REPO_USER/$MAIN_REPO_NAME/$MAIN_REPO_BRANCH/src/game/version.h | grep "^#define GAME_RELEASE_VERSION" | cut -d'"' -f2)"
+  export VERSION="$V-$(date +%Y%m%d)"
+  ./build.sh $VERSION &> builds/DDNet-playground.log
 elif [ "$1" = "rc" ]; then
   export UPDATE_FLAGS="-DAUTOUPDATE=OFF -DINFORM_UPDATE=OFF"
   export UPDATE_FLAGS_MACOS="-DINFORM_UPDATE=OFF"
@@ -65,6 +73,12 @@ if [ "$1" = "nightly" ]; then
   zmv -W "builds/DDNet-$VERSION*" "builds/DDNet-nightly*"
   scp -q builds/DDNet-nightly* ddnet:/var/www/downloads/tmp
   ssh ddnet "mv /var/www/downloads/tmp/DDNet-$VERSION*-symbols.tar.xz /var/www/downloads/symbols; mv /var/www/downloads/tmp/DDNet-nightly* /var/www/downloads"
+elif [ "$1" = "playground" ]; then
+  scp -q builds/DDNet-$VERSION*-symbols.tar.xz ddnet:/var/www/downloads/tmp
+  rm builds/DDNet-$VERSION*-symbols.tar.xz
+  zmv -W "builds/DDNet-$VERSION*" "builds/DDNet-playground*"
+  scp -q builds/DDNet-playground* ddnet:/var/www/downloads/tmp
+  ssh ddnet "mv /var/www/downloads/tmp/DDNet-$VERSION*-symbols.tar.xz /var/www/downloads/symbols; mv /var/www/downloads/tmp/DDNet-playground* /var/www/downloads"
 else
   scp -q builds/DDNet-$VERSION* ddnet:/var/www/downloads/tmp
   ssh ddnet "mv /var/www/downloads/tmp/DDNet-$VERSION*-symbols.tar.xz /var/www/downloads/symbols; mv /var/www/downloads/tmp/DDNet-$VERSION* /var/www/downloads"
