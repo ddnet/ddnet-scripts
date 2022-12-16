@@ -101,7 +101,7 @@ cd /home/deen/isos/ddnet/
 cp steamcmd_orig/* steamcmd
 cd /home/deen/isos/ddnet/steamcmd/
 sed -e "s/Nightly Build/$1: $VERSION/" app_build_412220.vdf > tmp.vdf
-if [ "$1" == "playground" ]; then
+if [ "$1" = "playground" ]; then
   sed -i "s/\"beta\"/\"playground\"/" tmp.vdf
 elif [ "$1" != "nightly" ]; then
   sed -i "s/\"beta\"/\"releasecandidates\"/" tmp.vdf
