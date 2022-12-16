@@ -40,7 +40,7 @@ elif [ "$1" = "playground" ]; then
   export UPDATE_FLAGS="-DAUTOUPDATE=OFF -DINFORM_UPDATE=OFF"
   export UPDATE_FLAGS_MACOS="-DINFORM_UPDATE=OFF"
   export MAIN_REPO_USER=Jupeyy
-  export MAIN_REPO_BRANCH=playgrouund
+  export MAIN_REPO_BRANCH=playground
   V="$(curl -s https://raw.githubusercontent.com/$MAIN_REPO_USER/$MAIN_REPO_NAME/$MAIN_REPO_BRANCH/src/game/version.h | grep "^#define GAME_RELEASE_VERSION" | cut -d'"' -f2)"
   export VERSION="$V-$(date +%Y%m%d)"
   ./build.sh $VERSION &> builds/DDNet-playground.log
@@ -57,6 +57,9 @@ else
   echo ""
   echo "Nightly:"
   echo "./build-and-deploy.sh nightly"
+  echo ""
+  echo "Playground:"
+  echo "./build-and-deploy.sh playground"
   echo ""
   echo "Release Candidate:"
   echo "MAIN_REPO_USER=def- MAIN_REPO_BRANCH=pr-15.0.5 ./build-and-deploy.sh rc 15.0.5-rc2"
@@ -98,7 +101,9 @@ cd /home/deen/isos/ddnet/
 cp steamcmd_orig/* steamcmd
 cd /home/deen/isos/ddnet/steamcmd/
 sed -e "s/Nightly Build/$1: $VERSION/" app_build_412220.vdf > tmp.vdf
-if [ "$1" != "nightly" ]; then
+if [ "$1" == "playground" ]; then
+  sed -i "s/\"beta\"/\"playground\"/" tmp.vdf
+elif [ "$1" != "nightly" ]; then
   sed -i "s/\"beta\"/\"releasecandidates\"/" tmp.vdf
 fi
 if [ ! -d "/home/deen/isos/ddnet/steam/macos" ]; then
