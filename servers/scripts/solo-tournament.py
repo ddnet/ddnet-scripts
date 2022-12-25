@@ -156,7 +156,7 @@ with con:
         if row[0] not in players:
           players[row[0]] = Player({}, {})
         if originalMapName not in players[row[0]].maps:
-          players[row[0]].maps[originalMapName] = PlayerMap(currentRank, 0, 0, 0, date(2015,10,10),  date(2016,10,10))
+          players[row[0]].maps[originalMapName] = PlayerMap(currentRank, 0, 0, date(2015,10,10),  date(2016,10,10))
 
         #if currentPosition > 10:
         #  continue

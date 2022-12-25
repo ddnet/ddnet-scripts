@@ -19,7 +19,7 @@ git push
 
 servers=0
 for i in `cat ~/servers/all-locations`; do
-  ssh $i.ddnet.tw "cd servers7; ni 10 3 git pull"
+  ssh $i.ddnet.org "cd servers7; ni 10 3 git pull"
   if [ $? -eq 0 ]; then
     echo -e "\e[1;32m$i updated successfully\e[0m"
     servers=$((servers+1))

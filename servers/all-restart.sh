@@ -1,4 +1,4 @@
 #!/bin/sh
 for loc in $(cat all-locations); do
-  ssh $loc.ddnet.tw servers/restart-ddnet-on-empty.sh
+  ssh $loc.ddnet.org servers/restart-ddnet-on-empty.sh
 done

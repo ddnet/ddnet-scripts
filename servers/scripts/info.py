@@ -79,7 +79,7 @@ def application(env, start_response):
 
   try:
     country = env['HTTP_CF_IPCOUNTRY']
-    result["map-download-url"] = 'https://ddnet-maps-1251829362.file.myqcloud.com' if country == 'CN' else 'https://maps2.ddnet.tw'
+    result["map-download-url"] = 'https://ddnet-maps-1251829362.file.myqcloud.com' if country == 'CN' else 'https://maps.ddnet.org'
   except Exception as e:
     print(e)
 

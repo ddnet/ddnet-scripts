@@ -34,7 +34,7 @@ def postRecord(row, names):
     oldTimeString = "new tie!"
   else:
     oldTimeString = "next best time: %s" % formatTimeExact(row[6])
-  postDiscordRecords("%s %s on \[[%s](<https://ddnet.tw/ranks/%s/>)\] [%s](<https://ddnet.tw%s>): %s %s (%s)" % (countryCodeMapping.get(row[8], ''), row[4], row[5], row[5].lower(), row[1], mapWebsite(row[1]), formatTimeExact(row[2]), names, oldTimeString))
+  postDiscordRecords("%s %s on \[[%s](<https://ddnet.org/ranks/%s/>)\] [%s](<https://ddnet.org%s>): %s %s (%s)" % (countryCodeMapping.get(row[8], ''), row[4], row[5], row[5].lower(), row[1], mapWebsite(row[1]), formatTimeExact(row[2]), names, oldTimeString))
 
 os.chdir("/home/teeworlds/servers/")
 
@@ -78,9 +78,9 @@ where lll.Map != "Nyan Cat" group by Name, Map, Time order by lll.Timestamp;
 
   for i, row in enumerate(rows):
     if row[4] == "Team finish" or row[4] == "Top 1 team rank":
-      names.append("[%s](<https://ddnet.tw%s>)" % (escapeMarkdown(row[0]), playerWebsite(row[0])))
+      names.append("[%s](<https://ddnet.org%s>)" % (escapeMarkdown(row[0]), playerWebsite(row[0])))
       if i+1 >= len(rows) or rows[i+1][1] != row[1] or rows[i+1][2] != row[2]:
         postRecord(row, makeAndString(names))
         names = []
     else:
-      postRecord(row, "[%s](<https://ddnet.tw%s>)" % (escapeMarkdown(row[0]), playerWebsite(row[0])))
+      postRecord(row, "[%s](<https://ddnet.org%s>)" % (escapeMarkdown(row[0]), playerWebsite(row[0])))

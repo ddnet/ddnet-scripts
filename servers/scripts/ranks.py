@@ -53,7 +53,7 @@ def printFooter():
           <td class="multiplier">5</td>
           <td class="multiplier">5</td>
         </tr><tr>
-          <td>DDmaX</td>
+          <td>DDmaX.*</td>
           <td class="multiplier">4</td>
           <td class="multiplier">0</td>
         </tr><tr>
@@ -187,10 +187,11 @@ with con:
     f = open("types/%s/maps" % type.lower(), 'r')
 
     serversString1 += '<div id="%s" class="longblock div-ranks">\n' % type
-    serversString1 += '<div class="right"><form id="mapform" action="/maps/" method="get">%s<input name="map" class="typeahead" type="text" placeholder="Map search"><input type="submit" value="Map search" style="position: absolute; left: -9999px"></form><br><form id="playerform" action="/players/" method="get"><input name="player" class="typeahead" type="text" placeholder="Player search"><input type="submit" value="Player search" style="position: absolute; left: -9999px"></form></div>' % mbCountryInput
+    serversString1 += '<div class="right"><form id="mapform" action="/maps/" method="get">%s<input name="map" class="typeahead" type="text" placeholder="Map search"><input type="submit" value="Map search" style="position: absolute; left: -9999px"></form><br><form id="mapperform" action="/maps/" method="get"><input id="mappersearch" name="mapper" class="typeahead" type="text" placeholder="Mapper search"><input type="submit" value="Mapper search" style="position: absolute; left: -9999px"></form><br><form id="playerform" action="/players/" method="get"><input name="player" class="typeahead" type="text" placeholder="Player search"><input type="submit" value="Player search" style="position: absolute; left: -9999px"></form></div>' % mbCountryInput
     serversString1 += '<script src="/jquery.js" type="text/javascript"></script>\n'
     serversString1 += '<script src="/typeahead.bundle.js" type="text/javascript"></script>\n'
     serversString1 += '<script src="/mapsearch.js" type="text/javascript"></script>\n'
+    serversString1 += '<script src="/mappersearch.js" type="text/javascript"></script>\n'
     serversString1 += '<script src="/playersearch.js?version=2" type="text/javascript"></script>\n'
     if country == None:
       serversString1 += '<div class="block7"><h2>%s Server Ranks%%s</h2></div><br/>\n' % type
@@ -201,6 +202,7 @@ with con:
     currentMapCount = 0
     subname = None
     maps[type] = []
+    firstLine = True
 
     for line in f:
       if line.startswith('───') and line.endswith('───\n'):
@@ -209,14 +211,20 @@ with con:
           mapsStrings[-1] += '<br/></div>\n'
         mapsStrings[-1] += '<div class="longblock div-ranks"><h2 id="%s">%s</h2><br/>\n' % (subname.lower().replace(' ', '-'), titleSubtype(subname))
         continue
-
       words = line.rstrip('\n').split('|')
       if len(words) == 0 or not words[0].isdigit():
         continue
 
+      if not subname and firstLine:
+        mapsStrings[-1] += '<div class="longblock div-ranks">\n'
+        firstLine = False
+
       # paginate
       if currentMapCount > 25:
-        mapsStrings.append('<div class="longblock div-ranks"><h2 id="%s">%s</h2><br/>\n' % (subname.lower().replace(' ', '-'), titleSubtype(subname)))
+        if subname:
+            mapsStrings.append('<div class="longblock div-ranks"><h2 id="%s">%s</h2><br/>\n' % (subname.lower().replace(' ', '-'), titleSubtype(subname)))
+        else:
+            mapsStrings.append('<div class="longblock div-ranks">\n')
         currentMapCount = 0
       currentMapCount += 1
 
@@ -597,10 +605,11 @@ else:
 print >>tf, '<p class="toggle"><a href="#" onclick="showClass(\'allPoints\'); return false;">Top 500 / Top 20</a></p>'
 
 print >>tf, '<div id="global" class="block">\n'
-print >>tf, '<div class="right"><form id="mapform" action="/maps/" method="get">%s<input name="map" class="typeahead" type="text" placeholder="Map search"><input type="submit" value="Map search" style="position: absolute; left: -9999px"></form><br><form id="playerform" action="/players/" method="get"><input name="player" class="typeahead" type="text" placeholder="Player search"><input type="submit" value="Player search" style="position: absolute; left: -9999px"></form></div>' % mbCountryInput
+print >>tf, '<div class="right"><form id="mapform" action="/maps/" method="get">%s<input name="map" class="typeahead" type="text" placeholder="Map search"><input type="submit" value="Map search" style="position: absolute; left: -9999px"></form><br><form id="mapperform" action="/maps/" method="get"><input id="mappersearch" name="mapper" class="typeahead" type="text" placeholder="Mapper search"><input type="submit" value="Mapper search" style="position: absolute; left: -9999px"></form><br><form id="playerform" action="/players/" method="get"><input name="player" class="typeahead" type="text" placeholder="Player search"><input type="submit" value="Player search" style="position: absolute; left: -9999px"></form></div>' % mbCountryInput
 print >>tf, '<script src="/jquery.js" type="text/javascript"></script>'
 print >>tf, '<script src="/typeahead.bundle.js" type="text/javascript"></script>'
 print >>tf, '<script src="/mapsearch.js" type="text/javascript"></script>'
+print >>tf, '<script src="/mappersearch.js" type="text/javascript"></script>'
 print >>tf, '<script src="/playersearch.js?version=2" type="text/javascript"></script>'
 if country == None:
   print >>tf, '<div class="block7"><h2>Global Ranks</h2></div><br/>'

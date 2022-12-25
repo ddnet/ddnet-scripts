@@ -24,13 +24,13 @@ git commit -a -m "upd"
 git push
 echo -e "\e[1;32mMAIN updated successfully\e[0m"
 
-(ni 12 3 nim-scripts/mapdl; rsync -avP --exclude compilations/ /var/www-maps chn11.ddnet.tw:/var/) &
+(ni 12 3 nim-scripts/mapdl; rsync -avP --exclude compilations/ /var/www-maps chn11.ddnet.org:/var/) &
 
 set +x
 LOGFILE=git-update-files-only.$$.log
 rm -f $LOGFILE
 for i in `cat all-locations`; do
-  (timeout 120 ssh $i.ddnet.tw "cd servers;ni 10 3 git pull || ni 10 3 git pull || ni 10 3 git pull"
+  (timeout 120 ssh $i.ddnet.org "cd servers;ni 10 3 git pull || ni 10 3 git pull || ni 10 3 git pull"
   if [ $? -eq 0 ]; then
     echo -e "\e[1;32m$i updated successfully\e[0m" >> $LOGFILE
   else

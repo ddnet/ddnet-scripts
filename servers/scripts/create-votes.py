@@ -17,7 +17,10 @@ serverStrings = {
   'Brutal'   : '                Brutal Server',
   'Insane'   : '                Insane Server',
   'Dummy'    : '                Dummy Server',
-  'DDmaX'    : '                DDmaX Server',
+  'DDmaX.Easy':'            DDmaX.Easy Server',
+  'DDmaX.Next':'            DDmaX.Next Server',
+  'DDmaX.Pro': '             DDmaX.Pro Server',
+  'DDmaX.Nut': '             DDmaX.Nut Server',
   'Oldschool': '            Oldschool Server',
   'Solo'     : '                 Solo Server',
   'Race'     : '                 Race Server',
@@ -158,6 +161,10 @@ with con:
       mbMapperName = " by %s" % mapperName
       mapperText = "\\n│ Mapper: %s" % mapperName
 
+    fullText = "%s%s | %s" % (originalMapName, mbMapperName, pointsText2)
+    length = len(fullText.encode('utf-8'))
+    if length >= 64:
+      mbMapperName = mbMapperName[:60-length] + "..."
     print 'add_vote "%s%s | %s" "sv_reset_file types/%s/flexreset.cfg; change_map \\"%s\\""' % (originalMapName, mbMapperName, pointsText2, server.lower(), originalMapName)
     print 'add_vote "%s" "info"' % text
 

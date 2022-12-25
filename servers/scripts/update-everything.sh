@@ -44,6 +44,6 @@ done
 
 (zip -q9r /var/www/players-cache.$$.tmp players-cache && mv /var/www/players-cache.$$.tmp /var/www/players-cache.zip) &
 
-(curl -s -o serverlist-kog.json.$$.tmp https://qshar.com/servers.php && mv serverlist-kog.json.$$.tmp serverlist-kog.json && ./git-update-serverlist-only.sh) &
+(curl -s -o serverlist-kog.json.$$.tmp http://51.91.78.232/servers.php && jq . serverlist-kog.json.$$.tmp > /dev/null  && mv serverlist-kog.json.$$.tmp serverlist-kog.json && ./git-update-serverlist-only.sh) &
 
 wait

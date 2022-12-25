@@ -5,4 +5,4 @@ if [ -z $1 ]; then
   exit
 fi
 
-for i in $(cat /home/teeworlds/servers/all-locations); do echo $i; ssh $i.ddnet.tw "echo auth_remove $1 >> servers/servers/*.fifo"; done
+for i in $(cat /home/teeworlds/servers/all-locations); do echo $i; ssh $i.ddnet.org "echo auth_remove $1 >> servers/servers/*.fifo"; done

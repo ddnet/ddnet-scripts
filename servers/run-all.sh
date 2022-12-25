@@ -39,4 +39,4 @@ cd ~/servers
 #nohup ./serverstatus-client.py &
 nohup scripts/masterstats.sh &
 
-#sshfs -o reconnect testmaps@ddnet.tw:/home/teeworlds/servers/test/maps/ test/data/maps &
+#sshfs -o reconnect testmaps@ddnet.org:/home/teeworlds/servers/test/maps/ test/data/maps &

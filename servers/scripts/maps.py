@@ -161,11 +161,11 @@ with con:
         rows = cur.fetchall()
         if len(rows) > 0:
           jsonT['name'] = originalMapName
-          slugifiedMapName = slugify2(originalMapName)
-          jsonT['website'] = 'https://ddnet.tw/maps/%s' % slugifiedMapName
+          slugifiedMapName = slugify2(u'%s' % originalMapName)
+          jsonT['website'] = 'https://ddnet.org/maps/%s' % slugifiedMapName
           normalizedMapName = normalizeMapname(originalMapName)
-          jsonT['thumbnail'] = 'https://ddnet.tw/ranks/maps/%s.png' % normalizedMapName
-          jsonT['web_preview'] = 'https://ddnet.tw/mappreview/?map=%s' % quote_plus(originalMapName)
+          jsonT['thumbnail'] = 'https://ddnet.org/ranks/maps/%s.png' % normalizedMapName
+          jsonT['web_preview'] = 'https://ddnet.org/mappreview/?map=%s' % quote_plus(originalMapName)
 
           (type, points, stars, mapperName, mapTimestamp) = rows[0]
           jsonT['type'] = type
@@ -259,6 +259,12 @@ with con:
         start_response('301 Moved Permanently', [('Location', newPath)])
         return ''
 
+      if 'mapper' in qs:
+        q = qs['mapper'][0]
+        newPath = '/mappers/%s' % slugify2(u'%s' % q).encode('utf-8')
+        start_response('301 Moved Permanently', [('Location', newPath)])
+        return ''
+
       if 'query' in qs:
         q = qs['query'][0]
         jsonT = []
@@ -266,20 +272,47 @@ with con:
         SELECT l.Map, l.Server, Mapper
         FROM (
           SELECT * FROM record_maps
-          WHERE Map LIKE '%%%s%%' COLLATE utf8mb4_general_ci
+          WHERE Map LIKE '%%%s%%' COLLATE utf8mb4_general_ci or Mapper LIKE '%%%s%%' COLLATE utf8mb4_general_ci
           ORDER BY
             CASE WHEN Map = '%s' THEN 0 ELSE 1 END,
-            CASE WHEN Map LIKE '%s%%' THEN 0 ELSE 1 END,
+            CASE WHEN Map LIKE '%s%%' COLLATE utf8mb4_general_ci THEN 0 ELSE 1 END,
+            CASE WHEN Map LIKE '%%%s%%' COLLATE utf8mb4_general_ci THEN 0 ELSE 1 END,
+            CASE WHEN Mapper = '%s' THEN 0 ELSE 1 END,
+            CASE WHEN Mapper LIKE '%s%%' COLLATE utf8mb4_general_ci THEN 0 ELSE 1 END,
             LENGTH(Map),
             Map
           LIMIT 10
-        ) as l;""" % (con.escape_string('%'.join(q)), con.escape_string(q), con.escape_string(q)))
+        ) as l;""" % (con.escape_string('%'.join(q)), con.escape_string('%'.join(q)), con.escape_string(q), con.escape_string(q), con.escape_string('%'.join(q)), con.escape_string(q), con.escape_string(q)))
         rows = cur.fetchall()
         if len(rows) > 0:
           for row in rows:
             jsonT.append({'name': row[0], 'type': row[1]})
             if row[2] != "Unknown Mapper":
               jsonT[-1]['mapper'] = row[2]
+
+        start_response('200 OK', [('Content-Type', 'application/json')])
+        return json.dumps(jsonT)
+
+      if 'qmapper' in qs:
+        q = qs['qmapper'][0]
+        jsonT = []
+        query("""
+        SELECT Mapper, l.NumMaps
+        FROM (
+          SELECT * FROM record_mappers
+          WHERE Mapper LIKE '%%%s%%' COLLATE utf8mb4_general_ci
+          ORDER BY
+            CASE WHEN Mapper = '%s' COLLATE utf8mb4_general_ci THEN 0 ELSE 1 END,
+            CASE WHEN Mapper LIKE '%s%%' COLLATE utf8mb4_general_ci THEN 0 ELSE 1 END,
+            NumMaps DESC,
+            LENGTH(Mapper),
+            Mapper
+          LIMIT 10
+        ) as l;""" % (con.escape_string('%'.join(q)), con.escape_string(q), con.escape_string(q)))
+        rows = cur.fetchall()
+        if len(rows) > 0:
+          for row in rows:
+            jsonT.append({'mapper': row[0], 'num_maps': row[1]})
 
         start_response('200 OK', [('Content-Type', 'application/json')])
         return json.dumps(jsonT)
@@ -345,7 +378,7 @@ with con:
       mbMapperNameHtml = " by %s" % makeAndString(newNamesHtml)
       mbMapperName = " by %s" % makeAndString(newNames)
 
-    slugifiedMapName = slugify2(originalMapName)
+    slugifiedMapName = slugify2(u'%s' % originalMapName)
     menuText = '<ul>'
     menuText += '<li><a href="/maps/%s">Global Ranks</a></li>' % slugifiedMapName
     for c in countries:
@@ -358,11 +391,12 @@ with con:
 
     ranksLink = '/ranks/%s/%s/' % (country.lower(), type.lower()) if country else '/ranks/%s/' % type.lower()
     print >>out, '<div id="global" class="longblock div-ranks">'
-    print >>out, '<div class="right"><form id="mapform" action="/maps/" method="get"><input id="mapsearch" name="map" class="typeahead" type="text" placeholder="Map search"><input type="submit" value="Map search" style="position: absolute; left: -9999px"></form></div>'
+    print >>out, '<div class="right"><form id="mapform" action="/maps/" method="get"><input id="mapsearch" name="map" class="typeahead" type="text" placeholder="Map search"><input type="submit" value="Map search" style="position: absolute; left: -9999px"></form><br><form id="mapperform" action="/maps/" method="get"><input id="mappersearch" name="mapper" class="typeahead" type="text" placeholder="Mapper search"><input type="submit" value="Mapper search" style="position: absolute; left: -9999px"></form></div>'
     print >>out, '<h2><a href="%s">%s Server Ranks%s</a></h2>' % (ranksLink, type, mbCountryString)
     print >>out, '<script src="/jquery.js" type="text/javascript"></script>'
     print >>out, '<script src="/typeahead.bundle.js" type="text/javascript"></script>'
     print >>out, '<script src="/mapsearch.js" type="text/javascript"></script>'
+    print >>out, '<script src="/mappersearch.js" type="text/javascript"></script>'
     print >>out, '<script>'
     print >>out, '  var input = document.getElementById("mapsearch");'
     print >>out, '  input.focus();'

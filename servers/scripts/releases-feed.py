@@ -37,9 +37,9 @@ for line in f:
 print """<?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>DDraceNetwork Map Releases</title>
-  <link href="http://ddnet.tw/releases/feed/" rel="self" />
-  <link href="http://ddnet.tw/releases/" />
-  <id>http://ddnet.tw/releases/</id>
+  <link href="http://ddnet.org/releases/feed/" rel="self" />
+  <link href="http://ddnet.org/releases/" />
+  <id>http://ddnet.org/releases/</id>
   <updated>%s</updated>
 """ % formatDateFeedStr(releases[0][0])
 

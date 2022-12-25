@@ -46,7 +46,10 @@ pointsDict = {
   'Brutal':    (3,15),
   'Insane':    (4,30),
   'Dummy':     (5, 5),
-  'DDmaX':     (4, 0),
+  'DDmaX.Easy':(4, 0),
+  'DDmaX.Next':(4, 0),
+  'DDmaX.Pro': (4, 0),
+  'DDmaX.Nut': (4, 0),
   'Oldschool': (6, 0),
   'Solo':      (4, 0),
   'Race':      (2, 0),
@@ -170,19 +173,11 @@ def globalPoints(type, stars):
 
 def countClients(server):
   result = 0
-  for player in server.playerlist:
-    if player.name != "(connecting)".decode('utf8') or player.clan != "".decode('utf8') or player.score != 0 or player.country != -1:
+  for player in server['clients']:
+    if player['name'] != "(connecting)".decode('utf8') or player['clan'] != "".decode('utf8') or player['score'] != 0 or player['country'] != -1:
       result += 1
   return result
 
-def countClients7(server):
-  result = 0
-  for player in server["players"]:
-    if player["name"] != "(connecting)".decode('utf8') or player["clan"] != "".decode('utf8') or player["score"] != 0 or player["country"] != -1:
-      result += 1
-  return result
-
-#PlayerMap = namedtuple('PlayerMap', ['teamRank', 'rank', 'points', 'nrFinishes', 'firstFinish', 'time'])
 PlayerMap = namedtuple('PlayerMap', ['teamRank', 'rank', 'nrFinishes', 'firstFinish', 'time'])
 Player = namedtuple('Player', ['maps', 'servers'])
 Map = namedtuple('Map', ['name', 'points', 'finishes'])
@@ -342,8 +337,8 @@ def header(title, menu, header, refresh = False, stupidIncludes = False, otherIn
         <li><a href="/status/">Status</a></li>
         <li><a href="/ranks/">Ranks</a></li>
         <li><a href="/releases/">Map Releases</a></li>
-        <li><a href="/discord">Discord</a> / <a href="//forum.ddnet.tw/">Forum</a></li>
-        <li><a href="//wiki.ddnet.tw/">Wiki</a></li>
+        <li><a href="/discord">Discord</a> / <a href="//forum.ddnet.org/">Forum</a></li>
+        <li><a href="//wiki.ddnet.org/">Wiki</a></li>
         <li><a href="/downloads/">Downloads</a></li>
         <li><a href="/tournament/">Tournaments</a></li>
         <li><a href="/skins/">Skin Database</a></li>
@@ -510,7 +505,7 @@ def serverStatus(title):
     </div>
     <script src="js/jquery-1.10.2.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
-    <script src="js/serverstatus.js"></script>
+    <script src="js/serverstatus.js?version=3"></script>
     """ % title
 
 childrenCount = 0
@@ -518,8 +513,8 @@ second = False
 
 def getDiscordStatus():
   return """<div class="block">
-<h3 class="ip"><a href="https://ddnet.tw/discord">ddnet.tw/discord</a></h3><h2>DDNet Discord</h2>
-<a href="https://ddnet.tw/discord"><img alt="Discord" src="discord.png"></a>
+<h3 class="ip"><a href="https://ddnet.org/discord">ddnet.org/discord</a></h3><h2>DDNet Discord</h2>
+<a href="https://ddnet.org/discord"><img alt="Discord" src="discord.png"></a>
 </div>"""
 
 #  import urllib2, json
@@ -535,7 +530,7 @@ def getDiscordStatus():
 #    num_total += 1
 #
 #  return """<div class="block">
-#<h3 class="ip"><a href="https://ddnet.tw/discord">ddnet.tw/discord</a></h3><h2>DDNet Discord</h2>
+#<h3 class="ip"><a href="https://ddnet.org/discord">ddnet.org/discord</a></h3><h2>DDNet Discord</h2>
 #<p>Online: {}</p>
 #<p>Total Members: {}</p>
 #</div>""".format(num_online, num_total)
@@ -560,7 +555,7 @@ def getDiscordRanks():
 def getTSStatus():
   import ts3
   global childrenCount
-  svr = ts3.TS3Server("ts.ddnet.tw", 10011, 1)
+  svr = ts3.TS3Server("ts.ddnet.org", 10011, 1)
   response = svr.send_command('use port=9987')
 
   response = svr.send_command('serverinfo')
@@ -651,7 +646,7 @@ def getTSStatus():
   #  result = '<div class="block empty" style="display:none">\n'
   #else:
   result = '<div class="block">\n'
-  result += '<h3 class="ip"><a href="ts3server://ts.ddnet.tw">ts.ddnet.tw</a></h3>'
+  result += '<h3 class="ip"><a href="ts3server://ts.ddnet.org">ts.ddnet.org</a></h3>'
   mbS = ''
   if childrenCount != 1:
     mbS = 's'
@@ -707,8 +702,7 @@ def printStatus(name, servers, doc, external = False):
           if len(server['clients']) < 0:
             continue
 
-          #clients = countClients(server)
-          clients = len(server['clients'])
+          clients = countClients(server)
 
           if country != lastServer:
             lastServer = country
@@ -718,8 +712,10 @@ def printStatus(name, servers, doc, external = False):
             serverPlayers[country] += clients
           if modPlayers.has_key(typ):
             modPlayers[typ] += clients
-        i += 1
-        j += 1
+          else:
+            modPlayers[typ] = clients
+          i += 1
+          j += 1
 
     menuText = ""
     if len(servers) > 1:
@@ -766,8 +762,7 @@ def printStatus(name, servers, doc, external = False):
           server = found['info']
 
           mbEmpty = ""
-          #clients = countClients(server)
-          clients = len(server['clients'])
+          clients = countClients(server)
           if clients < 1:
             mbEmpty = " empty\" style=\"display:none"
 
@@ -796,7 +791,7 @@ def printStatus(name, servers, doc, external = False):
 
           (ip, port) = s.split(":", 1)
           host = lookupIp(ip)
-          print((u'<div id="server-%d"><div class="block%s"><h3 class="ip"><a href="ddnet:%s:%s">%s:%s</a></h3><h2>%s: %s [%d/%d]</h2><br/>' % (j, mbEmpty, ip, port, host, port, serverName, mapName, clients, max_clients)).encode('utf-8'))
+          print((u'<div id="server-%d"><div class="block%s"><h3 class="ip"><a href="ddnet://%s:%s">%s:%s</a></h3><h2>%s: %s [%d/%d]</h2><br/>' % (j, mbEmpty, ip, port, host, port, serverName, mapName, clients, max_clients)).encode('utf-8'))
 
           print('<div class="block3 status-players"><h3>Players</h3>')
           printPlayers(server, lambda p: p['is_player'], con, cur)

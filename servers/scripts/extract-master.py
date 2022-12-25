@@ -26,7 +26,7 @@ for file in os.listdir(dir):
             continue
     playersNow = set()
     for server in j['servers']:
-        for player in server['info']['clients']:
+        for player in server['info'].get('clients', []):
             # rstrip() because some servers allow trailing spaces, ddnet doesn't, and mysql considers strings the same if only trailing space differs
             name = player['name'].rstrip()
             if name not in playersNow:

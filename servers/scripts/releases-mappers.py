@@ -10,6 +10,11 @@ from cgi import escape
 reload(sys)
 sys.setdefaultencoding('utf8')
 
+con = mysqlConnect()
+con.autocommit(True)
+cur = con.cursor()
+cur.execute("set names 'utf8mb4';")
+
 def footer():
   return """
   </section>
@@ -129,6 +134,7 @@ for mapper, servers in mappers.iteritems():
 
 print header('Mappers - DDraceNetwork', '', '')
 print '<div id="global" class="longblock"><h2>Mappers</h2><p>%d mappers total:</p>' % len(mappers)
+cur.execute('CREATE TABLE IF NOT EXISTS record_mappers (Mapper VARCHAR(128) NOT NULL, NumMaps INT DEFAULT 0 NOT NULL, UNIQUE(Mapper));')
 
 for name in sorted(mappers.iterkeys(), key=str.lower):
   servers = mappers[name]
@@ -142,5 +148,6 @@ for name in sorted(mappers.iterkeys(), key=str.lower):
       tmp += type + ': ' + str(len(maps))
       total += len(maps)
   print '<p><a href="%s">%s</a>: %d map%s (%s)</p>' % (mapperWebsite(name), escape(name), total, '' if total == 1 else 's', tmp)
+  cur.execute("INSERT INTO record_mappers (Mapper, NumMaps) VALUES ('%s', '%d') ON DUPLICATE KEY UPDATE NumMaps=VALUES(NumMaps);" % (con.escape_string(name), total))
 
 print '</div>'

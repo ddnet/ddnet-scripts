@@ -26,7 +26,7 @@ tar cfz votes.$$.tmp.tar.gz types/*/votes.cfg maps/*.map.cfg maps/.*.map.cfg
 mv votes.$$.tmp.tar.gz votes.tar.gz
 
 for i in `cat all-locations`; do
-  ssh -q $i.ddnet.tw "cd servers; tar xfz - --warning=no-timestamp" < votes.tar.gz &
+  ssh -q $i.ddnet.org "cd servers; tar xfz - --warning=no-timestamp" < votes.tar.gz &
 done
 
 #scripts/update-servers.sh # Should we? I think it makes the players lag for a moment. We can probably add sleeps inbetween the add_votes to stop the lags

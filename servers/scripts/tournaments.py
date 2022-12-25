@@ -69,7 +69,8 @@ for x in tournaments:
   except IOError:
     pass
 
-  mapsString += u'<div class="blockreleases release" id="map-%s"><h2 class="inline"><a href="%s/">%s: %s Server</a></h2><br/><h3 class="inline">%s</h3><br/><h3 class="inline"><a href="%s">%s</a></h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="%s/"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/></p></div>\n' % (escape(mapName), link, tournament, server, date, mapWebsite(originalMapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(server, stars), link, escape(mapName), mbMapInfo)
+  serverString = "" if "Advent" in tournament else ": %s Server" % server
+  mapsString += u'<div class="blockreleases release" id="map-%s"><h2 class="inline"><a href="%s/">%s%s</a></h2><br/><h3 class="inline">%s</h3><br/><h3 class="inline"><a href="%s">%s</a></h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="%s/"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/></p></div>\n' % (escape(mapName), link, tournament, serverString, date, mapWebsite(originalMapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(server, stars), link, escape(mapName), mbMapInfo)
 
 filename = '%s/tournaments/index.html' % webDir
 tmpname = '%s/tournaments/index.%d.tmp' % (webDir, os.getpid())

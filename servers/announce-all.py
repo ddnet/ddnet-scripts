@@ -9,7 +9,7 @@ from subprocess import Popen, PIPE, TimeoutExpired
 def get_servers():
     HOME = os.getenv('HOME')
     with open(os.path.join(HOME, 'servers', 'all-locations')) as f:
-        return ['ddnet.tw'] + [s + '.ddnet.tw' for s in f.readline().strip('\n').split()]
+        return ['ddnet.org'] + [s + '.ddnet.org' for s in f.readline().strip('\n').split()]
 
 def main():
     if len(sys.argv) <= 1:

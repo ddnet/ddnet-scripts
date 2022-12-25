@@ -76,9 +76,9 @@ for type in types:
   menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type)
 menuText += '</ul>'
 
-print header("Tutorial Tournament - DDraceNetwork", menuText, '<script src="/youtube.js" type="text/javascript"></script>')
+print header("Quick Tournament #62 - DDraceNetwork", menuText, '<script src="/youtube.js" type="text/javascript"></script>')
 
-f = open("tournament2")
+f = open("tournament")
 tournamentMaps = []
 for line in f:
   words = line.rstrip('\n').split('|')
@@ -142,7 +142,13 @@ with con:
       skips = 1
 
       for row in rows:
-        currentRank += 1
+        if row[1] != lastTime:
+            lastTime = row[1]
+            currentRank += skips
+            skips = 1
+        else:
+            skips += 1
+
         currentPosition += 1
 
         if row[0] in pointsLadder:
@@ -164,7 +170,7 @@ with con:
 
         #if currentPosition > 20:
         #  continue
-        cur.execute("select Server from record_race where Map = '%s' and Name = '%s' and Timestamp = '%s'" % (con.escape_string(originalMapName), con.escape_string(row[0]), row[3]))
+        cur.execute("select Server from record_race where Map = '%s' and Name = '%s'" % (con.escape_string(originalMapName), con.escape_string(row[0])))
         rows2 = cur.fetchall()
         ranks.append((currentRank, row[0], row[1], row[2], row[3], rows2[0][0]))
 
@@ -246,8 +252,8 @@ with con:
 #teamrankRanks = sorted(teamrankLadder.items(), key=lambda r: r[1], reverse=True)
 #rankRanks = sorted(rankLadder.items(), key=lambda r: r[1], reverse=True)
 
-print '<div id="global" class="block div-tournament"><h2>Tutorial Tournament</h2>'
-print '<p>This tournament is played on Sunday, 2021-02-27 at 15:00 CET. The best time after 30 minutes wins! The map is played alone.</p>'
+print '<div id="global" class="block div-tournament"><h2>Quick Tournament #62</h2>'
+print '<p>This tournament is played on Sunday, 2022-10-30 at 18:00 CET (summer time end on the same day!). The first finish wins!</p>'
 #print printLadder(teamrankRanks)
 print '</div>'
 print '<div id="serverranks" style="display: ">'

@@ -4,7 +4,7 @@ import requests
 import urllib
 
 
-URL = 'https://maps.ddnet.tw/'
+URL = 'https://maps.ddnet.org/'
 DIR = 'C:/Users/Jannis/AppData/Roaming/Teeworlds/downloadedmaps/'
 
 

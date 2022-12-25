@@ -87,7 +87,7 @@ with con:
     if result:
       return {'rank': result[0], 'points': result[1]}
     else:
-      return {'rank': 'unranked'}
+      return {'rank': None}
 
   def getPersonalResult(ranks, player):
     found = False
@@ -107,8 +107,8 @@ with con:
         return (currentRank, r[1])
     return None
 
-  def getPlayerTimes(name):
-    startDate = date.today() - timedelta(days=366)
+  def getPlayerTimes(name, days=366):
+    startDate = date.today() - timedelta(days=days)
     query("""select Date, least(24, sum(SecondsPlayed) div 3600) from (
         select Date, SecondsPlayed from record_playertimes where Name = '{}' union
         select Date, SecondsPlayed from record_playertimes inner join record_rename on record_playertimes.Name = record_rename.OldName and record_rename.Name = '{}' and record_rename.Timestamp >= '{}') as l
@@ -235,7 +235,9 @@ with con:
         if type != '':
           break
       dateWithTz = escape(formatDateTimeTz(row[0]))
-      print >>out, '<tr><td><span data-type="date" data-date="%s" data-datefmt="datetime">%s</span>: <img src="/countryflags/%s.png" alt="%s" height="15"/> <a href="/ranks/%s/">%s</a>: <a href="%s">%s</a> (%s)</td></tr>' % (dateWithTz, escape(formatDate(row[0])), row[3], row[3], row[4].lower(), row[4], mapWebsite(row[1]), escape(row[1]), escape(formatTime(row[2])))
+      # Some maps have no server since they are only available for Advent of DDNet, not regularly released
+      mapStr = '<a href="/ranks/%s/">%s</a>: <a href="%s">%s</a>' % (row[4].lower(), row[4], mapWebsite(row[1]), escape(row[1])) if row[4] else escape(row[1])
+      print >>out, '<tr><td><span data-type="date" data-date="%s" data-datefmt="datetime">%s</span>: <img src="/countryflags/%s.png" alt="%s" height="15"/> %s (%s)</td></tr>' % (dateWithTz, escape(formatDate(row[0])), row[3], row[3], mapStr, escape(formatTime(row[2])))
 
     print >>out, '</table></div>'
 
@@ -521,7 +523,9 @@ with con:
                 jsonT['types'][typ]['maps'][map]['finishes'] = player[0][map][2]
                 jsonT['types'][typ]['maps'][map]['first_finish'] = time.mktime(timestamp.timetuple())
 
-          (sumHours, rows) = getPlayerTimes(name)
+          # Last 10 years should be enough for a while
+          (sumHours10years, rows) = getPlayerTimes(name, 3660)
+          (sumHours, rows1year) = getPlayerTimes(name, 366)
           jsonT['activity'] = [{'date': row[0].isoformat(), 'hours_played': row[1]} for row in rows]
           jsonT['hours_played_past_365_days'] = sumHours
 

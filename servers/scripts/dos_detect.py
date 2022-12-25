@@ -39,7 +39,7 @@ def main():
     bad = collections.deque(maxlen=10)
     while True:
         netrx = traffic.get()
-        ping = os.system("ping -c 1 master.ddnet.tw > /dev/null") == 0
+        ping = os.system("ping -c 1 master.ddnet.org > /dev/null") == 0
         if netrx > 3_000_000 or not ping:
             bad.append(1)
         else:
