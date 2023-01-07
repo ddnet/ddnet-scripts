@@ -109,7 +109,8 @@ fi
 if [ ! -d "/home/deen/isos/ddnet/steam/macos" ]; then
   sed -i "/412224/d" tmp.vdf
 fi
-steamcmd +login deen_ddnet "$(cat pass)" +run_app_build /home/deen/isos/ddnet/steamcmd/tmp.vdf +quit
+# Try twice, fails sporadically sometimes
+steamcmd +login deen_ddnet "$(cat pass)" +run_app_build /home/deen/isos/ddnet/steamcmd/tmp.vdf +quit || (sleep 1m; steamcmd +login deen_ddnet "$(cat pass)" +run_app_build /home/deen/isos/ddnet/steamcmd/tmp.vdf +quit)
 
 cd ..
 rm -rf builds/* DDNet-$VERSION* steam/* ddnet-source
