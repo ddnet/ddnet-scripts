@@ -87,6 +87,7 @@ build_remote_macos ()
   ssh deen@si "export PATH=/opt/homebrew/bin:\$PATH:\$HOME/.cargo/bin && rm -rf macos$SUFFIX && \
   mkdir macos$SUFFIX && \
   cd macos$SUFFIX && \
+  export DDNET_GIT_SHORTREV_HASH=\"$DDNET_GIT_SHORTREV_HASH\"
   export CXXFLAGS=\"'$OUR_CXXFLAGS'\" && \
   cmake -DVERSION=$VERSION -DCMAKE_OSX_ARCHITECTURES=\"arm64;x86_64\" -DCMAKE_BUILD_TYPE=Release -DDISCORD=ON -DWEBSOCKETS=OFF -DIPO=OFF -DPREFER_BUNDLED_LIBS=ON $(echo $FLAGS) ../ddnet-source && \
   unset CXXFLAGS && \
@@ -122,12 +123,12 @@ build_linux ()
   mount -t sysfs sys sys/
   mount -o bind /dev dev/
 
-  rm -rf ddnet-source ddnet-source-steam ddnet-libs-source $MAIN_REPO_NAME-$MAIN_REPO_BRANCH $LIBS_REPO_NAME-$LIBS_REPO_BRANCH
+  rm -rf ddnet-source ddnet-source-steam ddnet-libs-source $MAIN_REPO_NAME-$MAIN_REPO_COMMIT $LIBS_REPO_NAME-$LIBS_REPO_COMMIT
   unzip -q $BUILDDIR/main.zip
   unzip -q $BUILDDIR/libs.zip
-  mv $MAIN_REPO_NAME-$MAIN_REPO_BRANCH ddnet-source
+  mv $MAIN_REPO_NAME-$MAIN_REPO_COMMIT ddnet-source
   rm -rf ddnet-source/ddnet-libs
-  mv $LIBS_REPO_NAME-$LIBS_REPO_BRANCH ddnet-source/ddnet-libs
+  mv $LIBS_REPO_NAME-$LIBS_REPO_COMMIT ddnet-source/ddnet-libs
   cp -r ddnet-source ddnet-source-steam
 
   # No Discord lib for Linux available for x86
@@ -204,20 +205,25 @@ build_windows_steam ()
   rm -rf win$PLATFORM-steam
 }
 
+MAIN_REPO_COMMIT="$(wget -nv --header 'Accept: application/vnd.github.sha' https://api.github.com/repos/ddnet/ddnet/commits/master -O-)"
+LIBS_REPO_COMMIT="$(wget -nv --header 'Accept: application/vnd.github.sha' https://api.github.com/repos/ddnet/ddnet/commits/master -O-)"
+
 # Get the sources
 rm -rf main.zip libs.zip
-wget -nv -O main.zip https://github.com/$MAIN_REPO_USER/$MAIN_REPO_NAME/archive/$MAIN_REPO_BRANCH.zip
-wget -nv -O libs.zip https://github.com/$LIBS_REPO_USER/$LIBS_REPO_NAME/archive/$LIBS_REPO_BRANCH.zip
-rm -rf ddnet-source $MAIN_REPO_NAME-$MAIN_REPO_BRANCH $LIBS_REPO_NAME-$LIBS_REPO_BRANCH
+wget -nv -O main.zip https://github.com/$MAIN_REPO_USER/$MAIN_REPO_NAME/archive/$MAIN_REPO_COMMIT.zip
+wget -nv -O libs.zip https://github.com/$LIBS_REPO_USER/$LIBS_REPO_NAME/archive/$LIBS_REPO_COMMIT.zip
+rm -rf ddnet-source $MAIN_REPO_NAME-$MAIN_REPO_COMMIT $LIBS_REPO_NAME-$LIBS_REPO_COMMIT
 unzip -q main.zip
-mv $MAIN_REPO_NAME-$MAIN_REPO_BRANCH ddnet-source
+mv $MAIN_REPO_NAME-$MAIN_REPO_COMMIT ddnet-source
 cp -r ddnet-source DDNet-$VERSION
+
+export DDNET_GIT_SHORTREV_HASH=$MAIN_REPO_COMMIT
 
 build_source &
 
 unzip -q libs.zip
 rm -rf ddnet-source/ddnet-libs
-mv $LIBS_REPO_NAME-$LIBS_REPO_BRANCH ddnet-source/ddnet-libs
+mv $LIBS_REPO_NAME-$LIBS_REPO_COMMIT ddnet-source/ddnet-libs
 # Can't cross-compiler currently since macOS with arm is stricter with unsigned
 # binaries and signing doesn't work. Temporarily use build from macOS:
 MAC_AVAILABLE=true
