@@ -205,8 +205,8 @@ build_windows_steam ()
   rm -rf win$PLATFORM-steam
 }
 
-MAIN_REPO_COMMIT="$(wget -nv --header 'Accept: application/vnd.github.sha' https://api.github.com/repos/ddnet/ddnet/commits/$MAIN_REPO_BRANCH -O-)"
-LIBS_REPO_COMMIT="$(wget -nv --header 'Accept: application/vnd.github.sha' https://api.github.com/repos/ddnet/ddnet-libs/commits/$LIBS_REPO_BRANCH -O-)"
+MAIN_REPO_COMMIT="$(wget -nv --header 'Accept: application/vnd.github.sha' https://api.github.com/repos/$MAIN_REPO_USER/ddnet/commits/$MAIN_REPO_BRANCH -O-)"
+LIBS_REPO_COMMIT="$(wget -nv --header 'Accept: application/vnd.github.sha' https://api.github.com/repos/$LIBS_REPO_USER/ddnet-libs/commits/$LIBS_REPO_BRANCH -O-)"
 
 # Get the sources
 rm -rf main.zip libs.zip
