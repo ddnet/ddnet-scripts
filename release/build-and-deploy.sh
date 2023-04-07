@@ -23,7 +23,7 @@ if [ "$1" = "nightly" ]; then
   export UPDATE_FLAGS="-DAUTOUPDATE=OFF -DINFORM_UPDATE=OFF"
   export UPDATE_FLAGS_MACOS="-DINFORM_UPDATE=OFF"
   V="$(curl -s https://raw.githubusercontent.com/$MAIN_REPO_USER/$MAIN_REPO_NAME/$MAIN_REPO_BRANCH/src/game/version.h | grep "^#define GAME_RELEASE_VERSION" | cut -d'"' -f2)"
-  export VERSION="$V-$(date +%Y%m%d)"
+  export VERSION="$V-$(date -d '+2 hours' +%Y%m%d)"
   ./build.sh $VERSION &> builds/DDNet-nightly.log
 
   rm -rf codebrowser
@@ -42,7 +42,7 @@ elif [ "$1" = "playground" ]; then
   export MAIN_REPO_USER=Jupeyy
   export MAIN_REPO_BRANCH=playground
   V="$(curl -s https://raw.githubusercontent.com/$MAIN_REPO_USER/$MAIN_REPO_NAME/$MAIN_REPO_BRANCH/src/game/version.h | grep "^#define GAME_RELEASE_VERSION" | cut -d'"' -f2)"
-  export VERSION="$V-$(date +%Y%m%d)"
+  export VERSION="$V-$(date -d '+2 hours' +%Y%m%d)"
   ./build.sh $VERSION &> builds/DDNet-playground.log
 elif [ "$1" = "rc" ]; then
   export UPDATE_FLAGS="-DAUTOUPDATE=OFF -DINFORM_UPDATE=OFF"
