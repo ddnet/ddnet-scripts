@@ -60,8 +60,7 @@ iptables-save > /etc/iptables.up.rules
 tar -C / -xvf ddnet-setup.tar.gz
 rm ddnet-setup.tar.gz
 
-ssh-keygen
-su - teeworlds -c "ssh-keygen"
+ssh-keygen -t rsa -N '' -f /root/.ssh/id_rsa <<< $'\ny'
 systemctl disable systemd-resolved
 systemctl stop systemd-resolved
 systemctl enable dnsbl-iphub
