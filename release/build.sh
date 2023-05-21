@@ -177,7 +177,7 @@ build_windows ()
   unset CXXFLAGS
   unset LDFLAGS
   make -j1
-  XZ_OPT=-9 tar cfJ DDNet-$VERSION-win$PLATFORM$SUFFIX-symbols.tar.xz DDNet.exe DDNet-Server.exe
+  XZ_OPT=-9 tar cfJ DDNet-$VERSION-win$PLATFORM$SUFFIX-$DDNET_GIT_SHORTREV_HASH-symbols.tar.xz DDNet.exe DDNet-Server.exe
   make -j1 package_default
   unset PREFIX \
     TARGET_FAMILY TARGET_PLATFORM TARGET_ARCH
