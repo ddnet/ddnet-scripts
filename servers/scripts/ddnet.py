@@ -462,7 +462,7 @@ def printPlayers(server, filt, con, cur):
     return
 
   print('<table class="status">')
-  for player in sorted(server['clients'], key=lambda p: (-p['score'], p['name'].lower())):
+  for player in sorted(server['clients'], key=lambda p: (p['score'] if p['score'] >= 0 else sys.maxsize, p['name'].lower())):
     if filt(player):
       print("<tr>")
       if isKnownPlayer(player['name'], con, cur):
