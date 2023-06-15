@@ -2,7 +2,9 @@
 
 import sys
 import re
-import html
+
+def escape(inp):
+    return inp
 
 tunings = {
     "ground_control_speed": 0,
@@ -71,7 +73,7 @@ for line in sys.stdin:
   x = re.findall(r'(?:[^,"]|"(?:\\.|[^"])*")+', line)
 
   idx = offset + 100 + tunings[x[1].strip()] * 5
-  result = (html.escape(x[1].strip()), idx, html.escape(x[3].strip(" )\n").split('"')[-2]), html.escape(str(foo(x[2]))))
+  result = (escape(x[1].strip()), idx, escape(x[3].strip(" )\n").split('"')[-2]), escape(str(foo(x[2]))))
 
   print("|-")
   print("| %s\n| <translate><!--T:%s--> %s</translate>\n| %s" % result)
