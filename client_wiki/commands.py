@@ -2,7 +2,6 @@
 
 import sys
 import re
-import html
 
 offset = int(sys.argv[2])
 
@@ -10,6 +9,9 @@ print('{| class="wikitable"')
 print(f"! <translate><!--T:{offset+1}--> Command</translate>")
 print(f"! <translate><!--T:{offset+2}--> Arguments</translate>")
 print(f"! <translate><!--T:{offset+3}--> Description</translate>")
+
+def escape(inp):
+    return inp.replace("|", "<nowiki>|</nowiki>")
 
 commands = {
     "save_dry": 0,
@@ -269,15 +271,15 @@ for line in sys.stdin:
         idx = offset + 100 + commands["ban2"]*5
       had_ban = True
   print("|-")
-  print("|", html.escape(y[1]))
+  print("|", escape(y[1]))
   if y[3].strip() == "":
     print("|")
   else:
-    print(f"| <translate><!--T:{idx}--> {html.escape(y[3])}</translate>")
+    print(f"| <translate><!--T:{idx}--> {escape(y[3])}</translate>")
   if y[-2].strip() == "":
     print("|")
   else:
-    print(f"| <translate><!--T:{idx+1}--> {html.escape(y[-2])}</translate>")
+    print(f"| <translate><!--T:{idx+1}--> {escape(y[-2])}</translate>")
 
 print('|}')
 

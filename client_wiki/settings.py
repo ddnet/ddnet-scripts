@@ -2,7 +2,9 @@
 
 import sys
 import re
-import html
+
+def escape(inp):
+    return inp
 
 offset = int(sys.argv[2])
 
@@ -530,13 +532,15 @@ settings = {
     "ui_toolbox_page": 513,
     "ui_unread_news": 514,
     # add new settings below here with increasing numbers
+    "sv_emoticon_ms_delay": 515,
+    "sv_global_emoticon_ms_delay": 516,
 }
 
 names = {}
 results = []
 
 def getValue(x):
-    return html.escape(x.lstrip()).replace("SERVERINFO_LEVEL_MIN", "0").replace("SERVERINFO_LEVEL_MAX", "2").replace("MAX_CLIENTS", "64")
+    return escape(x.lstrip()).replace("SERVERINFO_LEVEL_MIN", "0").replace("SERVERINFO_LEVEL_MAX", "2").replace("MAX_CLIENTS", "64")
 
 for line in sys.stdin:
   if sys.argv[1] not in line:
@@ -548,11 +552,11 @@ for line in sys.stdin:
   idx = offset + 100 + settings[name] * 5
 
   if "MACRO_CONFIG_STR" in line:
-    result = (html.escape(name), idx, html.escape(y[-2]), getValue(x[3].lstrip()), "", "")
+    result = (escape(name), idx, escape(y[-2]), getValue(x[3].lstrip()), "", "")
   elif "MACRO_CONFIG_INT" in line:
-    result = (html.escape(name), idx, html.escape(y[-2]), getValue(x[2].lstrip()), getValue(x[3]), getValue(x[4]))
+    result = (escape(name), idx, escape(y[-2]), getValue(x[2].lstrip()), getValue(x[3]), getValue(x[4]))
   elif "MACRO_CONFIG_COL" in line:
-    result = (html.escape(name), idx, html.escape(y[-2]), getValue(x[2].lstrip()), "", "")
+    result = (escape(name), idx, escape(y[-2]), getValue(x[2].lstrip()), "", "")
 
   line = "|-\n"
   if y[-2].strip() == "":
