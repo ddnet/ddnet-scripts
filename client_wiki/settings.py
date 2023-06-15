@@ -530,6 +530,8 @@ settings = {
     "ui_toolbox_page": 513,
     "ui_unread_news": 514,
     # add new settings below here with increasing numbers
+    "sv_emoticon_ms_delay": 515,
+    "sv_global_emoticon_ms_delay": 516,
 }
 
 names = {}
