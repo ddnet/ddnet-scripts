@@ -25,15 +25,18 @@ countryCodeMapping = {
         'COL': '🇨🇴',
         'CRI': '🇨🇷',
         'MEX': '🇲🇽',
+        'PER': '🇵🇪',
         'USA': '🇺🇸',
         'CAN': '🇨🇦',
         'CHN': '🇨🇳',
         'KOR': '🇰🇷',
         'JAP': '🇯🇵',
+        'TWN': '🇹🇼',
         'SGP': '🇸🇬',
         'ZAF': '🇿🇦',
         'AUS': '🇦🇺',
         'IND': '🇮🇳',
+        'SAU': '🇸🇦',
 }
 
 htmlRanksPathTmp = "%s.%d.tmp" % (htmlRanksPath, os.getpid())
@@ -79,9 +82,9 @@ with con:
 
   with open("scripts/discord-ranks-last", 'r+') as f:
     startTime = parseDatetime(f.read().rstrip())
-    # give mysql replication 1 minute to get the rank over to us, otherwise we
+    # give mysql replication 3 minutes to get the rank over to us, otherwise we
     # won't see it here
-    endTime = datetime.datetime.now() - datetime.timedelta(minutes=1)
+    endTime = datetime.datetime.now() - datetime.timedelta(minutes=3)
     f.seek(0)
     f.write(formatDateExact(endTime))
     f.truncate()

@@ -460,7 +460,7 @@ with open(tmpname, 'w') as tf:
   json.dump(data, tf)
 os.rename(tmpname, filename)
 
-otherIncludes = '''<script type="text/javascript" src="js/jquery.min.js"></script>
+otherIncludes = '''<script type="text/javascript" src="/jquery.js"></script>
 <script type="text/javascript" src="js/charts.js"></script>'''
 
 menu = """<ul>

@@ -2,8 +2,8 @@
 
 cd /home/teeworlds/servers
 
-if [ $(cat /proc/loadavg|head -c1) -ge 4 ]; then
-  #echo -e "Current load is > 4, not running."
+if [ $(cat /proc/loadavg|head -c1) -ge 8 ]; then
+  #echo -e "Current load is > 8, not running."
   exit 1
 fi
 

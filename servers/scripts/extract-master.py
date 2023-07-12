@@ -28,6 +28,8 @@ for file in os.listdir(dir):
     for server in j['servers']:
         for player in server['info'].get('clients', []):
             # rstrip() because some servers allow trailing spaces, ddnet doesn't, and mysql considers strings the same if only trailing space differs
+            if 'name' not in player or not isinstance(player['name'], unicode):
+                continue
             name = player['name'].rstrip()
             if name not in playersNow:
                 players[name] += 5

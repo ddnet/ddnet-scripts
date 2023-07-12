@@ -16,6 +16,7 @@ countryCodeMapping = {
     'CHL': '🇨🇱',
     'BRA': '🇧🇷',
     'MEX': '🇲🇽',
+    'PER': '🇵🇪',
     'USA': '🇺🇸',
     'CAN': '🇨🇦',
     'ZAF': '🇿🇦',

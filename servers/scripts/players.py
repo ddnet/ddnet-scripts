@@ -209,7 +209,7 @@ with con:
             skips += 1
 
           encodedName = slugify2(u'%s' % name.encode('utf-8'))
-          print >>out, '<tr><td>%d. <a href="/players/%s/">%s</a>: %d ranks</td></tr>' % (pos, encodedName, escape(name), finishes)
+          print >>out, '<tr><td>%d. <a href="/players/%s/">%s</a>&#x202d;: %d ranks</td></tr>' % (pos, encodedName, escape(name), finishes)
 
         print >>out, '</table></div>'
     except:
@@ -279,7 +279,7 @@ with con:
     print >>out, '<div id="global" class="block div-ranks">'
     print >>out, '<div id="remote" class="right"><form id="playerform" action="/players/" method="get"><input id="playersearch" name="player" class="typeahead" type="text" placeholder="Player search"><input type="submit" value="Player search" style="position: absolute; left: -9999px"></form><br>'
     print >>out, '<form id="playerform2" action="/compare/" method="get">%s<input name="player" class="typeahead" type="text" placeholder="Add to comparison"><input type="submit" value="Add to comparison" style="position: absolute; left: -9999px"></form></div>' % hiddenFields
-    print >>out, '<script src="/players-data/jquery-2.2.4.min.js" type="text/javascript"></script>'
+    print >>out, '<script src="/jquery.js" type="text/javascript"></script>'
     print >>out, '<script src="/typeahead.bundle.js" type="text/javascript"></script>'
     print >>out, '<script src="/playersearch.js?version=2" type="text/javascript"></script>'
     print >>out, '<script type="text/javascript" src="/players-data/jquery.tablesorter.js"></script>'

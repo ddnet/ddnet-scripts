@@ -38,7 +38,7 @@ if sys.version_info.major < 3:
 
 webDir = "/var/www"
 htmlRanksPath = "/home/teeworlds/servers/scripts/discord-ranks.html"
-countries = ["NLD", "FRA", "GER", "POL", "RUS", "TUR", "IRN", "CHL", "BRA", "ARG", "MEX", "USA", "CAN", "CHN", "KOR", "JAP", "SGP", "ZAF", "IND", "AUS", "OLD"]
+countries = ["NLD", "FRA", "GER", "POL", "RUS", "TUR", "IRN", "SAU", "CHL", "BRA", "ARG", "MEX", "PER", "USA", "CAN", "CHN", "KOR", "TWN", "SGP", "ZAF", "IND", "AUS", "OLD"]
 
 pointsDict = {
   'Novice':    (1, 0),
@@ -157,9 +157,9 @@ def textJoinNames(names):
   return result
 
 def joinNames(names):
-  result = ', '.join(names[:-1])
+  result = '&#x202d;, '.join(names[:-1])
   if names[-1]:
-    result += ' &amp; ' + names[-1]
+    result += '&#x202d; &amp; ' + names[-1]
   return result
 
 def renderStars(points):
@@ -503,7 +503,7 @@ def serverStatus(title):
         <a href="/stats/server/">Statistics</a>, <a href="https://github.com/BotoX/ServerStatus">ServerStatus</a>
       </h3>
     </div>
-    <script src="js/jquery-1.10.2.min.js"></script>
+    <script src="/jquery.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/serverstatus.js?version=3"></script>
     """ % title
@@ -825,7 +825,7 @@ def getRecords(cursor, startTime, endTime):
     cursor.execute("""
 select Name, lll.Map, Time, min(lll.Timestamp), min(Type), Server, max(OldTime), Points, Country from
 (
-select Name, Map, Time, Timestamp, "2 Top 1 rank" as Type, (select Time from record_race where Map = l.map and Timestamp < "{0}" order by Time limit 1) as OldTime, Country from (select Timestamp, Name, Map, Time, Server as Country from record_race where Timestamp >= "{0}" and Timestamp < "{1}") as l where Time <= (select min(Time) from record_race where Map = l.Map)
+select Name, Map, Time, Timestamp, "2 Top 1 rank" as Type, (select Time from record_race where Map = l.map and Timestamp < "{0}" order by Time limit 1) as OldTime, Country from (select Timestamp, Name, Map, Time, Server as Country from record_race where Timestamp >= "{0}" and Timestamp < "{1}") as l where Time <= (select min(Time) from record_race where Map = l.Map) and (Time < (select min(Time) from record_race where Map = l.Map and Timestamp < "{0}") or Name != l.Name)
 union all
 select record_teamrace.Name, record_teamrace.Map, record_teamrace.Time, record_teamrace.Timestamp, "1 Top 1 team rank" as Type, OldTime, record_race.Server as Country from (select ID, (select Time from record_teamrace where Map = l.Map and ID != l.ID and Timestamp < "{0}" order by Time limit 1) as OldTime from (select distinct ID, Map, Time from record_teamrace where Timestamp >= "{0}" and Timestamp < "{1}") as l left join (select Map, min(Time) as minTime from record_teamrace group by Map) as r on l.Map = r.Map where Time = minTime) as ll inner join record_teamrace on ll.ID = record_teamrace.ID join record_race on record_teamrace.Map = record_race.Map and record_teamrace.Name = record_race.Name and record_teamrace.Time = record_race.Time and record_teamrace.Timestamp = record_race.Timestamp
 union all
