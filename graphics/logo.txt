@@ -1,1 +1,3 @@
-Font: Frutiger Pro - linotype
+Font: Frutiger LT Pro - linotype
+Variant: Bold Italic
+Italicized: Additional 2-degree skew to the right
