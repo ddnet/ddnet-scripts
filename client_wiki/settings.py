@@ -534,6 +534,13 @@ settings = {
     # add new settings below here with increasing numbers
     "sv_emoticon_ms_delay": 515,
     "sv_global_emoticon_ms_delay": 516,
+    "cl_multiview_sensitivity": 517,
+    "cl_multiview_use_freeview": 518,
+    "cl_multiview_zoom_smoothness": 519,
+    "stdout_output_level": 520,
+    "ed_autosave_interval": 521,
+    "ed_autosave_max": 522,
+    "cl_video_pause_on_start": 523,
 }
 
 names = {}

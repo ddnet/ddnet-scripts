@@ -53,6 +53,8 @@ tunings = {
     "ninja_fire_delay": 43,
     "hammer_hit_fire_delay": 44,
     # add new tunings below here with increasing numbers
+    "ground_elasticity_x": 45,
+    "ground_elasticity_y": 46,
 }
 
 offset = int(sys.argv[1])
