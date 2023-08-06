@@ -253,6 +253,9 @@ commands = {
     "map": 236,
     # add new commands below here with increasing numbers
     "ban2": 237,
+    "spectate_multiview": 238,
+    "goto_switch": 239,
+    "goto_tele": 240,
 }
 
 # workaround for ban appearing twice
