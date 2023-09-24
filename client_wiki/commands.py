@@ -256,6 +256,10 @@ commands = {
     "spectate_multiview": 238,
     "goto_switch": 239,
     "goto_tele": 240,
+    "unninja": 241,
+    "lasttp": 242,
+    "solo": 243,
+    "deep": 244,
 }
 
 # workaround for ban appearing twice
