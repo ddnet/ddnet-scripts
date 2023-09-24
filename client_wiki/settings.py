@@ -541,6 +541,7 @@ settings = {
     "ed_autosave_interval": 521,
     "ed_autosave_max": 522,
     "cl_video_pause_on_start": 523,
+    "cl_demo_show_pause": 524,
 }
 
 names = {}
