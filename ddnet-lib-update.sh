@@ -35,6 +35,7 @@ cd
 
 mkdir x86-64
 cd x86-64
+tar xvf ../curl-8.0.1.tar.gz
 tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
@@ -44,6 +45,11 @@ tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-6.0.tar.gz
 tar xvf ../v4.3-stable.tar.gz
 tar xvf ../libpng-1.6.39.tar.gz
+
+cd curl-8.0.1
+./configure --with-openssl --enable-static --disable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
+make -j4
+cp lib/.libs/libcurl.a ..
 
 cd libogg-1.3.5
 ./configure CFLAGS=-fPIC
@@ -96,6 +102,7 @@ cd ../..
 
 mkdir x86
 cd x86
+tar xvf ../curl-8.0.1.tar.gz
 tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
@@ -105,6 +112,11 @@ tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-6.0.tar.gz
 tar xvf ../v4.3-stable.tar.gz
 tar xvf ../libpng-1.6.39.tar.gz
+
+cd curl-8.0.1
+CFLAGS=-m32 LDFLAGS=-m32 ./configure --with-openssl --enable-static --disable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
+CFLAGS=-m32 LDFLAGS=-m32 make -j4
+cp lib/.libs/libcurl.a ..
 
 cd libogg-1.3.5
 CFLAGS=-m32 LDFLAGS=-m32 ./configure
