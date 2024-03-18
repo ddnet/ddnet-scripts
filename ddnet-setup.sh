@@ -28,7 +28,7 @@ pip3 install sqlite3-to-mysql --upgrade --break-system-packages || pip3 install 
 
 hostnamectl set-hostname ddnet$NAME_LOWER
 addgroup teeworlds
-adduser --gecos "" --home /home/teeworlds --shell /usr/bin/zsh --disabled-password --ingroup users teeworlds
+adduser --comment "" --home /home/teeworlds --shell /usr/bin/zsh --disabled-password --ingroup users teeworlds
 sed -E -i "s/^#?Port .*/Port 6546/" /etc/ssh/sshd_config
 sed -E -i "s/^#?PermitRootLogin .*/PermitRootLogin yes/" /etc/ssh/sshd_config
 systemctl restart ssh
