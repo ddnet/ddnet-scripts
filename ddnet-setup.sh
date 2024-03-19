@@ -54,7 +54,8 @@ iptables -A serverinfo -m hashlimit --hashlimit-above 20/s --hashlimit-burst 100
 iptables -A newconn -m hashlimit --hashlimit-above 100/s --hashlimit-burst 100 --hashlimit-mode dstport --hashlimit-name nc_dstport -j DROP
 iptables -I INPUT -s 3.86.106.128 -j DROP
 iptables -I INPUT -s 185.82.223.0/24 -j DROP
-iptables -A INPUT -p tcp -m tcp --sport 35601 -j ACCEPT
+iptables -I INPUT -s 147.251.0.0/16 -j DROP
+iptables -I OUTPUT -d 147.251.0.0/16 -j DROP
 iptables -A INPUT -s 127.0.0.1 -j ACCEPT
 iptables -A INPUT -p tcp -m tcp -m conntrack -m multiport --ctstate NEW ! --dports 27685,6546,22 -j DROP
 iptables-save > /etc/iptables.up.rules
