@@ -484,6 +484,14 @@ with con:
           jsonT['points_last_month'] = getPersonalResultJson(data['monthlyPointsRanks'], name)
           jsonT['points_last_week'] = getPersonalResultJson(data['weeklyPointsRanks'], name)
 
+          try:
+            favServer = max(player[1].iteritems(), key=itemgetter(1))[0]
+            if favServer == None or favServer == "":
+              favServer = 'UNK'
+          except:
+            favServer = 'UNK'
+          jsonT['favorite_server'] = {"server": favServer}
+
           query("select Timestamp, Map, Time from record_race where Name = '%s' order by Timestamp limit 1;" % con.escape_string(name))
           rows = cur.fetchall()
           row = rows[0]
