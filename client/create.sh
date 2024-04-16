@@ -20,12 +20,12 @@ echo '</div>'
 
 echo '<div class="block">'
 echo '<h2 id="server-commands">Server Commands</h2>'
-(cat src/**/{console,netban,server,gamecontext,engine}.cpp | grep "Register(" | grep CFGFLAG_SERVER | grep -v "\\\\/\\\\/"; cat src/**/ddracecommands.h) | "$DIR/commands.py" CFGFLAG_SERVER
+(cat src/**/{console,netban,server,gamecontext,engine}.cpp | grep "Register(" | grep CFGFLAG_SERVER | grep -v CFGFLAG_CHAT | grep -v "\\\\/\\\\/") | "$DIR/commands.py" CFGFLAG_SERVER
 echo '</div>'
 
 echo '<div class="block">'
 echo '<h2 id="chat-commands">Chat Commands</h2>'
-cat src/**/{ddracechat,ddracecommands}.h | "$DIR/commands.py" CFGFLAG_CHAT
+(cat src/**/{console,netban,server,gamecontext,engine}.cpp | grep "Register(" | grep CFGFLAG_SERVER | grep CFGFLAG_CHAT | grep -v "\\\\/\\\\/") | "$DIR/commands.py" CFGFLAG_CHAT
 echo '</div>'
 
 echo '<div class="block">'
