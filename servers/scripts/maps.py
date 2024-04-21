@@ -246,7 +246,7 @@ with con:
             rankT['num'] = num
             rankT['time'] = time
             rankT['min_timestamp'] = mktime(minTime.timetuple())
-            rankT['max_timestamp'] = mktime(minTime.timetuple())
+            rankT['max_timestamp'] = mktime(maxTime.timetuple())
             jsonT['max_finishes'].append(rankT)
 
         return json.dumps(jsonT)
