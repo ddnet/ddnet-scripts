@@ -227,10 +227,10 @@ mv $LIBS_REPO_NAME-$LIBS_REPO_COMMIT ddnet-source/ddnet-libs
 # Can't cross-compiler currently since macOS with arm is stricter with unsigned
 # binaries and signing doesn't work. Temporarily use build from macOS:
 MAC_AVAILABLE=true
-ssh deen@si "rm -rf ddnet-source" || MAC_AVAILABLE=false
+ssh deen@si "exit" || MAC_AVAILABLE=false
 if [ "$MAC_AVAILABLE" = true ]; then
-  rsync -avzP ddnet-source deen@si:
-  (build_remote_macos_website; build_remote_macos_steam; ssh deen@si "rm -rf ddnet-source") &> builds/mac.log &
+  rsync -avzP --delete ddnet-source/ deen@si:ddnet-source
+  (build_remote_macos_website; build_remote_macos_steam) &> builds/mac.log &
 fi
 #(build_macos_website; build_macos_steam) &> builds/mac.log &
 
