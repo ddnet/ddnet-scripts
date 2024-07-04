@@ -27,7 +27,6 @@ mv DDNet-$VERSION-win64/data data
 mv DDNet-$VERSION-win64/license.txt .
 mv DDNet-$VERSION-win64/storage.cfg .
 mv DDNet-$VERSION-win64/config_directory.bat .
-mv DDNet-$VERSION-win64/config_directory.sh .
 rm -r data.old
 
 for i in DDNet-$VERSION-win32/*.{exe,dll}; do mcp $i ${i:r:t}-win32.${i:e}; done
