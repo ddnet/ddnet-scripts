@@ -46,6 +46,7 @@ Make sure port 443 isn't blocked by a firewall. Install `caddy`. `mkdir -p
 ```
 master2.ddnet.org:443 {
 	root * /var/www-master2
+	encode zstd gzip
 	file_server {
 		browse
 	}
