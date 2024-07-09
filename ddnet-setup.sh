@@ -10,9 +10,10 @@ if [ "$#" -ne 2 ]; then
   exit 1
 fi
 set -x -e
-NAME_LOWER=$1
-NAME_UPPER=`echo $1 | tr '[:lower:]' '[:upper:]'`
-NAME_INGAME=$2
+DDNET_IP=$1
+NAME_LOWER=$2
+NAME_UPPER=`echo $2 | tr '[:lower:]' '[:upper:]'`
+NAME_INGAME=$3
 NAME_SQL=`echo $NAME_UPPER | head -c3`
 
 apt-get -y update
@@ -57,6 +58,8 @@ iptables -I INPUT -s 185.82.223.0/24 -j DROP
 iptables -I INPUT -s 147.251.0.0/16 -j DROP
 iptables -I OUTPUT -d 147.251.0.0/16 -j DROP
 iptables -A INPUT -s 127.0.0.1 -j ACCEPT
+iptables -A INPUT 1 -p tcp --src $DDNET_IP -j ACCEPT
+iptables -A INPUT 2 -p tcp -m tcp --dport 6546 -m state --state NEW -m hashlimit --hashlimit-above 1/minute --hashlimit-mode srcip -j DROP
 iptables -A INPUT -p tcp -m tcp -m conntrack -m multiport --ctstate NEW ! --dports 27685,6546,22 -j DROP
 iptables-save > /etc/iptables.up.rules
 
