@@ -240,7 +240,7 @@ cd ../ffmpeg-7.0.1
 # Need to switch configure to use pkg-config instead of $pkg_config
 PKG_CONFIG_PATH=/home/deen/isos/ddnet/debian10/root/win64/x264-master PKG_CONFIG_LIBDIR=/usr/x86_64-w64-mingw32/lib/pkgconfig ./configure --disable-all --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-I/home/deen/isos/ddnet/debian10/root/win64/x264-master" --extra-cxxflags="-I/home/deen/isos/ddnet/debian10/root/win64/x264-master" --extra-ldflags="-L/home/deen/isos/ddnet/debian10/root/win64/x264-master" --arch=x86_64 --target_os=mingw32 --cross-prefix=x86_64-w64-mingw32- --disable-static --enable-shared --extra-libs="-lpthread -lm" --pkg-config-flags="--static"
 make -j4
-cp libavcodec/avcodec-60.dll libavformat/avformat-60.dll libavutil/avutil-58.dll libswresample/swresample-4.dll libswscale/swscale-7.dll libavcodec/avcodec.lib libavformat/avformat.lib libavutil/avutil.lib libswresample/swresample.lib libswscale/swscale.lib ..
+cp libavcodec/avcodec-61.dll libavformat/avformat-61.dll libavutil/avutil-59.dll libswresample/swresample-5.dll libswscale/swscale-8.dll libavcodec/avcodec.lib libavformat/avformat.lib libavutil/avutil.lib libswresample/swresample.lib libswscale/swscale.lib ..
 
 cd ../libwebsockets-4.3-stable
 cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-w64.cmake -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
@@ -333,7 +333,7 @@ cd ../ffmpeg-7.0.1
 # Need to switch configure to use pkg-config instead of $pkg_config
 PKG_CONFIG_PATH=/home/deen/isos/ddnet/debian10/root/win32/x264-master PKG_CONFIG_LIBDIR=/usr/i686-w64-mingw32/lib/pkgconfig ./configure --disable-all --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-I/home/deen/isos/ddnet/debian10/root/win32/x264-master" --extra-cxxflags="-I/home/deen/isos/ddnet/debian10/root/win32/x264-master" --extra-ldflags="-L/home/deen/isos/ddnet/debian10/root/win32/x264-master" --arch=i686 --target_os=mingw32 --cross-prefix=i686-w64-mingw32- --disable-static --enable-shared --pkg-config-flags="--static --with-path=/home/deen/isos/ddnet/debian10/root/win32/x264-master"
 make -j4
-cp libavcodec/avcodec-60.dll libavformat/avformat-60.dll libavutil/avutil-58.dll libswresample/swresample-4.dll libswscale/swscale-7.dll libavcodec/avcodec.lib libavformat/avformat.lib libavutil/avutil.lib libswresample/swresample.lib libswscale/swscale.lib ..
+cp libavcodec/avcodec-61.dll libavformat/avformat-61.dll libavutil/avutil-59.dll libswresample/swresample-5.dll libswscale/swscale-8.dll libavcodec/avcodec.lib libavformat/avformat.lib libavutil/avutil.lib libswresample/swresample.lib libswscale/swscale.lib ..
 
 cd ../libwebsockets-4.3-stable
 cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-w32.cmake -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
@@ -413,7 +413,7 @@ cd ../ffmpeg-7.0.1
 # Need to switch configure to use pkg-config instead of $pkg_config
 PKG_CONFIG_PATH=/home/deen/isos/ddnet/debian10/root/mac64/x264-master ./configure --disable-all --disable-appkit --disable-bzlib --disable-avfoundation --disable-coreimage --disable-securetransport --disable-audiotoolbox --disable-cuda-llvm --disable-videotoolbox --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-cxxflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-ldflags="-L../x264-master" --arch=x86_64 --target_os=darwin --cross-prefix=x86_64-apple-darwin20.1- --disable-static --enable-shared --cc=$CC --cxx=$CXX
 make -j4
-cp libavcodec/libavcodec.60.dylib libavformat/libavformat.60.dylib libavutil/libavutil.58.dylib libswresample/libswresample.4.dylib libswscale/libswscale.7.dylib ..
+cp libavcodec/libavcodec.61.dylib libavformat/libavformat.61.dylib libavutil/libavutil.59.dylib libswresample/libswresample.5.dylib libswscale/libswscale.8.dylib ..
 
 cd ../libwebsockets-4.3-stable
 # own contrib/cross-macos-x86_64.cmake
@@ -484,7 +484,7 @@ cd ../ffmpeg-7.0.1
 # Need to switch configure to use pkg-config instead of $pkg_config
 PKG_CONFIG_PATH=/home/deen/isos/ddnet/debian10/root/macarm64/x264-master ./configure --disable-all --disable-appkit --disable-bzlib --disable-avfoundation --disable-coreimage --disable-securetransport --disable-audiotoolbox --disable-cuda-llvm --disable-videotoolbox --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-cxxflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-ldflags="-L../x264-master" --arch=aarch64 --target_os=darwin --cross-prefix=aarch64-apple-darwin20.1- --disable-static --enable-shared --cc=$CC --cxx=$CXX
 make -j4
-cp libavcodec/libavcodec.60.dylib libavformat/libavformat.60.dylib libavutil/libavutil.58.dylib libswresample/libswresample.4.dylib libswscale/libswscale.7.dylib ..
+cp libavcodec/libavcodec.61.dylib libavformat/libavformat.61.dylib libavutil/libavutil.59.dylib libswresample/libswresample.5.dylib libswscale/libswscale.8.dylib ..
 
 cd ../libwebsockets-4.3-stable
 # own contrib/cross-macos-arm64.cmake
@@ -502,16 +502,16 @@ otool -L $i
 install_name_tool -id @rpath/SDL2.framework/Versions/A/SDL2 lib64/SDL2.framework/Versions/A/SDL2
 install_name_tool -id @rpath/libpng16.16.dylib libpng16.16.dylib
 install_name_tool -id @rpath/libfreetype.6.dylib libfreetype.6.dylib
-install_name_tool -id @rpath/libswscale.7.dylib libswscale.7.dylib
-install_name_tool -change /usr/local/lib/libavutil.58.dylib @rpath/libavutil.58.dylib libswscale.7.dylib
-install_name_tool -id @rpath/libswresample.4.dylib libswresample.4.dylib
-install_name_tool -change /usr/local/lib/libavutil.58.dylib @rpath/libavutil.58.dylib libswresample.4.dylib
-install_name_tool -id @rpath/libavutil.58.dylib libavutil.58.dylib
-install_name_tool -id @rpath/libavformat.60.dylib libavformat.60.dylib
-install_name_tool -change /usr/local/lib/libavcodec.60.dylib @rpath/libavcodec.60.dylib libavformat.60.dylib
-install_name_tool -change /usr/local/lib/libavutil.58.dylib @rpath/libavutil.58.dylib libavformat.60.dylib
-install_name_tool -id @rpath/libavcodec.60.dylib libavcodec.60.dylib
-install_name_tool -change /usr/local/lib/libavutil.58.dylib @rpath/libavutil.58.dylib libavcodec.60.dylib
+install_name_tool -id @rpath/libswscale.8.dylib libswscale.8.dylib
+install_name_tool -change /usr/local/lib/libavutil.59.dylib @rpath/libavutil.59.dylib libswscale.8.dylib
+install_name_tool -id @rpath/libswresample.5.dylib libswresample.5.dylib
+install_name_tool -change /usr/local/lib/libavutil.59.dylib @rpath/libavutil.59.dylib libswresample.5.dylib
+install_name_tool -id @rpath/libavutil.59.dylib libavutil.59.dylib
+install_name_tool -id @rpath/libavformat.61.dylib libavformat.61.dylib
+install_name_tool -change /usr/local/lib/libavcodec.61.dylib @rpath/libavcodec.61.dylib libavformat.61.dylib
+install_name_tool -change /usr/local/lib/libavutil.59.dylib @rpath/libavutil.59.dylib libavformat.61.dylib
+install_name_tool -id @rpath/libavcodec.61.dylib libavcodec.61.dylib
+install_name_tool -change /usr/local/lib/libavutil.59.dylib @rpath/libavutil.59.dylib libavcodec.61.dylib
 # TODO: Can this be done automatically by setting --prefix=@rpath?
 
 # create fat binaries for mac
