@@ -134,7 +134,7 @@ cp .libs/libopusfile.a ..
 cd ../SDL2-2.30.5
 ./configure --enable-ime CFLAGS="-fPIC -m32" LDFLAGS=-m32 --disable-video-wayland
 LDFLAGS=-m32 CFLAGS="-fPIC -m32" make -j4
-cp build/.libs/libSDL2-2.0.so.0.*.0 ../libSDL2-2.0.so.0
+cp build/.libs/libSDL2-2.0.so.0.*.* ../libSDL2-2.0.so.0
 strip -s ../libSDL2-2.0.so.0
 
 cd ../sqlite-autoconf-3460000
