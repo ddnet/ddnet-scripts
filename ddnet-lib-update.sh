@@ -82,7 +82,7 @@ CFLAGS="-O2 -fno-fast-math" make -j4
 cp libx264.a ..
 
 cd ../ffmpeg-7.0.1
-PKG_CONFIG_PATH=/root/x86-64/x264-master/ ./configure --disable-all --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-fPIC -I/root/x86-64/x264-master" --extra-cxxflags="-fPIC -I/root/x86-64/x264-master" --extra-ldflags="-L/root/x86-64/x264-master -ldl" --extra-libs="-lpthread -lm" --pkg-config-flags="--static"
+PKG_CONFIG_PATH=/root/x86-64/x264-master/ ./configure --disable-all --disable-vdpau --disable-vaapi --disable-libdrm --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-fPIC -I/root/x86-64/x264-master" --extra-cxxflags="-fPIC -I/root/x86-64/x264-master" --extra-ldflags="-L/root/x86-64/x264-master -ldl" --extra-libs="-lpthread -lm" --pkg-config-flags="--static"
 make -j4
 cp */*.a ..
 
@@ -148,7 +148,7 @@ CFLAGS="-m32 -O2 -fno-fast-math" LDFLAGS=-m32 make -j4
 cp libx264.a ..
 
 cd ../ffmpeg-7.0.1
-PKG_CONFIG_PATH=/root/x86/x264-master ./configure --disable-all --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-m32 -fPIC -I/root/x86/x264-master" --extra-cxxflags="-m32 -fPIC -I/root/x86/x264-master" --extra-ldflags="-m32 -L/root/x86/x264-master -ldl" --cpu=i686 --extra-libs="-lpthread -lm" --pkg-config-flags="--static"
+PKG_CONFIG_PATH=/root/x86/x264-master ./configure --disable-all --disable-vdpau --disable-vaapi --disable-libdrm --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-m32 -fPIC -I/root/x86/x264-master" --extra-cxxflags="-m32 -fPIC -I/root/x86/x264-master" --extra-ldflags="-m32 -L/root/x86/x264-master -ldl" --cpu=i686 --extra-libs="-lpthread -lm" --pkg-config-flags="--static"
 make -j4
 cp */*.a ..
 
