@@ -2,7 +2,7 @@
 
 # From root @ other server:
 # cd /
-# tar --exclude='UBSAN*' --exclude='ASAN*' --exclude='ddnet-server*.sqlite' --exclude='ddnet-block.sqlite' --exclude='teehistorian' --exclude='*.sql' --exclude='*.log*' --exclude='*.fifo' --exclude='nohup.out' --exclude home/teeworlds/servers/test/data/maps -czf ddnet-setup.tar.gz home/teeworlds/servers home/teeworlds/run-all.sh home/teeworlds/.config home/teeworlds/.vim* home/teeworlds/.ssh* home/teeworlds/.z* home/teeworlds/.my.cnf home/teeworlds/.gitconfig etc/zsh etc/vim* etc/mysql etc/ssmtp etc/dnsmasq.d etc/dnsmasq.conf etc/resolv.dnsmasq.conf etc/resolv.conf etc/resolv.conf.ddnet etc/security/limits.conf root/weekly root/ipset.sh root/.config root/.vim* root/.ssh* root/.z* usr/local/bin/ni usr/local/bin/rni etc/init.d/teeworlds-servers etc/network/if-up.d/iptables etc/apt/apt.conf.d/99defaultrelease etc/apt/sources.list.d etc/timezone etc/apt/apt.conf.d/50unattended-upgrades var/spool/cron/crontabs
+# tar --exclude='UBSAN*' --exclude='ASAN*' --exclude='ddnet-server*.sqlite' --exclude='ddnet-block.sqlite' --exclude='teehistorian' --exclude='*.sql' --exclude='*.log*' --exclude='*.fifo' --exclude='nohup.out' --exclude home/teeworlds/servers/test/data/maps -czf ddnet-setup.tar.gz home/teeworlds/servers home/teeworlds/run-all.sh home/teeworlds/.config home/teeworlds/.vim* home/teeworlds/.ssh* home/teeworlds/.z* home/teeworlds/.my.cnf home/teeworlds/dnsbl home/teeworlds/.gitconfig etc/zsh etc/vim* etc/mysql etc/ssmtp etc/dnsmasq.d etc/dnsmasq.conf etc/resolv.dnsmasq.conf etc/resolv.conf etc/resolv.conf.ddnet etc/security/limits.conf root/weekly root/ipset.sh root/.config root/.vim* root/.ssh* root/.z* usr/local/bin/ni usr/local/bin/rni etc/init.d/teeworlds-servers etc/network/if-up.d/iptables etc/apt/apt.conf.d/99defaultrelease etc/apt/sources.list.d etc/timezone etc/apt/apt.conf.d/50unattended-upgrades var/spool/cron/crontabs etc/systemd/system/dnsbl-ipapi.service
 # scp ddnet-setup.tar.gz kor.ddnet.org:/
 
 if [ "$#" -ne 2 ]; then
@@ -19,7 +19,7 @@ NAME_SQL=`echo $NAME_UPPER | head -c3`
 apt-get -y update
 apt-get -y upgrade
 apt-get -y dist-upgrade
-apt-get -y install bsdutils tree zsh vim htop git g++ libboost-dev python3-requests sshfs tcpdump gdb pkg-config ntpdate ntp mailutils msmtp msmtp-mta libssl-dev libmariadb-dev-compat libmariadb-dev libmysqlcppconn-dev cmake make unattended-upgrades apt-listchanges iptables-persistent libwebsockets-dev libcurl4-openssl-dev python3 dnsmasq strace dnsutils sqlite3 libsqlite3-dev mariadb-client rsync libreadline-dev binutils-dev libpcap-dev libnl-genl-3-dev dh-autoreconf conntrack ncdu psmisc ethtool net-tools mtr-tiny adduser cron iptables wget screen libmaxminddb-dev unzip ipset curl zstd python3-pip fd-find fish glances ripgrep
+apt-get -y install bsdutils tree zsh vim htop git g++ libboost-dev python3-requests sshfs tcpdump gdb pkg-config ntpdate ntp mailutils msmtp msmtp-mta libssl-dev libmariadb-dev-compat libmariadb-dev libmysqlcppconn-dev cmake make unattended-upgrades apt-listchanges iptables-persistent libwebsockets-dev libcurl4-openssl-dev python3 dnsmasq strace dnsutils sqlite3 libsqlite3-dev mariadb-client rsync libreadline-dev binutils-dev libpcap-dev libnl-genl-3-dev dh-autoreconf conntrack ncdu psmisc ethtool net-tools mtr-tiny adduser cron iptables wget screen libmaxminddb-dev unzip ipset curl zstd python3-pip fd-find fish glances ripgrep python3-cachetools python3-dnslib
 rm -rf  /root/.acme.sh
 rm -rf ~/.pip # bad tencent server on some CHN locations
 if [[ "$NAME_SQL" == "CHN" ]]; then
@@ -58,8 +58,8 @@ iptables -I INPUT -s 185.82.223.0/24 -j DROP
 iptables -I INPUT -s 147.251.0.0/16 -j DROP
 iptables -I OUTPUT -d 147.251.0.0/16 -j DROP
 iptables -A INPUT -s 127.0.0.1 -j ACCEPT
-iptables -A INPUT 1 -p tcp --src $DDNET_IP -j ACCEPT
-iptables -A INPUT 2 -p tcp -m tcp --dport 6546 -m state --state NEW -m hashlimit --hashlimit-above 1/minute --hashlimit-mode srcip -j DROP
+iptables -I INPUT 1 -p tcp --src $DDNET_IP -j ACCEPT
+iptables -I INPUT 2 -p tcp -m tcp --dport 6546 -m state --state NEW -m hashlimit --hashlimit-above 1/minute --hashlimit-mode srcip --hashlimit-name ssh -j DROP
 iptables -A INPUT -p tcp -m tcp -m conntrack -m multiport --ctstate NEW ! --dports 27685,6546,22 -j DROP
 iptables-save > /etc/iptables.up.rules
 
@@ -70,9 +70,16 @@ ssh-keygen -t rsa -N '' -f /root/.ssh/id_rsa <<< $'\ny'
 systemctl disable systemd-resolved
 systemctl stop systemd-resolved
 systemctl restart dnsmasq
+systemctl enable dnsbl-ipapi
+systemctl start dnsbl-ipapi
 dpkg-reconfigure -f noninteractive unattended-upgrades
 ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime
 dpkg-reconfigure -f noninteractive tzdata
+
+# Bad ntp servers on China
+sed -i "s/ntpupdate.tencentyun.com/de.pool.ntp.org/" /etc/**/*.conf
+systemctl enable ntp
+systemctl restart ntp
 
 echo "nameserver 127.0.0.1" > /etc/resolv.conf.ddnet
 chattr +i /etc/resolv.conf.ddnet
@@ -125,4 +132,4 @@ su - teeworlds "./run-all.sh"
 # ./git-update-serverlist-only.sh
 #
 # Hack for getting approximate time for hosters that totally block NTP:
-# date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
+# date -s "$(wget -qSO- --max-redirect=0 cloudflare.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
