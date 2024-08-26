@@ -111,6 +111,31 @@ build_remote_macos_steam ()
   ssh deen@si "rm -rf macos-steam"
 }
 
+build_remote_windows_arm64 ()
+{
+  SUFFIX=$1
+  OUR_CXXFLAGS=$2
+  FLAGS=$3
+  ssh deen@si "cd ddnet-arm/build && \
+  export MAIN_REPO_USER=\"$MAIN_REPO_USER\" && \
+  export MAIN_REPO_NAME=\"$MAIN_REPO_NAME\" && \
+  export MAIN_REPO_BRANCH=\"$MAIN_REPO_BRANCH\" && \
+  export LIBS_REPO_USER=\"$LIBS_REPO_USER\" && \
+  export LIBS_REPO_NAME=\"$LIBS_REPO_NAME\" && \
+  export LIBS_REPO_BRANCH=\"$LIBS_REPO_BRANCH\" && \
+  export CXXFLAGS=\"$OUR_CXXFLAGS\" && \
+  export FLAGS=\"$FLAGS\" && \
+  ./script.sh $VERSION
+  "
+}
+
+build_remote_windows_arm64_website ()
+{
+  build_remote_windows_arm64 "" "$CXXFLAGS_WEB" "$UPDATE_FLAGS"
+  scp deen@si:ddnet-arm/build/dist/\* $BUILDS/
+  ssh deen@si "rm -rf ddnet-arm/build/dist/\*"
+}
+
 build_linux ()
 {
   PLATFORM=$1
@@ -230,7 +255,7 @@ MAC_AVAILABLE=true
 ssh deen@si "exit" || MAC_AVAILABLE=false
 if [ "$MAC_AVAILABLE" = true ]; then
   rsync -avzP --delete --exclude linux --exclude windows --exclude lib64 --exclude libarm64 ddnet-source/ deen@si:ddnet-source
-  (build_remote_macos_website; build_remote_macos_steam) &> builds/mac.log &
+  (build_remote_windows_arm64_website; build_remote_macos_website; build_remote_macos_steam) &> builds/mac.log &
 fi
 #(build_macos_website; build_macos_steam) &> builds/mac.log &
 
