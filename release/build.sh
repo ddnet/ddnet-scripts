@@ -242,7 +242,7 @@ build_android ()
   { cat ../android_salt.cpp; cat src/engine/client/client.cpp; } > tmp && mv tmp src/engine/client/client.cpp
   mkdir build-android
   cp ../DDNet.jks build-android
-  scripts/android/cmake_android.sh all DDNet-$VERSION org.ddnet.client Release build-android
+  BUILD_FLAGS="-j2" scripts/android/cmake_android.sh all DDNet-$VERSION org.ddnet.client Release build-android
   mv build-android/DDNet-*.apk $BUILDS/DDNet-$VERSION.apk
   rm -rf ddnet-source-android
 }
