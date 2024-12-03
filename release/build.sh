@@ -133,7 +133,7 @@ build_remote_windows_arm64_website ()
 {
   build_remote_windows_arm64 "" "$CXXFLAGS_WEB" "$UPDATE_FLAGS"
   scp deen@si:ddnet-arm/build/dist/\* $BUILDS/
-  ssh deen@si "rm -rf ddnet-arm/build/dist/\*"
+  ssh deen@si "rm -rf ddnet-arm/build/dist/*"
 }
 
 build_linux ()
@@ -212,7 +212,7 @@ build_windows_website ()
 {
   PLATFORM=$1
   BUILDOPTS=$2
-  CXXFLAGS="'$CXXFLAGS_WEB' -pie" build_windows $PLATFORM "$UPDATE_FLAGS $(echo $BUILDOPTS)"
+  CXXFLAGS="'$CXXFLAGS_WEB'" build_windows $PLATFORM "$UPDATE_FLAGS $(echo $BUILDOPTS)"
   mv DDNet-*.zip $BUILDS/DDNet-$VERSION-win$PLATFORM.zip
   mv DDNet-*-symbols.tar.xz $BUILDS/
   cd ..
@@ -223,11 +223,28 @@ build_windows_steam ()
 {
   PLATFORM=$1
   BUILDOPTS=$2
-  CXXFLAGS="'$CXXFLAGS_STEAM' -pie" build_windows $PLATFORM "-DSTEAM=ON $(echo $BUILDOPTS)" "-steam"
+  CXXFLAGS="'$CXXFLAGS_STEAM'" build_windows $PLATFORM "-DSTEAM=ON $(echo $BUILDOPTS)" "-steam"
   mv DDNet-*.zip ../DDNet-$VERSION-steam-win$PLATFORM.zip
   mv DDNet-*-symbols.tar.xz $BUILDS/
   cd ..
   rm -rf win$PLATFORM-steam
+}
+
+build_android ()
+{
+  export TW_KEY_PW="$(cat DDNet.pass)"
+  export TW_KEY_NAME=DDNet.jks
+  export TW_KEY_ALIAS=DDNet-Android-Key
+  export TW_VERSION_NAME=$VERSION
+  rm -rf ddnet-source-android
+  cp -r ddnet-source ddnet-source-android
+  cd ddnet-source-android
+  { cat ../android_salt.cpp; cat src/engine/client/client.cpp; } > tmp && mv tmp src/engine/client/client.cpp
+  mkdir build-android
+  cp ../DDNet.jks build-android
+  scripts/android/cmake_android.sh all DDNet-$VERSION org.ddnet.client Release build-android
+  mv build-android/DDNet-*.apk $BUILDS/DDNet-$VERSION.apk
+  rm -rf ddnet-source-android
 }
 
 MAIN_REPO_COMMIT="$(wget -nv --header 'Accept: application/vnd.github.sha' https://api.github.com/repos/$MAIN_REPO_USER/ddnet/commits/$MAIN_REPO_BRANCH -O-)"
@@ -275,6 +292,8 @@ TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
 
 TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
   build_windows_steam 32 "-DIPO=OFF") &> builds/win32.log &
+
+build_android &> builds/android.log &
 
 wait
 
