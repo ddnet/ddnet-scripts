@@ -244,6 +244,7 @@ build_android ()
   cp ../DDNet.jks build-android
   BUILD_FLAGS="-j2" scripts/android/cmake_android.sh all DDNet-$VERSION org.ddnet.client Release build-android
   mv build-android/DDNet-*.apk $BUILDS/DDNet-$VERSION.apk
+  cd ..
   rm -rf ddnet-source-android
 }
 
