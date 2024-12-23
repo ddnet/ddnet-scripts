@@ -252,7 +252,7 @@ MAIN_REPO_COMMIT="$(wget -nv --header 'Accept: application/vnd.github.sha' https
 LIBS_REPO_COMMIT="$(wget -nv --header 'Accept: application/vnd.github.sha' https://api.github.com/repos/$LIBS_REPO_USER/ddnet-libs/commits/$LIBS_REPO_BRANCH -O-)"
 
 # Get the sources
-rm -rf main.zip libs.zip
+rm -f main.zip libs.zip
 wget -nv -O main.zip https://github.com/$MAIN_REPO_USER/$MAIN_REPO_NAME/archive/$MAIN_REPO_COMMIT.zip
 wget -nv -O libs.zip https://github.com/$LIBS_REPO_USER/$LIBS_REPO_NAME/archive/$LIBS_REPO_COMMIT.zip
 rm -rf ddnet-source $MAIN_REPO_NAME-$MAIN_REPO_COMMIT $LIBS_REPO_NAME-$LIBS_REPO_COMMIT

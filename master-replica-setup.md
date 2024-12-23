@@ -42,7 +42,7 @@ WantedBy=multi-user.target
 
 `systemctl enable httpmaster-collect`, `systemctl start httpmaster-collect`.
 
-Make sure port 443 isn't blocked by a firewall. Install `nginx` and `certbot`. `certbot certonly`. `mkdir -p /var/www-master2/ddnet/15/`. `ln -s ~httpmaster/servers.json /var/www-master2/ddnet/15/`. Configure `/etc/nginx/sites-enabled/default`:
+Make sure port 443 isn't blocked by a firewall. Install `nginx` and `certbot`. `certbot certonly`. `mkdir -p /var/www-master2/ddnet/15/`. `ln -s ~httpmaster/servers.json ~httpmaster/servers.json.gz /var/www-master2/ddnet/15/`. Configure `/etc/nginx/sites-enabled/default`:
 ```
 server {
 	listen 80 default_server;
@@ -53,9 +53,10 @@ server {
 	ssl_certificate_key /etc/letsencrypt/live/master2.ddnet.org/privkey.pem;
 	root /var/www-master2;
 	server_name master2.ddnet.org;
-	gzip on;
-	gzip_vary on;
-	gzip_comp_level 9;
+	gzip_static on;
+	#gzip on;
+	#gzip_vary on;
+	#gzip_comp_level 9;
 	gzip_types text/plain application/javascript application/x-javascript text/javascript text/xml text/css text/html application/json;
 }
 ```
