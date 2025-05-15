@@ -6,15 +6,12 @@ MAIN_REPO_USER="${MAIN_REPO_USER:-ddnet}"
 MAIN_REPO_NAME="${MAIN_REPO_NAME:-ddnet}"
 MAIN_REPO_BRANCH="${MAIN_REPO_BRANCH:-master}"
 
-#/home/deen/git/codebrowser/generator/codebrowser_generator -h > /dev/null || cat << EOF
-#After an LLVM upgrade rebuild codebrowser and osxcross as follows:
-#$ cd ~/git/codebrowser
-#$ cmake . -DCMAKE_PREFIX_PATH=/usr/lib/clang/14.0.6 -DCMAKE_BUILD_TYPE=Release
-#$ make -j4
-#$ cd ~/git/osxcross
-#$ ./build.sh
-#$ ./build_compiler_rt.sh
-#EOF
+/home/deen/git/codebrowser/generator/codebrowser_generator -h > /dev/null || cat << EOF
+After an LLVM upgrade rebuild codebrowser and osxcross as follows:
+$ cd ~/git/codebrowser
+$ cmake . -DCMAKE_PREFIX_PATH=/usr/lib/clang/14.0.6 -DCMAKE_BUILD_TYPE=Release
+$ make -j4
+EOF
 
 cd /home/deen/isos/ddnet
 find builds -mindepth 1 -delete
@@ -26,16 +23,16 @@ if [ "$1" = "nightly" ]; then
   export VERSION="$V-$(date -d '+2 hours' +%Y%m%d)"
   ./build.sh $VERSION &> builds/DDNet-nightly.log
 
-  #rm -rf codebrowser
-  #cd ddnet-source
-  #rm -rf ddnet-libs
-  #CC=clang CXX=clang++ cmake . -DCMAKE_BUILD_TYPE=Debug -GNinja -DDEV=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DUPNP=ON -DTEST_MYSQL=ON -DMYSQL=ON -DWEBSOCKETS=ON -DAUTOUPDATE=ON -DVIDEORECORDER=ON -DVULKAN=ON .
-  #ninja
-  #/home/deen/git/codebrowser/generator/codebrowser_generator -b . -a -o ../codebrowser -p DDNet:/home/deen/isos/ddnet/ddnet-source/src:$VERSION -d https://ddnet.tw/codebrowser-data
-  #/home/deen/git/codebrowser/indexgenerator/codebrowser_indexgenerator ../codebrowser -d https://ddnet.tw/codebrowser-data -p DDNet:/home/deen/isos/ddnet/ddnet-source/src:$VERSION
-  #cd ..
-  #rsync -avP --delay-updates --delete-delay codebrowser ddnet:/var/www/
-  #rm -rf codebrowser
+  rm -rf codebrowser
+  cd ddnet-source
+  rm -rf ddnet-libs
+  CC=clang CXX=clang++ cmake . -DCMAKE_BUILD_TYPE=Debug -GNinja -DDEV=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DUPNP=ON -DTEST_MYSQL=ON -DMYSQL=ON -DWEBSOCKETS=ON -DAUTOUPDATE=ON -DVIDEORECORDER=ON -DVULKAN=ON .
+  ninja
+  /home/deen/git/codebrowser/generator/codebrowser_generator -b . -a -o ../codebrowser -p DDNet:/home/deen/isos/ddnet/ddnet-source/src:$VERSION -d https://ddnet.tw/codebrowser-data
+  /home/deen/git/codebrowser/indexgenerator/codebrowser_indexgenerator ../codebrowser -d https://ddnet.tw/codebrowser-data -p DDNet:/home/deen/isos/ddnet/ddnet-source/src:$VERSION
+  cd ..
+  rsync -avP --delay-updates --delete-delay codebrowser ddnet:/var/www/
+  rm -rf codebrowser
 elif [ "$1" = "playground" ]; then
   export UPDATE_FLAGS="-DAUTOUPDATE=OFF -DINFORM_UPDATE=OFF"
   export UPDATE_FLAGS_MACOS="-DINFORM_UPDATE=OFF"

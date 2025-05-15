@@ -36,6 +36,8 @@ LIBS_REPO_USER="${LIBS_REPO_USER:-ddnet}"
 LIBS_REPO_NAME="${LIBS_REPO_NAME:-ddnet-libs}"
 LIBS_REPO_BRANCH="${LIBS_REPO_BRANCH:-master}"
 
+MAC_HOST=${MAC_HOST:-m4mini}
+
 VERSION=$1
 NOW=$(date +'%F %R')
 echo "Starting build of $VERSION at $NOW"
@@ -84,7 +86,7 @@ build_remote_macos ()
   SUFFIX=$1
   OUR_CXXFLAGS=$2
   FLAGS=$3
-  ssh deen@si "export PATH=/opt/homebrew/bin:\$PATH:\$HOME/.cargo/bin && rm -rf macos$SUFFIX && \
+  ssh deen@$MAC_HOST "export PATH=/opt/homebrew/bin:\$PATH:\$HOME/.cargo/bin && rm -rf macos$SUFFIX && \
   mkdir macos$SUFFIX && \
   cd macos$SUFFIX && \
   export DDNET_GIT_SHORTREV_HASH=\"$DDNET_GIT_SHORTREV_HASH\"
@@ -99,16 +101,16 @@ build_remote_macos ()
 build_remote_macos_website ()
 {
   build_remote_macos "" $CXXFLAGS_WEB $UPDATE_FLAGS_MACOS
-  scp deen@si:macos/DDNet-\*.dmg $BUILDS/DDNet-$VERSION-macos.dmg
-  ssh deen@si "rm -rf macos"
+  scp deen@$MAC_HOST:macos/DDNet-\*.dmg $BUILDS/DDNet-$VERSION-macos.dmg
+  ssh deen@$MAC_HOST "rm -rf macos"
 }
 
 build_remote_macos_steam ()
 {
   build_remote_macos -steam $CXXFLAGS_STEAM "-DSTEAM=ON"
   rm -rf DDNet-$VERSION-steam-macos
-  scp -r deen@si:macos-steam/pack_DDNet-\*_dmg DDNet-$VERSION-steam-macos
-  ssh deen@si "rm -rf macos-steam"
+  scp -r deen@$MAC_HOST:macos-steam/pack_DDNet-\*_dmg DDNet-$VERSION-steam-macos
+  ssh deen@$MAC_HOST "rm -rf macos-steam"
 }
 
 build_remote_windows_arm64 ()
@@ -116,7 +118,7 @@ build_remote_windows_arm64 ()
   SUFFIX=$1
   OUR_CXXFLAGS=$2
   FLAGS=$3
-  ssh deen@si "cd ddnet-arm/build && \
+  ssh deen@$MAC_HOST "cd ddnet-arm/build && \
   export MAIN_REPO_USER=\"$MAIN_REPO_USER\" && \
   export MAIN_REPO_NAME=\"$MAIN_REPO_NAME\" && \
   export MAIN_REPO_BRANCH=\"$MAIN_REPO_BRANCH\" && \
@@ -132,8 +134,8 @@ build_remote_windows_arm64 ()
 build_remote_windows_arm64_website ()
 {
   build_remote_windows_arm64 "" "$CXXFLAGS_WEB" "$UPDATE_FLAGS"
-  scp deen@si:ddnet-arm/build/dist/\* $BUILDS/
-  ssh deen@si "rm -rf ddnet-arm/build/dist/*"
+  scp deen@$MAC_HOST:ddnet-arm/build/dist/\* $BUILDS/
+  ssh deen@$MAC_HOST "rm -rf ddnet-arm/build/dist/*"
 }
 
 build_linux ()
@@ -143,10 +145,10 @@ build_linux ()
 
   cd $DIR
   mkdir -p proc sys dev
-  umount $DIR/proc $DIR/sys $DIR/dev 2> /dev/null || true
+  umount $DIR/proc $DIR/sys 2> /dev/null || true
   mount -t proc proc proc/
   mount -t sysfs sys sys/
-  mount -o bind /dev dev/
+  #mount -o bind /dev dev/
 
   rm -rf ddnet-source ddnet-source-steam ddnet-libs-source $MAIN_REPO_NAME-$MAIN_REPO_COMMIT $LIBS_REPO_NAME-$LIBS_REPO_COMMIT
   unzip -q $BUILDDIR/main.zip
@@ -183,7 +185,7 @@ build_linux ()
   mv ddnet-source-steam/DDNet-*.tar.xz ../DDNet-$VERSION-steam-linux_$PLATFORM.tar.xz
 
   rm -rf ddnet-source ddnet-source-steam
-  umount $DIR/proc $DIR/sys $DIR/dev
+  umount $DIR/proc $DIR/sys # $DIR/dev
   unset CFLAGS LDFLAGS PKG_CONFIG_PATH
 }
 
@@ -198,9 +200,8 @@ build_windows ()
   rm -rf $DIR
   mkdir $DIR
   cd $DIR
-  cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=RelWithDebInfo -DDISCORD=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain -DCMAKE_DISABLE_FIND_PACKAGE_GTest=ON -DEXCEPTION_HANDLING=ON $(echo $BUILDOPTS) ../ddnet-source
-  unset CXXFLAGS
-  unset LDFLAGS
+  rustup run 1.77.2 cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=RelWithDebInfo -DDISCORD=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain -DCMAKE_DISABLE_FIND_PACKAGE_GTest=ON -DEXCEPTION_HANDLING=ON $(echo $BUILDOPTS) ../ddnet-source
+  unset CXXFLAGS LDFLAGS CFLAGS
   make -j1
   XZ_OPT=-9 tar cfJ DDNet-$VERSION-win$PLATFORM$SUFFIX-$DDNET_GIT_SHORTREV_HASH-symbols.tar.xz DDNet.exe DDNet-Server.exe
   make -j2 package_default
@@ -270,9 +271,9 @@ mv $LIBS_REPO_NAME-$LIBS_REPO_COMMIT ddnet-source/ddnet-libs
 # Can't cross-compiler currently since macOS with arm is stricter with unsigned
 # binaries and signing doesn't work. Temporarily use build from macOS:
 MAC_AVAILABLE=true
-ssh deen@si "exit" || MAC_AVAILABLE=false
+ssh deen@$MAC_HOST "exit" || MAC_AVAILABLE=false
 if [ "$MAC_AVAILABLE" = true ]; then
-  rsync -avzP --delete --exclude linux --exclude windows --exclude lib64 --exclude libarm64 ddnet-source/ deen@si:ddnet-source
+  rsync -avzP --delete --exclude linux --exclude windows --exclude lib64 --exclude libarm64 ddnet-source/ deen@$MAC_HOST:ddnet-source
   (build_remote_windows_arm64_website; build_remote_macos_website; build_remote_macos_steam) &> builds/mac.log &
 fi
 #(build_macos_website; build_macos_steam) &> builds/mac.log &
