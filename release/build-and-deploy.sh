@@ -6,12 +6,13 @@ MAIN_REPO_USER="${MAIN_REPO_USER:-ddnet}"
 MAIN_REPO_NAME="${MAIN_REPO_NAME:-ddnet}"
 MAIN_REPO_BRANCH="${MAIN_REPO_BRANCH:-master}"
 
-/home/deen/git/codebrowser/generator/codebrowser_generator -h > /dev/null || cat << EOF
+/home/deen/git/codebrowser/generator/codebrowser_generator -h > /dev/null || (cat << EOF
 After an LLVM upgrade rebuild codebrowser and osxcross as follows:
 $ cd ~/git/codebrowser
 $ cmake . -DCMAKE_PREFIX_PATH=/usr/lib/clang/14.0.6 -DCMAKE_BUILD_TYPE=Release
 $ make -j4
 EOF
+exit 1)
 
 cd /home/deen/isos/ddnet
 find builds -mindepth 1 -delete
