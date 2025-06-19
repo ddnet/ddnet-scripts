@@ -87,7 +87,7 @@ make -j4
 cp */*.a ..
 
 cd ../libwebsockets-4.3-stable
-CXXFLAGS=-fPIC CFLAGS=-fPIC LDFLAGS=-fPIC cmake -DLWS_UNIX_SOCK=OFF -DLWS_WITH_SSL=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
+CXXFLAGS=-fPIC CFLAGS=-fPIC LDFLAGS=-fPIC cmake -DLWS_IPV6=ON -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
 make -j4
 cp lib/libwebsockets.a ..
 
@@ -153,7 +153,7 @@ make -j4
 cp */*.a ..
 
 cd ../libwebsockets-4.3-stable
-CXXFLAGS="-m32 -fPIC" CFLAGS="-m32 -fPIC" LDFLAGS="-m32 -fPIC" cmake -DLWS_UNIX_SOCK=OFF -DLWS_WITH_SSL=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
+CXXFLAGS="-m32 -fPIC" CFLAGS="-m32 -fPIC" LDFLAGS="-m32 -fPIC" cmake -DLWS_IPV6=ON -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
 make -j4
 cp lib/libwebsockets.a ..
 
@@ -243,7 +243,7 @@ make -j4
 cp libavcodec/avcodec-61.dll libavformat/avformat-61.dll libavutil/avutil-59.dll libswresample/swresample-5.dll libswscale/swscale-8.dll libavcodec/avcodec.lib libavformat/avformat.lib libavutil/avutil.lib libswresample/swresample.lib libswscale/swscale.lib ..
 
 cd ../libwebsockets-4.3-stable
-cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-w64.cmake -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
+cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-w64.cmake -DLWS_IPV6=ON -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
 make -j4
 cp bin/libwebsockets.dll ..
 
@@ -336,7 +336,7 @@ make -j4
 cp libavcodec/avcodec-61.dll libavformat/avformat-61.dll libavutil/avutil-59.dll libswresample/swresample-5.dll libswscale/swscale-8.dll libavcodec/avcodec.lib libavformat/avformat.lib libavutil/avutil.lib libswresample/swresample.lib libswscale/swscale.lib ..
 
 cd ../libwebsockets-4.3-stable
-cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-w32.cmake -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
+cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-w32.cmake -DLWS_IPV6=ON -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
 make -j4
 cp bin/libwebsockets.dll ..
 
@@ -417,7 +417,7 @@ cp libavcodec/libavcodec.61.dylib libavformat/libavformat.61.dylib libavutil/lib
 
 cd ../libwebsockets-4.3-stable
 # own contrib/cross-macos-x86_64.cmake
-cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-macos-x86_64.cmake -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
+cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-macos-x86_64.cmake -DLWS_IPV6=ON -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
 make -j4
 cp lib/libwebsockets.19.dylib ..
 
@@ -488,7 +488,7 @@ cp libavcodec/libavcodec.61.dylib libavformat/libavformat.61.dylib libavutil/lib
 
 cd ../libwebsockets-4.3-stable
 # own contrib/cross-macos-arm64.cmake
-cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-macos-arm64.cmake -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
+cmake -DCMAKE_TOOLCHAIN_FILE=contrib/cross-macos-arm64.cmake -DLWS_IPV6=ON -DLWS_WITH_SSL=OFF -DLWS_UNIX_SOCK=OFF -DLWS_WITHOUT_EXTENSIONS=ON -DLWS_WITH_SYS_SMD=OFF .
 make -j4
 cp lib/libwebsockets.19.dylib ..
 
