@@ -94,7 +94,7 @@ build_remote_macos ()
   cmake -DVERSION=$VERSION -DCMAKE_OSX_ARCHITECTURES=\"arm64;x86_64\" -DCMAKE_BUILD_TYPE=Release -DDISCORD=ON -DWEBSOCKETS=OFF -DIPO=OFF -DPREFER_BUNDLED_LIBS=ON $(echo $FLAGS) ../ddnet-source && \
   unset CXXFLAGS && \
   unset LDFLAGS && \
-  make -j10 package_default
+  nice -n19 make -j8 package_default
   "
 }
 
@@ -127,7 +127,7 @@ build_remote_windows_arm64 ()
   export LIBS_REPO_BRANCH=\"$LIBS_REPO_BRANCH\" && \
   export CXXFLAGS=\"$OUR_CXXFLAGS\" && \
   export FLAGS=\"$FLAGS\" && \
-  ./script.sh $VERSION
+  nice -n19 ./script.sh $VERSION
   "
 }
 
@@ -169,7 +169,9 @@ build_linux ()
     export CXXFLAGS=\"'$CXXFLAGS_WEB' -no-pie\" && \
     export LDFLAGS=\"-no-pie\" && \
     . /root/.cargo/env && \
-    cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DDISCORD=$DISCORD -DDISCORD_DYNAMIC=$DISCORD -DWEBSOCKETS=OFF -DIPO=OFF $(echo $UPDATE_FLAGS) -DPREFER_BUNDLED_LIBS=ON && \
+    mkdir build && \
+    cd build && \
+    cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DDISCORD=$DISCORD -DDISCORD_DYNAMIC=$DISCORD -DWEBSOCKETS=OFF -DIPO=OFF $(echo $UPDATE_FLAGS) -DPREFER_BUNDLED_LIBS=ON .. && \
     unset CXXFLAGS && \
     unset LDFLAGS && \
     make -j1 package_default"
@@ -177,12 +179,14 @@ build_linux ()
     export CXXFLAGS=\"'$CXXFLAGS_STEAM' -no-pie\" && \
     export LDFLAGS=\"-no-pie\" && \
     . /root/.cargo/env && \
-    cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DDISCORD=$DISCORD -DDISCORD_DYNAMIC=$DISCORD -DWEBSOCKETS=OFF -DIPO=OFF -DSTEAM=ON -DPREFER_BUNDLED_LIBS=ON && \
+    mkdir build && \
+    cd build && \
+    cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DDISCORD=$DISCORD -DDISCORD_DYNAMIC=$DISCORD -DWEBSOCKETS=OFF -DIPO=OFF -DSTEAM=ON -DPREFER_BUNDLED_LIBS=ON .. && \
     unset CXXFLAGS && \
     unset LDFLAGS && \
     make -j1 package_default"
-  mv ddnet-source/DDNet-*.tar.xz $BUILDS/DDNet-$VERSION-linux_$PLATFORM.tar.xz
-  mv ddnet-source-steam/DDNet-*.tar.xz ../DDNet-$VERSION-steam-linux_$PLATFORM.tar.xz
+  mv ddnet-source/build/DDNet-*.tar.xz $BUILDS/DDNet-$VERSION-linux_$PLATFORM.tar.xz
+  mv ddnet-source-steam/build/DDNet-*.tar.xz ../DDNet-$VERSION-steam-linux_$PLATFORM.tar.xz
 
   rm -rf ddnet-source ddnet-source-steam
   umount $DIR/proc $DIR/sys # $DIR/dev
@@ -278,8 +282,8 @@ if [ "$MAC_AVAILABLE" = true ]; then
 fi
 #(build_macos_website; build_macos_steam) &> builds/mac.log &
 
-build_linux x86_64 $BUILDDIR/debian10 &> builds/linux_x86_64.log &
-CFLAGS=-m32 LDFLAGS=-m32 build_linux x86 $BUILDDIR/debian10_x86 &> builds/linux_x86.log &
+build_linux x86_64 $BUILDDIR/debian11 &> builds/linux_x86_64.log &
+CFLAGS=-m32 LDFLAGS=-m32 build_linux x86 $BUILDDIR/debian11_x86 &> builds/linux_x86.log &
 
 # IPO causes issues with DrMinGW stack traces, so disable for now
 # https://github.com/ddnet/ddnet/issues/5371
