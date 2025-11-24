@@ -15,6 +15,7 @@ NAME_LOWER=$2
 NAME_UPPER=`echo $2 | tr '[:lower:]' '[:upper:]'`
 NAME_INGAME=$3
 NAME_SQL=`echo $NAME_UPPER | head -c3`
+FLAG=156
 
 apt-get -y update
 apt-get -y upgrade
@@ -92,6 +93,7 @@ echo "8298 8300 8303 8304 8305 8306 8308 8309" > /home/teeworlds/servers/all-ser
 sed -i "s/^sv_sql_servername .*/sv_sql_servername \"$NAME_SQL\"/" /home/teeworlds/servers/mysql.cfg
 sed -i "s/^USER = .*/USER = \"ddnet$NAME_LOWER\"/" /home/teeworlds/servers/serverstatus-client.py
 sed -i "s/^sv_name \"DDNet [A-Za-z0-9]* /sv_name \"DDNet $NAME_INGAME /" /home/teeworlds/servers/types/*/flexname.cfg /home/teeworlds/servers/servers/*.cfg
+echo "sv_flag $FLAG" > /home/teeworlds/servers/flag.cfg
 su - teeworlds -c "git config --global pull.rebase false"
 
 cat <<EOF > /home/teeworlds/servers/run-all.sh
