@@ -20,7 +20,7 @@ FLAG=156
 apt-get -y update
 apt-get -y upgrade
 apt-get -y dist-upgrade
-apt-get -y install bsdutils tree zsh vim htop git g++ libboost-dev python3-requests sshfs tcpdump gdb pkg-config mailutils msmtp msmtp-mta libssl-dev libmariadb-dev-compat libmariadb-dev libmysqlcppconn-dev cmake make unattended-upgrades apt-listchanges iptables-persistent libwebsockets-dev libcurl4-openssl-dev python3 dnsmasq strace dnsutils sqlite3 libsqlite3-dev mariadb-client rsync libreadline-dev binutils-dev libpcap-dev libnl-genl-3-dev dh-autoreconf conntrack ncdu psmisc ethtool net-tools mtr-tiny adduser cron iptables wget screen libmaxminddb-dev unzip ipset curl zstd python3-pip fd-find fish glances ripgrep python3-cachetools python3-dnslib
+apt-get -y install bsdutils tree zsh vim htop git g++ libboost-dev python3-requests sshfs tcpdump gdb pkg-config mailutils msmtp msmtp-mta libssl-dev libmariadb-dev-compat libmariadb-dev libmysqlcppconn-dev cmake make unattended-upgrades apt-listchanges iptables-persistent libwebsockets-dev libcurl4-openssl-dev python3 dnsmasq strace dnsutils sqlite3 libsqlite3-dev mariadb-client rsync libreadline-dev binutils-dev libpcap-dev libnl-genl-3-dev dh-autoreconf conntrack ncdu psmisc ethtool net-tools mtr-tiny adduser cron iptables wget screen libmaxminddb-dev unzip ipset curl zstd python3-pip fd-find fish glances ripgrep python3-cachetools python3-dnslib python3-tqdm python3-six
 rm -rf  /root/.acme.sh
 rm -rf ~/.pip # bad tencent server on some CHN locations
 if [[ "$NAME_SQL" == "CHN" ]]; then
