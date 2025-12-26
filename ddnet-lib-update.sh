@@ -28,6 +28,23 @@ wget https://download.sourceforge.net/libpng/libpng-1.6.43.tar.gz
 #for i in build/mingw64/bin/*.dll; do x86_64-w64-mingw32-strip -s $i; done
 #for i in build/mingw32/bin/*.dll; do i686-w64-mingw32-strip -s $i; done
 
+CURL_CONFIGURE_OPTIONS=(
+	--disable-ftp
+	--disable-file
+	--disable-ipfs
+	--disable-ldap
+	--disable-rtsp
+	--disable-dict
+	--disable-telnet
+	--disable-tftp
+	--disable-pop3
+	--disable-imap
+	--disable-smb
+	--disable-smtp
+	--disable-gopher
+	--disable-mqtt
+)
+
 cd ../..
 chroot debian10 bash
 cd
@@ -46,7 +63,7 @@ tar xvf ../v4.3-stable.tar.gz
 tar xvf ../libpng-1.6.43.tar.gz
 
 cd curl-8.8.0
-./configure --with-openssl --enable-static --disable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
+./configure --with-openssl --enable-static --disable-shared "${CURL_CONFIGURE_OPTIONS[@]}"
 make -j4
 cp lib/.libs/libcurl.a ..
 
@@ -112,7 +129,7 @@ tar xvf ../v4.3-stable.tar.gz
 tar xvf ../libpng-1.6.43.tar.gz
 
 cd curl-8.8.0
-CFLAGS=-m32 LDFLAGS=-m32 ./configure --with-openssl --enable-static --disable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
+CFLAGS=-m32 LDFLAGS=-m32 ./configure --with-openssl --enable-static --disable-shared "${CURL_CONFIGURE_OPTIONS[@]}"
 CFLAGS=-m32 LDFLAGS=-m32 make -j4
 cp lib/.libs/libcurl.a ..
 
@@ -185,7 +202,7 @@ cp build/.libs/SDL2.dll build/.libs/libSDL2.dll.a ..
 x86_64-w64-mingw32-dlltool -v --export-all-symbols -D SDL2.dll -l ../SDL2.lib build/.libs/*.o
 
 cd ../curl-8.8.0
-./configure --host=x86_64-w64-mingw32 --with-schannel --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
+./configure --host=x86_64-w64-mingw32 --with-schannel --enable-shared "${CURL_CONFIGURE_OPTIONS[@]}"
 make -j4 V=1
 rm lib/.libs/libcurl-4.dll
 cd lib
@@ -279,7 +296,7 @@ cp build/.libs/SDL2.dll build/.libs/libSDL2.dll.a ..
 i686-w64-mingw32-dlltool -v --export-all-symbols -D SDL2.dll -l ../SDL2.lib build/.libs/*.o
 
 cd ../curl-8.8.0
-./configure --host=i686-w64-mingw32 --with-schannel --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
+./configure --host=i686-w64-mingw32 --with-schannel --enable-shared "${CURL_CONFIGURE_OPTIONS[@]}"
 make -j4 V=1
 rm lib/.libs/libcurl-4.dll
 cd lib
@@ -376,7 +393,7 @@ eval `osxcross-conf`
 
 cd curl-8.8.0
 # Set cross_compiling=yes in configure
-CFLAGS="-mmacosx-version-min=10.9" ./configure --host=x86_64-apple-darwin20.1 --with-secure-transport --enable-static --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
+CFLAGS="-mmacosx-version-min=10.9" ./configure --host=x86_64-apple-darwin20.1 --with-secure-transport --enable-static --enable-shared "${CURL_CONFIGURE_OPTIONS[@]}"
 make -j4
 cp lib/.libs/libcurl.a ..
 
@@ -447,7 +464,7 @@ eval `osxcross-conf`
 
 cd curl-8.8.0
 # Set cross_compiling=yes in configure
-CFLAGS="-mmacosx-version-min=10.9" ./configure --host=aarch64-apple-darwin20.1 --with-secure-transport --enable-static --enable-shared --disable-dict --disable-gopher --disable-imap --disable-pop3 --disable-rtsp --disable-smtp --disable-telnet --disable-tftp --disable-smb --disable-ldap --enable-file
+CFLAGS="-mmacosx-version-min=10.9" ./configure --host=aarch64-apple-darwin20.1 --with-secure-transport --enable-static --enable-shared "${CURL_CONFIGURE_OPTIONS[@]}"
 make -j4
 cp lib/.libs/libcurl.a ..
 
