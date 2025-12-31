@@ -122,7 +122,7 @@ chmod +x /home/teeworlds/run-all.sh
 # sed -i "s/CHN4 北京/CHN13 北京/" types/*/flexname.cfg
 su - teeworlds "./run-all.sh"
 #
-# Add the IP on Cloudflare and other firewall we use for db server
+# Add the IP on Cloudflare and iptables on ddnet server
 # Make sure teehistorian backups work and inform other teehistorian consumers
 #
 # On ddnet.org:
@@ -130,7 +130,6 @@ su - teeworlds "./run-all.sh"
 # systemctl restart sergate
 # cd servers
 # vim scripts/status.py
-# vim serverlist.json
 # vim all-locations
 # ./git-update-serverlist-only.sh
 #

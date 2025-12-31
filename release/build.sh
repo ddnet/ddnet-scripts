@@ -263,6 +263,7 @@ wget -nv -O libs.zip https://github.com/$LIBS_REPO_USER/$LIBS_REPO_NAME/archive/
 rm -rf ddnet-source $MAIN_REPO_NAME-$MAIN_REPO_COMMIT $LIBS_REPO_NAME-$LIBS_REPO_COMMIT
 unzip -q main.zip
 mv $MAIN_REPO_NAME-$MAIN_REPO_COMMIT ddnet-source
+curl -s https://api.github.com/repos/ddnet/ddnet/commits/master | jq -r ".commit.committer.date" | xargs -I{} date -d {} +%s > ddnet-source/source_date_epoch
 cp -r ddnet-source DDNet-$VERSION
 
 export DDNET_GIT_SHORTREV_HASH=$MAIN_REPO_COMMIT

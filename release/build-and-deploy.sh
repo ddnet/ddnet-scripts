@@ -1,6 +1,8 @@
 #!/usr/bin/zsh
+renice -n 19 -p $$ > /dev/null
+ionice -c 3 -p $$
+
 autoload zmv
-set -e
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 MAIN_REPO_USER="${MAIN_REPO_USER:-ddnet}"
 MAIN_REPO_NAME="${MAIN_REPO_NAME:-ddnet}"
