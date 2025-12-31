@@ -16,7 +16,7 @@ unset CC
 unset CXX
 CXXFLAGS_STEAM="-DDDNET_CHECKSUM_SALT=$(cat steam_salt)"
 CXXFLAGS_WEB="-DDDNET_CHECKSUM_SALT=$(cat web_salt)"
-PATH=$PATH:/usr/local/bin:/opt/android-sdk/build-tools/23.0.3:/opt/android-sdk/tools:/opt/android-ndk:/opt/android-sdk/platform-tools
+PATH=$PATH:/usr/local/bin
 BUILDDIR=/home/deen/isos/ddnet
 BUILDS=$BUILDDIR/builds
 
