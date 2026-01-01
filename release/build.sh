@@ -289,16 +289,16 @@ CFLAGS=-m32 LDFLAGS=-m32 build_linux x86 $BUILDDIR/debian11_x86 &> builds/linux_
 # IPO causes issues with DrMinGW stack traces, so disable for now
 # https://github.com/ddnet/ddnet/issues/5371
 (TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
-  build_windows_website 64 "-DIPO=OFF"
+  build_windows_website 64 "-DVULKAN=ON -DIPO=OFF"
 
 TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
-  build_windows_steam 64 "-DIPO=OFF") &> builds/win64.log &
+  build_windows_steam 64 "-DVULKAN=ON -DIPO=OFF") &> builds/win64.log &
 
 (TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
-  build_windows_website 32 "-DIPO=OFF"
+  build_windows_website 32 "-DVULKAN=OFF -DIPO=OFF"
 
 TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
-  build_windows_steam 32 "-DIPO=OFF") &> builds/win32.log &
+  build_windows_steam 32 "-DVULKAN=OFF -DIPO=OFF") &> builds/win32.log &
 
 build_android &> builds/android.log &
 
