@@ -39,7 +39,7 @@ if [ "$1" = "nightly" ]; then
   cd ddnet-source
   rm -rf docs
   doxygen -q
-  rsync -avP --delay-updates --delete-delay docs/html/ ddnet:/var/www/codedoc/
+  rsync -avP --delay-updates --delete-delay docs/html/ ddnet:/var/www-codedoc/
   rm -rf docs
   cd ..
 elif [ "$1" = "playground" ]; then

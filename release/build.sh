@@ -148,7 +148,7 @@ build_linux ()
   umount $DIR/proc $DIR/sys 2> /dev/null || true
   mount -t proc proc proc/
   mount -t sysfs sys sys/
-  #mount -o bind /dev dev/
+  mount -o bind /dev dev/ || true
 
   rm -rf ddnet-source ddnet-source-steam ddnet-libs-source $MAIN_REPO_NAME-$MAIN_REPO_COMMIT $LIBS_REPO_NAME-$LIBS_REPO_COMMIT
   unzip -q $BUILDDIR/main.zip
@@ -189,7 +189,7 @@ build_linux ()
   mv ddnet-source-steam/build/DDNet-*.tar.xz ../DDNet-$VERSION-steam-linux_$PLATFORM.tar.xz
 
   rm -rf ddnet-source ddnet-source-steam
-  umount $DIR/proc $DIR/sys # $DIR/dev
+  umount $DIR/proc $DIR/sys $DIR/dev || true
   unset CFLAGS LDFLAGS PKG_CONFIG_PATH
 }
 
