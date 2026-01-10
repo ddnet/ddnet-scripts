@@ -87,7 +87,7 @@ build_remote_macos ()
   SUFFIX=$1
   OUR_CXXFLAGS=$2
   FLAGS=$3
-  ssh -t deen@$MAC_HOST "export PATH=/opt/homebrew/bin:\$PATH:\$HOME/.cargo/bin && rm -rf macos$SUFFIX && \
+  ssh deen@$MAC_HOST "export PATH=/opt/homebrew/bin:\$PATH:\$HOME/.cargo/bin && rm -rf macos$SUFFIX && \
   mkdir macos$SUFFIX && \
   cd macos$SUFFIX && \
   export MACOS_APP_IDENTITY=\"Developer ID Application: Dennis Felsing\" && \
@@ -157,7 +157,7 @@ build_linux ()
   umount $DIR/proc $DIR/sys 2> /dev/null || true
   mount -t proc proc proc/
   mount -t sysfs sys sys/
-  mount -o bind /dev dev/ || true
+  # mount -o bind /dev dev/ || true
 
   rm -rf ddnet-source ddnet-source-steam ddnet-libs-source $MAIN_REPO_NAME-$MAIN_REPO_COMMIT $LIBS_REPO_NAME-$LIBS_REPO_COMMIT
   unzip -q $BUILDDIR/main.zip
