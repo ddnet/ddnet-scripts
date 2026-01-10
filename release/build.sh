@@ -16,6 +16,7 @@ unset CC
 unset CXX
 CXXFLAGS_STEAM="-DDDNET_CHECKSUM_SALT=$(cat steam_salt)"
 CXXFLAGS_WEB="-DDDNET_CHECKSUM_SALT=$(cat web_salt)"
+APPLE_APP_SPECIFIC_PASSWORD="$(cat apple_app_specific_password)"
 PATH=$PATH:/usr/local/bin
 BUILDDIR=/home/deen/isos/ddnet
 BUILDS=$BUILDDIR/builds
@@ -86,15 +87,22 @@ build_remote_macos ()
   SUFFIX=$1
   OUR_CXXFLAGS=$2
   FLAGS=$3
-  ssh deen@$MAC_HOST "export PATH=/opt/homebrew/bin:\$PATH:\$HOME/.cargo/bin && rm -rf macos$SUFFIX && \
+  ssh -t deen@$MAC_HOST "export PATH=/opt/homebrew/bin:\$PATH:\$HOME/.cargo/bin && rm -rf macos$SUFFIX && \
   mkdir macos$SUFFIX && \
   cd macos$SUFFIX && \
+  security unlock-keychain -p "" build.keychain && \
+  security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "" build.keychain -A > /dev/null && \
+  security list-keychains -d user -s build.keychain \$(security list-keychains -d user | tr -d '\"') && \
+  security default-keychain -s build.keychain && \
+  export MACOS_APP_IDENTITY=\"Developer ID Application: Dennis Felsing\" && \
   export DDNET_GIT_SHORTREV_HASH=\"$DDNET_GIT_SHORTREV_HASH\"
   export CXXFLAGS=\"'$OUR_CXXFLAGS'\" && \
-  cmake -DVERSION=$VERSION -DCMAKE_OSX_ARCHITECTURES=\"arm64;x86_64\" -DCMAKE_BUILD_TYPE=Release -DDISCORD=ON -DWEBSOCKETS=OFF -DIPO=OFF -DPREFER_BUNDLED_LIBS=ON $(echo $FLAGS) ../ddnet-source && \
+  cmake -DVERSION=$VERSION -DCMAKE_OSX_ARCHITECTURES=\"arm64;x86_64\" -DCMAKE_BUILD_TYPE=Release -DDISCORD=ON -DWEBSOCKETS=OFF -DIPO=OFF -DPREFER_BUNDLED_LIBS=ON -DMACOS_CODESIGN=ON $(echo $FLAGS) ../ddnet-source && \
   unset CXXFLAGS && \
   unset LDFLAGS && \
-  nice -n19 make -j8 package_default
+  nice -n19 make -j8 package_default && \
+  xcrun notarytool submit DDNet-*.dmg --apple-id \"dennis@felsing.org\" --team-id 53Q7AACS5Q --password \"$APPLE_APP_SPECIFIC_PASSWORD\" --wait && \
+  xcrun stapler staple DDNet-*.dmg
   "
 }
 
@@ -189,7 +197,7 @@ build_linux ()
   mv ddnet-source-steam/build/DDNet-*.tar.xz ../DDNet-$VERSION-steam-linux_$PLATFORM.tar.xz
 
   rm -rf ddnet-source ddnet-source-steam
-  umount $DIR/proc $DIR/sys $DIR/dev || true
+  umount $DIR/proc $DIR/sys || true
   unset CFLAGS LDFLAGS PKG_CONFIG_PATH
 }
 
