@@ -90,11 +90,12 @@ build_remote_macos ()
   ssh -t deen@$MAC_HOST "export PATH=/opt/homebrew/bin:\$PATH:\$HOME/.cargo/bin && rm -rf macos$SUFFIX && \
   mkdir macos$SUFFIX && \
   cd macos$SUFFIX && \
-  security unlock-keychain -p "" build.keychain && \
-  security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "" build.keychain -A > /dev/null && \
+  export MACOS_APP_IDENTITY=\"Developer ID Application: Dennis Felsing\" && \
+  security unlock-keychain -p \"\" build.keychain && \
+  security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k \"\" build.keychain > /dev/null && \
   security list-keychains -d user -s build.keychain \$(security list-keychains -d user | tr -d '\"') && \
   security default-keychain -s build.keychain && \
-  export MACOS_APP_IDENTITY=\"Developer ID Application: Dennis Felsing\" && \
+  export CODESIGN_ALLOCATE=\$(xcrun --find codesign_allocate) && \
   export DDNET_GIT_SHORTREV_HASH=\"$DDNET_GIT_SHORTREV_HASH\"
   export CXXFLAGS=\"'$OUR_CXXFLAGS'\" && \
   cmake -DVERSION=$VERSION -DCMAKE_OSX_ARCHITECTURES=\"arm64;x86_64\" -DCMAKE_BUILD_TYPE=Release -DDISCORD=ON -DWEBSOCKETS=OFF -DIPO=OFF -DPREFER_BUNDLED_LIBS=ON -DMACOS_CODESIGN=ON $(echo $FLAGS) ../ddnet-source && \
