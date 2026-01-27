@@ -470,7 +470,7 @@ def printPlayers(server, filt, con, cur):
       else:
         htmlName = escape(player['name'])
 
-      print((u"  <td class=\"time\">%s</td><td class=\"name\">%s</td><td class=\"clan\">%s</td><td class=\"flag\"><img src=\"countryflags/%s.png\" alt=\"%s\" height=\"20\"/></td>" % (formatScore(player['score'], "race" not in server['game_type'].lower()), htmlName, escape(player['clan']), countryFlags.get(player['country'], 'default'), countryFlags.get(player['country'], 'NONE'))).encode('utf-8'))
+      print((u"  <td class=\"time\">%s</td><td class=\"team\">Team %s</td><td class=\"name\">%s</td><td class=\"clan\">%s</td><td class=\"flag\"><img src=\"countryflags/%s.png\" alt=\"%s\" height=\"20\"/></td>" % (formatScore(player['score'], "race" not in server['game_type'].lower()), escape(player["team"]), htmlName, escape(player['clan']), countryFlags.get(player['country'], 'default'), countryFlags.get(player['country'], 'NONE'))).encode('utf-8'))
       print("</tr>")
   print("</table>")
 
