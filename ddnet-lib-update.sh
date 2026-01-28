@@ -3,7 +3,7 @@
 
 cd debian10/root
 rm -rf *
-wget http://libsdl.org/release/SDL2-2.30.5.tar.gz
+wget https://libsdl.org/release/SDL2-2.32.10.tar.gz
 wget https://curl.haxx.se/download/curl-8.8.0.tar.gz
 wget https://download.savannah.gnu.org/releases/freetype/freetype-2.13.2.tar.gz
 wget http://downloads.xiph.org/releases/ogg/libogg-1.3.5.tar.gz
@@ -55,7 +55,7 @@ tar xvf ../curl-8.8.0.tar.gz
 tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
-tar xvf ../SDL2-2.30.5.tar.gz
+tar xvf ../SDL2-2.32.10.tar.gz
 tar xvf ../sqlite-autoconf-3460000.tar.gz
 tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-7.0.1.tar.gz
@@ -82,7 +82,7 @@ DEPS_LIBS="-lopus -logg -L/root/x86-64/opus-1.3.1/.libs/ -L/root/x86-64/libogg-1
 make -j4
 cp .libs/libopusfile.a ..
 
-cd ../SDL2-2.30.5
+cd ../SDL2-2.32.10
 ./configure --enable-ime CFLAGS=-fPIC --disable-video-wayland
 CFLAGS=-fPIC make -j4
 cp build/.libs/libSDL2-2.0.so.0.*.* ../libSDL2-2.0.so.0
@@ -121,7 +121,7 @@ tar xvf ../curl-8.8.0.tar.gz
 tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
-tar xvf ../SDL2-2.30.5.tar.gz
+tar xvf ../SDL2-2.32.10.tar.gz
 tar xvf ../sqlite-autoconf-3460000.tar.gz
 tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-7.0.1.tar.gz
@@ -148,7 +148,7 @@ CFLAGS=-m32 LDFLAGS=-m32 DEPS_LIBS="-lopus -logg -L/root/x86/opus-1.3.1/.libs/ -
 CFLAGS=-m32 LDFLAGS=-m32 make -j4
 cp .libs/libopusfile.a ..
 
-cd ../SDL2-2.30.5
+cd ../SDL2-2.32.10
 ./configure --enable-ime CFLAGS="-fPIC -m32" LDFLAGS=-m32 --disable-video-wayland
 LDFLAGS=-m32 CFLAGS="-fPIC -m32" make -j4
 cp build/.libs/libSDL2-2.0.so.0.*.* ../libSDL2-2.0.so.0
@@ -183,7 +183,7 @@ cd ../..
 [exit chroot]
 mkdir win64
 cd win64
-tar xvf ../SDL2-2.30.5.tar.gz
+tar xvf ../SDL2-2.32.10.tar.gz
 tar xvf ../curl-8.8.0.tar.gz
 tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
@@ -195,7 +195,7 @@ tar xvf ../ffmpeg-7.0.1.tar.gz
 tar xvf ../v4.3-stable.tar.gz
 tar xvf ../libpng-1.6.43.tar.gz
 
-cd SDL2-2.30.5
+cd SDL2-2.32.10
 ./configure --host=x86_64-w64-mingw32 --enable-ime
 make -j4
 cp build/.libs/SDL2.dll build/.libs/libSDL2.dll.a ..
@@ -277,7 +277,7 @@ cd ../..
 
 mkdir win32
 cd win32
-tar xvf ../SDL2-2.30.5.tar.gz
+tar xvf ../SDL2-2.32.10.tar.gz
 tar xvf ../curl-8.8.0.tar.gz
 tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
@@ -289,7 +289,7 @@ tar xvf ../ffmpeg-7.0.1.tar.gz
 tar xvf ../v4.3-stable.tar.gz
 tar xvf ../libpng-1.6.43.tar.gz
 
-cd SDL2-2.30.5
+cd SDL2-2.32.10
 ./configure --host=i686-w64-mingw32 --enable-ime
 make -j4
 cp build/.libs/SDL2.dll build/.libs/libSDL2.dll.a ..
@@ -374,7 +374,7 @@ tar xvf ../curl-8.8.0.tar.gz
 tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
-tar xvf ../SDL2-2.30.5.tar.gz
+tar xvf ../SDL2-2.32.10.tar.gz
 tar xvf ../freetype-2.13.2.tar.gz
 tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-7.0.1.tar.gz
@@ -412,7 +412,7 @@ PKG_CONFIG=/usr/sbin/pkg-config DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/
 make -j4
 cp .libs/libopusfile.a ..
 
-cd ../SDL2-2.30.5
+cd ../SDL2-2.32.10
 ./configure --enable-ime CFLAGS="-mmacosx-version-min=10.9" --host=x86_64-apple-darwin20.1
 CFLAGS="-mmacosx-version-min=10.9" make -j4
 cp build/.libs/libSDL2-2.0.0.dylib ../SDL2
@@ -450,7 +450,7 @@ tar xvf ../curl-8.8.0.tar.gz
 tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
-tar xvf ../SDL2-2.30.5.tar.gz
+tar xvf ../SDL2-2.32.10.tar.gz
 tar xvf ../freetype-2.13.2.tar.gz
 tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-7.0.1.tar.gz
@@ -483,7 +483,7 @@ PKG_CONFIG=/usr/sbin/pkg-config DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/
 make -j4
 cp .libs/libopusfile.a ..
 
-cd ../SDL2-2.30.5
+cd ../SDL2-2.32.10
 ./configure --enable-ime CFLAGS="-mmacosx-version-min=10.9" --host=aarch64-apple-darwin20.1
 CFLAGS="-mmacosx-version-min=10.9" make -j4
 cp build/.libs/libSDL2-2.0.0.dylib ../SDL2
