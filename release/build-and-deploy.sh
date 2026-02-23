@@ -37,10 +37,12 @@ if [ "$1" = "nightly" ]; then
   rsync -avP --delay-updates --delete-delay codebrowser ddnet:/var/www/
   rm -rf codebrowser
   cd ddnet-source
-  rm -rf docs
+  rm -rf docs/html
+  rm -rf docs/warn.log
   doxygen -q
   rsync -avP --delay-updates --delete-delay docs/html/ ddnet:/var/www-codedoc/
-  rm -rf docs
+  rm -rf docs/html
+  rm -rf docs/warn.log
   cd ..
 elif [ "$1" = "playground" ]; then
   export UPDATE_FLAGS="-DAUTOUPDATE=OFF -DINFORM_UPDATE=OFF"
