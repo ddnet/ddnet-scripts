@@ -1,7 +1,7 @@
 # Using a Debian 10 chroot, mingw and osxcross (with compiler-rt built)
 # DO NOT COPY libogg, extract directly... Changing timestamps breaks the build and requires autotools (or cp -a)
 
-cd debian10/root
+cd debian11/root
 rm -rf *
 wget https://libsdl.org/release/SDL2-2.32.10.tar.gz
 wget https://curl.haxx.se/download/curl-8.8.0.tar.gz
@@ -46,7 +46,7 @@ CURL_CONFIGURE_OPTIONS=(
 )
 
 cd ../..
-chroot debian10 bash
+chroot debian11 bash
 cd
 
 mkdir x86-64
@@ -63,9 +63,9 @@ tar xvf ../v4.3-stable.tar.gz
 tar xvf ../libpng-1.6.43.tar.gz
 
 cd curl-8.8.0
-./configure --with-openssl --enable-static --disable-shared "${CURL_CONFIGURE_OPTIONS[@]}"
+./configure --with-openssl --enable-shared "${CURL_CONFIGURE_OPTIONS[@]}"
 make -j4
-cp lib/.libs/libcurl.a ..
+cp lib/.libs/libcurl.so ..
 
 cd ../libogg-1.3.5
 ./configure CFLAGS=-fPIC
@@ -129,9 +129,9 @@ tar xvf ../v4.3-stable.tar.gz
 tar xvf ../libpng-1.6.43.tar.gz
 
 cd curl-8.8.0
-CFLAGS=-m32 LDFLAGS=-m32 ./configure --with-openssl --enable-static --disable-shared "${CURL_CONFIGURE_OPTIONS[@]}"
+CFLAGS=-m32 LDFLAGS=-m32 ./configure --with-openssl --enable-shared "${CURL_CONFIGURE_OPTIONS[@]}"
 CFLAGS=-m32 LDFLAGS=-m32 make -j4
-cp lib/.libs/libcurl.a ..
+cp lib/.libs/libcurl.so ..
 
 cd ../libogg-1.3.5
 CFLAGS=-m32 LDFLAGS=-m32 ./configure
@@ -228,7 +228,7 @@ x86_64-w64-mingw32-dlltool -v --export-all-symbols -D libopus.dll -l ../opus.lib
 cp .libs/libopus.dll ../libopus.dll
 
 cd ../opusfile-0.12
-DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian10/root/win64/opus-1.3.1/.libs/ -L/home/deen/isos/ddnet/debian10/root/win64/libogg-1.3.5/src/.libs/" DEPS_CFLAGS="-I/home/deen/isos/ddnet/debian10/root/win64/opus-1.3.1/include -I/home/deen/isos/ddnet/debian10/root/win64/libogg-1.3.5/include" ./configure --host=x86_64-w64-mingw32 --disable-http
+DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian11/root/win64/opus-1.3.1/.libs/ -L/home/deen/isos/ddnet/debian11/root/win64/libogg-1.3.5/src/.libs/" DEPS_CFLAGS="-I/home/deen/isos/ddnet/debian11/root/win64/opus-1.3.1/include -I/home/deen/isos/ddnet/debian11/root/win64/libogg-1.3.5/include" ./configure --host=x86_64-w64-mingw32 --disable-http
 make -j4 V=1
 rm .libs/libopusfile-0.dll
 # Long command from make with fixed dll name
@@ -255,7 +255,7 @@ make -j4
 
 cd ../ffmpeg-7.0.1
 # Need to switch configure to use pkg-config instead of $pkg_config
-PKG_CONFIG_PATH=/home/deen/isos/ddnet/debian10/root/win64/x264-master PKG_CONFIG_LIBDIR=/usr/x86_64-w64-mingw32/lib/pkgconfig ./configure --disable-all --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-I/home/deen/isos/ddnet/debian10/root/win64/x264-master" --extra-cxxflags="-I/home/deen/isos/ddnet/debian10/root/win64/x264-master" --extra-ldflags="-L/home/deen/isos/ddnet/debian10/root/win64/x264-master" --arch=x86_64 --target_os=mingw32 --cross-prefix=x86_64-w64-mingw32- --disable-static --enable-shared --extra-libs="-lpthread -lm" --pkg-config-flags="--static"
+PKG_CONFIG_PATH=/home/deen/isos/ddnet/debian11/root/win64/x264-master PKG_CONFIG_LIBDIR=/usr/x86_64-w64-mingw32/lib/pkgconfig ./configure --disable-all --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-I/home/deen/isos/ddnet/debian11/root/win64/x264-master" --extra-cxxflags="-I/home/deen/isos/ddnet/debian11/root/win64/x264-master" --extra-ldflags="-L/home/deen/isos/ddnet/debian11/root/win64/x264-master" --arch=x86_64 --target_os=mingw32 --cross-prefix=x86_64-w64-mingw32- --disable-static --enable-shared --extra-libs="-lpthread -lm" --pkg-config-flags="--static"
 make -j4
 cp libavcodec/avcodec-61.dll libavformat/avformat-61.dll libavutil/avutil-59.dll libswresample/swresample-5.dll libswscale/swscale-8.dll libavcodec/avcodec.lib libavformat/avformat.lib libavutil/avutil.lib libswresample/swresample.lib libswscale/swscale.lib ..
 
@@ -322,7 +322,7 @@ i686-w64-mingw32-dlltool -v --export-all-symbols -D libopus.dll -l ../opus.lib s
 cp .libs/libopus.dll ../libopus.dll
 
 cd ../opusfile-0.12
-DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian10/root/win32/opus-1.3.1/.libs/ -L/home/deen/isos/ddnet/debian10/root/win32/libogg-1.3.5/src/.libs/" DEPS_CFLAGS="-I/home/deen/isos/ddnet/debian10/root/win32/opus-1.3.1/include -I/home/deen/isos/ddnet/debian10/root/win32/libogg-1.3.5/include" ./configure --host=i686-w64-mingw32 --disable-http
+DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian11/root/win32/opus-1.3.1/.libs/ -L/home/deen/isos/ddnet/debian11/root/win32/libogg-1.3.5/src/.libs/" DEPS_CFLAGS="-I/home/deen/isos/ddnet/debian11/root/win32/opus-1.3.1/include -I/home/deen/isos/ddnet/debian11/root/win32/libogg-1.3.5/include" ./configure --host=i686-w64-mingw32 --disable-http
 make -j4 V=1
 rm .libs/libopusfile-0.dll
 # Long command from make with fixed dll name
@@ -348,7 +348,7 @@ make -j4
 
 cd ../ffmpeg-7.0.1
 # Need to switch configure to use pkg-config instead of $pkg_config
-PKG_CONFIG_PATH=/home/deen/isos/ddnet/debian10/root/win32/x264-master PKG_CONFIG_LIBDIR=/usr/i686-w64-mingw32/lib/pkgconfig ./configure --disable-all --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-I/home/deen/isos/ddnet/debian10/root/win32/x264-master" --extra-cxxflags="-I/home/deen/isos/ddnet/debian10/root/win32/x264-master" --extra-ldflags="-L/home/deen/isos/ddnet/debian10/root/win32/x264-master" --arch=i686 --target_os=mingw32 --cross-prefix=i686-w64-mingw32- --disable-static --enable-shared --pkg-config-flags="--static --with-path=/home/deen/isos/ddnet/debian10/root/win32/x264-master"
+PKG_CONFIG_PATH=/home/deen/isos/ddnet/debian11/root/win32/x264-master PKG_CONFIG_LIBDIR=/usr/i686-w64-mingw32/lib/pkgconfig ./configure --disable-all --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-I/home/deen/isos/ddnet/debian11/root/win32/x264-master" --extra-cxxflags="-I/home/deen/isos/ddnet/debian11/root/win32/x264-master" --extra-ldflags="-L/home/deen/isos/ddnet/debian11/root/win32/x264-master" --arch=i686 --target_os=mingw32 --cross-prefix=i686-w64-mingw32- --disable-static --enable-shared --pkg-config-flags="--static --with-path=/home/deen/isos/ddnet/debian11/root/win32/x264-master"
 make -j4
 cp libavcodec/avcodec-61.dll libavformat/avformat-61.dll libavutil/avutil-59.dll libswresample/swresample-5.dll libswscale/swscale-8.dll libavcodec/avcodec.lib libavformat/avformat.lib libavutil/avutil.lib libswresample/swresample.lib libswscale/swscale.lib ..
 
@@ -408,13 +408,13 @@ make -j4
 cp .libs/libopus.a ..
 
 cd ../opusfile-0.12
-PKG_CONFIG=/usr/sbin/pkg-config DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian10/root/mac64/opus-1.3.1/.libs/ -L/home/deen/isos/ddnet/debian10/root/mac64/libogg-1.3.5/src/.libs/" ./configure CFLAGS="-mmacosx-version-min=10.9 -I/home/deen/isos/ddnet/debian10/root/mac64/opus-1.3.1/include -I/home/deen/isos/ddnet/debian10/root/mac64/libogg-1.3.5/include" CPPFLAGS="-I/home/deen/isos/ddnet/debian10/root/mac64/opus-1.3.1/include -I/home/deen/isos/ddnet/debian10/root/mac64/libogg-1.3.5/include" --host=x86_64-apple-darwin20.1 --disable-http
+PKG_CONFIG=/usr/sbin/pkg-config DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian11/root/mac64/opus-1.3.1/.libs/ -L/home/deen/isos/ddnet/debian11/root/mac64/libogg-1.3.5/src/.libs/" ./configure CFLAGS="-mmacosx-version-min=10.9 -I/home/deen/isos/ddnet/debian11/root/mac64/opus-1.3.1/include -I/home/deen/isos/ddnet/debian11/root/mac64/libogg-1.3.5/include" CPPFLAGS="-I/home/deen/isos/ddnet/debian11/root/mac64/opus-1.3.1/include -I/home/deen/isos/ddnet/debian11/root/mac64/libogg-1.3.5/include" --host=x86_64-apple-darwin20.1 --disable-http
 make -j4
 cp .libs/libopusfile.a ..
 
 cd ../SDL2-2.32.10
-./configure --enable-ime CFLAGS="-mmacosx-version-min=10.9" --host=x86_64-apple-darwin20.1
-CFLAGS="-mmacosx-version-min=10.9" make -j4
+./configure --enable-ime CFLAGS="-mmacosx-version-min=10.9" LDFLAGS="-mmacosx-version-min=10.9" --host=x86_64-apple-darwin20.1
+CFLAGS="-mmacosx-version-min=10.9" LDFLAGS="-mmacosx-version-min=10.9" make -j4
 cp build/.libs/libSDL2-2.0.0.dylib ../SDL2
 
 cd ../freetype-2.13.2
@@ -428,7 +428,7 @@ make -j4
 
 cd ../ffmpeg-7.0.1
 # Need to switch configure to use pkg-config instead of $pkg_config
-PKG_CONFIG_PATH=/home/deen/isos/ddnet/debian10/root/mac64/x264-master ./configure --disable-all --disable-appkit --disable-bzlib --disable-avfoundation --disable-coreimage --disable-securetransport --disable-audiotoolbox --disable-cuda-llvm --disable-videotoolbox --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-cxxflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-ldflags="-L../x264-master" --arch=x86_64 --target_os=darwin --cross-prefix=x86_64-apple-darwin20.1- --disable-static --enable-shared --cc=$CC --cxx=$CXX
+PKG_CONFIG_PATH=/home/deen/isos/ddnet/debian11/root/mac64/x264-master ./configure --disable-all --disable-appkit --disable-bzlib --disable-avfoundation --disable-coreimage --disable-securetransport --disable-audiotoolbox --disable-cuda-llvm --disable-videotoolbox --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-cxxflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-ldflags="-L../x264-master" --arch=x86_64 --target_os=darwin --cross-prefix=x86_64-apple-darwin20.1- --disable-static --enable-shared --cc=$CC --cxx=$CXX
 make -j4
 cp libavcodec/libavcodec.61.dylib libavformat/libavformat.61.dylib libavutil/libavutil.59.dylib libswresample/libswresample.5.dylib libswscale/libswscale.8.dylib ..
 
@@ -479,13 +479,13 @@ make -j4
 cp .libs/libopus.a ..
 
 cd ../opusfile-0.12
-PKG_CONFIG=/usr/sbin/pkg-config DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian10/root/macarm64/opus-1.3.1/.libs/ -L/home/deen/isos/ddnet/debian10/root/macarm64/libogg-1.3.5/src/.libs/" ./configure CFLAGS="-mmacosx-version-min=10.9 -I/home/deen/isos/ddnet/debian10/root/macarm64/opus-1.3.1/include -I/home/deen/isos/ddnet/debian10/root/macarm64/libogg-1.3.5/include" CPPFLAGS="-I/home/deen/isos/ddnet/debian10/root/macarm64/opus-1.3.1/include -I/home/deen/isos/ddnet/debian10/root/macarm64/libogg-1.3.5/include" --host=aarch64-apple-darwin20.1 --disable-http
+PKG_CONFIG=/usr/sbin/pkg-config DEPS_LIBS="-lopus -logg -L/home/deen/isos/ddnet/debian11/root/macarm64/opus-1.3.1/.libs/ -L/home/deen/isos/ddnet/debian11/root/macarm64/libogg-1.3.5/src/.libs/" ./configure CFLAGS="-mmacosx-version-min=10.9 -I/home/deen/isos/ddnet/debian11/root/macarm64/opus-1.3.1/include -I/home/deen/isos/ddnet/debian11/root/macarm64/libogg-1.3.5/include" CPPFLAGS="-I/home/deen/isos/ddnet/debian11/root/macarm64/opus-1.3.1/include -I/home/deen/isos/ddnet/debian11/root/macarm64/libogg-1.3.5/include" --host=aarch64-apple-darwin20.1 --disable-http
 make -j4
 cp .libs/libopusfile.a ..
 
 cd ../SDL2-2.32.10
-./configure --enable-ime CFLAGS="-mmacosx-version-min=10.9" --host=aarch64-apple-darwin20.1
-CFLAGS="-mmacosx-version-min=10.9" make -j4
+./configure --enable-ime CFLAGS="-mmacosx-version-min=10.9" LDFLAGS="-mmacosx-version-min=10.9" --host=aarch64-apple-darwin20.1
+CFLAGS="-mmacosx-version-min=10.9" LDFLAGS="-mmacosx-version-min=10.9" make -j4
 cp build/.libs/libSDL2-2.0.0.dylib ../SDL2
 
 cd ../freetype-2.13.2
@@ -499,7 +499,7 @@ make -j4
 
 cd ../ffmpeg-7.0.1
 # Need to switch configure to use pkg-config instead of $pkg_config
-PKG_CONFIG_PATH=/home/deen/isos/ddnet/debian10/root/macarm64/x264-master ./configure --disable-all --disable-appkit --disable-bzlib --disable-avfoundation --disable-coreimage --disable-securetransport --disable-audiotoolbox --disable-cuda-llvm --disable-videotoolbox --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-cxxflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-ldflags="-L../x264-master" --arch=aarch64 --target_os=darwin --cross-prefix=aarch64-apple-darwin20.1- --disable-static --enable-shared --cc=$CC --cxx=$CXX
+PKG_CONFIG_PATH=/home/deen/isos/ddnet/debian11/root/macarm64/x264-master ./configure --disable-all --disable-appkit --disable-bzlib --disable-avfoundation --disable-coreimage --disable-securetransport --disable-audiotoolbox --disable-cuda-llvm --disable-videotoolbox --disable-alsa --disable-iconv --disable-libxcb --disable-libxcb-shape --disable-libxcb-xfixes --disable-sdl2 --disable-xlib --disable-zlib --enable-avcodec --enable-avformat --enable-encoder=libx264,aac --enable-muxer=mp4,mov --enable-protocol=file --enable-libx264 --enable-swresample --enable-swscale --enable-gpl --extra-cflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-cxxflags="-mmacosx-version-min=10.9 -I../x264-master" --extra-ldflags="-L../x264-master" --arch=aarch64 --target_os=darwin --cross-prefix=aarch64-apple-darwin20.1- --disable-static --enable-shared --cc=$CC --cxx=$CXX
 make -j4
 cp libavcodec/libavcodec.61.dylib libavformat/libavformat.61.dylib libavutil/libavutil.59.dylib libswresample/libswresample.5.dylib libswscale/libswscale.8.dylib ..
 
