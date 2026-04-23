@@ -134,8 +134,11 @@ build_remote_windows_arm64 ()
   export LIBS_REPO_USER=\"$LIBS_REPO_USER\" && \
   export LIBS_REPO_NAME=\"$LIBS_REPO_NAME\" && \
   export LIBS_REPO_BRANCH=\"$LIBS_REPO_BRANCH\" && \
+  export MAIN_REPO_COMMIT=\"$MAIN_REPO_COMMIT\" && \\
+  export LIBS_REPO_COMMIT=\"$LIBS_REPO_COMMIT\" && \\
   export CXXFLAGS=\"$OUR_CXXFLAGS\" && \
   export FLAGS=\"$FLAGS\" && \
+  export DOCKER_CONFIG=~/.docker-ssh && \
   nice -n19 ./script.sh $VERSION
   "
 }
@@ -157,7 +160,7 @@ build_linux ()
   umount $DIR/proc $DIR/sys 2> /dev/null || true
   mount -t proc proc proc/
   mount -t sysfs sys sys/
-  # mount -o bind /dev dev/ || true
+  #mount -o bind /dev dev/ || true
 
   rm -rf ddnet-source ddnet-source-steam ddnet-libs-source $MAIN_REPO_NAME-$MAIN_REPO_COMMIT $LIBS_REPO_NAME-$LIBS_REPO_COMMIT
   unzip -q $BUILDDIR/main.zip
@@ -215,9 +218,9 @@ build_windows ()
   cd $DIR
   rustup run 1.77.2 cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=RelWithDebInfo -DDISCORD=ON -DWEBSOCKETS=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw$PLATFORM.toolchain -DCMAKE_DISABLE_FIND_PACKAGE_GTest=ON -DEXCEPTION_HANDLING=ON $(echo $BUILDOPTS) ../ddnet-source
   unset CXXFLAGS LDFLAGS CFLAGS
-  make -j1
+  make -j2
   XZ_OPT=-9 tar cfJ DDNet-$VERSION-win$PLATFORM$SUFFIX-$DDNET_GIT_SHORTREV_HASH-symbols.tar.xz DDNet.exe DDNet-Server.exe
-  make -j2 package_default
+  make -j1 package_default
   unset PREFIX \
     TARGET_FAMILY TARGET_PLATFORM TARGET_ARCH
 }
