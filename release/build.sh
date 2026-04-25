@@ -95,6 +95,7 @@ build_remote_macos ()
   security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k \"\" build.keychain > /dev/null && \
   security list-keychains -d user -s build.keychain \$(security list-keychains -d user | tr -d '\"') && \
   security default-keychain -s build.keychain && \
+  security find-identity -v -p codesigning build.keychain && \
   export CODESIGN_ALLOCATE=\$(xcrun --find codesign_allocate) && \
   export DDNET_GIT_SHORTREV_HASH=\"$DDNET_GIT_SHORTREV_HASH\"
   export CXXFLAGS=\"'$OUR_CXXFLAGS'\" && \
@@ -116,9 +117,19 @@ build_remote_macos_website ()
 
 build_remote_macos_steam ()
 {
-  build_remote_macos -steam $CXXFLAGS_STEAM "-DSTEAM=ON"
+  ssh deen@$MAC_HOST "mkdir -p /Users/deen/git/ddnet"
+  scp steamworks/sdk/redistributable_bin/osx/libsteam_api.dylib deen@$MAC_HOST:/Users/deen/git/ddnet/libsteam_api.dylib
+  build_remote_macos -steam $CXXFLAGS_STEAM "-DSTEAM=ON -DEXTERNAL_STEAM_API_DYLIB=/Users/deen/git/ddnet/libsteam_api.dylib"
+  ssh deen@$MAC_HOST "cd macos-steam && \
+  rm -rf steam-notarize steam-notarize.zip && \
+  mkdir steam-notarize && \
+  cp -a pack_DDNet-*_dmg/DDNet.app steam-notarize/ && \
+  ditto -c -k --keepParent steam-notarize steam-notarize.zip && \
+  xcrun notarytool submit steam-notarize.zip --apple-id \"dennis@felsing.org\" --team-id 53Q7AACS5Q --password \"$APPLE_APP_SPECIFIC_PASSWORD\" --wait && \
+  xcrun stapler staple pack_DDNet-*_dmg/DDNet.app"
   rm -rf DDNet-$VERSION-steam-macos
-  scp -r deen@$MAC_HOST:macos-steam/pack_DDNet-\*_dmg DDNet-$VERSION-steam-macos
+  mkdir DDNet-$VERSION-steam-macos
+  rsync -a deen@$MAC_HOST:macos-steam/pack_DDNet-\*_dmg/DDNet.app DDNet-$VERSION-steam-macos/
   ssh deen@$MAC_HOST "rm -rf macos-steam"
 }
 
@@ -357,13 +368,8 @@ rm -r ddnet
 #7z x ../DDNet-$VERSION-steam-macos.dmg
 if [ "$MAC_AVAILABLE" = true ]; then
   cp -a ../DDNet-$VERSION-steam-macos .
-  rm -r DDNet-*-macos/DDNet.app/Contents/Resources/data DDNet-*-macos/DDNet-Server.app/Contents/Resources/data
-  mkdir ddnet
-  mv DDNet-*-macos/DDNet.app/Contents/MacOS/DDNet DDNet-*-macos/DDNet-Server.app/Contents/MacOS/DDNet-Server* ddnet
-  mv DDNet-*-macos/DDNet.app/Contents/Frameworks .
-  cp $BUILDDIR/steamworks/sdk/redistributable_bin/osx/libsteam_api.dylib Frameworks
-  zip -9r DDNet-$VERSION-macos.zip ddnet Frameworks
-  rm -r ddnet Frameworks DDNet-*-macos
+  (cd DDNet-$VERSION-steam-macos && zip -y -9r ../DDNet-$VERSION-macos.zip *.app)
+  rm -r DDNet-*-macos
 fi
 
 NOW=$(date +'%F %R')
