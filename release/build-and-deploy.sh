@@ -31,16 +31,18 @@ if [ "$1" = "nightly" ]; then
   rm -rf ddnet-libs
   CC=clang CXX=clang++ cmake . -DCMAKE_BUILD_TYPE=Debug -GNinja -DDEV=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DUPNP=ON -DTEST_MYSQL=ON -DMYSQL=ON -DWEBSOCKETS=ON -DAUTOUPDATE=ON -DVIDEORECORDER=ON -DVULKAN=ON .
   ninja
-  /home/deen/git/codebrowser/generator/codebrowser_generator -b . -a -o ../codebrowser -p DDNet:/home/deen/isos/ddnet/ddnet-source/src:$VERSION -d https://ddnet.tw/codebrowser-data
-  /home/deen/git/codebrowser/indexgenerator/codebrowser_indexgenerator ../codebrowser -d https://ddnet.tw/codebrowser-data -p DDNet:/home/deen/isos/ddnet/ddnet-source/src:$VERSION
+  /home/deen/git/codebrowser/generator/codebrowser_generator -b . -a -o ../codebrowser -p DDNet:/home/deen/isos/ddnet/ddnet-source/src:$VERSION -d https://ddnet.org/codebrowser-data
+  /home/deen/git/codebrowser/indexgenerator/codebrowser_indexgenerator ../codebrowser -d https://ddnet.org/codebrowser-data -p DDNet:/home/deen/isos/ddnet/ddnet-source/src:$VERSION
   cd ..
   rsync -avP --delay-updates --delete-delay codebrowser ddnet:/var/www/
   rm -rf codebrowser
   cd ddnet-source
-  rm -rf docs
+  rm -rf docs/html
+  rm -rf docs/warn.log
   doxygen -q
   rsync -avP --delay-updates --delete-delay docs/html/ ddnet:/var/www-codedoc/
-  rm -rf docs
+  rm -rf docs/html
+  rm -rf docs/warn.log
   cd ..
 elif [ "$1" = "playground" ]; then
   export UPDATE_FLAGS="-DAUTOUPDATE=OFF -DINFORM_UPDATE=OFF"
