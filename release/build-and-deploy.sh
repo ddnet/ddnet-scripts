@@ -44,6 +44,13 @@ if [ "$1" = "nightly" ]; then
   rm -rf docs/html
   rm -rf docs/warn.log
   cd ..
+elif [ "$1" = "experimental" ]; then
+  export UPDATE_FLAGS="-DAUTOUPDATE=OFF -DINFORM_UPDATE=OFF"
+  export UPDATE_FLAGS_MACOS="-DINFORM_UPDATE=OFF"
+  export MAIN_REPO_BRANCH=experimental
+  V="$(curl -s https://raw.githubusercontent.com/$MAIN_REPO_USER/$MAIN_REPO_NAME/$MAIN_REPO_BRANCH/src/game/version.h | grep "^#define GAME_RELEASE_VERSION_INTERNAL" | cut -d' ' -f3)"
+  export VERSION="$V-experimental"
+  ./build.sh $VERSION &> builds/DDNet-experimental.log
 elif [ "$1" = "playground" ]; then
   export UPDATE_FLAGS="-DAUTOUPDATE=OFF -DINFORM_UPDATE=OFF"
   export UPDATE_FLAGS_MACOS="-DINFORM_UPDATE=OFF"
@@ -66,6 +73,9 @@ else
   echo "Nightly:"
   echo "./build-and-deploy.sh nightly"
   echo ""
+  echo "Experimental:"
+  echo "./build-and-deploy.sh experimental"
+  echo ""
   echo "Playground:"
   echo "./build-and-deploy.sh playground"
   echo ""
@@ -84,6 +94,12 @@ if [ "$1" = "nightly" ]; then
   zmv -W "builds/DDNet-$VERSION*" "builds/DDNet-nightly*"
   scp -q builds/DDNet-nightly* ddnet:/var/www/downloads/tmp
   ssh ddnet "mv /var/www/downloads/tmp/DDNet-$VERSION*-symbols.tar.xz /var/www/downloads/symbols; mv /var/www/downloads/tmp/DDNet-nightly* /var/www/downloads"
+elif [ "$1" = "experimental" ]; then
+  scp -q builds/DDNet-$VERSION*-symbols.tar.xz ddnet:/var/www/downloads/tmp
+  rm builds/DDNet-$VERSION*-symbols.tar.xz
+  zmv -W "builds/DDNet-$VERSION*" "builds/DDNet-experimental*"
+  scp -q builds/DDNet-experimental* ddnet:/var/www/downloads/tmp
+  ssh ddnet "mv /var/www/downloads/tmp/DDNet-$VERSION*-symbols.tar.xz /var/www/downloads/symbols; mv /var/www/downloads/tmp/DDNet-experimental* /var/www/downloads"
 elif [ "$1" = "playground" ]; then
   scp -q builds/DDNet-$VERSION*-symbols.tar.xz ddnet:/var/www/downloads/tmp
   rm builds/DDNet-$VERSION*-symbols.tar.xz
@@ -109,7 +125,9 @@ cd /home/deen/isos/ddnet/
 cp steamcmd_orig/* steamcmd
 cd /home/deen/isos/ddnet/steamcmd/
 sed -e "s/Nightly Build/$1: $VERSION/" app_build_412220.vdf > tmp.vdf
-if [ "$1" = "playground" ]; then
+if [ "$1" = "experimental" ]; then
+  sed -i "s/\"beta\"/\"experimental\"/" tmp.vdf
+elif [ "$1" = "playground" ]; then
   sed -i "s/\"beta\"/\"playground\"/" tmp.vdf
 elif [ "$1" != "nightly" ]; then
   sed -i "s/\"beta\"/\"releasecandidates\"/" tmp.vdf
