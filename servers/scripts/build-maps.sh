@@ -25,6 +25,22 @@ done
 
 git pull &>/dev/null
 git add * &>/dev/null
+
+ZIP_SIZE=$(du -sh --exclude=.git . | awk '{print $1}' | sed 's/G$/ GiB/;s/M$/ MiB/')
+CLONE_SIZE=$(git count-objects -v | awk '
+  $1 == "size:" || $1 == "size-pack:" { total += $2 }
+  END {
+    if (total >= 1024 * 1024)
+      printf "%.1f GiB", total / (1024 * 1024)
+    else
+      printf "%.0f MiB", total / 1024
+  }
+')
+sed -i \
+  -e "/Download the ZIP/s/(about [^)]*)/(about $ZIP_SIZE)/" \
+  -e "/git clone/s/(about [^)]*)/(about $CLONE_SIZE)/" \
+  README.md
+
 MAPS=$(git diff --name-status HEAD | grep '\.map')
 if [ $? -eq 0 ]; then
   git commit -a -m "$(echo "$MAPS" | grep '\.map' | sed -e 's#^\(.\).*/maps/\(.*\).map.*$#\1 \2,#' | tr '\n' ' ' | head -c -2)" &>/dev/null
