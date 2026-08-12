@@ -14,6 +14,7 @@ wget https://code.videolan.org/videolan/x264/-/archive/master/x264-master.tar.bz
 wget https://ffmpeg.org/releases/ffmpeg-7.0.1.tar.gz
 wget https://github.com/warmcat/libwebsockets/archive/v4.3-stable.tar.gz
 wget https://download.sourceforge.net/libpng/libpng-1.6.43.tar.gz
+wget https://github.com/dbry/WavPack/releases/download/5.9.0/wavpack-5.9.0.tar.xz
 
 # Causes issues, see https://github.com/ddnet/ddnet/pull/5475
 #git clone --recurse-submodules https://github.com/jrfonseca/drmingw
@@ -43,6 +44,17 @@ CURL_CONFIGURE_OPTIONS=(
 	--disable-smtp
 	--disable-gopher
 	--disable-mqtt
+)
+
+WAVPACK_CMAKE_OPTIONS=(
+	-DCMAKE_BUILD_TYPE=Release
+	-DCMAKE_POLICY_VERSION_MINIMUM=3.5
+	-DBUILD_TESTING=OFF
+	-DWAVPACK_BUILD_PROGRAMS=OFF
+	-DWAVPACK_ENABLE_THREADS=OFF
+	-DWAVPACK_INSTALL_CMAKE_MODULE=OFF
+	-DWAVPACK_INSTALL_DOCS=OFF
+	-DWAVPACK_INSTALL_PKGCONFIG_MODULE=OFF
 )
 
 rustup target add x86_64-pc-windows-gnu i686-pc-windows-gnu x86_64-apple-darwin aarch64-apple-darwin
@@ -135,6 +147,7 @@ tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-7.0.1.tar.gz
 tar xvf ../v4.3-stable.tar.gz
 tar xvf ../libpng-1.6.43.tar.gz
+tar xvf ../wavpack-5.9.0.tar.xz
 
 cd curl-8.8.0
 ./configure --with-openssl --enable-shared "${CURL_CONFIGURE_OPTIONS[@]}"
@@ -188,6 +201,11 @@ cd ../libpng-1.6.43
 make -j4
 cp .libs/libpng16.a ..
 
+cd ../wavpack-5.9.0
+cmake -S . -B build "${WAVPACK_CMAKE_OPTIONS[@]}" -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS=-fPIC
+cmake --build build -j4
+cp build/libwavpack.a ..
+
 cd ../..
 
 mkdir x86
@@ -202,6 +220,7 @@ tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-7.0.1.tar.gz
 tar xvf ../v4.3-stable.tar.gz
 tar xvf ../libpng-1.6.43.tar.gz
+tar xvf ../wavpack-5.9.0.tar.xz
 
 cd curl-8.8.0
 CFLAGS=-m32 LDFLAGS=-m32 ./configure --with-openssl --enable-shared "${CURL_CONFIGURE_OPTIONS[@]}"
@@ -257,6 +276,14 @@ cd ../libpng-1.6.43
 make -j4
 cp .libs/libpng16.a ..
 
+# wavpack detects the target CPU by compiling a probe, so -m32 already selects
+# its x86 assembly; CMAKE_ASM_FLAGS has to repeat it or those files are still
+# assembled as 64 bit
+cd ../wavpack-5.9.0
+cmake -S . -B build "${WAVPACK_CMAKE_OPTIONS[@]}" -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="-m32 -fPIC" -DCMAKE_ASM_FLAGS=-m32
+cmake --build build -j4
+cp build/libwavpack.a ..
+
 cd ../..
 [exit chroot]
 mkdir win64
@@ -272,6 +299,7 @@ tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-7.0.1.tar.gz
 tar xvf ../v4.3-stable.tar.gz
 tar xvf ../libpng-1.6.43.tar.gz
+tar xvf ../wavpack-5.9.0.tar.xz
 
 cd SDL3-3.4.14
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ -DCMAKE_RC_COMPILER=x86_64-w64-mingw32-windres -DSDL_SHARED=ON -DSDL_STATIC=OFF -DSDL_TESTS=OFF -DSDL_EXAMPLES=OFF
@@ -357,6 +385,14 @@ make -j4
 cp .libs/libpng16-16.dll ..
 x86_64-w64-mingw32-dlltool -v --export-all-symbols -D libpng16-16.dll -l ../libpng16-16.lib **/*.o
 
+cd ../wavpack-5.9.0
+cmake -S . -B build "${WAVPACK_CMAKE_OPTIONS[@]}" -DBUILD_SHARED_LIBS=ON -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ -DCMAKE_RC_COMPILER=x86_64-w64-mingw32-windres -DCMAKE_SHARED_LINKER_FLAGS=-static-libgcc
+cmake --build build -j4
+cp build/libwavpack-1.dll ..
+# import lib for MSVC; gendef is not packaged, mkdef.py is in ddnet-scripts
+x86_64-w64-mingw32-objdump -p build/libwavpack-1.dll | python3 mkdef.py libwavpack-1.dll > wavpack.def
+x86_64-w64-mingw32-dlltool -d wavpack.def -D libwavpack-1.dll -l ../wavpack.lib
+
 cd ..
 for i in *.dll; do x86_64-w64-mingw32-strip -s $i; done
 
@@ -375,6 +411,7 @@ tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-7.0.1.tar.gz
 tar xvf ../v4.3-stable.tar.gz
 tar xvf ../libpng-1.6.43.tar.gz
+tar xvf ../wavpack-5.9.0.tar.xz
 
 cd SDL3-3.4.14
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_C_COMPILER=i686-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=i686-w64-mingw32-g++ -DCMAKE_RC_COMPILER=i686-w64-mingw32-windres -DSDL_SHARED=ON -DSDL_STATIC=OFF -DSDL_TESTS=OFF -DSDL_EXAMPLES=OFF
@@ -459,6 +496,14 @@ make -j4
 cp .libs/libpng16-16.dll ..
 i686-w64-mingw32-dlltool -v --export-all-symbols -D libpng16-16.dll -l ../libpng16-16.lib **/*.o
 
+cd ../wavpack-5.9.0
+cmake -S . -B build "${WAVPACK_CMAKE_OPTIONS[@]}" -DBUILD_SHARED_LIBS=ON -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_C_COMPILER=i686-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=i686-w64-mingw32-g++ -DCMAKE_RC_COMPILER=i686-w64-mingw32-windres -DCMAKE_SHARED_LINKER_FLAGS=-static-libgcc
+cmake --build build -j4
+cp build/libwavpack-1.dll ..
+# import lib for MSVC; gendef is not packaged, mkdef.py is in ddnet-scripts
+i686-w64-mingw32-objdump -p build/libwavpack-1.dll | python3 mkdef.py libwavpack-1.dll > wavpack.def
+i686-w64-mingw32-dlltool -d wavpack.def -D libwavpack-1.dll -l ../wavpack.lib
+
 cd ..
 for i in *.dll; do i686-w64-mingw32-strip -s $i; done
 
@@ -476,6 +521,7 @@ tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-7.0.1.tar.gz
 tar xvf ../v4.3-stable.tar.gz
 tar xvf ../libpng-1.6.43.tar.gz
+tar xvf ../wavpack-5.9.0.tar.xz
 
 export PATH=/home/deen/git/osxcross/target/bin/:$PATH
 export CC=o64-clang
@@ -551,6 +597,14 @@ CC=x86_64-apple-darwin20.1-cc CPPFLAGS="-I/root/zlib-rs/x86_64-apple-darwin/incl
 make -j4
 cp .libs/libpng16.16.dylib ..
 
+cd ../wavpack-5.9.0
+# own cross-macos-x86_64.cmake, copied into the source dir. CMAKE_AR/CMAKE_RANLIB
+# because the toolchain file does not set them and cmake would otherwise archive
+# with the host GNU ar, which Apple's linker cannot read.
+cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=cross-macos-x86_64.cmake "${WAVPACK_CMAKE_OPTIONS[@]}" -DBUILD_SHARED_LIBS=OFF -DCMAKE_AR=$(which x86_64-apple-darwin20.1-ar) -DCMAKE_RANLIB=$(which x86_64-apple-darwin20.1-ranlib) -DCMAKE_C_FLAGS="-mmacosx-version-min=10.9"
+cmake --build build -j4
+cp build/libwavpack.a ..
+
 # Requires osxcross with SDK >= 12.0 for oa64-clang
 mkdir macarm64
 cd macarm64
@@ -564,6 +618,7 @@ tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-7.0.1.tar.gz
 tar xvf ../v4.3-stable.tar.gz
 tar xvf ../libpng-1.6.43.tar.gz
+tar xvf ../wavpack-5.9.0.tar.xz
 
 export PATH=/home/deen/git/osxcross/target/bin/:$PATH
 export CC=oa64-clang
@@ -626,6 +681,15 @@ cd ../libpng-1.6.43
 CC=aarch64-apple-darwin20.1-cc CPPFLAGS="-I/root/zlib-rs/aarch64-apple-darwin/include" LDFLAGS="-L/root/zlib-rs/aarch64-apple-darwin/lib" ./configure --host=aarch64-apple-darwin20.1
 make -j4
 cp .libs/libpng16.16.dylib ..
+
+cd ../wavpack-5.9.0
+# own cross-macos-arm64.cmake, copied into the source dir; see the x86_64 lane
+cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=cross-macos-arm64.cmake "${WAVPACK_CMAKE_OPTIONS[@]}" -DBUILD_SHARED_LIBS=OFF -DCMAKE_AR=$(which aarch64-apple-darwin20.1-ar) -DCMAKE_RANLIB=$(which aarch64-apple-darwin20.1-ranlib) -DCMAKE_C_FLAGS="-mmacosx-version-min=10.9"
+cmake --build build -j4
+cp build/libwavpack.a ..
+
+# The public wavpack.h in ddnet-libs/wavpack/include is the one from the source
+# tarball (include/wavpack.h); it is identical for every platform.
 
 # fix output paths in shared libs on macOS:
 # (SDL3's cmake framework build already sets @rpath/SDL3.framework/Versions/A/SDL3)

@@ -19,6 +19,7 @@ SQLITE_VERSION=3460000
 FFMPEG_VERSION=7.0.1
 LWS_VERSION=4.3-stable
 LIBPNG_VERSION=1.6.43
+WAVPACK_VERSION=5.9.0
 
 if [ "$PLATFORM" = "x86" ]; then
   ARCH_FLAGS="-m32"
@@ -54,6 +55,7 @@ wget -q --tries=5 --timeout=60 --waitretry=10 --retry-on-http-error=429,500,502,
 wget -q --tries=5 --timeout=60 --waitretry=10 --retry-on-http-error=429,500,502,503 "https://ffmpeg.org/releases/ffmpeg-${FFMPEG_VERSION}.tar.gz"
 wget -q --tries=5 --timeout=60 --waitretry=10 --retry-on-http-error=429,500,502,503 "https://github.com/warmcat/libwebsockets/archive/v${LWS_VERSION}.tar.gz"
 wget -q --tries=5 --timeout=60 --waitretry=10 --retry-on-http-error=429,500,502,503 "https://download.sourceforge.net/libpng/libpng-${LIBPNG_VERSION}.tar.gz"
+wget -q --tries=5 --timeout=60 --waitretry=10 --retry-on-http-error=429,500,502,503 "https://github.com/dbry/WavPack/releases/download/${WAVPACK_VERSION}/wavpack-${WAVPACK_VERSION}.tar.xz"
 
 mkdir src && cd src
 tar xf "../SDL3-${SDL3_VERSION}.tar.gz"
@@ -66,11 +68,23 @@ tar xf ../x264-master.tar.bz2
 tar xf "../ffmpeg-${FFMPEG_VERSION}.tar.gz"
 tar xf "../v${LWS_VERSION}.tar.gz"
 tar xf "../libpng-${LIBPNG_VERSION}.tar.gz"
+tar xf "../wavpack-${WAVPACK_VERSION}.tar.xz"
 
 CURL_CONFIGURE_OPTIONS=(
   --disable-ftp --disable-file --disable-ldap --disable-rtsp
   --disable-dict --disable-telnet --disable-tftp --disable-pop3
   --disable-imap --disable-smb --disable-smtp --disable-gopher --disable-mqtt
+)
+
+WAVPACK_CMAKE_OPTIONS=(
+  -DCMAKE_BUILD_TYPE=Release
+  -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+  -DBUILD_TESTING=OFF
+  -DWAVPACK_BUILD_PROGRAMS=OFF
+  -DWAVPACK_ENABLE_THREADS=OFF
+  -DWAVPACK_INSTALL_CMAKE_MODULE=OFF
+  -DWAVPACK_INSTALL_DOCS=OFF
+  -DWAVPACK_INSTALL_PKGCONFIG_MODULE=OFF
 )
 
 # --- curl ---
@@ -156,6 +170,15 @@ cd /build/src/libpng-${LIBPNG_VERSION}
 make -j"$(nproc)"
 cp .libs/libpng16.a /build/src/
 
+# --- wavpack ---
+cd /build/src/wavpack-${WAVPACK_VERSION}
+# CMAKE_ASM_FLAGS has to repeat -m32 or wavpack's x86 assembly is still
+# assembled as 64 bit
+cmake -S . -B build "${WAVPACK_CMAKE_OPTIONS[@]}" -DBUILD_SHARED_LIBS=OFF \
+  -DCMAKE_C_FLAGS="$COMMON_CFLAGS" -DCMAKE_ASM_FLAGS="$ARCH_FLAGS"
+cmake --build build -j"$(nproc)"
+cp build/libwavpack.a /build/src/
+
 # --- Distribute to ddnet-libs layout ---
 cd /build/src
 
@@ -180,5 +203,8 @@ cp lws_config.h "$OUTPUT/websockets/linux/${LIB_SUFFIX}/"
 
 mkdir -p "$OUTPUT/png/linux/${LIB_SUFFIX}"
 cp libpng16.a "$OUTPUT/png/linux/${LIB_SUFFIX}/"
+
+mkdir -p "$OUTPUT/wavpack/linux/${LIB_SUFFIX}"
+cp libwavpack.a "$OUTPUT/wavpack/linux/${LIB_SUFFIX}/"
 
 echo "Linux ${PLATFORM} library build complete."

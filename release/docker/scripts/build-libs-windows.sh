@@ -20,6 +20,7 @@ SQLITE_VERSION=3460000
 FFMPEG_VERSION=7.0.1
 LWS_VERSION=4.3-stable
 LIBPNG_VERSION=1.6.43
+WAVPACK_VERSION=5.9.0
 ZLIB_VERSION=1.3.1
 ZLIB_RS_VERSION=0.6.7
 
@@ -45,6 +46,17 @@ CURL_CONFIGURE_OPTIONS=(
   --disable-imap --disable-smb --disable-smtp --disable-gopher --disable-mqtt
 )
 
+WAVPACK_CMAKE_OPTIONS=(
+  -DCMAKE_BUILD_TYPE=Release
+  -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+  -DBUILD_TESTING=OFF
+  -DWAVPACK_BUILD_PROGRAMS=OFF
+  -DWAVPACK_ENABLE_THREADS=OFF
+  -DWAVPACK_INSTALL_CMAKE_MODULE=OFF
+  -DWAVPACK_INSTALL_DOCS=OFF
+  -DWAVPACK_INSTALL_PKGCONFIG_MODULE=OFF
+)
+
 # Download all sources
 cd /build
 wget -q --tries=5 --timeout=60 --waitretry=10 --retry-on-http-error=429,500,502,503 "https://libsdl.org/release/SDL3-${SDL3_VERSION}.tar.gz"
@@ -58,6 +70,7 @@ wget -q --tries=5 --timeout=60 --waitretry=10 --retry-on-http-error=429,500,502,
 wget -q --tries=5 --timeout=60 --waitretry=10 --retry-on-http-error=429,500,502,503 "https://ffmpeg.org/releases/ffmpeg-${FFMPEG_VERSION}.tar.gz"
 wget -q --tries=5 --timeout=60 --waitretry=10 --retry-on-http-error=429,500,502,503 "https://github.com/warmcat/libwebsockets/archive/v${LWS_VERSION}.tar.gz"
 wget -q --tries=5 --timeout=60 --waitretry=10 --retry-on-http-error=429,500,502,503 "https://download.sourceforge.net/libpng/libpng-${LIBPNG_VERSION}.tar.gz"
+wget -q --tries=5 --timeout=60 --waitretry=10 --retry-on-http-error=429,500,502,503 "https://github.com/dbry/WavPack/releases/download/${WAVPACK_VERSION}/wavpack-${WAVPACK_VERSION}.tar.xz"
 wget -q --tries=5 --timeout=60 --waitretry=10 --retry-on-http-error=429,500,502,503 "https://github.com/madler/zlib/releases/download/v${ZLIB_VERSION}/zlib-${ZLIB_VERSION}.tar.gz"
 
 mkdir src && cd src
@@ -73,6 +86,7 @@ tar xf ../x264-master.tar.bz2
 tar xf "../ffmpeg-${FFMPEG_VERSION}.tar.gz"
 tar xf "../v${LWS_VERSION}.tar.gz"
 tar xf "../libpng-${LIBPNG_VERSION}.tar.gz"
+tar xf "../wavpack-${WAVPACK_VERSION}.tar.xz"
 
 # --- SDL3 ---
 cd /build/src/SDL3-${SDL3_VERSION}
@@ -275,6 +289,15 @@ ${HOST}-dlltool -v --export-all-symbols -D libpng16-16.dll -l /build/src/libpng1
 cd /build/src
 for i in *.dll; do ${HOST}-strip -s "$i"; done
 
+# --- wavpack ---
+cd /build/src/wavpack-${WAVPACK_VERSION}
+cmake -S . -B build "${WAVPACK_CMAKE_OPTIONS[@]}" -DBUILD_SHARED_LIBS=ON \
+  -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_C_COMPILER=${HOST}-gcc -DCMAKE_CXX_COMPILER=${HOST}-g++ \
+  -DCMAKE_RC_COMPILER=${HOST}-windres -DCMAKE_SHARED_LINKER_FLAGS=-static-libgcc
+cmake --build build -j"$(nproc)"
+cp build/libwavpack-1.dll /build/src/
+(cd /build/src && gendef libwavpack-1.dll && ${HOST}-dlltool -d libwavpack-1.def -D libwavpack-1.dll -l /build/src/wavpack.lib)
+
 # --- Distribute to ddnet-libs layout ---
 mkdir -p "$OUTPUT/sdl/windows/${LIB_SUFFIX}"
 cp SDL3.dll SDL3.lib libSDL3.dll.a "$OUTPUT/sdl/windows/${LIB_SUFFIX}/"
@@ -300,5 +323,8 @@ cp libwebsockets.dll websockets.lib lws_config.h "$OUTPUT/websockets/windows/${L
 
 mkdir -p "$OUTPUT/png/windows/${LIB_SUFFIX}"
 cp libpng16-16.dll libpng16-16.lib "$OUTPUT/png/windows/${LIB_SUFFIX}/"
+
+mkdir -p "$OUTPUT/wavpack/windows/${LIB_SUFFIX}"
+cp libwavpack-1.dll wavpack.lib "$OUTPUT/wavpack/windows/${LIB_SUFFIX}/"
 
 echo "Windows win${PLATFORM} library build complete."
