@@ -83,6 +83,7 @@ else
   echo "Release:"
   echo "./build-and-deploy.sh release 15.0.5"
   echo "and set live for beta, default manually in Steamworks"
+  echo "and release the uploaded iOS build in App Store Connect"
   exit 1
 fi
 

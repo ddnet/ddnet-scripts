@@ -6,6 +6,9 @@
 # https://github.com/tpoechtrager/osxcross build osxcross and its compiler-rt.sh (don't forget to install)
 # https://github.com/mozilla/libdmg-hfsplus build and install
 # steamworks sdk
+# iOS: app record in App Store Connect, Apple Distribution certificate in
+#   build.keychain on MAC_HOST, App Store provisioning profile for
+#   org.ddnet.client stored as ios_appstore.mobileprovision
 
 [ $# -ne 1 ] && echo "Usage: ./build.sh VERSION" && exit 1
 
@@ -131,6 +134,43 @@ build_remote_macos_steam ()
   mkdir DDNet-$VERSION-steam-macos
   rsync -a deen@$MAC_HOST:macos-steam/pack_DDNet-\*_dmg/DDNet.app DDNet-$VERSION-steam-macos/
   ssh deen@$MAC_HOST "rm -rf macos-steam"
+}
+
+build_remote_ios ()
+{
+  # Not all branches have iOS support yet
+  if [ ! -e ddnet-source/scripts/ios/cmake_ios.sh ]; then
+    echo "Skipping iOS build, no scripts/ios/cmake_ios.sh in source"
+    return
+  fi
+  # App Store version fields must be period-separated integers and every
+  # upload needs a higher build number, a nightly version like 20.0-20260823
+  # is not valid there
+  IOS_SHORT_VERSION=${VERSION%%-*}
+  IOS_BUILD_NUMBER=$(date +%Y%m%d%H%M)
+  scp ios_appstore.mobileprovision deen@$MAC_HOST:
+  ssh deen@$MAC_HOST "export PATH=/opt/homebrew/opt/rustup/bin:/opt/homebrew/bin:\$PATH:\$HOME/.cargo/bin && \
+  export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer && \
+  security unlock-keychain -p \"\" build.keychain && \
+  security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k \"\" build.keychain > /dev/null && \
+  security list-keychains -d user -s build.keychain \$(security list-keychains -d user | tr -d '\"') && \
+  security default-keychain -s build.keychain && \
+  export CODESIGN_ALLOCATE=\$(xcrun --find codesign_allocate) && \
+  export DDNET_GIT_SHORTREV_HASH=\"$DDNET_GIT_SHORTREV_HASH\" && \
+  cd ddnet-source && \
+  rm -rf build-ios && \
+  IOS_VERSION=\"$VERSION\" scripts/ios/cmake_ios.sh device DDNet org.ddnet.client Release build-ios && \
+  APP=build-ios/Release-iphoneos/DDNet.app && \
+  /usr/libexec/PlistBuddy -c \"Set :CFBundleShortVersionString $IOS_SHORT_VERSION\" -c \"Set :CFBundleVersion $IOS_BUILD_NUMBER\" \$APP/Info.plist && \
+  cp ~/ios_appstore.mobileprovision \$APP/embedded.mobileprovision && \
+  security cms -D -i ~/ios_appstore.mobileprovision > build-ios/profile.plist && \
+  /usr/libexec/PlistBuddy -x -c 'Print :Entitlements' build-ios/profile.plist > build-ios/entitlements.plist && \
+  codesign -f -s \"Apple Distribution: Dennis Felsing (53Q7AACS5Q)\" --entitlements build-ios/entitlements.plist \$APP && \
+  rm -rf build-ios/Payload && \
+  mkdir build-ios/Payload && \
+  cp -a \$APP build-ios/Payload/ && \
+  ditto -c -k --keepParent build-ios/Payload build-ios/DDNet-$VERSION-ios.ipa && \
+  xcrun altool --upload-app -f build-ios/DDNet-$VERSION-ios.ipa -u dennis@felsing.org -p \"$APPLE_APP_SPECIFIC_PASSWORD\""
 }
 
 build_remote_windows_arm64 ()
@@ -316,7 +356,7 @@ MAC_AVAILABLE=true
 ssh deen@$MAC_HOST "exit" || MAC_AVAILABLE=false
 if [ "$MAC_AVAILABLE" = true ]; then
   rsync -avzP --delete --exclude linux --exclude windows --exclude lib64 --exclude libarm64 ddnet-source/ deen@$MAC_HOST:ddnet-source
-  (build_remote_windows_arm64_website; build_remote_macos_website; build_remote_macos_steam) &> builds/mac.log &
+  (build_remote_windows_arm64_website; build_remote_macos_website; build_remote_macos_steam; build_remote_ios) &> builds/mac.log &
 fi
 #(build_macos_website; build_macos_steam) &> builds/mac.log &
 
