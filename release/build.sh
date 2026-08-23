@@ -60,7 +60,7 @@ build_macos ()
   PATH=${PATH:+$PATH:}/home/deen/git/osxcross/target/bin
   eval `osxcross-conf`
   export OSXCROSS_OSX_VERSION_MIN=10.9
-  cmake -DVERSION=$VERSION -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_BUILD_TYPE=Release -DDISCORD=ON -DWEBSOCKETS=OFF -DIPO=OFF -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin-arm64.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX11.0.sdk/ $(echo $FLAGS) ../ddnet-source
+  cmake -DVERSION=$VERSION -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_BUILD_TYPE=Release -DDISCORD=ON -DWEBSOCKETS=OFF -DIPO=ON -DPREFER_BUNDLED_LIBS=ON -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/darwin-arm64.toolchain -DCMAKE_OSX_SYSROOT=/home/deen/git/osxcross/target/SDK/MacOSX11.0.sdk/ $(echo $FLAGS) ../ddnet-source
   unset CXXFLAGS
   unset LDFLAGS
   make -j1 package_default
@@ -99,7 +99,7 @@ build_remote_macos ()
   export CODESIGN_ALLOCATE=\$(xcrun --find codesign_allocate) && \
   export DDNET_GIT_SHORTREV_HASH=\"$DDNET_GIT_SHORTREV_HASH\"
   export CXXFLAGS=\"'$OUR_CXXFLAGS'\" && \
-  cmake -DVERSION=$VERSION -DCMAKE_OSX_ARCHITECTURES=\"arm64;x86_64\" -DCMAKE_BUILD_TYPE=Release -DDISCORD=ON -DWEBSOCKETS=OFF -DIPO=OFF -DPREFER_BUNDLED_LIBS=ON -DMACOS_CODESIGN=ON $(echo $FLAGS) ../ddnet-source && \
+  cmake -DVERSION=$VERSION -DCMAKE_OSX_ARCHITECTURES=\"arm64;x86_64\" -DCMAKE_BUILD_TYPE=Release -DDISCORD=ON -DWEBSOCKETS=OFF -DIPO=ON -DPREFER_BUNDLED_LIBS=ON -DMACOS_CODESIGN=ON $(echo $FLAGS) ../ddnet-source && \
   unset CXXFLAGS && \
   unset LDFLAGS && \
   nice -n19 make -j8 package_default && \
@@ -194,7 +194,7 @@ build_linux ()
     . /root/.cargo/env && \
     mkdir build && \
     cd build && \
-    cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DDISCORD=$DISCORD -DDISCORD_DYNAMIC=$DISCORD -DWEBSOCKETS=OFF -DIPO=OFF $(echo $UPDATE_FLAGS) -DPREFER_BUNDLED_LIBS=ON .. && \
+    cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DDISCORD=$DISCORD -DDISCORD_DYNAMIC=$DISCORD -DWEBSOCKETS=OFF -DIPO=ON $(echo $UPDATE_FLAGS) -DPREFER_BUNDLED_LIBS=ON .. && \
     unset CXXFLAGS && \
     unset LDFLAGS && \
     make -j1 package_default"
@@ -204,7 +204,7 @@ build_linux ()
     . /root/.cargo/env && \
     mkdir build && \
     cd build && \
-    cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DDISCORD=$DISCORD -DDISCORD_DYNAMIC=$DISCORD -DWEBSOCKETS=OFF -DIPO=OFF -DSTEAM=ON -DPREFER_BUNDLED_LIBS=ON .. && \
+    cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DDISCORD=$DISCORD -DDISCORD_DYNAMIC=$DISCORD -DWEBSOCKETS=OFF -DIPO=ON -DSTEAM=ON -DPREFER_BUNDLED_LIBS=ON .. && \
     unset CXXFLAGS && \
     unset LDFLAGS && \
     make -j1 package_default"
@@ -323,19 +323,17 @@ fi
 build_linux x86_64 $BUILDDIR/debian11 &> builds/linux_x86_64.log &
 CFLAGS=-m32 LDFLAGS=-m32 build_linux x86 $BUILDDIR/debian11_x86 &> builds/linux_x86.log &
 
-# IPO causes issues with DrMinGW stack traces, so disable for now
-# https://github.com/ddnet/ddnet/issues/5371
 (TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
-  build_windows_website 64 "-DVULKAN=ON -DIPO=OFF"
+  build_windows_website 64 "-DVULKAN=ON -DIPO=ON"
 
 TARGET_FAMILY=windows TARGET_PLATFORM=win64 TARGET_ARCH=amd64 \
-  build_windows_steam 64 "-DVULKAN=ON -DIPO=OFF") &> builds/win64.log &
+  build_windows_steam 64 "-DVULKAN=ON -DIPO=ON") &> builds/win64.log &
 
 (TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
-  build_windows_website 32 "-DVULKAN=OFF -DIPO=OFF"
+  build_windows_website 32 "-DVULKAN=OFF -DIPO=ON"
 
 TARGET_FAMILY=windows TARGET_PLATFORM=win32 TARGET_ARCH=ia32 \
-  build_windows_steam 32 "-DVULKAN=OFF -DIPO=OFF") &> builds/win32.log &
+  build_windows_steam 32 "-DVULKAN=OFF -DIPO=ON") &> builds/win32.log &
 
 build_android &> builds/android.log &
 
