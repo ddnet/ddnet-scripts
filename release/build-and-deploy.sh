@@ -47,7 +47,8 @@ if [ "$1" = "nightly" ]; then
   rm -rf docs/warn.log
   cd ..
 
-  rsync -avP --delay-updates --delete-delay ddnet-source/build-emscripten/pack_DDNet-$VERSION-Emscripten_tar_xz/DDNet-$VERSION-Emscripten/ ddnet:/var/www-client/nightly
+  # TODO: Reenable after https://github.com/ddnet/ddnet/pull/12470
+  # rsync -avP --delay-updates --delete-delay ddnet-source/build-emscripten/pack_DDNet-$VERSION-Emscripten_tar_xz/DDNet-$VERSION-Emscripten/ ddnet:/var/www-client/nightly
 elif [ "$1" = "playground" ]; then
   export UPDATE_FLAGS="-DAUTOUPDATE=OFF -DINFORM_UPDATE=OFF"
   export UPDATE_FLAGS_MACOS="-DINFORM_UPDATE=OFF"
@@ -146,4 +147,67 @@ if [ $STEAM_OK -ne 1 ]; then
 fi
 
 cd ..
+
+VT_KEY_FILE=/home/deen/isos/ddnet/virustotal_key
+if [ -e "$VT_KEY_FILE" ]; then
+  VT_KEY="$(cat $VT_KEY_FILE)"
+  VT_TMP="$(mktemp -d)"
+  typeset -A VT_FILES VT_ANALYSIS VT_SHA
+
+  for zip in builds/DDNet-*-win*.zip(N); do
+    dir=$VT_TMP/${${zip:t}:r}
+    mkdir $dir
+    unzip -q -j $zip "*/DDNet.exe" "*/DDNet-Server.exe" -d $dir
+    for exe in $dir/*.exe(N); do
+      VT_FILES[${${zip:t}:r}/${exe:t}]=$exe
+    done
+  done
+  for exe in steam/win{64,32}/ddnet/{DDNet,DDNet-Server}.exe(N); do
+    VT_FILES[steam-${exe:h:h:t}/${exe:t}]=$exe
+  done
+
+  echo "VirusTotal: uploading ${#VT_FILES} Windows executables"
+  for label in ${(k)VT_FILES}; do
+    exe=$VT_FILES[$label]
+    VT_SHA[$label]="$(sha256sum $exe | cut -d' ' -f1)"
+    sleep 16 # free API allows 4 requests/minute
+    UPLOAD_URL="$(curl -s --max-time 60 -H "x-apikey: $VT_KEY" https://www.virustotal.com/api/v3/files/upload_url | jq -r .data)"
+    if [ -z "$UPLOAD_URL" ] || [ "$UPLOAD_URL" = "null" ]; then
+      echo "VirusTotal: failed to get upload URL for $label"
+      continue
+    fi
+    sleep 16
+    RESP="$(curl -s --max-time 600 -H "x-apikey: $VT_KEY" -F file=@$exe "$UPLOAD_URL")"
+    ID="$(echo "$RESP" | jq -r .data.id)"
+    if [ -z "$ID" ] || [ "$ID" = "null" ]; then
+      echo "VirusTotal: upload failed for $label: $RESP"
+    else
+      VT_ANALYSIS[$label]=$ID
+    fi
+  done
+
+  VT_DEADLINE=$(($(date +%s) + 1200))
+  while [ ${#VT_ANALYSIS} -gt 0 ] && [ $(date +%s) -lt $VT_DEADLINE ]; do
+    for label in ${(k)VT_ANALYSIS}; do
+      sleep 16
+      RESP="$(curl -s --max-time 60 -H "x-apikey: $VT_KEY" https://www.virustotal.com/api/v3/analyses/$VT_ANALYSIS[$label])"
+      [ "$(echo "$RESP" | jq -r .data.attributes.status)" != "completed" ] && continue
+      DETECTIONS="$(echo "$RESP" | jq -r '.data.attributes.stats.malicious + .data.attributes.stats.suspicious')"
+      if [ "$DETECTIONS" = "0" ]; then
+        # echo "VirusTotal: clean: $label"
+      else
+        echo "VirusTotal: $DETECTIONS detections for $label: https://www.virustotal.com/gui/file/$VT_SHA[$label]"
+        echo "$RESP" | jq -r '.data.attributes.results[] | select(.category == "malicious" or .category == "suspicious") | "  \(.engine_name): \(.result // .category)"'
+      fi
+      unset "VT_ANALYSIS[$label]"
+    done
+  done
+  for label in ${(k)VT_ANALYSIS}; do
+    echo "VirusTotal: analysis not finished for $label: https://www.virustotal.com/gui/file/$VT_SHA[$label]"
+  done
+  rm -rf $VT_TMP
+else
+  echo "VirusTotal: no $VT_KEY_FILE, skipping scan"
+fi
+
 rm -rf builds/* DDNet-$VERSION* steam/* ddnet-source
