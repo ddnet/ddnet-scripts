@@ -27,7 +27,7 @@ set -ex
 # always without autoupdater and without update info. For nightlies and RCs use:
 # UPDATE_FLAGS="-DAUTOUPDATE=OFF -DINFORM_UPDATE=OFF" UPDATE_FLAGS_MACOS=-DINFORM_UPDATE=OFF
 UPDATE_FLAGS="${UPDATE_FLAGS:--DAUTOUPDATE=ON}"
-UPDATE_FLAGS_MACOS="${UPDATE_FLAGS_MACOS:-}"
+UPDATE_FLAGS_MACOS="${UPDATE_FLAGS_MACOS:--DAUTOUPDATE=ON}"
 
 MAIN_REPO_USER="${MAIN_REPO_USER:-ddnet}"
 MAIN_REPO_NAME="${MAIN_REPO_NAME:-ddnet}"
@@ -301,6 +301,8 @@ rm -rf ddnet-source $MAIN_REPO_NAME-$MAIN_REPO_COMMIT $LIBS_REPO_NAME-$LIBS_REPO
 unzip -q main.zip
 mv $MAIN_REPO_NAME-$MAIN_REPO_COMMIT ddnet-source
 curl -s https://api.github.com/repos/ddnet/ddnet/commits/master | jq -r ".commit.committer.date" | xargs -I{} date -d {} +%s > ddnet-source/source_date_epoch
+# Builds from the source download have no git repository to read the revision from
+echo $MAIN_REPO_COMMIT > ddnet-source/git_revision
 cp -r ddnet-source DDNet-$VERSION
 
 export DDNET_GIT_SHORTREV_HASH=$MAIN_REPO_COMMIT
