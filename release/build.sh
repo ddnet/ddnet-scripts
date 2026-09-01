@@ -96,7 +96,7 @@ build_remote_macos ()
   export MACOS_APP_IDENTITY=\"Developer ID Application: Dennis Felsing\" && \
   security unlock-keychain -p \"\" build.keychain && \
   security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k \"\" build.keychain > /dev/null && \
-  security list-keychains -d user -s build.keychain \$(security list-keychains -d user | tr -d '\"') && \
+  security list-keychains -d user -s build.keychain \$(security list-keychains -d user | tr -d '\"' | grep -v build.keychain) && \
   security default-keychain -s build.keychain && \
   security find-identity -v -p codesigning build.keychain && \
   export CODESIGN_ALLOCATE=\$(xcrun --find codesign_allocate) && \
@@ -153,7 +153,7 @@ build_remote_ios ()
   export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer && \
   security unlock-keychain -p \"\" build.keychain && \
   security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k \"\" build.keychain > /dev/null && \
-  security list-keychains -d user -s build.keychain \$(security list-keychains -d user | tr -d '\"') && \
+  security list-keychains -d user -s build.keychain \$(security list-keychains -d user | tr -d '\"' | grep -v build.keychain) && \
   security default-keychain -s build.keychain && \
   export CODESIGN_ALLOCATE=\$(xcrun --find codesign_allocate) && \
   export DDNET_GIT_SHORTREV_HASH=\"$DDNET_GIT_SHORTREV_HASH\" && \
