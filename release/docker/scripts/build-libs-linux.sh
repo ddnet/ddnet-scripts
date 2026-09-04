@@ -10,7 +10,8 @@ set -ex
 OUTPUT=/output
 
 # Library versions
-SDL3_VERSION=3.4.14
+# SDL main snapshot, the 3.4 releases lack the per-device mice on macOS
+SDL3_COMMIT=d4410b9a7ccbc05f6b235b411226b01ebb91fe51
 CURL_VERSION=8.8.0
 LIBOGG_VERSION=1.3.5
 OPUS_VERSION=1.3.1
@@ -45,7 +46,7 @@ COMMON_CFLAGS="${ARCH_FLAGS} ${ARCH_FPIC}"
 
 # Download all sources
 cd /build
-wget -q --tries=5 --timeout=60 --waitretry=10 --retry-on-http-error=429,500,502,503 "https://libsdl.org/release/SDL3-${SDL3_VERSION}.tar.gz"
+wget -q --tries=5 --timeout=60 --waitretry=10 --retry-on-http-error=429,500,502,503 -O "SDL3-${SDL3_COMMIT}.tar.gz" "https://github.com/libsdl-org/SDL/archive/${SDL3_COMMIT}.tar.gz"
 wget -q --tries=5 --timeout=60 --waitretry=10 --retry-on-http-error=429,500,502,503 "https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz"
 wget -q --tries=5 --timeout=60 --waitretry=10 --retry-on-http-error=429,500,502,503 "http://downloads.xiph.org/releases/ogg/libogg-${LIBOGG_VERSION}.tar.gz"
 wget -q --tries=5 --timeout=60 --waitretry=10 --retry-on-http-error=429,500,502,503 "https://archive.mozilla.org/pub/opus/opus-${OPUS_VERSION}.tar.gz"
@@ -58,7 +59,7 @@ wget -q --tries=5 --timeout=60 --waitretry=10 --retry-on-http-error=429,500,502,
 wget -q --tries=5 --timeout=60 --waitretry=10 --retry-on-http-error=429,500,502,503 "https://github.com/dbry/WavPack/releases/download/${WAVPACK_VERSION}/wavpack-${WAVPACK_VERSION}.tar.xz"
 
 mkdir src && cd src
-tar xf "../SDL3-${SDL3_VERSION}.tar.gz"
+tar xf "../SDL3-${SDL3_COMMIT}.tar.gz"
 tar xf "../curl-${CURL_VERSION}.tar.gz"
 tar xf "../libogg-${LIBOGG_VERSION}.tar.gz"
 tar xf "../opus-${OPUS_VERSION}.tar.gz"
@@ -116,7 +117,7 @@ CFLAGS="$COMMON_CFLAGS" LDFLAGS="$ARCH_FLAGS" make -j"$(nproc)"
 cp .libs/libopusfile.a /build/src/
 
 # --- SDL3 ---
-cd /build/src/SDL3-${SDL3_VERSION}
+cd /build/src/SDL-${SDL3_COMMIT}
 env $SDL_PKG_CONFIG_ENV cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_C_FLAGS="$ARCH_FLAGS" -DCMAKE_CXX_FLAGS="$ARCH_FLAGS" \
   -DCMAKE_SHARED_LINKER_FLAGS="$ARCH_FLAGS" -DCMAKE_EXE_LINKER_FLAGS="$ARCH_FLAGS" \
