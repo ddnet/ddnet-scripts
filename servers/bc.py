@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # coding=utf-8
 import readline
 import sys
@@ -8,7 +8,7 @@ f = open('/home/teeworlds/servers/scripts/asciiart').readlines()
 try:
   while True:
     sys.stderr.write('bc> ')
-    sys.stdout.flush()
+    sys.stderr.flush()
     n = sys.stdin.readline().rstrip('\n').replace('"','\\"')
 
     ns = n.split('|')

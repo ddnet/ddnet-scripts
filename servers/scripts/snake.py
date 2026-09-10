@@ -1,4 +1,4 @@
-#!/usr/bin/python2 -u
+#!/usr/bin/python3 -u
 # coding: utf8
 import random
 import time
@@ -57,10 +57,10 @@ try:
   time.sleep(4)
   while running:
     board = [[0 for x in range(cols)] for x in range(rows)]
-    headx = cols/2
-    heady = rows/2
+    headx = cols//2
+    heady = rows//2
     board[heady][headx] = 1
-    board[cols/2][rows/4] = -1
+    board[cols//2][rows//4] = -1
     score = 0
     gameover = False
     sleeptime = 0.2

@@ -2,8 +2,8 @@
 
 cd /home/teeworlds/servers
 
-if [ $(cat /proc/loadavg|head -c1) -ge 8 ]; then
-  #echo -e "Current load is > 8, not running."
+if [ $(cat /proc/loadavg|head -c1) -ge 15 ]; then
+  #echo -e "Current load is > 15, not running."
   exit 1
 fi
 
@@ -27,11 +27,13 @@ types=`cat all-types`
 scripts/update-local.sh &
 
 scripts/ranks.py $types
+scripts/players-cache.py
 i=0
-# EUR is split into 4 regions in ranks:
-(echo NLD; echo GER; echo POL; echo FRA; grep name serverlist.json | sed -e 's/.*"name": "\(.*\)".*/\1/') | while read country; do
+parallelism=10
+# EUR is split into 5 regions in ranks:
+(echo NLD; echo GER; echo POL; echo FRA; echo FIN; jq -r 'map(select(.id == "ddnet")).[0]["icon"]["servers"] | map(.name) .[]' ~httpmaster/communities-generated-backcompat.json) | while read country; do
   scripts/ranks.py --country=$country $types &
-  if (( $i % 4 == 0 )); then
+  if (( $i % $parallelism == 0 )); then
     wait
   fi
   let i=i+1
@@ -42,8 +44,5 @@ done
 
 (scripts/releases-mappers.py $types > /var/www/mappers/index.$$.tmp && mv /var/www/mappers/index.$$.tmp /var/www/mappers/index.html) &
 
-(zip -q9r /var/www/players-cache.$$.tmp players-cache && mv /var/www/players-cache.$$.tmp /var/www/players-cache.zip) &
-
-(curl -s -o serverlist-kog.json.$$.tmp http://51.91.78.232/servers.php && jq . serverlist-kog.json.$$.tmp > /dev/null  && mv serverlist-kog.json.$$.tmp serverlist-kog.json && ./git-update-serverlist-only.sh) &
 
 wait

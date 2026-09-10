@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from ddnet import *
@@ -6,13 +6,14 @@ import datetime
 import sys
 import random
 import re
+from contextlib import nullcontext
 
-reload(sys)
-sys.setdefaultencoding('utf8')
+sys.stdout.reconfigure(encoding='utf-8')
 
 countryCodeMapping = {
     'GER': '🇩🇪',
     'RUS': '🇷🇺',
+    'UKR': '🇺🇦',
     'CHL': '🇨🇱',
     'BRA': '🇧🇷',
     'MEX': '🇲🇽',
@@ -35,13 +36,16 @@ def postRecord(row, names):
     oldTimeString = "new tie!"
   else:
     oldTimeString = "next best time: %s" % formatTimeExact(row[6])
-  postDiscordRecords("%s %s on \[[%s](<https://ddnet.org/ranks/%s/>)\] [%s](<https://ddnet.org%s>): %s %s (%s)" % (countryCodeMapping.get(row[8], ''), row[4], row[5], row[5].lower(), row[1], mapWebsite(row[1]), formatTimeExact(row[2]), names, oldTimeString))
+  postDiscordRecords(r"%s %s on \[[%s](<https://ddnet.org/ranks/%s/>)\] [%s](<https://ddnet.org%s>): %s %s (%s)" % (countryCodeMapping.get(row[8], ''), row[4], row[5], row[5].lower(), row[1], mapWebsite(row[1]), formatTimeExact(row[2]), names, oldTimeString))
 
 os.chdir("/home/teeworlds/servers/")
 
 con = mysqlConnect()
 
-with con:
+# mysqlclient 2.x (py3) dropped the Connection context-manager protocol that
+# py2 MySQLdb had. The block below is read-only, so keep the implicit single
+# transaction open for a consistent snapshot (matching the old `with con:`).
+with nullcontext():
   cur = con.cursor()
   cur.execute("set names 'utf8mb4';");
 

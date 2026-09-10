@@ -1,16 +1,16 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from ddnet import *
 import sys
 import msgpack
-from cgi import escape
+from html import escape
+from contextlib import nullcontext
 
-reload(sys)
-sys.setdefaultencoding('utf8')
+sys.stdout.reconfigure(encoding='utf-8')
 
 def printExactSoloRecords2(recordName, className, topFinishes):
-  string = u'<div class="block4 %s"><h4>%s:</h4>\n' % (className, recordName)
+  string = '<div class="block4 %s"><h4>%s:</h4>\n' % (className, recordName)
   if len(topFinishes) > 0:
     string += '<table class="tight">\n'
     for f in topFinishes:
@@ -19,18 +19,18 @@ def printExactSoloRecords2(recordName, className, topFinishes):
       else:
         mbS = ""
       #string += u'  <tr title="%s, %s, %d finish%s total"><td class="rank">%d.</td><td class="time">%s</td><td><a href="%s">%s</a></td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[4], mbS, f[0], escape(formatTimeExact(f[2])), escape(playerWebsite(u'%s' % f[1])), escape(f[1]))
-      string += u'  <tr title="%s, %s, %d finish%s total"><td class="rank">%d.</td><td class="time">%s</td><td><img src="/countryflags/%s.png" alt="%s" height="15" /></td><td><a href="%s">%s</a></td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[4], mbS, f[0], escape(formatTimeExact(f[2])), f[5], f[5], escape(playerWebsite(u'%s' % f[1])), escape(f[1]))
+      string += '  <tr title="%s, %s, %d finish%s total"><td class="rank">%d.</td><td class="time">%s</td><td><img src="/countryflags/%s.png" alt="%s" height="15" /></td><td><a href="%s">%s</a></td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[4], mbS, f[0], escape(formatTimeExact(f[2])), f[5], f[5], escape(playerWebsite('%s' % f[1])), escape(f[1]))
     string += '</table>\n'
   string += '</div>\n'
 
   return string
 
 def printFooter():
-  print """
+  print("""
   </section>
   </article>
   </body>
-</html>"""
+</html>""")
 
 def printLadder(ranks):
   string = '<div class="ladder">\n'
@@ -52,7 +52,7 @@ def printLadder(ranks):
         string += '<tr class="allPoints" style="display: none">\n'
       else:
         string += '<tr>\n'
-      string += u'  <td class="rankglobal">%d.</td><td class="points">%d points</td><td><a href="%s">%s</a></td></tr>' % (currentRank, r[1], escape(playerWebsite(u'%s' % r[0])), escape(r[0]))
+      string += '  <td class="rankglobal">%d.</td><td class="points">%d points</td><td><a href="%s">%s</a></td></tr>' % (currentRank, r[1], escape(playerWebsite('%s' % r[0])), escape(r[0]))
     string += '</table>\n'
   string += '</div>'
 
@@ -76,7 +76,7 @@ for type in types:
   menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type)
 menuText += '</ul>'
 
-print header("Tutorial Tournament - DDraceNetwork", menuText, "")
+print(header("Tutorial Tournament - DDraceNetwork", menuText, ""))
 #print '<script src="/js.js" type="text/javascript"></script><p class="toggle"><a href="#" onclick="showClass(\'allPoints\'); return false;">All ranks / Top 10 ranks</a></p>'
 
 f = open("tournament")
@@ -85,7 +85,10 @@ for line in f:
   words = line.rstrip('\n').split('|')
   tournamentMaps.append(tuple(words))
 
-with con:
+# mysqlclient 2.x (py3) dropped the Connection context-manager protocol that
+# py2 MySQLdb had. The block below is read-only, so keep the implicit single
+# transaction open for a consistent snapshot (matching the old `with con:`).
+with nullcontext():
   cur = con.cursor()
   cur.execute("set names 'utf8mb4';");
   for type in types:
@@ -127,7 +130,7 @@ with con:
       skips = 1
 
       try:
-        cur.execute("select Name, r.ID, Time, Timestamp from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID order by r.Time, r.ID, Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
+        cur.execute("select Name, r.ID, Time, Timestamp from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID order by r.Time, r.ID, Name;" % (con.escape_string(originalMapName).decode('utf-8'), con.escape_string(originalMapName).decode('utf-8')))
         rows = cur.fetchall()
       except:
         pass
@@ -138,7 +141,7 @@ with con:
         if row[1] != ID:
           fNames = []
           for name in names:
-            fNames.append('<a href="%s">%s</a>' % (escape(playerWebsite(u'%s' % name)), escape(name)))
+            fNames.append('<a href="%s">%s</a>' % (escape(playerWebsite('%s' % name)), escape(name)))
           teamRanks.append((currentRank, joinNames(fNames), time, timestamp))
           names = []
 
@@ -183,7 +186,7 @@ with con:
       if time > 0:
         fNames = []
         for name in names:
-          fNames.append('<a href="%s">%s</a>' % (escape(playerWebsite(u'%s' % name)), escape(name)))
+          fNames.append('<a href="%s">%s</a>' % (escape(playerWebsite('%s' % name)), escape(name)))
         teamRanks.append((currentRank, joinNames(fNames), time, timestamp))
         countTeamFinishes += 1
 
@@ -192,7 +195,7 @@ with con:
       countFinishes = 0
 
       try:
-        cur.execute("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, maxTimestamp, Server from (select * from record_race where Map = '%s') as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp, max(Timestamp) as maxTimestamp from record_race where Map = '%s' group by Name order by minTime ASC) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTime;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
+        cur.execute("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, maxTimestamp, Server from (select * from record_race where Map = '%s') as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp, max(Timestamp) as maxTimestamp from record_race where Map = '%s' group by Name order by minTime ASC) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTime;" % (con.escape_string(originalMapName).decode('utf-8'), con.escape_string(originalMapName).decode('utf-8')))
         rows = cur.fetchall()
       except:
         pass
@@ -259,7 +262,7 @@ with con:
       finishTimes = ""
 
       try:
-        cur.execute("select (select median(Time) over (partition by Map) from record_race where Map = '%s' limit 1), min(Timestamp), max(Timestamp) from record_race where Map = '%s';" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
+        cur.execute("select (select median(Time) over (partition by Map) from record_race where Map = '%s' limit 1), min(Timestamp), max(Timestamp) from record_race where Map = '%s';" % (con.escape_string(originalMapName).decode('utf-8'), con.escape_string(originalMapName).decode('utf-8')))
         rows = cur.fetchall()
         avgTime = " (median time: %s)" % formatTime(rows[0][0])
         finishTimes = "first finish: %s, last finish: %s" % (escape(formatDate(rows[0][1])), escape(formatDate(rows[0][2])))
@@ -269,7 +272,7 @@ with con:
       biggestTeam = ""
 
       try:
-        cur.execute("select count(Name) from record_teamrace where Map = '%s' group by ID order by count(Name) desc limit 1;" % con.escape_string(originalMapName))
+        cur.execute("select count(Name) from record_teamrace where Map = '%s' group by ID order by count(Name) desc limit 1;" % con.escape_string(originalMapName).decode('utf-8'))
         rows = cur.fetchall()
         biggestTeam = " (biggest team: %d)" % rows[0][0]
       except:
@@ -302,7 +305,7 @@ with con:
       except IOError:
         pass
 
-      mapsString += u'<div class="block3 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/mappreview/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime))
+      mapsString += '<div class="block3 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="/mappreview/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span></div>\n' % (escape(mapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime))
       #mapsString += printTeamRecords("Team Records", "teamrecords", teamRanks)
       mapsString += printExactSoloRecords2("Records", "records", ranks)
       mapsString += '<br/>\n'
@@ -322,11 +325,11 @@ with con:
 #teamrankRanks = sorted(teamrankLadder.items(), key=lambda r: r[1], reverse=True)
 #rankRanks = sorted(rankLadder.items(), key=lambda r: r[1], reverse=True)
 
-print '<div id="global" class="block div-tournament"><h2>Tutorial Tournament</h2>'
-print '<p>This tournament is played on Sunday, 2021-02-27 at 15:00 CET. The best time after 30 minutes wins! The map is played alone.</p>'
+print('<div id="global" class="block div-tournament"><h2>Tutorial Tournament</h2>')
+print('<p>This tournament is played on Sunday, 2021-02-27 at 15:00 CET. The best time after 30 minutes wins! The map is played alone.</p>')
 #print printLadder(teamrankRanks)
-print '</div>'
-print '<div id="serverranks" style="display: ">'
-print serversString
-print '</div>'
+print('</div>')
+print('<div id="serverranks" style="display: ">')
+print(serversString)
+print('</div>')
 printFooter()

@@ -4,3 +4,9 @@ tags
 discord-ranks.html
 discord-ranks-last
 ranks-lock
+release/DDNet.pass
+release/DDNet.jks
+release/apple_app_specific_password
+release/steam_salt
+release/web_salt
+release/android_salt.cpp

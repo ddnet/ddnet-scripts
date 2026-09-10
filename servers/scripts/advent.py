@@ -1,16 +1,16 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from ddnet import *
 import sys
 import msgpack
-from cgi import escape
+from html import escape
+from contextlib import nullcontext
 
-reload(sys)
-sys.setdefaultencoding('utf8')
+sys.stdout.reconfigure(encoding='utf-8')
 
 def printExactSoloRecords2(recordName, className, topFinishes):
-  string = u'<div class="block4 %s"><h4>%s:</h4>\n' % (className, recordName)
+  string = '<div class="block4 %s"><h4>%s:</h4>\n' % (className, recordName)
   if len(topFinishes) > 0:
     string += '<table class="tight">\n'
     for i, f in enumerate(topFinishes):
@@ -19,18 +19,18 @@ def printExactSoloRecords2(recordName, className, topFinishes):
       else:
         mbS = ""
       #string += u'  <tr title="%s, %s, %d finish%s total"><td class="rank">%d.</td><td class="time">%s</td><td><a href="%s">%s</a></td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[4], mbS, f[0], escape(formatTimeExact(f[2])), escape(playerWebsite(u'%s' % f[1])), escape(f[1]))
-      string += u'  <tr %s title="%s, %s, %d finish%s total"><td class="rank">%d.</td><td class="time">%s</td><td><img src="/countryflags/%s.png" alt="%s" height="15" /></td><td><a href="%s">%s</a></td></tr>\n' % ('' if i < 20 else 'class="allPoints" style="display: none"', escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[4], mbS, f[0], escape(formatTimeExact(f[2])), f[5], f[5], escape(playerWebsite(u'%s' % f[1])), escape(f[1]))
+      string += '  <tr %s title="%s, %s, %d finish%s total"><td class="rank">%d.</td><td class="time">%s</td><td><img src="/countryflags/%s.png" alt="%s" height="15" /></td><td><a href="%s">%s</a></td></tr>\n' % ('' if i < 20 else 'class="allPoints" style="display: none"', escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[4], mbS, f[0], escape(formatTimeExact(f[2])), f[5], f[5], escape(playerWebsite('%s' % f[1])), escape(f[1]))
     string += '</table>\n'
   string += '</div>\n'
 
   return string
 
 def printFooter():
-  print """
+  print("""
   </section>
   </article>
   </body>
-</html>"""
+</html>""")
 
 def printLadder(ranks):
   string = '<div class="ladder">\n'
@@ -52,7 +52,7 @@ def printLadder(ranks):
         string += '<tr class="allPoints" style="display: none">\n'
       else:
         string += '<tr>\n'
-      string += u'  <td class="rankglobal">%d.</td><td class="points">%d points</td><td><a href="%s">%s</a></td></tr>' % (currentRank, r[1], escape(playerWebsite(u'%s' % r[0])), escape(r[0]))
+      string += '  <td class="rankglobal">%d.</td><td class="points">%d points</td><td><a href="%s">%s</a></td></tr>' % (currentRank, r[1], escape(playerWebsite('%s' % r[0])), escape(r[0]))
     string += '</table>\n'
   string += '</div>'
 
@@ -80,8 +80,8 @@ if day < 24:
   day += 1
   menuText += '<li><a href="#day%d">Day %d</a></li>\n' % (day, day)
 menuText += '</ul>'
-print header("Advent of DDNet 2022 - DDraceNetwork", menuText, "")
-print '<p class="toggle"><a href="#" onclick="showClass(\'allPoints\'); return false;">All / Top 20</a></p>'
+print(header("Advent of DDNet 2022 - DDraceNetwork", menuText, ""))
+print('<p class="toggle"><a href="#" onclick="showClass(\'allPoints\'); return false;">All / Top 20</a></p>')
 
 def betweenDate(day):
   return "Timestamp between '2022-12-%02d' and '2022-12-%02d'" % (day, day + 1)
@@ -92,7 +92,10 @@ def adventPoints(rank):
   else:
     return 10
 
-with con:
+# mysqlclient 2.x (py3) dropped the Connection context-manager protocol that
+# py2 MySQLdb had. The block below is read-only, so keep the implicit single
+# transaction open for a consistent snapshot (matching the old `with con:`).
+with nullcontext():
   cur = con.cursor()
   cur.execute("set names 'utf8mb4';");
   totalServerPoints = 0
@@ -124,7 +127,7 @@ with con:
     skips = 1
 
     try:
-      cur.execute("select Name, r.ID, Time, Timestamp from ((select distinct ID from record_teamrace where Map = '%s' AND %s ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s' and %s) as r on l.ID = r.ID order by r.Time, r.ID, Name;" % (con.escape_string(originalMapName), betweenDate(day), con.escape_string(originalMapName), betweenDate(day)))
+      cur.execute("select Name, r.ID, Time, Timestamp from ((select distinct ID from record_teamrace where Map = '%s' AND %s ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s' and %s) as r on l.ID = r.ID order by r.Time, r.ID, Name;" % (con.escape_string(originalMapName).decode('utf-8'), betweenDate(day), con.escape_string(originalMapName).decode('utf-8'), betweenDate(day)))
       rows = cur.fetchall()
     except:
       pass
@@ -135,7 +138,7 @@ with con:
       if row[1] != ID:
         fNames = []
         for name in names:
-          fNames.append('<a href="%s">%s</a>' % (escape(playerWebsite(u'%s' % name)), escape(name)))
+          fNames.append('<a href="%s">%s</a>' % (escape(playerWebsite('%s' % name)), escape(name)))
         teamRanks.append((currentRank, joinNames(fNames), time, timestamp))
         names = []
 
@@ -180,7 +183,7 @@ with con:
     if time > 0:
       fNames = []
       for name in names:
-        fNames.append('<a href="%s">%s</a>' % (escape(playerWebsite(u'%s' % name)), escape(name)))
+        fNames.append('<a href="%s">%s</a>' % (escape(playerWebsite('%s' % name)), escape(name)))
       teamRanks.append((currentRank, joinNames(fNames), time, timestamp))
       countTeamFinishes += 1
 
@@ -189,7 +192,7 @@ with con:
     countFinishes = 0
 
     try:
-      cur.execute("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, maxTimestamp, Server from (select * from record_race where Map = '%s' and %s) as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp, max(Timestamp) as maxTimestamp from record_race where Map = '%s' and %s group by Name order by minTime ASC) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTime, Name;" % (con.escape_string(originalMapName), betweenDate(day), con.escape_string(originalMapName), betweenDate(day)))
+      cur.execute("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, maxTimestamp, Server from (select * from record_race where Map = '%s' and %s) as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp, max(Timestamp) as maxTimestamp from record_race where Map = '%s' and %s group by Name order by minTime ASC) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTime, Name;" % (con.escape_string(originalMapName).decode('utf-8'), betweenDate(day), con.escape_string(originalMapName).decode('utf-8'), betweenDate(day)))
       rows = cur.fetchall()
     except:
       pass
@@ -251,7 +254,7 @@ with con:
     finishTimes = ""
 
     try:
-      cur.execute("select (select median(Time) over (partition by Map) from record_race where Map = '%s' and %s limit 1), min(Timestamp), max(Timestamp) from record_race where Map = '%s' and %s;" % (con.escape_string(originalMapName), betweenDate(day), con.escape_string(originalMapName), betweenDate(day)))
+      cur.execute("select (select median(Time) over (partition by Map) from record_race where Map = '%s' and %s limit 1), min(Timestamp), max(Timestamp) from record_race where Map = '%s' and %s;" % (con.escape_string(originalMapName).decode('utf-8'), betweenDate(day), con.escape_string(originalMapName).decode('utf-8'), betweenDate(day)))
       rows = cur.fetchall()
       avgTime = " (median time: %s)" % formatTime(rows[0][0])
       finishTimes = "first finish: %s, last finish: %s" % (escape(formatDate(rows[0][1])), escape(formatDate(rows[0][2])))
@@ -261,7 +264,7 @@ with con:
     biggestTeam = ""
 
     try:
-      cur.execute("select count(Name) from record_teamrace where Map = '%s' and %s group by ID order by count(Name) desc limit 1;" % con.escape_string(originalMapName), betweenDate(day))
+      cur.execute("select count(Name) from record_teamrace where Map = '%s' and %s group by ID order by count(Name) desc limit 1;" % con.escape_string(originalMapName).decode('utf-8'), betweenDate(day))
       rows = cur.fetchall()
       biggestTeam = " (biggest team: %d)" % rows[0][0]
     except:
@@ -286,7 +289,7 @@ with con:
         height = unpacker.unpack()
         tiles = unpacker.unpack()
 
-        formattedMapName = '<span title="Map size: %dx%d"><a href="/maps/%s">%s</a></span>' % (width, height, slugify2(u'%s' % originalMapName), escape(originalMapName))
+        formattedMapName = '<span title="Map size: %dx%d"><a href="/maps/%s">%s</a></span>' % (width, height, slugify2('%s' % originalMapName), escape(originalMapName))
 
         mbMapInfo = "<br/>"
         for tile in sorted(tiles.keys(), key=lambda i:order(i)):
@@ -294,7 +297,7 @@ with con:
     except IOError:
       pass
 
-    mapsString += u'<div class="block3 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Server: <a href="/ranks/%s/">%s</a>, Difficulty: %s, Points: %d<br/><a href="/maps/%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span><br/>%d team%s finished%s</p></div>\n' % (escape(mapName), formattedMapName, mbMapperName, type.lower(), type, escape(renderStars(stars)), globalPoints(type, stars), slugify2(u'%s' % originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime), countTeamFinishes, mbS, escape(biggestTeam))
+    mapsString += '<div class="block3 info" id="map-%s"><h3 class="inline">%s</h3><p class="inline">%s</p><p>Server: <a href="/ranks/%s/">%s</a>, Difficulty: %s, Points: %d<br/><a href="/maps/%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span><br/>%d team%s finished%s</p></div>\n' % (escape(mapName), formattedMapName, mbMapperName, type.lower(), type, escape(renderStars(stars)), globalPoints(type, stars), slugify2('%s' % originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime), countTeamFinishes, mbS, escape(biggestTeam))
     #mapsString += printTeamRecords("Team Records", "teamrecords", teamRanks)
     mapsString += printExactSoloRecords2("Records", "records", ranks)
     mapsString += '<br/>\n'
@@ -333,11 +336,11 @@ pointsRanks = sorted(pointsLadder.items(), key=lambda r: r[1], reverse=True)
 #teamrankRanks = sorted(teamrankLadder.items(), key=lambda r: r[1], reverse=True)
 #rankRanks = sorted(rankLadder.items(), key=lambda r: r[1], reverse=True)
 
-print '<div id="global" class="block div-tournament"><h2>Advent of DDNet 2022</h2>'
-print '<p>Finish the (already released) map behind each door on the assigned day to land on the leaderboard. Doors are opened at 00:00 CET and have to be finished within 24 hours. Best finish time gets 20 points, second 19 points and so on with a minimum of 10 points just for finishing. The points are accumulated for the entire time from December 1 to December 24 and don\'t count outside of this event.</p>'
-print printLadder(pointsRanks)
-print '</div>'
-print '<div id="serverranks" style="display: ">'
-print serversString
-print '</div>'
+print('<div id="global" class="block div-tournament"><h2>Advent of DDNet 2022</h2>')
+print('<p>Finish the (already released) map behind each door on the assigned day to land on the leaderboard. Doors are opened at 00:00 CET and have to be finished within 24 hours. Best finish time gets 20 points, second 19 points and so on with a minimum of 10 points just for finishing. The points are accumulated for the entire time from December 1 to December 24 and don\'t count outside of this event.</p>')
+print(printLadder(pointsRanks))
+print('</div>')
+print('<div id="serverranks" style="display: ">')
+print(serversString)
+print('</div>')
 printFooter()

@@ -1,14 +1,13 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from ddnet import *
 import sys
 import msgpack
-from cgi import escape
+from html import escape
 import os
 
-reload(sys)
-sys.setdefaultencoding('utf8')
+sys.stdout.reconfigure(encoding='utf-8')
 
 def printFooter():
   return """
@@ -69,8 +68,8 @@ for x in tournaments:
   except IOError:
     pass
 
-  serverString = "" if "Advent" in tournament else ": %s Server" % server
-  mapsString += u'<div class="blockreleases release" id="map-%s"><h2 class="inline"><a href="%s/">%s%s</a></h2><br/><h3 class="inline">%s</h3><br/><h3 class="inline"><a href="%s">%s</a></h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="%s/"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/></p></div>\n' % (escape(mapName), link, tournament, serverString, date, mapWebsite(originalMapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(server, stars), link, escape(mapName), mbMapInfo)
+  serverString = "" if "Advent" in tournament or "Christmas" in tournament else ": %s Server" % server
+  mapsString += '<div class="blockreleases release" id="map-%s"><h2 class="inline"><a href="%s/">%s%s</a></h2><br/><h3 class="inline">%s</h3><br/><h3 class="inline"><a href="%s">%s</a></h3><p class="inline">%s</p><p>Difficulty: %s, Points: %d<br/><a href="%s/"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/></p></div>\n' % (escape(mapName), link, tournament, serverString, date, mapWebsite(originalMapName), formattedMapName, mbMapperName, escape(renderStars(stars)), globalPoints(server, stars), link, escape(mapName), mbMapInfo)
 
 filename = '%s/tournaments/index.html' % webDir
 tmpname = '%s/tournaments/index.%d.tmp' % (webDir, os.getpid())
@@ -79,19 +78,19 @@ directory = os.path.dirname(filename)
 if not os.path.exists(directory):
   os.makedirs(directory)
 
-tf = open(tmpname, 'w')
+tf = open(tmpname, 'w', encoding='utf-8')
 
-print >>tf, header("Tournaments - DDraceNetwork", "", "")
-print >>tf, '<div id="global" class="block">'
-print >>tf, '<div class="right"><form id="mapform" action="/maps/" method="get"><input name="map" class="typeahead" type="text" placeholder="Map search"><input type="submit" value="Map search" style="position: absolute; left: -9999px"></form></div>'
-print >>tf, '<h2>Tournaments</h2><br/>'
-print >>tf, '<script src="/jquery.js" type="text/javascript"></script>'
-print >>tf, '<script src="/typeahead.bundle.js" type="text/javascript"></script>'
-print >>tf, '<script src="/mapsearch.js" type="text/javascript"></script>'
-print >>tf, mapsString
-print >>tf, '<span class="stretch"></span></div>'
+print(header("Tournaments - DDraceNetwork", "", ""), file=tf)
+print('<div id="global" class="block">', file=tf)
+print('<div class="right"><form id="mapform" action="/maps/" method="get"><input name="map" class="typeahead" type="text" placeholder="Map search"><input type="submit" value="Map search" style="position: absolute; left: -9999px"></form></div>', file=tf)
+print('<h2>Tournaments</h2><br/>', file=tf)
+print('<script src="/jquery.js" type="text/javascript"></script>', file=tf)
+print('<script src="/typeahead.bundle.js" type="text/javascript"></script>', file=tf)
+print('<script src="/mapsearch.js" type="text/javascript"></script>', file=tf)
+print(mapsString, file=tf)
+print('<span class="stretch"></span></div>', file=tf)
 
-print >>tf, printFooter()
+print(printFooter(), file=tf)
 
 tf.close()
 os.rename(tmpname, filename)

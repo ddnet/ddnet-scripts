@@ -1,16 +1,16 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from ddnet import *
 import sys
 import os
-from cgi import escape
-from urllib import quote_plus
+from html import escape
+from urllib.parse import quote_plus
 from time import sleep
 from datetime import datetime, timedelta
+from contextlib import nullcontext
 
-reload(sys)
-sys.setdefaultencoding('utf8')
+sys.stdout.reconfigure(encoding='utf-8')
 
 con = mysqlConnect()
 
@@ -22,7 +22,9 @@ with open("releases") as f:
     words = line.rstrip('\n').split('\t')
     releases.append(tuple(words))
 
-with con:
+# mysqlclient 2.x (py3) dropped the Connection context-manager protocol that
+# py2 MySQLdb had (it committed on exit). Autocommit is off, so commit explicitly.
+with nullcontext():
   cur = con.cursor()
   cur.execute("set names 'utf8mb4';")
 
@@ -63,14 +65,16 @@ with con:
         except:
           pass
 
-      cur.execute("INSERT INTO record_maps(Map, Server, Mapper, Points, Stars, Timestamp) VALUES ('%s', '%s', '%s', '%d', '%d', %s) ON duplicate key UPDATE Server=VALUES(Server), Mapper=VALUES(Mapper), Points=VALUES(Points), Stars=VALUES(Stars), Timestamp=VALUES(Timestamp);" % (con.escape_string(mapName), con.escape_string(type), con.escape_string(mapperName), points, stars, "'" + realDate + "'" if realDate else "0"))
+      cur.execute("INSERT INTO record_maps(Map, Server, Mapper, Points, Stars, Timestamp) VALUES ('%s', '%s', '%s', '%d', '%d', %s) ON duplicate key UPDATE Server=VALUES(Server), Mapper=VALUES(Mapper), Points=VALUES(Points), Stars=VALUES(Stars), Timestamp=VALUES(Timestamp);" % (con.escape_string(mapName).decode('utf-8'), con.escape_string(type).decode('utf-8'), con.escape_string(mapperName).decode('utf-8'), points, stars, "'" + realDate + "'" if realDate else "0"))
 
-      with open('maps/%s.msgpack' % mapName) as inp:
+      with open('maps/%s.msgpack' % mapName, 'rb') as inp:
         try:
           unpacker = msgpack.Unpacker(inp)
           width = unpacker.unpack()
           height = unpacker.unpack()
           ts = unpacker.unpack()
-          cur.execute("REPLACE INTO record_mapinfo (Map, Width, Height, %s) VALUES ('%s', %d, %d, %s);" % (", ".join(all_tiles), con.escape_string(mapName), width, height, ", ".join([str(ts.get(tile, False)) for tile in all_tiles])))
+          cur.execute("REPLACE INTO record_mapinfo (Map, Width, Height, %s) VALUES ('%s', %d, %d, %s);" % (", ".join(all_tiles), con.escape_string(mapName).decode('utf-8'), width, height, ", ".join([str(ts.get(tile, False)) for tile in all_tiles])))
         except:
           print("Failed to insert " + mapName)
+
+  con.commit()

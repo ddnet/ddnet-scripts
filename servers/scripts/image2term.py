@@ -8,8 +8,8 @@ except:
     stderr.write('[E] PIL not installed')
     exit(1)
 from drawille import Canvas
-from StringIO import StringIO
-import urllib2
+from io import BytesIO
+import urllib.request
 
 
 def getTerminalSize():
@@ -37,9 +37,9 @@ def getTerminalSize():
 
 def image2term(image, threshold=128, ratio=None, invert=False):
     if image.startswith('http://') or image.startswith('https://'):
-        i = Image.open(StringIO(urllib2.urlopen(image).read())).convert('L')
+        i = Image.open(BytesIO(urllib.request.urlopen(image).read())).convert('L')
     else:
-        i = Image.open(open(image)).convert('L')
+        i = Image.open(open(image, 'rb')).convert('L')
     w, h = i.size
     if ratio:
         w = int(w * ratio)

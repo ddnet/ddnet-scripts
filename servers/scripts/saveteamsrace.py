@@ -1,7 +1,7 @@
-#!/usr/bin/env python2
-import _mysql
+#!/usr/bin/env python3
+from MySQLdb import _mysql
 f = open('teamrace')
 for l in f:
   x = l.rstrip('\n').split("\t")
-  x[1] = _mysql.escape_string(x[1])
-  print 'insert into record_teamrace(Map, Name, Timestamp, Time, ID) VALUES ("%s", "%s", "%s", "%s", "%s");' % tuple(x)
+  x[1] = _mysql.escape_string(x[1]).decode('utf-8')
+  print('insert into record_teamrace(Map, Name, Timestamp, Time, ID) VALUES ("%s", "%s", "%s", "%s", "%s");' % tuple(x))

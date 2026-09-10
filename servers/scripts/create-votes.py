@@ -1,11 +1,11 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from ddnet import *
 import sys
+from contextlib import nullcontext
 
-reload(sys)
-sys.setdefaultencoding('utf8')
+sys.stdout.reconfigure(encoding='utf-8')
 
 def truncate(s, length, encoding='utf-8'):
   encoded = s.encode(encoding)[:length]
@@ -25,18 +25,19 @@ serverStrings = {
   'Solo'     : '                 Solo Server',
   'Race'     : '                 Race Server',
   'Fun'      : '                  Fun Server',
+  'Event'      : '              Event Server',
 }
 
 server = sys.argv[1]
 
 con = mysqlConnect()
-f = open('types/%s/maps' % server.lower(), 'r')
+f = open('types/%s/maps' % server.lower(), 'r', encoding='utf-8')
 
-motdSkeleton = open('motd/skeleton', 'rb').read()
+motdSkeleton = open('motd/skeleton', encoding='utf-8').read()
 
 localString = ""
 try:
-  localString = open('motd/local', 'rb').read().rstrip('\n')
+  localString = open('motd/local', encoding='utf-8').read().rstrip('\n')
 except:
   pass
 
@@ -47,7 +48,7 @@ clear_votes
 exec types/%s/flexvotes.cfg
 exec types/%s/votes.cfg""" % (server.lower(), server.lower(), server.lower(), server.lower())
 
-with con:
+with nullcontext():
   cur = con.cursor()
   cur.execute("set names 'utf8mb4';");
 
@@ -66,7 +67,7 @@ with con:
 
       knownTexts |= set([text])
 
-      print(('add_vote "%s" "info"' % text).encode('utf-8'))
+      print('add_vote "%s" "info"' % text)
       continue
 
     originalMapName = words[1]
@@ -88,13 +89,13 @@ with con:
     pointsText2 = '%d/5 ★' % int(words[0])
 
     #try:
-    #  cur.execute("select Time from record_teamrace where Map = '%s' ORDER BY Time LIMIT 1;" % con.escape_string(originalMapName))
+    #  cur.execute("select Time from record_teamrace where Map = '%s' ORDER BY Time LIMIT 1;" % con.escape_string(originalMapName).decode('utf-8'))
     #  bestTime = formatTime(cur.fetchone()[0])
     #except:
     #  pass
 
     try:
-      cur.execute("select count(distinct Name), count(*) from record_race where Map = '%s';" % con.escape_string(originalMapName))
+      cur.execute("select count(distinct Name), count(*) from record_race where Map = '%s';" % con.escape_string(originalMapName).decode('utf-8'))
       line = cur.fetchone()
       countFinishes = line[0]
       countFinishesTotal = line[1]
@@ -102,7 +103,7 @@ with con:
       pass
 
     try:
-      cur.execute("select (select median(Time) over (partition by Map) from record_race where Map = '%s' limit 1), min(Time), max(Time) from record_race where Map = '%s';" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
+      cur.execute("select (select median(Time) over (partition by Map) from record_race where Map = '%s' limit 1), min(Time), max(Time) from record_race where Map = '%s';" % (con.escape_string(originalMapName).decode('utf-8'), con.escape_string(originalMapName).decode('utf-8')))
       line = cur.fetchone()
       medianTime = formatTime(line[0])
       topTime = formatTime(line[1])
@@ -111,30 +112,30 @@ with con:
       pass
 
     try:
-      cur.execute("select Timestamp from record_maps where Map = '%s';" % con.escape_string(originalMapName))
+      cur.execute("select Timestamp from record_maps where Map = '%s';" % con.escape_string(originalMapName).decode('utf-8'))
       releaseDate = cur.fetchone()[0].strftime('%Y-%m-%d')
     except:
       pass
 
     if countFinishes == 0:
-      text = (u'%d ⚑' % countFinishes).encode('utf-8')
+      text = u'%d ⚑' % countFinishes
     else:
       #try:
-      #  cur.execute("select Name from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY TIME LIMIT 1) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID order by Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
+      #  cur.execute("select Name from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY TIME LIMIT 1) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID order by Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName).decode('utf-8')))
       #  bestTeamRank = escapeOption(textJoinNames(map(lambda x: x[0], cur.fetchall())))
       #except:
       #  pass
 
       #if bestTeamRank == "":
       #  try:
-      #    cur.execute("select Name, Time from record_race where Map = '%s' ORDER BY TIME LIMIT 1;" % con.escape_string(originalMapName))
+      #    cur.execute("select Name, Time from record_race where Map = '%s' ORDER BY TIME LIMIT 1;" % con.escape_string(originalMapName).decode('utf-8'))
       #    row = cur.fetchone()
       #    bestRank = escapeOption(row[0])
       #    bestTime = formatTime(row[1])
       #  except:
       #    pass
 
-      text = (u'%d ⚑ | %s ◷' % (countFinishes, medianTime)).encode('utf-8')
+      text = u'%d ⚑ | %s ◷' % (countFinishes, medianTime)
 
         #if len(text) > 63:
         #  d = 63 - len(text) - 3
@@ -165,8 +166,8 @@ with con:
     length = len(fullText.encode('utf-8'))
     if length >= 64:
       mbMapperName = mbMapperName[:60-length] + "..."
-    print 'add_vote "%s%s | %s" "sv_reset_file types/%s/flexreset.cfg; change_map \\"%s\\""' % (originalMapName, mbMapperName, pointsText2, server.lower(), originalMapName)
-    print 'add_vote "%s" "info"' % text
+    print('add_vote "%s%s | %s" "sv_reset_file types/%s/flexreset.cfg; change_map \\"%s\\""' % (originalMapName, mbMapperName, pointsText2, server.lower(), originalMapName))
+    print('add_vote "%s" "info"' % text)
 
     points = globalPoints(server, int(words[0]))
     mbS = 's'
@@ -196,7 +197,7 @@ with con:
     motdMap = '│ Map: %s%s\\n│ Difficulty: %s (%d Point%s)%s\\n│ %d finishes by %d tees%s%s%s' % (originalMapName, mapperText, pointsText, points, mbS, releaseDateText, countFinishesTotal, countFinishes, topTimeText, medianTimeText, worstTimeText)
 
     if server in serverStrings: # Special handling for PermaNovice, don't do this
-        with open('maps/%s.map.cfg' % originalMapName, 'w') as cfg:
+        with open('maps/%s.map.cfg' % originalMapName, 'w', encoding='utf-8') as cfg:
           cfg.write(motdSkeleton % (serverStrings[server], localString, motdMap))
           skill_level = 0 if points < 6 else 1 if points < 16 else 2
           cfg.write("sv_skill_level %d\n" % skill_level)

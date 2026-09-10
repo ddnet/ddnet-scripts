@@ -1,14 +1,14 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from ddnet import *
 import sys
 import msgpack
 import os
-from cgi import escape
+import shutil
+from html import escape
 
-reload(sys)
-sys.setdefaultencoding('utf8')
+sys.stdout.reconfigure(encoding='utf-8')
 
 con = mysqlConnect()
 con.autocommit(True)
@@ -32,7 +32,7 @@ totalPoints = 0
 serverRanks = {}
 types = sys.argv[1:]
 
-f = open("releases")
+f = open("releases", encoding='utf-8')
 releases = []
 for line in f:
   words = line.rstrip('\n').split('\t')
@@ -58,7 +58,7 @@ for x in releases:
     stars = int(stars)
     mappers[name][server].append((date, server, stars, originalMapName, mapperName))
 
-for mapper, servers in mappers.iteritems():
+for mapper, servers in mappers.items():
   serversString = ""
 
   filename = "%s/mappers/%s/index.html" % (webDir, slugify2(u'%s' % mapper))
@@ -66,7 +66,7 @@ for mapper, servers in mappers.iteritems():
   directory = os.path.dirname(filename)
   if not os.path.exists(directory):
     os.makedirs(directory)
-  tf = open(tmpname, 'w')
+  tf = open(tmpname, 'w', encoding='utf-8')
 
   menuText = '<ul>\n'
   menuText += '<li><a href="/mappers/">All Mappers</a></li>\n'
@@ -75,7 +75,7 @@ for mapper, servers in mappers.iteritems():
     if type in servers:
       menuText += '<li><a href="#%s">%s Server</a></li>\n' % (type, type)
   menuText += '</ul>'
-  print >>tf, header('%s - Mapper Profile - DDraceNetwork' % escape(mapper), menuText, '')
+  print(header('%s - Mapper Profile - DDraceNetwork' % escape(mapper), menuText, ''), file=tf)
 
   for type in types:
     mapsString = '<div id="%s" class="longblock div-ranks">\n' % type
@@ -125,18 +125,18 @@ for mapper, servers in mappers.iteritems():
     serversString += mapsString
     serversString += '</div>\n'
 
-  print >>tf, '<div id="global" class="block"><h2>Mapper Profile: %s</h2><br/></div>' % escape(mapper)
-  print >>tf, serversString
-  print >>tf, footer()
+  print('<div id="global" class="block"><h2>Mapper Profile: %s</h2><br/></div>' % escape(mapper), file=tf)
+  print(serversString, file=tf)
+  print(footer(), file=tf)
 
   tf.close()
   os.rename(tmpname, filename)
 
-print header('Mappers - DDraceNetwork', '', '')
-print '<div id="global" class="longblock"><h2>Mappers</h2><p>%d mappers total:</p>' % len(mappers)
+print(header('Mappers - DDraceNetwork', '', ''))
+print('<div id="global" class="longblock"><h2>Mappers</h2><p>%d mappers total:</p>' % len(mappers))
 cur.execute('CREATE TABLE IF NOT EXISTS record_mappers (Mapper VARCHAR(128) NOT NULL, NumMaps INT DEFAULT 0 NOT NULL, UNIQUE(Mapper));')
 
-for name in sorted(mappers.iterkeys(), key=str.lower):
+for name in sorted(mappers.keys(), key=str.lower):
   servers = mappers[name]
   tmp = ''
   total = 0
@@ -147,7 +147,16 @@ for name in sorted(mappers.iterkeys(), key=str.lower):
         tmp += ', '
       tmp += type + ': ' + str(len(maps))
       total += len(maps)
-  print '<p><a href="%s">%s</a>: %d map%s (%s)</p>' % (mapperWebsite(name), escape(name), total, '' if total == 1 else 's', tmp)
-  cur.execute("INSERT INTO record_mappers (Mapper, NumMaps) VALUES ('%s', '%d') ON DUPLICATE KEY UPDATE NumMaps=VALUES(NumMaps);" % (con.escape_string(name), total))
+  print('<p><a href="%s">&#x202d;%s&#x202d;</a>: %d map%s (%s)</p>' % (mapperWebsite(name), escape(name), total, '' if total == 1 else 's', tmp))
+  cur.execute("INSERT INTO record_mappers (Mapper, NumMaps) VALUES ('%s', '%d') ON DUPLICATE KEY UPDATE NumMaps=VALUES(NumMaps);" % (con.escape_string(name).decode("utf-8"), total))
 
-print '</div>'
+print('</div>')
+
+# Delete old mapper directories which shouldn't exist anymore
+dirs = next(os.walk("/var/www/mappers"))[1]
+for dir in dirs:
+  if deslugify3(dir) not in mappers:
+    print(dir)
+    path = os.path.join("/var/www/mappers", dir)
+    print("Deleting " + path, file=sys.stderr)
+    shutil.rmtree(path)

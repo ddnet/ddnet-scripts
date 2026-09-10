@@ -1,16 +1,16 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from ddnet import *
 import sys
 import os
-from cgi import escape
-from urllib import quote_plus
+from html import escape
+from urllib.parse import quote_plus
 from time import sleep
 from datetime import datetime, timedelta
+from contextlib import nullcontext
 
-reload(sys)
-sys.setdefaultencoding('utf8')
+sys.stdout.reconfigure(encoding='utf-8')
 
 con = mysqlConnect()
 
@@ -25,7 +25,9 @@ totalPoints = 0
 serverRanks = {}
 types = sys.argv[1:]
 
-with con:
+# mysqlclient 2.x (py3) dropped the Connection context-manager protocol that
+# py2 MySQLdb had (it committed on exit). Autocommit is off, so commit explicitly.
+with nullcontext():
   cur = con.cursor()
   cur.execute("set names 'utf8mb4';")
 
@@ -51,7 +53,7 @@ with con:
 
       oldMapName = normalizeMapname(mapName)
 
-      cur.execute("INSERT IGNORE INTO record_maps(Map, Server, Points) VALUES ('%s', '%s', '%d');" % (con.escape_string(mapName), con.escape_string(type), points))
+      cur.execute("INSERT IGNORE INTO record_maps(Map, Server, Points) VALUES ('%s', '%s', '%d');" % (con.escape_string(mapName).decode('utf-8'), con.escape_string(type).decode('utf-8'), points))
 
       try:
         cur.execute("select * from record_%s_teamrace;" % oldMapName)
@@ -59,7 +61,7 @@ with con:
         cur.execute("drop table record_%s_teamrace;" % oldMapName)
 
         for row in rows:
-          cur.execute("INSERT IGNORE INTO record_teamrace(Map, Name, Timestamp, time, ID) VALUES ('%s', '%s', '%s', '%s', '%s');" % (con.escape_string(mapName), con.escape_string(row[0]), row[1], row[2], con.escape_string(row[3])))
+          cur.execute("INSERT IGNORE INTO record_teamrace(Map, Name, Timestamp, time, ID) VALUES ('%s', '%s', '%s', '%s', '%s');" % (con.escape_string(mapName).decode('utf-8'), con.escape_string(row[0]).decode('utf-8'), row[1], row[2], con.escape_string(row[3]).decode('utf-8')))
       except:
         pass
 
@@ -69,6 +71,8 @@ with con:
         cur.execute("drop table record_%s_race;" % oldMapName)
 
         for row in rows:
-          cur.execute("INSERT IGNORE INTO record_race(Map, Name, Timestamp, Time, cp1, cp2, cp3, cp4, cp5, cp6, cp7, cp8, cp9, cp10, cp11, cp12, cp13, cp14, cp15, cp16, cp17, cp18, cp19, cp20, cp21, cp22, cp23, cp24, cp25) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');" % (con.escape_string(mapName), con.escape_string(row[0]), row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13], row[14], row[15], row[16], row[17], row[18], row[19], row[20], row[21], row[22], row[23], row[24], row[25], row[26], row[27]))
+          cur.execute("INSERT IGNORE INTO record_race(Map, Name, Timestamp, Time, cp1, cp2, cp3, cp4, cp5, cp6, cp7, cp8, cp9, cp10, cp11, cp12, cp13, cp14, cp15, cp16, cp17, cp18, cp19, cp20, cp21, cp22, cp23, cp24, cp25) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');" % (con.escape_string(mapName).decode('utf-8'), con.escape_string(row[0]).decode('utf-8'), row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13], row[14], row[15], row[16], row[17], row[18], row[19], row[20], row[21], row[22], row[23], row[24], row[25], row[26], row[27]))
       except:
         pass
+
+  con.commit()

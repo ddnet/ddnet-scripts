@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 from drawille import Canvas, line
 import math
 from time import sleep

@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 import fileinput
 
@@ -21,5 +21,5 @@ for line in fileinput.input():
   elif "[game]: team_join player='" in line and "team=-1" in line:
     lines.append(line)
 
-print codes
-print len(codes)
+print(codes)
+print(len(codes))

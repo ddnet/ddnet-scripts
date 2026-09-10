@@ -5,10 +5,26 @@ import subprocess
 
 with open('/var/www-master1/ddnet/15/servers.json') as f:
     servers = json.load(f)
-with open('/home/teeworlds/servers/serverlist.json') as f:
-    ddnet = json.load(f)
-with open('/home/teeworlds/servers/serverlist-kog.json') as f:
-    kog = json.load(f)
+with open('/home/httpmaster/communities-generated-backcompat.json') as f:
+    communities = json.load(f)
+ddnet_community = None
+kog_community = None
+for community in communities:
+    if community["id"] == "ddnet":
+        if ddnet_community is not None:
+            raise RuntimeError("duplicate ddnet community")
+        ddnet_community = community
+    elif community["id"] == "kog":
+        if kog_community is not None:
+            raise RuntimeError("duplicate kog community")
+        kog_community = community
+if ddnet_community is None:
+    raise RuntimeError("ddnet community not found")
+if kog_community is None:
+    raise RuntimeError("kog community not found")
+
+ddnet = ddnet_community["icon"]["servers"]
+kog = kog_community["icon"]["servers"]
 
 good_names = set()
 good_ips = set()

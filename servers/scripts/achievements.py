@@ -1,16 +1,18 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from ddnet import *
 import sys
 import os
+from contextlib import nullcontext
 
-reload(sys)
-sys.setdefaultencoding('utf8')
+sys.stdout.reconfigure(encoding='utf-8')
 
 con = mysqlConnect()
 
-with con:
+# mysqlclient 2.x (py3) dropped the Connection context-manager protocol that
+# py2 MySQLdb had (it committed on exit). Autocommit is off, so commit explicitly.
+with nullcontext():
   cur = con.cursor()
   cur.execute("set names 'utf8mb4';")
 
@@ -22,6 +24,7 @@ with con:
     words = line.rstrip('\n').split('|')
 
   cur.execute("rename table record_achievements to record_achievements_tmp, record_achievements_tmp to record_achievements;")
+  con.commit()
 
 # Bronze Finisher
 # 100 maps finished

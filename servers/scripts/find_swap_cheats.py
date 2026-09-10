@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 from ddnet import *
 
 with open("out.txt") as f:
@@ -28,4 +28,4 @@ cur.execute("set names 'utf8mb4';")
 cur.execute("select * from record_saves where {};".format(list2))
 rows = cur.fetchall()
 for row in rows:
-    print row
+    print(row)

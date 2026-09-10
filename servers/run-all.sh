@@ -2,6 +2,8 @@
 
 cd ~/servers
 
+find servers -name '*.fifo' -delete
+
 #nohup ./run-versionsrv.sh &
 
 #for i in `cat all-servers`; do
@@ -37,6 +39,7 @@ cd ~/servers
 
 cd ~/servers
 #nohup ./serverstatus-client.py &
+pkill -f masterstats.sh
 nohup scripts/masterstats.sh &
 
 #sshfs -o reconnect testmaps@ddnet.org:/home/teeworlds/servers/test/maps/ test/data/maps &

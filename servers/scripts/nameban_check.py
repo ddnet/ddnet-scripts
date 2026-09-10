@@ -1,11 +1,11 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from ddnet import *
 import sys
+from contextlib import nullcontext
 
-reload(sys)
-sys.setdefaultencoding('utf8')
+sys.stdout.reconfigure(encoding='utf-8')
 
 
 def levenshtein_distance(string1, string2):
@@ -36,7 +36,10 @@ def main():
 
     con = mysqlConnect()
 
-    with con:
+    # mysqlclient 2.x (py3) dropped the Connection context-manager protocol that
+    # py2 MySQLdb had. The block below is read-only, so keep the implicit single
+    # transaction open for a consistent snapshot (matching the old `with con:`).
+    with nullcontext():
         cur = con.cursor()
         cur.execute("set names 'utf8mb4';")
 

@@ -1,10 +1,10 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from ddnet import *
 import re
+from contextlib import nullcontext
 
-reload(sys)
-sys.setdefaultencoding('utf-8')
+sys.stdout.reconfigure(encoding='utf-8')
 
 con = mysqlConnect()
 
@@ -15,7 +15,10 @@ nodes = {}
 def escape(s):
   return re.escape(s)
 
-with con:
+# mysqlclient 2.x (py3) dropped the Connection context-manager protocol that
+# py2 MySQLdb had. The block below is read-only, so keep the implicit single
+# transaction open for a consistent snapshot (matching the old `with con:`).
+with nullcontext():
   cur = con.cursor()
   cur.execute("set names 'utf8mb4';")
 

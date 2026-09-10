@@ -4,6 +4,7 @@ rni 10 3
 
 LOGFILE=execute-all.$$.log
 rm -f $LOGFILE
+
 for i in $(< ~/servers/all-locations); do
   {
     if timeout 30 ssh "$i.ddnet.org" "echo ${1:q} > servers/servers/*.fifo"; then

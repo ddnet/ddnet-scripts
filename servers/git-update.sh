@@ -3,7 +3,7 @@ rni 10 3
 
 cd /home/teeworlds/servers
 
-jq . serverlist.json > /dev/null || (echo "Invalid serverlist.json" && exit 1)
+./update-info-files.sh
 (set +x; ./config_store_d maps/*.map) > /dev/null 2>/dev/null
 
 for i in /home/teeworlds/servers /home/teeworlds/servers/halloween; do
@@ -31,6 +31,8 @@ scripts/update-points.py `cat all-types`
 scripts/releases.py
 scripts/releases-feed.py > /var/www/releases/feed/index.$$.tmp
 mv /var/www/releases/feed/index.$$.tmp /var/www/releases/feed/index.atom
+scripts/releases-mappers.py `cat all-types` > /var/www/mappers/index.$$.tmp
+mv /var/www/mappers/index.$$.tmp /var/www/mappers/index.html
 scripts/tiles.py
 echo -e "\e[1;32mMAIN updated successfully\e[0m") &
 

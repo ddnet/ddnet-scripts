@@ -1,20 +1,19 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from ddnet import *
+from watchlinks import watchLinks
 import sys
 import os
-from cgi import escape
-from urllib import quote_plus
+import sqlite3
+from html import escape
+from urllib.parse import quote_plus
 from datetime import datetime, timedelta
 from collections import defaultdict
 import msgpack
-from diskcache import Cache
 import traceback
 from time import strftime
-
-reload(sys)
-sys.setdefaultencoding('utf8')
+from contextlib import nullcontext
 
 def printFooter():
   generatedTime = strftime("%Y-%m-%d %H:%M:%S")
@@ -54,6 +53,11 @@ def printFooter():
           <td class="multiplier">5</td>
         </tr><tr>
           <td>DDmaX.*</td>
+          <td class="multiplier">4</td>
+          <td class="multiplier">0</td>
+        </tr><tr>
+        </tr><tr>
+          <td>Event</td>
           <td class="multiplier">4</td>
           <td class="multiplier">0</td>
         </tr><tr>
@@ -126,6 +130,8 @@ def printFooter():
 </html>""" % (generatedTime, generatedTime, printDateTimeScript())
 
 con = mysqlConnect()
+# Every rank that has a pre-generated demo, loaded once for all map sections
+watchable = watchLinks()
 
 rankLadder = defaultdict(int)
 teamrankLadder = defaultdict(int)
@@ -137,6 +143,7 @@ players = {}
 maps = {}
 totalPoints = 0
 serverRanks = {}
+recordsFile = '/home/teeworlds/servers/players-records.db'
 if sys.argv[1].startswith("--country="):
   country = sys.argv[1][10:]
   types = sys.argv[2:]
@@ -152,6 +159,7 @@ else:
   mbCountry = ""
   mbCountry2 = ""
 mbCountryInput = ('<input name="country" type="hidden" value="%s">' % country) if country else ''
+mbCountryQuery = ("&country=" + country) if country else ''
 
 menuText = '<ul>'
 menuText += '<li><a href="/ranks/">Global Ranks</a> ('
@@ -169,10 +177,39 @@ for type in types:
 menuText += '<li><a href="#points">Points Calculation</a></li>\n'
 menuText += '</ul>'
 
-with con:
+# mysqlclient 2.x (py3) dropped the Connection context-manager protocol that
+# py2 MySQLdb had. The block below is read-only, so keep the implicit single
+# transaction open for a consistent snapshot (matching the old `with con:`).
+with nullcontext():
   cur = con.cursor()
   cur.execute("set names 'utf8mb4';")
+  cur.execute("SET SESSION max_statement_time=0")  # batch job: allow long queries (global 60s net stays for web/game)
   #cur.execute("set profiling = 1;")
+
+  # Map release dates fetched once for all maps (record_maps is tiny) instead of
+  # one query per map. Replaces the per-map "select DATE_FORMAT(...) from record_maps".
+  releasedByMap = {}
+  cur.execute("select Map, DATE_FORMAT(Timestamp, '%Y-%m-%d') from record_maps;")
+  for r in cur.fetchall():
+    releasedByMap[r[0]] = r[1]
+
+  # Per-(player, map) records are streamed to a temp sqlite instead of held in a
+  # 30 GB in-memory dict; players-cache.py reads it sorted by player to build the
+  # diskcache. Only the global (country=None) run produces the players-cache.
+  recdb = None
+  # Set True if any per-map records query fails (e.g. DB timeout). players-cache.py
+  # only prunes stale players when the run was complete, so a partial run can't
+  # empty the cache by deleting players whose queries happened to fail.
+  incomplete = False
+  if country == None:
+    recordsTmp = recordsFile + '.tmp'
+    recdb = sqlite3.connect(recordsTmp)
+    recdb.execute("PRAGMA journal_mode=OFF")
+    recdb.execute("PRAGMA synchronous=OFF")
+    recdb.execute("DROP TABLE IF EXISTS records")
+    recdb.execute("CREATE TABLE records (player TEXT, mapname TEXT, teamrank INT, rnk INT, finishes INT, firstfinish TEXT, time REAL, server TEXT)")
+    reccur = recdb.cursor()
+
   for type in types:
     serversString1 = ""
     serversString2 = ""
@@ -184,7 +221,7 @@ with con:
     monthlyServerPointsLadder = defaultdict(int)
     yearlyServerPointsLadder = defaultdict(int)
 
-    f = open("types/%s/maps" % type.lower(), 'r')
+    f = open("types/%s/maps" % type.lower(), 'r', encoding='utf-8')
 
     serversString1 += '<div id="%s" class="longblock div-ranks">\n' % type
     serversString1 += '<div class="right"><form id="mapform" action="/maps/" method="get">%s<input name="map" class="typeahead" type="text" placeholder="Map search"><input type="submit" value="Map search" style="position: absolute; left: -9999px"></form><br><form id="mapperform" action="/maps/" method="get"><input id="mappersearch" name="mapper" class="typeahead" type="text" placeholder="Mapper search"><input type="submit" value="Mapper search" style="position: absolute; left: -9999px"></form><br><form id="playerform" action="/players/" method="get"><input name="player" class="typeahead" type="text" placeholder="Player search"><input type="submit" value="Player search" style="position: absolute; left: -9999px"></form></div>' % mbCountryInput
@@ -250,14 +287,17 @@ with con:
       currentPosition = 1
       countTeamFinishes = 0
       skips = 1
+      mapMaps = {}
+      mapServers = {}
 
       try:
         if country == None:
-          cur.execute("select distinct r.Name, r.ID, r.Time, r.Timestamp, (select substring(Server, 1, 3) from record_race where Map = r.Map and Name = r.Name and Time = r.Time limit 1) as Server from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID order by r.Time, r.ID, r.Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName)))
+          cur.execute("select distinct r.Name, r.ID, r.Time, r.Timestamp, (select substring(Server, 1, 3) from record_race where Map = r.Map and Name = r.Name and Time = r.Time limit 1) as Server, r.GameID from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID order by r.Time, r.ID, r.Name;" % (con.escape_string(originalMapName).decode("utf-8"), con.escape_string(originalMapName).decode("utf-8")))
         else:
-          cur.execute("select distinct r.Name, r.ID, r.Time, r.Timestamp, n.Server from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID inner join ((select distinct Map, Name, Time, SUBSTRING(Server, 1, 3) as Server from record_race %s) as n) on r.Map = n.Map and r.Name = n.Name and r.Time = n.Time order by r.Time, r.ID, r.Name;" % (con.escape_string(originalMapName), con.escape_string(originalMapName), mbCountry2))
+          cur.execute("select distinct r.Name, r.ID, r.Time, r.Timestamp, n.Server, r.GameID from ((select distinct ID from record_teamrace where Map = '%s' ORDER BY Time) as l) left join (select * from record_teamrace where Map = '%s') as r on l.ID = r.ID inner join ((select distinct Map, Name, Time, SUBSTRING(Server, 1, 3) as Server from record_race %s) as n) on r.Map = n.Map and r.Name = n.Name and r.Time = n.Time order by r.Time, r.ID, r.Name;" % (con.escape_string(originalMapName).decode("utf-8"), con.escape_string(originalMapName).decode("utf-8"), mbCountry2))
         rows = cur.fetchall()
       except:
+        incomplete = True
         traceback.print_exc()
       if len(rows) > 0:
         ID = rows[0][1]
@@ -268,7 +308,7 @@ with con:
             fNames = []
             for name in names:
               fNames.append('<a href="%s">%s</a>' % (escape(playerWebsite(u'%s' % name)), escape(name)))
-            teamRanks.append((currentRank, joinNames(fNames), time, timestamp, foundCountry))
+            teamRanks.append((currentRank, joinNames(fNames), time, timestamp, foundCountry, foundGameId))
             names = []
 
           countTeamFinishes += 1
@@ -284,14 +324,15 @@ with con:
 
         if row[0] not in players:
           players[row[0]] = Player({}, {})
-        if originalMapName not in players[row[0]].maps:
-          players[row[0]].maps[originalMapName] = PlayerMap(currentRank, 0, 0, "2030-10-10 00:00:00", 0.0)
+        if row[0] not in mapMaps:
+          mapMaps[row[0]] = PlayerMap(currentRank, 0, 0, "2030-10-10 00:00:00", 0.0)
 
         if currentPosition <= 10:
           time = row[2]
           timestamp = row[3]
           names.append(row[0])
           foundCountry = row[4] if row[4] else 'UNK'
+          foundGameId = row[5]
 
         if currentRank <= 10 and row[0] not in namesOnMap:
           namesOnMap[row[0]] = True
@@ -305,7 +346,7 @@ with con:
         fNames = []
         for name in names:
           fNames.append('<a href="%s">%s</a>' % (escape(playerWebsite(u'%s' % name)), escape(name)))
-        teamRanks.append((currentRank, joinNames(fNames), time, timestamp, foundCountry))
+        teamRanks.append((currentRank, joinNames(fNames), time, timestamp, foundCountry, foundGameId))
 
       if time > 0:
         countTeamFinishes += 1
@@ -315,9 +356,10 @@ with con:
       countFinishes = 0
 
       try:
-        cur.execute("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, l.Server from (select * from record_race where Map = '%s' %s) as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp from record_race where Map = '%s' %s group by Name order by minTime ASC) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTime, l.Name;" % (con.escape_string(originalMapName), mbCountry, con.escape_string(originalMapName), mbCountry))
+        cur.execute("select l.Name, minTime, l.Timestamp, playCount, minTimestamp, l.Server, l.GameID from (select * from record_race where Map = '%s' %s) as l JOIN (select Name, min(Time) as minTime, count(*) as playCount, min(Timestamp) as minTimestamp from record_race where Map = '%s' %s group by Name order by minTime ASC) as r on l.Time = r.minTime and l.Name = r.Name GROUP BY Name ORDER BY minTime, l.Name;" % (con.escape_string(originalMapName).decode("utf-8"), mbCountry, con.escape_string(originalMapName).decode("utf-8"), mbCountry))
         rows = cur.fetchall()
       except:
+        incomplete = True
         traceback.print_exc()
 
       countFinishes = len(rows)
@@ -355,10 +397,11 @@ with con:
 
         if row[0] not in players:
           players[row[0]] = Player({}, {})
-        if originalMapName not in players[row[0]].maps:
-          players[row[0]].maps[originalMapName] = PlayerMap(0, currentRank, row[3], row[4], row[1])
+        if row[0] not in mapMaps:
+          mapMaps[row[0]] = PlayerMap(0, currentRank, row[3], row[4], row[1])
         else:
-          players[row[0]].maps[originalMapName] = PlayerMap(players[row[0]].maps[originalMapName][0], currentRank, row[3], row[4], row[1])
+          mapMaps[row[0]] = PlayerMap(mapMaps[row[0]][0], currentRank, row[3], row[4], row[1])
+        mapServers[row[0]] = row[5]
 
         if row[5] != None:
           if row[5] not in players[row[0]].servers:
@@ -367,10 +410,15 @@ with con:
             players[row[0]].servers[row[5]] += 1
 
         if currentPosition <= 10:
-          ranks.append((currentRank, row[0], row[1], row[2], row[3], row[5] if row[5] else 'UNK'))
+          ranks.append((currentRank, row[0], row[1], row[2], row[3], row[5] if row[5] else 'UNK', row[6]))
         if currentRank <= 10 and type != "Fun":
           rankLadder[row[0]] += points(currentRank)
           serverRankLadder[row[0]] += points(currentRank)
+
+      # Stream this map's per-player records to the temp store (global run only).
+      if country == None:
+        reccur.executemany("INSERT INTO records VALUES (?,?,?,?,?,?,?,?)",
+          [(p, originalMapName, pm[0], pm[1], pm[2], str(pm[3]), pm[4], mapServers.get(p)) for p, pm in mapMaps.items()])
 
       if countTeamFinishes == 1:
         mbS = ""
@@ -387,17 +435,10 @@ with con:
 
       if countFinishes:
         try:
-          cur.execute("select (select median(Time) over (partition by Map) from record_race where Map = '%s' %s limit 1), min(Timestamp), max(Timestamp) from record_race where Map = '%s' %s;" % (con.escape_string(originalMapName), mbCountry, con.escape_string(originalMapName), mbCountry))
+          cur.execute("select (select median(Time) over (partition by Map) from record_race where Map = '%s' %s limit 1), min(Timestamp), max(Timestamp) from record_race where Map = '%s' %s;" % (con.escape_string(originalMapName).decode("utf-8"), mbCountry, con.escape_string(originalMapName).decode("utf-8"), mbCountry))
           rows = cur.fetchall()
           avgTime = " (median time: %s)" % formatTime(rows[0][0])
           finishTimes = "first finish: %s, last finish: %s" % (escape(formatDate(rows[0][1])), escape(formatDate(rows[0][2])))
-        except:
-          pass
-
-        try:
-          cur.execute("select count(Name) from record_race where Map = '%s' %s;" % (con.escape_string(originalMapName), mbCountry))
-          rows = cur.fetchall()
-          finishTimes += ", total finishes: %d" % rows[0][3]
         except:
           pass
 
@@ -405,9 +446,9 @@ with con:
 
       try:
         if country == None:
-          cur.execute("select count(Name) from record_teamrace where Map = '%s' group by ID order by count(Name) desc limit 1;" % con.escape_string(originalMapName))
+          cur.execute("select count(Name) from record_teamrace where Map = '%s' group by ID order by count(Name) desc limit 1;" % con.escape_string(originalMapName).decode("utf-8"))
         else:
-          cur.execute("select count(record_teamrace.Name) from (record_teamrace join record_race on record_teamrace.Map = record_race.Map and record_teamrace.Name = record_race.Name and record_teamrace.Time = record_race.Time) where record_teamrace.Map = '%s' %s group by ID order by count(record_teamrace.Name) desc limit 1;" % (con.escape_string(originalMapName), mbCountry))
+          cur.execute("select count(record_teamrace.Name) from (record_teamrace join record_race on record_teamrace.Map = record_race.Map and record_teamrace.Name = record_race.Name and record_teamrace.Time = record_race.Time) where record_teamrace.Map = '%s' %s group by ID order by count(record_teamrace.Name) desc limit 1;" % (con.escape_string(originalMapName).decode("utf-8"), mbCountry))
         rows = cur.fetchall()
         biggestTeam = " (biggest team: %d)" % rows[0][0]
       except:
@@ -441,21 +482,18 @@ with con:
         traceback.print_exc()
 
       mbReleased = ""
-      try:
-        cur.execute("select DATE_FORMAT(Timestamp, '%%Y-%%m-%%d') from record_maps where Map = '%s';" % con.escape_string(originalMapName))
-        rows = cur.fetchall()
-        if rows[0][0] != "0000-00-00":
-          mbReleased = "Released: %s<br/>" % rows[0][0]
-      except:
-        pass
+      if originalMapName in releasedByMap:
+        released = releasedByMap[originalMapName]
+        if released != "0000-00-00":
+          mbReleased = "Released: %s<br/>" % released
 
       if type == "Solo" or type == "Race" or type == "Dummy":
         mapsStrings[-1] += u'<div class="block2 info" id="map-%s"><h3 class="inline"><a href="%s">%s</a></h3><p class="inline">%s</p><p>%sDifficulty: %s, Points: %d<br/><a href="/mappreview/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span></p></div>\n' % (escape(mapName), mapWebsite(originalMapName, country), formattedMapName, mbMapperName, mbReleased, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime))
-        mapsStrings[-1] += printExactSoloRecords("Records", "records", ranks, not country)
+        mapsStrings[-1] += printExactSoloRecords("Records", "records", ranks, not country, watchable.get((originalMapName, 'solo')))
       else:
         mapsStrings[-1] += u'<div class="block2 info" id="map-%s"><h3 class="inline"><a href="%s">%s</a></h3><p class="inline">%s</p><p>%sDifficulty: %s, Points: %d<br/><a href="/mappreview/?map=%s"><img class="screenshot" alt="Screenshot" src="/ranks/maps/%s.png" width="360" height="225" /></a>%s<br/><span title="%s">%d tee%s finished%s</span><br/>%d team%s finished%s</p></div>\n' % (escape(mapName), mapWebsite(originalMapName, country), formattedMapName, mbMapperName, mbReleased, escape(renderStars(stars)), globalPoints(type, stars), quote_plus(originalMapName), escape(mapName), mbMapInfo, finishTimes, countFinishes, mbS2, escape(avgTime), countTeamFinishes, mbS, escape(biggestTeam))
-        mapsStrings[-1] += printTeamRecords("Team Records", "teamrecords", teamRanks, not country)
-        mapsStrings[-1] += printSoloRecords("Records", "records", ranks, not country)
+        mapsStrings[-1] += printTeamRecords("Team Records", "teamrecords", teamRanks, not country, watchable.get((originalMapName, 'team')))
+        mapsStrings[-1] += printSoloRecords("Records", "records", ranks, not country, watchable.get((originalMapName, 'solo')))
       mapsStrings[-1] += '<br/>\n'
 
     serverPointsRanks = sorted(serverPointsLadder.items(), key=lambda r: r[1], reverse=True)
@@ -477,7 +515,7 @@ with con:
     cur.execute("select * from (select l.Timestamp, l.Map, Name, Time, l.Server, record_maps.Server as Type from (select Timestamp, Map, Name, Time, Server from record_race %s) as l inner join record_maps on l.Map = record_maps.Map) as r where Type = '%s' and Timestamp > '%s' order by Timestamp desc limit 500;" % (mbCountry2, type, formatDate(datetime.now() - timedelta(days=7))))
     rows = cur.fetchall()
 
-    lastString = '<div class="block4"><h3>Last Finishes</h3><table class="tight">'
+    lastString = '<div class="block4"><h3>Latest Finishes <button style="display: inline-block; margin-left: 10px;" id="play-button">⏸︎</button></h3><table class="tight" id="last-finishes">'
 
     for i, row in enumerate(rows):
       lastString += '<tr>' if i < 10 else '<tr class="allPoints" style="display: none">'
@@ -488,6 +526,78 @@ with con:
         lastString += '<td><span data-type="date" data-date="%s" data-datefmt="time" title="%s">%s</span>: <img src="/countryflags/%s.png" alt="%s" height="15"/> <a href="%s">%s</a> by <a href="%s">%s</a> (%s)</td></tr>' % (dateWithTz, escape(formatDate(row[0])), escape(formatDateShort(row[0])), row[4], row[4], mapWebsite(row[1], country), escape(row[1]), escape(playerWebsite(row[2])), escape(row[2]), escape(formatTime(row[3])))
 
     lastString += '</table></div><br/>'
+    lastString += '''<script>
+  function updateLastFinishes(finishes) {
+      const tbody = document.querySelector('#last-finishes tbody');
+
+      tbody.innerHTML = '';
+
+      finishes.forEach(finish => {
+        const row = document.createElement('tr');
+        const date = new Date(finish.timestamp * 1000);
+        const time = Number(finish.time);
+        const seconds = Math.floor(time %% 60);
+        const minutes = Math.floor((time %% 3600) / 60);
+        const hours = Math.floor(time / 3600);
+        const finishTime = {
+          hours: String(hours).padStart(2, '0'),
+          minutes: String(minutes).padStart(2, '0'),
+          seconds: String(seconds).padStart(2, '0'),
+        }
+
+        const cells = [
+          `<td>
+            <span data-type="date" data-date="${date}" data-datefmt="time" title="${date.toLocaleTimeString()}">${date.toLocaleTimeString()}</span>:
+            <img src="/countryflags/${finish.server}.png" alt="${finish.server}" height="15">
+            <a href="/maps/${finish.map}/">${finish.map}</a> by
+            <a href="/players/${finish.name}/">${finish.name}</a>
+            (${finishTime.hours > 0 ? `${finishTime.hours}:` : ''}${finishTime.minutes}:${finishTime.seconds})
+          </td>`
+        ];
+
+        row.innerHTML = cells.join('');
+        tbody.appendChild(row);
+      });
+    }
+
+
+  async function fetchQueryResults() {
+    try {
+      const response = await fetch("/maps/?latest=1&server=%s%s");
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const finishes = data?.slice(0,20) ?? [];
+      updateLastFinishes(finishes);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
+
+  let intervalId = setInterval(fetchQueryResults, 1000);
+
+  fetchQueryResults();
+
+  const playButton = document.querySelector('#play-button');
+
+
+  playButton.addEventListener('click', () => {
+    if (intervalId) {
+      // Stop the interval
+      clearInterval(intervalId);
+      intervalId = null;
+      playButton.textContent = '⏵︎';
+    } else {
+      // Start the interval
+      fetchQueryResults();
+      intervalId = setInterval(fetchQueryResults, 1000);
+      playButton.textContent = '⏸︎';
+    }
+  });
+</script>''' % (type, mbCountryQuery,)
 
     serversString2 += printLadder("Points (past 365 days)", yearlyServerPointsRanks, players, not country)
     serversString2 += printLadder("Points (past 30 days)", monthlyServerPointsRanks, players, not country)
@@ -515,40 +625,29 @@ with con:
       if not os.path.exists(directory):
         os.makedirs(directory)
 
-      tf = open(tmpname, 'w')
+      tf = open(tmpname, 'w', encoding='utf-8')
 
       mbPage = " (%d/%d)" % (i+1, len(mapsStrings)) if len(mapsStrings) > 1 else ""
       if country == None:
-        print >>tf, header("%s Server Ranks%s - DDraceNetwork" % (type, mbPage), menuText, "")
+        print(header("%s Server Ranks%s - DDraceNetwork" % (type, mbPage), menuText, ""), file=tf)
       else:
-        print >>tf, header("%s %s Server Ranks%s - DDraceNetwork" % (country, type, mbPage), menuText, "")
-      print >>tf, '<p class="toggle"><a href="#" onclick="showClass(\'allPoints\'); return false;">Top 500 / Top 10</a></p>'
+        print(header("%s %s Server Ranks%s - DDraceNetwork" % (country, type, mbPage), menuText, ""), file=tf)
+      print('<p class="toggle"><a href="#" onclick="showClass(\'allPoints\'); return false;">Top 500 / Top 10</a></p>', file=tf)
 
-      print >>tf, '<div id="serverranks" style="display: ">'
-      print >>tf, serversString1 % mbPage
-      print >>tf, serversString2
-      print >>tf, '<div class="all-%s" style="display: ">\n' % type
-      print >>tf, mapsString
-      print >>tf, '</div>\n'
-      print >>tf, '</div>'
+      print('<div id="serverranks" style="display: ">', file=tf)
+      print(serversString1 % mbPage, file=tf)
+      print(serversString2, file=tf)
+      print('<div class="all-%s" style="display: ">\n' % type, file=tf)
+      print(mapsString, file=tf)
+      print('</div>\n', file=tf)
+      print('</div>', file=tf)
       if len(mapsStrings) > 1:
-        print >>tf, '<div class="longblock div-ranks"><h3 style="text-align: center;">'
-        for i in range(len(mapsStrings)):
-          if i > 0:
-            print >>tf, ' '
-          if i == 0:
-            if country:
-              link = '/ranks/%s/%s/' % (country.lower(), type.lower())
-            else:
-              link = '/ranks/%s/' % type.lower()
-          else:
-            if country:
-              link = '/ranks/%s/%s/%d/' % (country.lower(), type.lower(), i+1)
-            else:
-              link = '/ranks/%s/%d/' % (type.lower(), i+1)
-          print >>tf, '<a href="%s">%d</a>' % (link, i+1)
-        print >>tf, '</h3></div>'
-      print >>tf, printFooter()
+        if country:
+          baseLink = '/ranks/%s/%s/' % (country.lower(), type.lower())
+        else:
+          baseLink = '/ranks/%s/' % type.lower()
+        print(printPagination(baseLink, i+1, len(mapsStrings)), file=tf)
+      print(printFooter(), file=tf)
 
       tf.close()
       os.rename(tmpname, filename)
@@ -557,7 +656,7 @@ with con:
   cur.execute("select l.Timestamp, l.Map, Name, Time, l.Server, record_maps.Server from ((select * from record_race %s order by Timestamp desc limit 500) as l inner join record_maps on l.Map = record_maps.Map) order by Timestamp desc;" % mbCountry2)
   rows = cur.fetchall()
 
-  lastString = '<div class="block4"><h3>Last Finishes</h3><table class="tight">'
+  lastString += '<div class="block4"><h3>Latest Finishes <button style="display: inline-block; margin-left: 10px;" id="play-button">⏸︎</button></h3><table class="tight" id="last-finishes">'
 
   for i, row in enumerate(rows):
     lastString += '<tr>' if i < 20 else '<tr class="allPoints" style="display: none">'
@@ -568,6 +667,78 @@ with con:
       lastString += '<td><span data-type="date" data-date="%s" data-datefmt="time" title="%s">%s</span>: <img src="/countryflags/%s.png" alt="%s" height="15"/> <a href="%s/">%s</a>: <a href="%s">%s</a> by <a href="%s">%s</a> (%s)</td></tr>' % (dateWithTz, escape(formatDate(row[0])), escape(formatDateShort(row[0])), row[4], row[4], row[5].lower(), row[5], mapWebsite(row[1], country), escape(row[1]), escape(playerWebsite(row[2])), escape(row[2]), escape(formatTime(row[3])))
 
   lastString += '</table></div><br/>'
+  lastString += '''<script>
+  function updateLastFinishes(finishes) {
+      const tbody = document.querySelector('#last-finishes tbody');
+
+      tbody.innerHTML = '';
+
+      finishes.forEach(finish => {
+        const row = document.createElement('tr');
+        const date = new Date(finish.timestamp * 1000);
+        const time = Number(finish.time);
+        const seconds = Math.floor(time %% 60);
+        const minutes = Math.floor((time %% 3600) / 60);
+        const hours = Math.floor(time / 3600);
+        const finishTime = {
+          hours: String(hours).padStart(2, '0'),
+          minutes: String(minutes).padStart(2, '0'),
+          seconds: String(seconds).padStart(2, '0'),
+        }
+
+        const cells = [
+          `<td>
+            <span data-type="date" data-date="${date}" data-datefmt="time" title="${date.toLocaleTimeString()}">${date.toLocaleTimeString()}</span>:
+            <img src="/countryflags/${finish.server}.png" alt="${finish.server}" height="15">
+            <a href="/maps/${finish.map}/">${finish.map}</a> by
+            <a href="/players/${finish.name}/">${finish.name}</a>
+            (${finishTime.hours > 0 ? `${finishTime.hours}:` : ''}${finishTime.minutes}:${finishTime.seconds})
+          </td>`
+        ];
+
+        row.innerHTML = cells.join('');
+        tbody.appendChild(row);
+      });
+    }
+
+
+  async function fetchQueryResults() {
+    try {
+      const response = await fetch("/maps/?latest=1%s");
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const finishes = data?.slice(0,20) ?? [];
+      updateLastFinishes(finishes);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
+
+  let intervalId = setInterval(fetchQueryResults, 1000);
+
+  fetchQueryResults();
+
+  const playButton = document.querySelector('#play-button');
+
+
+  playButton.addEventListener('click', () => {
+    if (intervalId) {
+      // Stop the interval
+      clearInterval(intervalId);
+      intervalId = null;
+      playButton.textContent = '⏵︎';
+    } else {
+      // Start the interval
+      fetchQueryResults();
+      intervalId = setInterval(fetchQueryResults, 1000);
+      playButton.textContent = '⏸︎';
+    }
+  });
+</script>''' % (mbCountryQuery,)
 
   #cur.execute('show profiles')
   #for row in cur:
@@ -596,35 +767,35 @@ directory = os.path.dirname(filename)
 if not os.path.exists(directory):
   os.makedirs(directory)
 
-tf = open(tmpname, 'w')
+tf = open(tmpname, 'w', encoding='utf-8')
 
 if country == None:
-  print >>tf, header("Ranks - DDraceNetwork", menuText, "")
+  print(header("Ranks - DDraceNetwork", menuText, ""), file=tf)
 else:
-  print >>tf, header("%s Ranks - DDraceNetwork" % country, menuText, "")
-print >>tf, '<p class="toggle"><a href="#" onclick="showClass(\'allPoints\'); return false;">Top 500 / Top 20</a></p>'
+  print(header("%s Ranks - DDraceNetwork" % country, menuText, ""), file=tf)
+print('<p class="toggle"><a href="#" onclick="showClass(\'allPoints\'); return false;">Top 500 / Top 20</a></p>', file=tf)
 
-print >>tf, '<div id="global" class="block">\n'
-print >>tf, '<div class="right"><form id="mapform" action="/maps/" method="get">%s<input name="map" class="typeahead" type="text" placeholder="Map search"><input type="submit" value="Map search" style="position: absolute; left: -9999px"></form><br><form id="mapperform" action="/maps/" method="get"><input id="mappersearch" name="mapper" class="typeahead" type="text" placeholder="Mapper search"><input type="submit" value="Mapper search" style="position: absolute; left: -9999px"></form><br><form id="playerform" action="/players/" method="get"><input name="player" class="typeahead" type="text" placeholder="Player search"><input type="submit" value="Player search" style="position: absolute; left: -9999px"></form></div>' % mbCountryInput
-print >>tf, '<script src="/jquery.js" type="text/javascript"></script>'
-print >>tf, '<script src="/typeahead.bundle.js" type="text/javascript"></script>'
-print >>tf, '<script src="/mapsearch.js" type="text/javascript"></script>'
-print >>tf, '<script src="/mappersearch.js" type="text/javascript"></script>'
-print >>tf, '<script src="/playersearch.js?version=2" type="text/javascript"></script>'
+print('<div id="global" class="block">\n', file=tf)
+print('<div class="right"><form id="mapform" action="/maps/" method="get">%s<input name="map" class="typeahead" type="text" placeholder="Map search"><input type="submit" value="Map search" style="position: absolute; left: -9999px"></form><br><form id="mapperform" action="/maps/" method="get"><input id="mappersearch" name="mapper" class="typeahead" type="text" placeholder="Mapper search"><input type="submit" value="Mapper search" style="position: absolute; left: -9999px"></form><br><form id="playerform" action="/players/" method="get"><input name="player" class="typeahead" type="text" placeholder="Player search"><input type="submit" value="Player search" style="position: absolute; left: -9999px"></form></div>' % mbCountryInput, file=tf)
+print('<script src="/jquery.js" type="text/javascript"></script>', file=tf)
+print('<script src="/typeahead.bundle.js" type="text/javascript"></script>', file=tf)
+print('<script src="/mapsearch.js" type="text/javascript"></script>', file=tf)
+print('<script src="/mappersearch.js" type="text/javascript"></script>', file=tf)
+print('<script src="/playersearch.js?version=2" type="text/javascript"></script>', file=tf)
 if country == None:
-  print >>tf, '<div class="block7"><h2>Global Ranks</h2></div><br/>'
+  print('<div class="block7"><h2>Global Ranks</h2></div><br/>', file=tf)
 else:
-  print >>tf, '<div class="block7"><h2>%s Ranks</h2></div><br/>' % country
-print >>tf, printLadder("Points (%d total)" % totalPoints, pointsRanks, players, not country, 20)
-print >>tf, printLadder("Team Rank", teamrankRanks, players, not country, 20)
-print >>tf, printLadder("Rank", rankRanks, players, not country, 20)
-print >>tf, '<br/>'
-print >>tf, printLadder("Points (past 365 days)", yearlyPointsRanks, players, not country, 20)
-print >>tf, printLadder("Points (past 30 days)", monthlyPointsRanks, players, not country, 20)
-print >>tf, printLadder("Points (past 7 days)", weeklyPointsRanks, players, not country, 20)
-print >>tf, lastString
-print >>tf, '</div>'
-print >>tf, printFooter()
+  print('<div class="block7"><h2>%s Ranks</h2></div><br/>' % country, file=tf)
+print(printLadder("Points (%d total)" % totalPoints, pointsRanks, players, not country, 20), file=tf)
+print(printLadder("Team Rank", teamrankRanks, players, not country, 20), file=tf)
+print(printLadder("Rank", rankRanks, players, not country, 20), file=tf)
+print('<br/>', file=tf)
+print(printLadder("Points (past 365 days)", yearlyPointsRanks, players, not country, 20), file=tf)
+print(printLadder("Points (past 30 days)", monthlyPointsRanks, players, not country, 20), file=tf)
+print(printLadder("Points (past 7 days)", weeklyPointsRanks, players, not country, 20), file=tf)
+print(lastString, file=tf)
+print('</div>', file=tf)
+print(printFooter(), file=tf)
 
 tf.close()
 os.rename(tmpname, filename)
@@ -645,10 +816,13 @@ if country == None:
     out.write(msgpack.packb(serverRanks))
   os.rename(msgpackTmpFile, msgpackFile)
 
-  with Cache('/home/teeworlds/servers/players-cache', eviction_policy='none', sqlite_auto_vacuum=0, sqlite_journal_mode='off') as cache:
-    for player, value in players.items():
-        cache[player] = value
-    cachedPlayers = list(cache.iterkeys())
-    for player in cachedPlayers:
-        if player not in players:
-            del cache[player]
+  # Finalize the records temp store (atomically); players-cache.py streams it
+  # into the diskcache sorted by player, so nothing holds all players in memory.
+  # user_version = 1 signals a complete run (all queries succeeded); players-cache.py
+  # only prunes stale players when this is 1, so a partial run can't empty the cache.
+  if incomplete:
+    print("ranks.py: WARNING incomplete run (a records query failed); players-cache will NOT prune", file=sys.stderr)
+  recdb.execute("PRAGMA user_version = %d" % (0 if incomplete else 1))
+  recdb.commit()
+  recdb.close()
+  os.rename(recordsFile + '.tmp', recordsFile)

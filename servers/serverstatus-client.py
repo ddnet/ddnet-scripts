@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 SERVER = "127.0.0.1"
-PORT = 35601
+PORT = 39100
 USER = "ddnet"
 PASSWORD = "SECRET"
 INTERVAL = 1 # Update interval

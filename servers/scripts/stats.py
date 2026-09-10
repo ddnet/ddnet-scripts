@@ -1,14 +1,14 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from ddnet import *
 import sys
 import msgpack
 import locale
-from cgi import escape
 from datetime import datetime, timedelta
 from time import strftime
 from collections import defaultdict, OrderedDict
+from contextlib import nullcontext
 
 def strfdelta(tdelta, fmt):
   d = {}
@@ -25,8 +25,7 @@ def changeStr(now, before):
         return ("+" if int(change) > 0 else "") + "%d%%" % change
 
 locale.setlocale(locale.LC_ALL, 'en_US')
-reload(sys)
-sys.setdefaultencoding('utf8')
+sys.stdout.reconfigure(encoding='utf-8')
 
 ignoredCountries = ("GER2",) #("KSA", "AUS", "FRA")
 now = datetime.today()
@@ -37,9 +36,10 @@ startDateLastDay = now - timedelta(days = 2)
 
 # Finishes
 con = mysqlConnect()
-with con:
+with nullcontext():
   cur = con.cursor()
   cur.execute("set names 'utf8mb4';")
+  cur.execute("SET SESSION max_statement_time=0")  # batch job: allow long queries (global 60s net stays for web/game)
 
   nrMaps = {}
   cur.execute("select Server, count(*) from record_maps group by Server;")
@@ -55,12 +55,12 @@ with con:
     types = f.read().split()
 
   avgTime = {}
-  cur.execute('select record_maps.Server, avg(Time) from record_race inner join record_maps on record_race.Map = record_maps.Map where record_race.Map != "Flappy Bird" and record_race.Map != "Time Shop" and record_race.Map != "Bullseye" and record_race.Map != "Care for your Time" group by record_maps.Server;')
+  cur.execute('select record_maps.Server, avg(Time) from record_race inner join record_maps on record_race.Map = record_maps.Map where record_race.Map not in ("Flappy Bird", "Time Shop", "Bullseye", "Care for your Time", "Edge Jump Pro") group by record_maps.Server;')
   rows = cur.fetchall()
   for row in rows:
       avgTime[row[0]] = formatTime(row[1])
 
-  cur.execute('select avg(Time) from record_race inner join record_maps on record_race.Map = record_maps.Map where record_race.Map != "Flappy Bird" and record_race.Map != "Time Shop" and record_race.Map != "Bullseye" and record_race.Map != "Care for your Time";')
+  cur.execute('select avg(Time) from record_race inner join record_maps on record_race.Map = record_maps.Map where record_race.Map not in ("Flappy Bird", "Time Shop", "Bullseye", "Care for your Time", "Edge Jump Pro");')
   rows = cur.fetchall()
   avgTime["Total"] = formatTime(rows[0][0])
 
@@ -69,13 +69,13 @@ with con:
   cur.execute('select record_maps.Server, count(*), count(distinct Name) from record_race inner join record_maps on record_race.Map = record_maps.Map group by record_maps.Server;')
   rows = cur.fetchall()
   for row in rows:
-      nrFinishesType[row[0]] = locale.format("%d", int(row[1]), grouping=True)
-      nrRanksType[row[0]] = locale.format("%d", int(row[2]), grouping=True)
+      nrFinishesType[row[0]] = locale.format_string("%d", int(row[1]), grouping=True)
+      nrRanksType[row[0]] = locale.format_string("%d", int(row[2]), grouping=True)
 
   cur.execute('select count(*), count(distinct Name) from record_race inner join record_maps on record_race.Map = record_maps.Map;')
   rows = cur.fetchall()
-  nrFinishesType["Total"] = locale.format("%d", int(rows[0][0]), grouping=True)
-  nrRanksType["Total"] = locale.format("%d", int(rows[0][1]), grouping=True)
+  nrFinishesType["Total"] = locale.format_string("%d", int(rows[0][0]), grouping=True)
+  nrRanksType["Total"] = locale.format_string("%d", int(rows[0][1]), grouping=True)
 
   def getRanksTyp(result, start, end):
       cur.execute('select record_maps.Server, count(*) from record_race inner join record_maps on record_race.Map = record_maps.Map where record_race.Timestamp >= "%s" and record_race.Timestamp < "%s" group by record_maps.Server;' % (start.strftime("%Y-%m-%d %H:%M:%S"), end.strftime("%Y-%m-%d %H:%M:%S")))
@@ -106,30 +106,30 @@ with con:
     ranksLastDay = ranksTypLastDay.get(typ, 0)
     ranksWeek = ranksTypWeek.get(typ, 0)
     ranksLastWeek = ranksTypLastWeek.get(typ, 0)
-    tableTypes += '<tr><td style="text-align: right;"><strong>%s</strong></td><td style="text-align: right;">%s</td><td style="text-align: right;">%s</td><td style="text-align: right;">%s</td><td style="text-align: right;">%s</td><td style="text-align: right;">%s</td><td style="text-align: right;">%s</td><td style="text-align: right;">%s</td><td style="text-align: right;"><a href="/ranks/%s/">%s</a></td></tr>\n' % (typ, locale.format("%d", ranksDay, grouping=True), changeStr(ranksDay, ranksLastDay), locale.format("%d", ranksWeek, grouping=True), changeStr(ranksWeek, ranksLastWeek), locale.format("%d", nrMaps[typ], grouping=True), avgTime[typ], nrRanksType[typ], typ.lower(), nrFinishesType[typ])
+    tableTypes += '<tr><td style="text-align: right;"><strong>%s</strong></td><td style="text-align: right;">%s</td><td style="text-align: right;">%s</td><td style="text-align: right;">%s</td><td style="text-align: right;">%s</td><td style="text-align: right;">%s</td><td style="text-align: right;">%s</td><td style="text-align: right;">%s</td><td style="text-align: right;"><a href="/ranks/%s/">%s</a></td></tr>\n' % (typ, locale.format_string("%d", ranksDay, grouping=True), changeStr(ranksDay, ranksLastDay), locale.format_string("%d", ranksWeek, grouping=True), changeStr(ranksWeek, ranksLastWeek), locale.format_string("%d", nrMaps[typ], grouping=True), avgTime[typ], nrRanksType[typ], typ.lower(), nrFinishesType[typ])
   # Total
-  tableTypes += '<tr style="border-top: .5em solid transparent;"><td style="text-align: right;"><strong>%s</strong></td><td style="text-align: right;">%s</td><td style="text-align: right;">%s</td><td style="text-align: right;">%s</td><td style="text-align: right;">%s</td><td style="text-align: right;"><a href="/releases/">%s</a></td><td style="text-align: right;">%s</td><td style="text-align: right;">%s</td><td style="text-align: right;"><a href="/ranks/">%s</a></td></tr>' % ("Total", locale.format("%d", ranksTypDay["Total"], grouping=True), changeStr(ranksTypDay["Total"], ranksTypLastDay["Total"]), locale.format("%d", ranksTypWeek["Total"], grouping=True), changeStr(ranksTypWeek["Total"], ranksTypLastWeek["Total"]), locale.format("%d", nrMaps["Total"], grouping=True), avgTime["Total"], nrRanksType["Total"], nrFinishesType["Total"])
+  tableTypes += '<tr style="border-top: .5em solid transparent;"><td style="text-align: right;"><strong>%s</strong></td><td style="text-align: right;">%s</td><td style="text-align: right;">%s</td><td style="text-align: right;">%s</td><td style="text-align: right;">%s</td><td style="text-align: right;"><a href="/releases/">%s</a></td><td style="text-align: right;">%s</td><td style="text-align: right;">%s</td><td style="text-align: right;"><a href="/ranks/">%s</a></td></tr>' % ("Total", locale.format_string("%d", ranksTypDay["Total"], grouping=True), changeStr(ranksTypDay["Total"], ranksTypLastDay["Total"]), locale.format_string("%d", ranksTypWeek["Total"], grouping=True), changeStr(ranksTypWeek["Total"], ranksTypLastWeek["Total"]), locale.format_string("%d", nrMaps["Total"], grouping=True), avgTime["Total"], nrRanksType["Total"], nrFinishesType["Total"])
 
   nrPlayers = {}
   cur.execute("select count(distinct Name) from record_race;")
   rows = cur.fetchall()
-  nrPlayers["Total"] = locale.format("%d", int(rows[0][0]), grouping=True)
+  nrPlayers["Total"] = locale.format_string("%d", int(rows[0][0]), grouping=True)
 
-  record_race = "(select Map, Name, Timestamp, Time, case Server when 'NLD' then 'EUR' when 'GER' then 'EUR' when 'POL' then 'EUR' when 'FRA' then 'EUR' else Server end as Server from record_race) as record_race"
+  record_race = "(select Map, Name, Timestamp, Time, case Server when 'NLD' then 'EUR' when 'GER' then 'EUR' when 'POL' then 'EUR' when 'FRA' then 'EUR' when 'FIN' then 'EUR' else Server end as Server from record_race) as record_race"
   cur.execute("select Server, count(distinct Name) from %s group by Server;" % record_race)
   rows = cur.fetchall()
   for row in rows:
-      nrPlayers[row[0]] = locale.format("%d", int(row[1]), grouping=True)
+      nrPlayers[row[0]] = locale.format_string("%d", int(row[1]), grouping=True)
 
   nrRanks = {}
   cur.execute("select count(*) from record_race;")
   rows = cur.fetchall()
-  nrRanks["Total"] = locale.format("%d", int(rows[0][0]), grouping=True)
+  nrRanks["Total"] = locale.format_string("%d", int(rows[0][0]), grouping=True)
 
   cur.execute("select Server, count(*) from %s group by Server;" % record_race)
   rows = cur.fetchall()
   for row in rows:
-      nrRanks[row[0]] = locale.format("%d", int(row[1]), grouping=True)
+      nrRanks[row[0]] = locale.format_string("%d", int(row[1]), grouping=True)
 
   todayStr = now.strftime("%Y-%m-%d")
   cur.execute('select year(Timestamp), month(Timestamp), day(Timestamp), count(*) from record_race where Timestamp < "%s" group by year(Timestamp), month(Timestamp), day(Timestamp) order by Timestamp;' % todayStr)
@@ -162,7 +162,7 @@ with con:
     currDay = datetime(row[1], row[2], row[3])
 
     if server != oldServer:
-      lastDay = datetime(2013,07,18)
+      lastDay = datetime(2013,7,18)
       if series:
         data.append(series)
       series = {"name": server, "pointInterval": 24 * 3600 * 1000, "pointStart": int(lastDay.strftime("%s")) * 1000, "data": []}
@@ -203,7 +203,7 @@ with con:
         if server != oldServer:
           if series:
             data.append(series)
-          lastDay = datetime(2013,07,18)
+          lastDay = datetime(2013,7,18)
           series = {"name": server, "pointInterval": 24 * 3600 * 1000, "pointStart": int(lastDay.strftime("%s")) * 1000, "data": []}
         else:
           lastDay += timedelta(days=1)
@@ -239,18 +239,18 @@ with open("/home/teeworlds/servers/all-types") as f:
 for x in releases:
   dateString, server, y = x
   date = datetime.strptime(dateString, '%Y-%m-%d %H:%M')
-  if date < datetime(2013,11,01):
+  if date < datetime(2013,11,1):
     continue
 
-  for s2, vals in maps.iteritems():
+  for s2, vals in maps.items():
     if not (date.year, date.month) in vals:
       vals[(date.year, date.month)] = 0
   maps[server][(date.year, date.month)] += 1
 
 data = []
-for server, dates in maps.iteritems():
+for server, dates in maps.items():
   series = {"name": server, "data": []}
-  for date, num in sorted(dates.iteritems()):
+  for date, num in sorted(dates.items()):
     series["data"].append([int(datetime(date[0], date[1], 1).strftime("%s")) * 1000, num])
   data.append(series)
 filename = "%s/stats/mapreleases.json" % webDir
@@ -324,12 +324,12 @@ with open('%s/status/csv/bycountry' % webDir) as f:
 
 scale = 30
 data = []
-for server, dates in players.iteritems():
+for server, dates in players.items():
   series = {"name": server, "pointInterval": scale * 2 * 60 * 1000, "pointStart": int(startDate.strftime("%s")) * 1000, "data": []}
   pos = 1
   aggNum = 0
   lastDate = startDate
-  for date, num in sorted(dates.iteritems()):
+  for date, num in sorted(dates.items()):
     currDate = datetime(date.year, date.month, date.day, date.hour, date.minute)
     lastDate += timedelta(minutes=2)
     while lastDate < currDate:
@@ -354,27 +354,27 @@ os.rename(tmpname, filename)
 
 scale = 720
 data = []
-for server, dates in players.iteritems():
-  if dates.keys()[0] < startDate:
-    startDate = dates.keys()[0]
-for server, dates in players.iteritems():
+for server, dates in players.items():
+  if next(iter(dates)) < startDate:
+    startDate = next(iter(dates))
+for server, dates in players.items():
   series = {"name": server, "pointInterval": scale * 2 * 60 * 1000, "pointStart": int(startDate.strftime("%s")) * 1000, "data": []}
   pos = 1
   aggNum = 0
   lastDate = startDate
-  for date, num in sorted(dates.iteritems()):
+  for date, num in sorted(dates.items()):
     currDate = datetime(date.year, date.month, date.day, date.hour, date.minute)
     lastDate += timedelta(minutes=2)
     while lastDate < currDate:
       lastDate += timedelta(minutes=2)
       if pos == 0:
-        series["data"].append(aggNum / 30)
+        series["data"].append(aggNum // 30)
         aggNum = 0
       pos = (pos + 1) % scale
 
     aggNum += num
     if pos == 0:
-      series["data"].append(aggNum / 30)
+      series["data"].append(aggNum // 30)
       aggNum = 0
     pos = (pos + 1) % scale
   data.append(series)
@@ -401,13 +401,13 @@ with open('%s/status/csv/bymod' % webDir) as f:
 
 scale = 30
 data = []
-for server, dates in players.iteritems():
+for server, dates in players.items():
   series = {"name": server, "pointInterval": scale * 2 * 60 * 1000, "pointStart": int(startDate.strftime("%s")) * 1000, "data": []}
   n = ""
   pos = 1
   aggNum = 0
   lastDate = startDate
-  for date, num in sorted(dates.iteritems()):
+  for date, num in sorted(dates.items()):
     currDate = datetime(date.year, date.month, date.day, date.hour, date.minute)
     lastDate += timedelta(minutes=2)
     while lastDate < currDate:
@@ -432,25 +432,25 @@ os.rename(tmpname, filename)
 
 scale = 720
 data = []
-for server, dates in players.iteritems():
+for server, dates in players.items():
   series = {"name": server, "pointInterval": scale * 2 * 60 * 1000, "pointStart": int(startDate.strftime("%s")) * 1000, "data": []}
   n = ""
   pos = 1
   aggNum = 0
   lastDate = startDate
-  for date, num in sorted(dates.iteritems()):
+  for date, num in sorted(dates.items()):
     currDate = datetime(date.year, date.month, date.day, date.hour, date.minute)
     lastDate += timedelta(minutes=2)
     while lastDate < currDate:
       lastDate += timedelta(minutes=2)
       if pos == 0:
-        series["data"].append(aggNum / 30)
+        series["data"].append(aggNum // 30)
         aggNum = 0
       pos = (pos + 1) % scale
 
     aggNum += num
     if pos == 0:
-      series["data"].append(aggNum / 30)
+      series["data"].append(aggNum // 30)
       aggNum = 0
     pos = (pos + 1) % scale
   data.append(series)
@@ -490,12 +490,12 @@ for server, avgDay in sorted(countryAveragesDay.items(), key=lambda x: -x[1]):
     sumPlayersLastDay += playersLastDay
     tableCountries += "<tr><td style=\"text-align: right;\"><strong>%s</strong></td><td style=\"text-align: right;\">%.2f</td><td style=\"text-align: right;\">%s</td><td style=\"text-align: right;\">%.2f</td><td style=\"text-align: right;\">%s</td><td style=\"text-align: right;\">%d&nbsp;at&nbsp;%s</td><td style=\"text-align: right;\">%s</td><td style=\"text-align: right;\"><a href=\"/ranks/%s/\">%s</a></td>\n" % (server, playersDay, changeStr(playersDay, playersLastDay), playersWeek, changeStr(playersWeek, playersLastWeek), countryRecords[server][0], countryRecords[server][1].replace(" ", "&nbsp;"), nrPlayers.get(server, 0), server.lower(), nrRanks.get(server, 0))
 # Total
-tableCountries += "<tr style=\"border-top: .5em solid transparent;\"><td style=\"text-align: right;\"><strong>Total</strong></td><td style=\"text-align: right;\">%.2f</td><td style=\"text-align: right;\">%s</td><td style=\"text-align: right;\">%.2f</td><td style=\"text-align: right;\">%s</td><td style=\"text-align: right;\"><a href=\"4041/\">%d&nbsp;at&nbsp;%s</a></td><td style=\"text-align: right;\"><a href=\"/players/\">%s</a></td><td style=\"text-align: right;\"><a href=\"/ranks/\">%s</a></td>" % (sumPlayersDay, changeStr(sumPlayersDay, sumPlayersLastDay), sumPlayersWeek, changeStr(sumPlayersWeek, sumPlayersLastWeek), countryRecords["Total"][0], countryRecords["Total"][1].replace(" ", "&nbsp;"), nrPlayers["Total"], nrRanks["Total"])
+tableCountries += "<tr style=\"border-top: .5em solid transparent;\"><td style=\"text-align: right;\"><strong>Total</strong></td><td style=\"text-align: right;\">%.2f</td><td style=\"text-align: right;\">%s</td><td style=\"text-align: right;\">%.2f</td><td style=\"text-align: right;\">%s</td><td style=\"text-align: right;\"><a href=\"12277/\">%d&nbsp;at&nbsp;%s</a></td><td style=\"text-align: right;\"><a href=\"/players/\">%s</a></td><td style=\"text-align: right;\"><a href=\"/ranks/\">%s</a></td>" % (sumPlayersDay, changeStr(sumPlayersDay, sumPlayersLastDay), sumPlayersWeek, changeStr(sumPlayersWeek, sumPlayersLastWeek), countryRecords["Total"][0], countryRecords["Total"][1].replace(" ", "&nbsp;"), nrPlayers["Total"], nrRanks["Total"])
 
-print text % (tableCountries, tableTypes)
+print(text % (tableCountries, tableTypes))
 
-print """<p class="toggle">Refreshed: %s</p>
+print("""<p class="toggle">Refreshed: %s</p>
 </section>
 </article>
 </body>
-</html>""" % strftime("%Y-%m-%d %H:%M")
+</html>""" % strftime("%Y-%m-%d %H:%M"))

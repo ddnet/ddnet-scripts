@@ -1,11 +1,11 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from ddnet import *
 import sys
+from contextlib import nullcontext
 
-reload(sys)
-sys.setdefaultencoding('utf8')
+sys.stdout.reconfigure(encoding='utf-8')
 
 pos_values = (
     (46, 47),  # m_Pos
@@ -42,7 +42,9 @@ def main():
 
     con = mysqlConnect()
 
-    with con:
+    # mysqlclient 2.x (py3) dropped the Connection context-manager protocol that
+    # py2 MySQLdb had (it committed on exit). Autocommit is off, so commit explicitly.
+    with nullcontext():
         cur = con.cursor()
         cur.execute('SET names "utf8mb4";')
 
@@ -51,6 +53,8 @@ def main():
 
         for savegame, code in rows:
             cur.execute('UPDATE record_saves SET Savegame = %s WHERE Map = %s AND code = %s;', (shift_savegame(savegame, x=x, y=y), map_, code))
+
+        con.commit()
 
     print('Updated %d row(s)' % len(rows))
 

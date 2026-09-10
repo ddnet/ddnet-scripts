@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 from mysql import *
 import sys
 import os
@@ -28,11 +28,17 @@ for file in os.listdir(dir):
     for server in j['servers']:
         for player in server['info'].get('clients', []):
             # rstrip() because some servers allow trailing spaces, ddnet doesn't, and mysql considers strings the same if only trailing space differs
-            if 'name' not in player or not isinstance(player['name'], unicode):
+            if not player or 'name' not in player or not isinstance(player['name'], str):
                 continue
             name = player['name'].rstrip()
             if name not in playersNow:
                 players[name] += 5
                 playersNow.add(name)
 for name, seconds in players.items():
-    cur.execute('insert into record_playertimes values ("{}", "{}", {});'.format(con.escape_string(name.encode('utf-8')), con.escape_string(dir), seconds))
+    if len(name) > 16:
+        print("Name too long, ignoring: " + name)
+        continue
+    try:
+        cur.execute('insert into record_playertimes values ("{}", "{}", {});'.format(con.escape_string(name.encode('utf-8')).decode('utf-8'), con.escape_string(dir).decode('utf-8'), seconds))
+    except mdb.DataError:
+        print("Name too long, ignoring: " + name)

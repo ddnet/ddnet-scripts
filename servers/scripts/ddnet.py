@@ -24,7 +24,6 @@ import json
 import subprocess
 
 from mysql import *
-from teeworlds import *
 from countryflags import *
 
 try:
@@ -32,13 +31,21 @@ try:
 except ImportError:
     from urllib import quote_plus
 
+try:
+    from contextlib import nullcontext
+except ImportError:  # python 2
+    from contextlib import contextmanager
+    @contextmanager
+    def nullcontext():
+        yield
+
 if sys.version_info.major < 3:
     reload(sys)
     sys.setdefaultencoding('utf8')
 
 webDir = "/var/www"
 htmlRanksPath = "/home/teeworlds/servers/scripts/discord-ranks.html"
-countries = ["NLD", "FRA", "GER", "POL", "RUS", "TUR", "IRN", "SAU", "CHL", "BRA", "ARG", "MEX", "PER", "USA", "CAN", "CHN", "KOR", "TWN", "SGP", "ZAF", "IND", "AUS", "OLD"]
+countries = ["NLD", "FRA", "GER", "POL", "FIN", "UKR", "RUS", "TUR", "IRN", "BHR", "CHL", "BRA", "ARG", "PER", "USA", "CHN", "KOR", "TWN", "SGP", "ZAF", "IND", "AUS", "OLD"]
 
 pointsDict = {
   'Novice':    (1, 0),
@@ -54,6 +61,7 @@ pointsDict = {
   'Solo':      (4, 0),
   'Race':      (2, 0),
   'Fun':       (0, 0),
+  'Event':     (4, 0),
 }
 
 tiles_with_descs = [
@@ -174,7 +182,7 @@ def globalPoints(type, stars):
 def countClients(server):
   result = 0
   for player in server['clients']:
-    if player['name'] != "(connecting)".decode('utf8') or player['clan'] != "".decode('utf8') or player['score'] != 0 or player['country'] != -1:
+    if player['name'] != "(connecting)" or player['clan'] != "" or player['score'] != 0 or player['country'] != -1:
       result += 1
   return result
 
@@ -198,6 +206,15 @@ def deslugify2(string):
     for special_char in re.findall('(-([\d]+)-)', n):
       n = n.replace(special_char[0], unichr(int(special_char[1])))
     return n.encode('utf-8')
+  except:
+    return string
+
+def deslugify3(string):
+  try:
+    n = string
+    for special_char in re.findall('(-([\d]+)-)', n):
+      n = n.replace(special_char[0], chr(int(special_char[1])))
+    return n
   except:
     return string
 
@@ -290,7 +307,7 @@ def header(title, menu, header, refresh = False, stupidIncludes = False, otherIn
   if stupidIncludes:
     mbIncludes = """    <link rel="stylesheet" href="css/bootstrap.css">
     <link rel="stylesheet" href="css/bootstrap-theme.css">
-    <link rel="stylesheet" type="text/css" href="css/light.css" />"""
+    <link rel="stylesheet" type="text/css" href="css/light.css?version=2" />"""
   else:
     mbIncludes = ''
 
@@ -339,7 +356,7 @@ def header(title, menu, header, refresh = False, stupidIncludes = False, otherIn
         <li><a href="/releases/">Map Releases</a></li>
         <li><a href="/discord">Discord</a> / <a href="//forum.ddnet.org/">Forum</a></li>
         <li><a href="//wiki.ddnet.org/">Wiki</a></li>
-        <li><a href="/downloads/">Downloads</a></li>
+        <li><a href="/downloads/">Downloads</a>&nbsp;/&nbsp;<a href="https://store.steampowered.com/app/412220/DDNet/">Steam</a></li>
         <li><a href="/tournament/">Tournaments</a></li>
         <li><a href="/skins/">Skin Database</a></li>
         <li><a href="/stats/">Statistics</a></li>
@@ -364,7 +381,21 @@ def printFinishes(recordName, className, topFinishes):
 
   return string
 
-def printExactSoloRecords(recordName, className, topFinishes, showServer = False):
+# A rank whose run has a pre-generated demo (record_watch, see
+# other/teehistorian-replayer in the ddnet repo) shows its time as a link to
+# the replayer. watch is {time in milliseconds: url} for the records printed.
+def watchTime(watch, gameId, time, formatted):
+  # A rank names its run by game uuid and time, or by time and player on the
+  # Materialize backed page, which has no uuid (see watchlinks.nameKeys)
+  key = gameId if isinstance(gameId, tuple) else (gameId, round(time * 1000))
+  url = watch.get(key) if watch and gameId else None
+  if url is None:
+    return formatted
+  # No title of its own: the row already carries the details of the rank, and
+  # a title here would replace them while the pointer rests on the time
+  return '<a href="%s">%s</a>' % (escape(url), formatted)
+
+def printExactSoloRecords(recordName, className, topFinishes, showServer = False, watch = None):
   string = u'<div class="block2 %s"><h4>%s:</h4>\n' % (className, recordName)
   if len(topFinishes) > 0:
     string += '<table class="tight">\n'
@@ -374,13 +405,13 @@ def printExactSoloRecords(recordName, className, topFinishes, showServer = False
       else:
         mbS = ""
       mbServer = '<td class="flag"><img src="/countryflags/%s.png" alt="%s" height="15"/></td>' % (f[5], f[5]) if showServer else ''
-      string += u'  <tr title="%s, %s, %d finish%s total"><td class="rank">%d.</td><td class="time">%s</td>%s<td><a href="%s">%s</a></td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[4], mbS, f[0], escape(formatTimeExact(f[2])), mbServer, escape(playerWebsite(u'%s' % f[1])), escape(f[1]))
+      string += u'  <tr title="%s, %s, %d finish%s total"><td class="rank">%d.</td><td class="time">%s</td>%s<td><a href="%s">%s</a></td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[4], mbS, f[0], watchTime(watch, f[6] if len(f) > 6 else None, f[2], escape(formatTimeExact(f[2]))), mbServer, escape(playerWebsite(u'%s' % f[1])), escape(f[1]))
     string += '</table>\n'
   string += '</div>\n'
 
   return string
 
-def printSoloRecords(recordName, className, topFinishes, showServer = False):
+def printSoloRecords(recordName, className, topFinishes, showServer = False, watch = None):
   string = u'<div class="block2 %s"><h4>%s:</h4>\n' % (className, recordName)
   if len(topFinishes) > 0:
     string += '<table class="tight">\n'
@@ -390,19 +421,19 @@ def printSoloRecords(recordName, className, topFinishes, showServer = False):
       else:
         mbS = ""
       mbServer = '<td class="flag"><img src="/countryflags/%s.png" alt="%s" height="15"/></td>' % (f[5], f[5]) if showServer else ''
-      string += u'  <tr title="%s, %s, %d finish%s total"><td class="rank">%d.</td><td class="time">%s</td>%s<td><a href="%s">%s</a></td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[4], mbS, f[0], escape(formatTime(f[2])), mbServer, escape(playerWebsite(u'%s' % f[1])), escape(f[1]))
+      string += u'  <tr title="%s, %s, %d finish%s total"><td class="rank">%d.</td><td class="time">%s</td>%s<td><a href="%s">%s</a></td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[4], mbS, f[0], watchTime(watch, f[6] if len(f) > 6 else None, f[2], escape(formatTime(f[2]))), mbServer, escape(playerWebsite(u'%s' % f[1])), escape(f[1]))
     string += '</table>\n'
   string += '</div>\n'
 
   return string
 
-def printTeamRecords(recordName, className, topFinishes, showServer = False):
+def printTeamRecords(recordName, className, topFinishes, showServer = False, watch = None):
   string = u'<div class="block2 %s"><h4>%s:</h4>\n' % (className, recordName)
   if len(topFinishes) > 0:
     string += '<table class="tight">\n'
     for f in topFinishes:
       mbServer = '<td class="flag"><img src="/countryflags/%s.png" alt="%s" height="15"/></td>' % (f[4], f[4]) if showServer else ''
-      string += u'  <tr title="%s, %s"><td class="rank">%d.</td><td class="time">%s</td>%s<td>%s</td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[0], escape(formatTime(f[2])), mbServer, f[1])
+      string += u'  <tr title="%s, %s"><td class="rank">%d.</td><td class="time">%s</td>%s<td>%s</td></tr>\n' % (escape(formatTimeExact(f[2])), escape(formatDate(f[3])), f[0], watchTime(watch, f[5] if len(f) > 5 else None, f[2], escape(formatTime(f[2]))), mbServer, f[1])
     string += '</table>\n'
   string += '</div>\n'
 
@@ -433,7 +464,7 @@ def printLadder(name, ranks, players, showFavServer, number = 10):
       if showFavServer:
         try:
           player = players.get(r[0])
-          favServer = max(player[1].iteritems(), key=itemgetter(1))[0]
+          favServer = max(player[1].items(), key=itemgetter(1))[0]
           if not favServer:
             favServer = 'UNK'
         except:
@@ -447,10 +478,21 @@ def printLadder(name, ranks, players, showFavServer, number = 10):
 
   return string
 
+def printPagination(baseLink, curPage, numPages):
+  string = '<div class="longblock div-ranks"><h3 style="text-align: center;">\n'
+  for text, page in [('&lt;', curPage - 1)] + [(str(p), p) for p in range(1, numPages + 1)] + [('&gt;', curPage + 1)]:
+    if page == curPage or page < 1 or page > numPages:
+      string += '<span>%s</span>\n' % text
+    else:
+      string += '<a href="%s">%s</a>\n' % (baseLink if page == 1 else '%s%d/' % (baseLink, page), text)
+  string += '</h3></div>'
+
+  return string
+
 def isKnownPlayer(name, con, cur):
   if name in ("(connecting)", "nameless tee"):
       return True
-  cur.execute("select count(distinct Name) from record_race where Name = '%s';" % (con.escape_string(name)))
+  cur.execute("select count(distinct Name) from record_race where Name = '%s';" % (con.escape_string(name).decode("utf-8")))
   return int(cur.fetchall()[0][0]) > 0
 
 def printPlayers(server, filt, con, cur):
@@ -470,7 +512,7 @@ def printPlayers(server, filt, con, cur):
       else:
         htmlName = escape(player['name'])
 
-      print((u"  <td class=\"time\">%s</td><td class=\"name\">%s</td><td class=\"clan\">%s</td><td class=\"flag\"><img src=\"countryflags/%s.png\" alt=\"%s\" height=\"20\"/></td>" % (formatScore(player['score'], "race" not in server['game_type'].lower()), htmlName, escape(player['clan']), countryFlags.get(player['country'], 'default'), countryFlags.get(player['country'], 'NONE'))).encode('utf-8'))
+      print(u"  <td class=\"time\">%s</td><td class=\"name\">%s</td><td class=\"clan\">%s</td><td class=\"flag\"><img src=\"/status/countryflags/%s.png\" alt=\"%s\" height=\"20\"/></td>" % (formatScore(player['score'], "race" not in server['game_type'].lower()), htmlName, escape(player['clan']), countryFlags.get(player['country'], 'default'), countryFlags.get(player['country'], 'NONE')))
       print("</tr>")
   print("</table>")
 
@@ -661,7 +703,7 @@ def address(s):
 
 def printStatus(name, servers, doc, external = False):
   con = mysqlConnect()
-  with con:
+  with nullcontext():
     cur = con.cursor()
     cur.execute("set names 'utf8mb4';")
     now = datetime.now()
@@ -685,7 +727,7 @@ def printStatus(name, servers, doc, external = False):
     j = 0
     for countryEntry in doc:
       country = countryEntry['name']
-      for typ, svs in countryEntry['servers'].iteritems():
+      for typ, svs in countryEntry['servers'].items():
         for s in svs:
           found = None
           for server in masterStatus['servers']:
@@ -708,9 +750,9 @@ def printStatus(name, servers, doc, external = False):
             lastServer = country
             serverPositions[lastServer] = j
           totalPlayers += clients
-          if serverPlayers.has_key(country):
+          if country in serverPlayers:
             serverPlayers[country] += clients
-          if modPlayers.has_key(typ):
+          if typ in modPlayers:
             modPlayers[typ] += clients
           else:
             modPlayers[typ] = clients
@@ -734,12 +776,13 @@ def printStatus(name, servers, doc, external = False):
     print('<p class="toggle"><a href="#" title="Click to enable/disable automatic page reloads", onclick="toggleReload(); return false;">Automatic reload in <span id="autoreloadtimer">120</span> seconds</a>, <a title="Click to toggle whether empty servers are shown" href="#" onclick="showClass(\'empty\'); return false;">Show empty servers</a></p>')
 
     if name == "DDraceNetwork":
-      print(getDiscordRanks())
+      pass
+      #print(getDiscordRanks())
 
-      try:
-        print(getTSStatus())
-      except:
-        pass
+      #try:
+      #  print(getTSStatus())
+      #except:
+      #  pass
 
     inp = None
 
@@ -747,7 +790,7 @@ def printStatus(name, servers, doc, external = False):
     j = 0
     for countryEntry in doc:
       country = countryEntry['name']
-      for typ, svs in countryEntry['servers'].iteritems():
+      for typ, svs in countryEntry['servers'].items():
         for s in svs:
           found = None
           for server in masterStatus['servers']:
@@ -791,7 +834,7 @@ def printStatus(name, servers, doc, external = False):
 
           (ip, port) = s.split(":", 1)
           host = lookupIp(ip)
-          print((u'<div id="server-%d"><div class="block%s"><h3 class="ip"><a href="ddnet://%s:%s">%s:%s</a></h3><h2>%s: %s [%d/%d]</h2><br/>' % (j, mbEmpty, ip, port, host, port, serverName, mapName, clients, max_clients)).encode('utf-8'))
+          print(u'<div id="server-%d"><div class="block%s"><h3 class="ip"><a href="ddnet://%s:%s">%s:%s</a></h3><h2>%s: %s [%d/%d]</h2><br/>' % (j, mbEmpty, ip, port, host, port, serverName, mapName, clients, max_clients))
 
           print('<div class="block3 status-players"><h3>Players</h3>')
           printPlayers(server, lambda p: p['is_player'], con, cur)
@@ -825,13 +868,13 @@ def getRecords(cursor, startTime, endTime):
     cursor.execute("""
 select Name, lll.Map, Time, min(lll.Timestamp), min(Type), Server, max(OldTime), Points, Country from
 (
-select Name, Map, Time, Timestamp, "2 Top 1 rank" as Type, (select Time from record_race where Map = l.map and Timestamp < "{0}" order by Time limit 1) as OldTime, Country from (select Timestamp, Name, Map, Time, Server as Country from record_race where Timestamp >= "{0}" and Timestamp < "{1}") as l where Time <= (select min(Time) from record_race where Map = l.Map) and (Time < (select min(Time) from record_race where Map = l.Map and Timestamp < "{0}") or Name != l.Name)
+select Name, Map, Time, Timestamp, "2 Top 1 rank" as Type, (select Time from record_race where Map = l.map and Timestamp < "{0}" order by Time limit 1) as OldTime, Country from (select Timestamp, Name, Map, Time, Server as Country from record_race where Timestamp >= "{0}" and Timestamp < "{1}") as l where Time <= (select min(Time) from record_race where Map = l.Map)
 union all
 select record_teamrace.Name, record_teamrace.Map, record_teamrace.Time, record_teamrace.Timestamp, "1 Top 1 team rank" as Type, OldTime, record_race.Server as Country from (select ID, (select Time from record_teamrace where Map = l.Map and ID != l.ID and Timestamp < "{0}" order by Time limit 1) as OldTime from (select distinct ID, Map, Time from record_teamrace where Timestamp >= "{0}" and Timestamp < "{1}") as l left join (select Map, min(Time) as minTime from record_teamrace group by Map) as r on l.Map = r.Map where Time = minTime) as ll inner join record_teamrace on ll.ID = record_teamrace.ID join record_race on record_teamrace.Map = record_race.Map and record_teamrace.Name = record_race.Name and record_teamrace.Time = record_race.Time and record_teamrace.Timestamp = record_race.Timestamp
 union all
 select Name, Map, Time, Timestamp, "5 Worst rank on DDNet" as Type, (select Time from record_race where Timestamp < "{0}" and Map != "Time Shop" and Map != "Care for your Time" order by Time desc limit 1) as OldTime, Server as Country from (select * from record_race where Map != "Time Shop" and Map != "Care for your Time" and Time > (select Time from record_race where Timestamp < "{0}" and Map != "Time Shop" and Map != "Care for your Time" order by Time desc limit 1) order by Time desc) as llll where Timestamp >= "{0}" and Timestamp < "{1}"
 ) as lll join record_maps on lll.Map = record_maps.Map
-where lll.Map != "Nyan Cat" and record_maps.Server != "Fun" group by Name, Map, Time order by lll.Timestamp, Name asc;
+where lll.Map not in ("Nyan Cat", "Freezejump", "Grenadium", "Autumn Sunset", "AiP-Gores", "Fly to the Legends", "Fly to the Legends 2", "Shooting Range", "Fox", "deathpack", "Fly out of hell", "deadrun", "Justice 2", "BlackBear1", "BlackBear2", "BlackBear3", "BlackBear4", "BlackBear5", "BlackBear6", "BlackBear7", "BlackBear8", "BlackBear9", "Partenack", "xyzyx", "Hell's Castle") and record_maps.Server != "Fun" group by Name, Map, Time order by lll.Timestamp, Name asc;
     """.format(formatDateExact(startTime), formatDateExact(endTime)))
     return cursor.fetchall()
 

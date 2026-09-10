@@ -1,4 +1,4 @@
-#!/usr/bin/python2 -u
+#!/usr/bin/python3 -u
 # coding: utf8
 import random
 import time
@@ -69,21 +69,21 @@ try:
   while running:
     board = [[0 for x in range(cols)] for x in range(rows)]
 
-    headxP1 = cols/2+4
-    headyP1 = rows/2
+    headxP1 = cols//2+4
+    headyP1 = rows//2
     board[headyP1][headxP1] = 3
     board[headyP1][headxP1-1] = 2
     board[headyP1][headxP1-2] = 1
     scoreP1 = 0
 
-    headxP2 = cols/2-4
-    headyP2 = rows/2
+    headxP2 = cols//2-4
+    headyP2 = rows//2
     board[headyP2][headxP2] = -3
     board[headyP2][headxP2+1] = -2
     board[headyP2][headxP2+2] = -1
     scoreP2 = 0
 
-    board[cols/2][rows/2] = 500
+    board[cols//2][rows//2] = 500
     gameover = False
     sleeptime = 0.2
 
