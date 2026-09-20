@@ -100,14 +100,20 @@ build_remote_macos ()
   security default-keychain -s build.keychain && \
   security find-identity -v -p codesigning build.keychain && \
   export CODESIGN_ALLOCATE=\$(xcrun --find codesign_allocate) && \
-  export DDNET_GIT_SHORTREV_HASH=\"$DDNET_GIT_SHORTREV_HASH\"
-  export CXXFLAGS=\"'$OUR_CXXFLAGS'\" && \
+  export DDNET_GIT_SHORTREV_HASH=\"$DDNET_GIT_SHORTREV_HASH\" && \
+  export CARGO_PROFILE_RELEASE_DEBUG=true && \
+  export CFLAGS=\"-g\" && \
+  export CXXFLAGS=\"'$OUR_CXXFLAGS' -g\" && \
   cmake -DVERSION=$VERSION -DCMAKE_OSX_ARCHITECTURES=\"arm64;x86_64\" -DCMAKE_BUILD_TYPE=Release -DDISCORD=ON -DWEBSOCKETS=OFF -DIPO=ON -DPREFER_BUNDLED_LIBS=ON -DMACOS_CODESIGN=ON $(echo $FLAGS) ../ddnet-source && \
+  unset CFLAGS && \
   unset CXXFLAGS && \
   unset LDFLAGS && \
   nice -n19 make -j8 package_default && \
   xcrun notarytool submit DDNet-*.dmg --apple-id \"dennis@felsing.org\" --team-id 53Q7AACS5Q --password \"$APPLE_APP_SPECIFIC_PASSWORD\" --wait && \
-  xcrun stapler staple DDNet-*.dmg
+  xcrun stapler staple DDNet-*.dmg && \
+  dsymutil DDNet DDNet-Server DDNet-Server-Launcher && \
+  tar cf - DDNet.dSYM DDNet-Server.dSYM DDNet-Server-Launcher.dSYM | xz -9 > DDNet-$VERSION-macos$SUFFIX-$DDNET_GIT_SHORTREV_HASH-symbols.tar.xz && \
+  rm -rf lto
   "
 }
 
@@ -115,6 +121,7 @@ build_remote_macos_website ()
 {
   build_remote_macos "" $CXXFLAGS_WEB $UPDATE_FLAGS_MACOS
   scp deen@$MAC_HOST:macos/DDNet-\*.dmg $BUILDS/DDNet-$VERSION-macos.dmg
+  scp deen@$MAC_HOST:macos/DDNet-\*-symbols.tar.xz $BUILDS/
   ssh deen@$MAC_HOST "rm -rf macos"
 }
 
@@ -130,6 +137,7 @@ build_remote_macos_steam ()
   ditto -c -k --keepParent steam-notarize steam-notarize.zip && \
   xcrun notarytool submit steam-notarize.zip --apple-id \"dennis@felsing.org\" --team-id 53Q7AACS5Q --password \"$APPLE_APP_SPECIFIC_PASSWORD\" --wait && \
   xcrun stapler staple pack_DDNet-*_dmg/DDNet.app"
+  scp deen@$MAC_HOST:macos-steam/DDNet-\*-symbols.tar.xz $BUILDS/
   rm -rf DDNet-$VERSION-steam-macos
   mkdir DDNet-$VERSION-steam-macos
   rsync -a deen@$MAC_HOST:macos-steam/pack_DDNet-\*_dmg/DDNet.app DDNet-$VERSION-steam-macos/
@@ -170,7 +178,10 @@ build_remote_ios ()
   mkdir build-ios/Payload && \
   cp -a \$APP build-ios/Payload/ && \
   ditto -c -k --keepParent build-ios/Payload build-ios/DDNet-$VERSION-ios.ipa && \
-  xcrun altool --upload-app -f build-ios/DDNet-$VERSION-ios.ipa -u dennis@felsing.org -p \"$APPLE_APP_SPECIFIC_PASSWORD\""
+  xcrun altool --upload-app -f build-ios/DDNet-$VERSION-ios.ipa -u dennis@felsing.org -p \"$APPLE_APP_SPECIFIC_PASSWORD\" && \
+  tar cf - -C build-ios/Release-iphoneos DDNet.app.dSYM | xz -9 > ~/DDNet-$VERSION-ios-$DDNET_GIT_SHORTREV_HASH-symbols.tar.xz"
+  scp deen@$MAC_HOST:DDNet-$VERSION-ios-\*-symbols.tar.xz $BUILDS/
+  ssh deen@$MAC_HOST "rm -f DDNet-$VERSION-ios-*-symbols.tar.xz"
 }
 
 build_remote_windows_arm64 ()
@@ -229,7 +240,9 @@ build_linux ()
   fi
 
   chroot . sh -c "cd ddnet-source && \
-    export CXXFLAGS=\"'$CXXFLAGS_WEB' -no-pie\" && \
+    export CARGO_PROFILE_RELEASE_DEBUG=true && \
+    export CFLAGS=\"\$CFLAGS -g\" && \
+    export CXXFLAGS=\"'$CXXFLAGS_WEB' -no-pie -g\" && \
     export LDFLAGS=\"-no-pie\" && \
     . /root/.cargo/env && \
     mkdir build && \
@@ -237,9 +250,12 @@ build_linux ()
     cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DDISCORD=$DISCORD -DDISCORD_DYNAMIC=$DISCORD -DWEBSOCKETS=OFF -DIPO=ON $(echo $UPDATE_FLAGS) -DPREFER_BUNDLED_LIBS=ON .. && \
     unset CXXFLAGS && \
     unset LDFLAGS && \
-    make -j1 package_default"
+    make -j1 package_default && \
+    XZ_OPT=-9 tar cfJ DDNet-$VERSION-linux_$PLATFORM-$DDNET_GIT_SHORTREV_HASH-symbols.tar.xz DDNet DDNet-Server"
   chroot . sh -c "cd ddnet-source-steam && \
-    export CXXFLAGS=\"'$CXXFLAGS_STEAM' -no-pie\" && \
+    export CARGO_PROFILE_RELEASE_DEBUG=true && \
+    export CFLAGS=\"\$CFLAGS -g\" && \
+    export CXXFLAGS=\"'$CXXFLAGS_STEAM' -no-pie -g\" && \
     export LDFLAGS=\"-no-pie\" && \
     . /root/.cargo/env && \
     mkdir build && \
@@ -247,7 +263,10 @@ build_linux ()
     cmake -DVERSION=$VERSION -DCMAKE_BUILD_TYPE=Release -DDISCORD=$DISCORD -DDISCORD_DYNAMIC=$DISCORD -DWEBSOCKETS=OFF -DIPO=ON -DSTEAM=ON -DPREFER_BUNDLED_LIBS=ON .. && \
     unset CXXFLAGS && \
     unset LDFLAGS && \
-    make -j1 package_default"
+    make -j1 package_default && \
+    XZ_OPT=-9 tar cfJ DDNet-$VERSION-linux_$PLATFORM-steam-$DDNET_GIT_SHORTREV_HASH-symbols.tar.xz DDNet DDNet-Server"
+  mv ddnet-source/build/DDNet-*-symbols.tar.xz $BUILDS/
+  mv ddnet-source-steam/build/DDNet-*-symbols.tar.xz $BUILDS/
   mv ddnet-source/build/DDNet-*.tar.xz $BUILDS/DDNet-$VERSION-linux_$PLATFORM.tar.xz
   mv ddnet-source-steam/build/DDNet-*.tar.xz ../DDNet-$VERSION-steam-linux_$PLATFORM.tar.xz
 
@@ -312,6 +331,7 @@ build_android ()
   cp ../DDNet.jks build-android
   BUILD_FLAGS="-j2" scripts/android/cmake_android.sh all DDNet-$VERSION org.ddnet.client Release build-android
   mv build-android/DDNet-*.apk $BUILDS/DDNet-$VERSION.apk
+  XZ_OPT=-9 tar cfJ $BUILDS/DDNet-$VERSION-android-$DDNET_GIT_SHORTREV_HASH-symbols.tar.xz build-android/build_arch/*/libDDNet*.so
   cd ..
   rm -rf ddnet-source-android
 }
