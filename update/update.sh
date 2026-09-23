@@ -40,6 +40,19 @@ if ls DDNet-$VERSION-linux_x86_64/*.so 2>&1 > /dev/null; then
   for i in DDNet-$VERSION-linux_x86_64/*.so; do mcp $i ${i:r:t}-linux-x86_64.so; done
 fi
 
+dmg2img -s -i /var/www/downloads/DDNet-$VERSION-macos.dmg -o DDNet-macos.img
+MACOS_LOOP=$(losetup -f --show -P DDNet-macos.img)
+mkdir -p macos-mnt
+mount -t hfsplus -o ro ${MACOS_LOOP}p1 macos-mnt
+tar -C macos-mnt -c --owner=0 --group=0 DDNet.app | xz -T0 > DDNet-macos.tar.xz.$$.tmp
+mv DDNet-macos.tar.xz.$$.tmp DDNet-macos.tar.xz
+tar -C macos-mnt -c --owner=0 --group=0 DDNet-Server.app | xz -T0 > DDNet-Server-macos.tar.xz.$$.tmp
+mv DDNet-Server-macos.tar.xz.$$.tmp DDNet-Server-macos.tar.xz
+umount macos-mnt
+losetup -d $MACOS_LOOP
+rmdir macos-mnt
+rm DDNet-macos.img
+
 cp update.json update.json.old && mv update.json.new update.json
 
 rm -r DDNet-$OLD_VERSION-*
