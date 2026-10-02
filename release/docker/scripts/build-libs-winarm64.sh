@@ -9,7 +9,8 @@ OUTPUT=/output
 mkdir -p "$OUTPUT" /dist
 
 # Library versions
-SDL3_VERSION=3.4.14
+# SDL main snapshot, the 3.4 releases lack the per-device mice on macOS
+SDL3_COMMIT=d4410b9a7ccbc05f6b235b411226b01ebb91fe51
 CURL_VERSION=8.8.0
 FREETYPE_VERSION=2.13.2
 LIBOGG_VERSION=1.3.5
@@ -31,7 +32,7 @@ SYSROOT=${SYSROOT:-${TOOLCHAIN_DIR}/aarch64-w64-mingw32}
 
 # Download all sources
 cd /build
-wget -q --tries=5 --timeout=60 --waitretry=10 --retry-on-http-error=429,500,502,503 "https://libsdl.org/release/SDL3-${SDL3_VERSION}.tar.gz"
+wget -q --tries=5 --timeout=60 --waitretry=10 --retry-on-http-error=429,500,502,503 -O "SDL3-${SDL3_COMMIT}.tar.gz" "https://github.com/libsdl-org/SDL/archive/${SDL3_COMMIT}.tar.gz"
 wget -q --tries=5 --timeout=60 --waitretry=10 --retry-on-http-error=429,500,502,503 "https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz"
 wget -q --tries=5 --timeout=60 --waitretry=10 --retry-on-http-error=429,500,502,503 "https://downloads.sourceforge.net/freetype/freetype-${FREETYPE_VERSION}.tar.gz"
 wget -q --tries=5 --timeout=60 --waitretry=10 --retry-on-http-error=429,500,502,503 "http://downloads.xiph.org/releases/ogg/libogg-${LIBOGG_VERSION}.tar.gz"
@@ -46,7 +47,7 @@ wget -q --tries=5 --timeout=60 --waitretry=10 --retry-on-http-error=429,500,502,
 wget -q --tries=5 --timeout=60 --waitretry=10 --retry-on-http-error=429,500,502,503 "https://github.com/madler/zlib/releases/download/v${ZLIB_VERSION}/zlib-${ZLIB_VERSION}.tar.gz"
 
 mkdir src && cd src
-tar xf "../SDL3-${SDL3_VERSION}.tar.gz"
+tar xf "../SDL3-${SDL3_COMMIT}.tar.gz"
 tar xf "../curl-${CURL_VERSION}.tar.gz"
 tar xf "../libogg-${LIBOGG_VERSION}.tar.gz"
 tar xf "../opus-${OPUS_VERSION}.tar.gz"
@@ -77,7 +78,7 @@ cp build/libzlibstatic.a ${SYSROOT}/lib/libz.a
 cp *.h build/*.h ${SYSROOT}/include
 
 # --- SDL3 ---
-cd /build/src/SDL3-${SDL3_VERSION}
+cd /build/src/SDL-${SDL3_COMMIT}
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=aarch64 \
   -DCMAKE_C_COMPILER=${TOOLCHAIN_DIR}/bin/aarch64-w64-mingw32-clang \

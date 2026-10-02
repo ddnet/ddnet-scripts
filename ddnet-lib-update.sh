@@ -3,7 +3,7 @@
 
 cd debian11/root
 rm -rf *
-wget https://libsdl.org/release/SDL3-3.4.14.tar.gz
+wget -O SDL3-d4410b9a.tar.gz https://github.com/libsdl-org/SDL/archive/d4410b9a7ccbc05f6b235b411226b01ebb91fe51.tar.gz
 wget https://curl.haxx.se/download/curl-8.8.0.tar.gz
 wget https://download.savannah.gnu.org/releases/freetype/freetype-2.13.2.tar.gz
 wget http://downloads.xiph.org/releases/ogg/libogg-1.3.5.tar.gz
@@ -141,7 +141,7 @@ tar xvf ../curl-8.8.0.tar.gz
 tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
-tar xvf ../SDL3-3.4.14.tar.gz
+tar xvf ../SDL3-d4410b9a.tar.gz
 tar xvf ../sqlite-autoconf-3460000.tar.gz
 tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-7.0.1.tar.gz
@@ -169,7 +169,7 @@ DEPS_LIBS="-lopus -logg -L/root/x86-64/opus-1.3.1/.libs/ -L/root/x86-64/libogg-1
 make -j4
 cp .libs/libopusfile.a ..
 
-cd ../SDL3-3.4.14
+cd ../SDL-d4410b9a7ccbc05f6b235b411226b01ebb91fe51
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DSDL_SHARED=ON -DSDL_STATIC=OFF -DSDL_TESTS=OFF -DSDL_EXAMPLES=OFF -DSDL_WAYLAND=OFF -DSDL_RPATH=OFF
 cmake --build build -j4
 cp build/libSDL3.so.0.*.* ../libSDL3.so.0
@@ -214,7 +214,7 @@ tar xvf ../curl-8.8.0.tar.gz
 tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
-tar xvf ../SDL3-3.4.14.tar.gz
+tar xvf ../SDL3-d4410b9a.tar.gz
 tar xvf ../sqlite-autoconf-3460000.tar.gz
 tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-7.0.1.tar.gz
@@ -244,7 +244,7 @@ cp .libs/libopusfile.a ..
 
 # The i386 variants of the dev packages are needed here, and pkg-config must be
 # pointed at them, otherwise the amd64 glibconfig.h breaks the ibus build
-cd ../SDL3-3.4.14
+cd ../SDL-d4410b9a7ccbc05f6b235b411226b01ebb91fe51
 PKG_CONFIG_LIBDIR=/usr/lib/i386-linux-gnu/pkgconfig:/usr/share/pkgconfig cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32 -DCMAKE_SHARED_LINKER_FLAGS=-m32 -DCMAKE_EXE_LINKER_FLAGS=-m32 -DSDL_SHARED=ON -DSDL_STATIC=OFF -DSDL_TESTS=OFF -DSDL_EXAMPLES=OFF -DSDL_WAYLAND=OFF -DSDL_RPATH=OFF
 cmake --build build -j4
 cp build/libSDL3.so.0.*.* ../libSDL3.so.0
@@ -288,7 +288,7 @@ cd ../..
 [exit chroot]
 mkdir win64
 cd win64
-tar xvf ../SDL3-3.4.14.tar.gz
+tar xvf ../SDL3-d4410b9a.tar.gz
 tar xvf ../curl-8.8.0.tar.gz
 tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
@@ -301,7 +301,7 @@ tar xvf ../v4.3-stable.tar.gz
 tar xvf ../libpng-1.6.43.tar.gz
 tar xvf ../wavpack-5.9.0.tar.xz
 
-cd SDL3-3.4.14
+cd SDL-d4410b9a7ccbc05f6b235b411226b01ebb91fe51
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ -DCMAKE_RC_COMPILER=x86_64-w64-mingw32-windres -DSDL_SHARED=ON -DSDL_STATIC=OFF -DSDL_TESTS=OFF -DSDL_EXAMPLES=OFF
 cmake --build build -j4
 cp build/SDL3.dll build/libSDL3.dll.a ..
@@ -400,7 +400,7 @@ cd ../..
 
 mkdir win32
 cd win32
-tar xvf ../SDL3-3.4.14.tar.gz
+tar xvf ../SDL3-d4410b9a.tar.gz
 tar xvf ../curl-8.8.0.tar.gz
 tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
@@ -413,7 +413,7 @@ tar xvf ../v4.3-stable.tar.gz
 tar xvf ../libpng-1.6.43.tar.gz
 tar xvf ../wavpack-5.9.0.tar.xz
 
-cd SDL3-3.4.14
+cd SDL-d4410b9a7ccbc05f6b235b411226b01ebb91fe51
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_C_COMPILER=i686-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=i686-w64-mingw32-g++ -DCMAKE_RC_COMPILER=i686-w64-mingw32-windres -DSDL_SHARED=ON -DSDL_STATIC=OFF -DSDL_TESTS=OFF -DSDL_EXAMPLES=OFF
 cmake --build build -j4
 cp build/SDL3.dll build/libSDL3.dll.a ..
@@ -515,7 +515,7 @@ tar xvf ../curl-8.8.0.tar.gz
 tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
-tar xvf ../SDL3-3.4.14.tar.gz
+tar xvf ../SDL3-d4410b9a.tar.gz
 tar xvf ../freetype-2.13.2.tar.gz
 tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-7.0.1.tar.gz
@@ -563,7 +563,9 @@ cp .libs/libopusfile.a ..
 export OSXCROSS_SDK=/home/deen/git/osxcross/target/SDK/MacOSX15.4.sdk
 export OSXCROSS_SDKROOT=$OSXCROSS_SDK
 export OSXCROSS_SDK_VERSION=15.4
-cd ../SDL3-3.4.14
+cd ../SDL-d4410b9a7ccbc05f6b235b411226b01ebb91fe51
+# Name GCMouse devices after the product instead of "Mouse", not upstream yet
+sed -i 's/SDL_AddMouse(mouseID, NULL);/SDL_AddMouse(mouseID, mouse.vendorName ? [mouse.vendorName UTF8String] : NULL);/' src/video/cocoa/SDL_cocoamouse.m
 cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=cross-macos-x86_64.cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-mmacosx-version-min=10.15" -DCMAKE_SHARED_LINKER_FLAGS="-mmacosx-version-min=10.15" -DCMAKE_C_STANDARD_LIBRARIES="-L/home/deen/git/osxcross/build/compiler-rt/compiler-rt/build_x86_64/lib/darwin -lclang_rt.osx" -DSDL_FRAMEWORK=ON -DSDL_SHARED=ON -DSDL_STATIC=OFF -DSDL_TESTS=OFF -DSDL_EXAMPLES=OFF -DSDL_HIDAPI_LIBUSB=OFF
 cmake --build build -j4
 cp -a build/SDL3.framework ..
@@ -612,7 +614,7 @@ tar xvf ../curl-8.8.0.tar.gz
 tar xvf ../libogg-1.3.5.tar.gz
 tar xvf ../opus-1.3.1.tar.gz
 tar xvf ../opusfile-0.12.tar.gz
-tar xvf ../SDL3-3.4.14.tar.gz
+tar xvf ../SDL3-d4410b9a.tar.gz
 tar xvf ../freetype-2.13.2.tar.gz
 tar xvf ../x264-master.tar.bz2
 tar xvf ../ffmpeg-7.0.1.tar.gz
@@ -650,7 +652,8 @@ cp .libs/libopusfile.a ..
 export OSXCROSS_SDK=/home/deen/git/osxcross/target/SDK/MacOSX15.4.sdk
 export OSXCROSS_SDKROOT=$OSXCROSS_SDK
 export OSXCROSS_SDK_VERSION=15.4
-cd ../SDL3-3.4.14
+cd ../SDL-d4410b9a7ccbc05f6b235b411226b01ebb91fe51
+sed -i 's/SDL_AddMouse(mouseID, NULL);/SDL_AddMouse(mouseID, mouse.vendorName ? [mouse.vendorName UTF8String] : NULL);/' src/video/cocoa/SDL_cocoamouse.m
 cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=cross-macos-arm64.cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-mmacosx-version-min=10.15" -DCMAKE_SHARED_LINKER_FLAGS="-mmacosx-version-min=10.15" -DCMAKE_C_STANDARD_LIBRARIES="-L/home/deen/git/osxcross/build/compiler-rt/compiler-rt/build_arm64/lib/darwin -lclang_rt.osx" -DSDL_FRAMEWORK=ON -DSDL_SHARED=ON -DSDL_STATIC=OFF -DSDL_TESTS=OFF -DSDL_EXAMPLES=OFF -DSDL_HIDAPI_LIBUSB=OFF
 cmake --build build -j4
 cp -a build/SDL3.framework ..
